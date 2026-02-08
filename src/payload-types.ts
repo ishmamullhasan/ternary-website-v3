@@ -1642,7 +1642,20 @@ export interface Header {
   menu?:
     | {
         label?: string | null;
+        /**
+         * Optional. Leave empty if this item has sub-items.
+         */
         link?: string | null;
+        /**
+         * Add sub-items for dropdown. If empty, this is a regular link.
+         */
+        subItems?:
+          | {
+              label?: string | null;
+              link?: string | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
@@ -1807,6 +1820,13 @@ export interface HeaderSelect<T extends boolean = true> {
     | {
         label?: T;
         link?: T;
+        subItems?:
+          | T
+          | {
+              label?: T;
+              link?: T;
+              id?: T;
+            };
         id?: T;
       };
   button?:

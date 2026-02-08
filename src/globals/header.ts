@@ -40,6 +40,31 @@ const Header: GlobalConfig = {
           label: 'Link',
           type: 'text',
           required: false,
+          admin: {
+            description: 'Optional. Leave empty if this item has sub-items.',
+          },
+        },
+        {
+          name: 'subItems',
+          label: 'Sub Menu',
+          type: 'array',
+          admin: {
+            description: 'Add sub-items for dropdown. If empty, this is a regular link.',
+          },
+          fields: [
+            {
+              name: 'label',
+              label: 'Label',
+              type: 'text',
+
+            },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+            
+            },
+          ],
         },
       ],
     },

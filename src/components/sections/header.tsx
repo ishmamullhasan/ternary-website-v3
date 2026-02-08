@@ -1,18 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu'
-import Link from 'next/link'
+import { cn } from '@/utilities/ui'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import Image from 'next/image'
-import { Menu } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
-type MenuItem = { label?: string | null; link?: string | null }
+type SubMenuItem = { label?: string | null; link?: string | null }
+type MenuItem = { label?: string | null; link?: string | null; subItems?: SubMenuItem[] | null }
 type MediaWithUrl = { url?: string | null }
 
 interface HeaderData {
@@ -34,15 +31,167 @@ function getLogoUrl(logo: MediaWithUrl | string | null | undefined): string | nu
 }
 
 export default function Header({ headerData }: HeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const path = usePathname()
+  const [open, setOpen] = useState(false)
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<{ [key: string]: boolean }>({})
+  const panelRef = useRef<HTMLDivElement>(null)
+  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   const menuItems = headerData?.menu?.filter((item) => item?.label) ?? []
   const logoUrl = getLogoUrl(headerData?.logo)
 
+  useEffect(() => {
+    setOpen(false)
+    setActiveDropdown(null)
+    setMobileSubmenuOpen({})
+  }, [path])
+
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (!open && !activeDropdown) return
+
+      if (open && panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+
+      if (activeDropdown) {
+        const activeRef = dropdownRefs.current[activeDropdown]
+        if (activeRef && !activeRef.contains(e.target as Node)) {
+          setActiveDropdown(null)
+        }
+      }
+    }
+
+    function onEsc(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        setActiveDropdown(null)
+      }
+    }
+
+    document.addEventListener('mousedown', onClick)
+    document.addEventListener('keydown', onEsc)
+    return () => {
+      document.removeEventListener('mousedown', onClick)
+      document.removeEventListener('keydown', onEsc)
+    }
+  }, [open, activeDropdown])
+
+  const toggleMobileSubmenu = (itemId: string) => {
+    setMobileSubmenuOpen((prev) => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }))
+  }
+
+  const DesktopNav = (
+    <div className="flex items-center gap-8">
+      {menuItems.map((item, i) => {
+        const hasSubmenu = item.subItems && item.subItems.length > 0
+        const itemId = `item-${i}`
+        const isDropdownActive = activeDropdown === itemId
+
+        if (hasSubmenu) {
+          return (
+            <div
+              key={i}
+              className="relative group"
+              ref={(el) => {
+                dropdownRefs.current[itemId] = el
+              }}
+            >
+              <Link
+                href={item.link || '#'}
+                onMouseEnter={() => {
+                  if (timeoutRef.current) clearTimeout(timeoutRef.current)
+                  setActiveDropdown(itemId)
+                }}
+                onMouseLeave={() => {
+                  if (timeoutRef.current) clearTimeout(timeoutRef.current)
+                  timeoutRef.current = setTimeout(() => setActiveDropdown(null), 500)
+                }}
+                className={cn(
+                  'flex items-center gap-1 font-medium text-sm transition-colors duration-200 relative',
+                  isDropdownActive ? 'text-secondary' : 'opacity-90 hover:opacity-100',
+                )}
+              >
+                <span>{item.label || 'Label'}</span>
+                <ChevronDown
+                  className={cn(
+                    'h-4 w-4 transition-transform duration-200',
+                    isDropdownActive ? 'rotate-180' : '',
+                  )}
+                />
+                <span className="absolute bottom-0 left-0 h-0.5 w-full bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left" />
+              </Link>
+
+              {isDropdownActive && (
+                <div
+                  onMouseEnter={() => {
+                    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+                    setActiveDropdown(itemId)
+                  }}
+                  onMouseLeave={() => {
+                    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+                    timeoutRef.current = setTimeout(() => setActiveDropdown(null), 100)
+                  }}
+                  className="absolute top-full left-0 mt-1 min-w-[200px] rounded-2xl border border-white/10 bg-primary/95 py-2 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-primary/80"
+                >
+                  {item.subItems?.map((subItem, j) => {
+                    const subHref = subItem.link || '#'
+                    const subActive = path === subHref
+                    return (
+                      <Link
+                        key={j}
+                        href={subHref}
+                        className={cn(
+                          'block px-4 py-2 text-sm font-medium transition-colors duration-200 relative group',
+                          subActive
+                            ? 'text-secondary bg-white/10'
+                            : 'opacity-90 hover:bg-white/10 hover:opacity-100',
+                        )}
+                      >
+                        {subItem.label || 'Submenu Item'}
+                        <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left" />
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        } else {
+          const href = item.link || '#'
+          const active = path === href
+          return (
+            <Link
+              key={i}
+              href={href}
+              className={cn(
+                'font-medium text-sm transition-colors duration-200 relative group',
+                active
+                  ? 'text-secondary underline underline-offset-8'
+                  : 'opacity-90 hover:opacity-100',
+              )}
+            >
+              {item.label || 'Label'}
+              {!active && (
+                <span className="absolute bottom-0 left-0 h-0.5 w-full bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left" />
+              )}
+            </Link>
+          )
+        }
+      })}
+    </div>
+  )
+
   return (
     <header className="w-full pt-3">
-      <div className="flex flex-row w-full justify-between px-5 md:px-10  py-3 items-center">
+      <div className="flex flex-row w-full justify-between items-center px-5 md:px-10 py-3">
         {/* Logo */}
-        <Link href="/" className="pt-3">
+        <Link href="/" className="flex-shrink-0 pt-3">
           {logoUrl ? (
             <Image src={logoUrl} width={100} height={30} alt={headerData?.siteName ?? 'Logo'} />
           ) : (
@@ -50,61 +199,124 @@ export default function Header({ headerData }: HeaderProps) {
           )}
         </Link>
 
-        {/* Hamburger Icon */}
-        <button
-          className="md:hidden text-2xl bg-transparent hover:bg-transparent text-white"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle navigation"
-        >
-          <Menu className="size-6" />
-        </button>
+        {/* Desktop Navigation - center */}
+        <div className="hidden md:flex flex-1 justify-center">
+          {DesktopNav}
+        </div>
 
-        {/* Desktop Navigation */}
-        <NavigationMenu className="hidden md:block">
-          <NavigationMenuList className="flex gap-6 font-medium text-sm ">
-            {menuItems.map((item, index) => (
-              <NavigationMenuItem key={index} className="hover:bg-[#1B1A17] rounded-lg p-2">
-                <NavigationMenuLink asChild>
-                  <Link href={item.link ?? '#'} className="hover:bg-muted py-2 px-4 rounded-lg">
-                    {item.label}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-        <button
-          className="text-sm bg-[#1B1A17] hover:bg-transparent rounded-lg p-2"
-         
-        >
-          <Link href={headerData?.button?.link ?? '#'} className="hover:bg-muted py-2 px-4 rounded-lg">
-            {headerData?.button?.label}
-          </Link>
-        </button>
+        {/* Desktop Button - right (placeholder when no button keeps menu centered) */}
+        <div className="hidden md:flex flex-shrink-0 min-w-[100px] justify-end">
+          {headerData?.button?.label && (
+            <Link
+              href={headerData.button.link ?? '#'}
+              className="inline-flex items-center gap-2 rounded-2xl bg-[#1B1A17] px-4 py-2 text-sm font-semibold text-white transition active:scale-[0.99] hover:bg-white/10"
+            >
+              {headerData.button.label}
+            </Link>
+          )}
+        </div>
+
+        {/* Mobile: button + menu toggle - right */}
+        <div className="flex items-center gap-2 md:hidden">
+          {headerData?.button?.label && (
+            <Link
+              href={headerData.button.link ?? '#'}
+              className="rounded-2xl bg-[#1B1A17] px-3 py-2 text-sm font-semibold"
+            >
+              {headerData.button.label}
+            </Link>
+          )}
+          <button
+            type="button"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl outline-none transition active:scale-95"
+          >
+            {open ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Navigation with Animation */}
+      {/* Mobile Panel */}
       <div
-        className={`transition-all duration-1200  ease-in-out mt-3  ${
-          isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-        } overflow-hidden md:hidden bg-muted`}
+        id="mobile-nav"
+        ref={panelRef}
+        className={cn(
+          'fixed inset-x-0 top-16 z-[110] w-full max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-primary/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-primary/80 md:hidden',
+          open ? 'animate-[accordion-down_200ms_ease-out]' : 'hidden',
+        )}
       >
-        <NavigationMenu className="mt-3">
-          <NavigationMenuList className="flex flex-col items-start gap-4 px-10 pb-4 font-medium text-sm">
-            {menuItems.map((item, index) => (
-              <NavigationMenuItem key={index}>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href={item.link ?? '#'}
-                    className="hover:text-gray-400 py-2 px-4 rounded-lg"
+        <div className="flex flex-col px-4 py-3">
+          {menuItems.map((item, i) => {
+            const hasSubmenu = item.subItems && item.subItems.length > 0
+            const itemId = `item-${i}`
+            const isSubmenuOpen = mobileSubmenuOpen[itemId]
+
+            if (hasSubmenu) {
+              return (
+                <div key={i} className="border-b border-white/10 last:border-b-0">
+                  <button
+                    type="button"
+                    onClick={() => toggleMobileSubmenu(itemId)}
+                    className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-base font-medium opacity-90 transition-colors duration-200 hover:bg-white/10 hover:opacity-100"
                   >
-                    {item.label}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+                    <span>{item.label || 'Label'}</span>
+                    <ChevronDown
+                      className={cn(
+                        'h-4 w-4 transition-transform duration-200',
+                        isSubmenuOpen ? 'rotate-180' : '',
+                      )}
+                    />
+                  </button>
+
+                  {isSubmenuOpen && (
+                    <div className="pb-2 pl-4">
+                      {item.subItems?.map((subItem, j) => {
+                        const subHref = subItem.link || '#'
+                        const subActive = path === subHref
+                        return (
+                          <Link
+                            key={j}
+                            href={subHref}
+                            onClick={() => setOpen(false)}
+                            className={cn(
+                              'block rounded-2xl px-3 py-2 text-sm font-medium transition-colors duration-200',
+                              subActive
+                                ? 'bg-white/10 text-secondary'
+                                : 'opacity-80 hover:bg-white/10 hover:opacity-100',
+                            )}
+                          >
+                            {subItem.label || 'Submenu Item'}
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            } else {
+              const href = item.link || '#'
+              const active = path === href
+              return (
+                <Link
+                  key={i}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className={cn(
+                    'block rounded-2xl px-3 py-3 text-base font-medium transition-colors duration-200 border-b border-white/10 last:border-b-0',
+                    active
+                      ? 'bg-white/10 text-secondary'
+                      : 'opacity-90 hover:bg-white/10 hover:opacity-100',
+                  )}
+                >
+                  {item.label || 'Label'}
+                </Link>
+              )
+            }
+          })}
+        </div>
       </div>
     </header>
   )
