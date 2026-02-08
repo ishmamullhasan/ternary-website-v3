@@ -61,9 +61,9 @@ export default function Header({ headerData }: HeaderProps) {
 
         {/* Desktop Navigation */}
         <NavigationMenu className="hidden md:block">
-          <NavigationMenuList className="flex gap-6 font-medium text-sm">
+          <NavigationMenuList className="flex gap-6 font-medium text-sm ">
             {menuItems.map((item, index) => (
-              <NavigationMenuItem key={index}>
+              <NavigationMenuItem key={index} className="hover:bg-[#1B1A17] rounded-lg p-2">
                 <NavigationMenuLink asChild>
                   <Link href={item.link ?? '#'} className="hover:bg-muted py-2 px-4 rounded-lg">
                     {item.label}
@@ -74,7 +74,7 @@ export default function Header({ headerData }: HeaderProps) {
           </NavigationMenuList>
         </NavigationMenu>
         <button
-          className="text-sm bg-transparent hover:bg-transparent text-black"
+          className="text-sm bg-[#1B1A17] hover:bg-transparent rounded-lg p-2"
          
         >
           <Link href={headerData?.button?.link ?? '#'} className="hover:bg-muted py-2 px-4 rounded-lg">
