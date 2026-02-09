@@ -97,7 +97,7 @@ export default function Header({ headerData }: HeaderProps) {
           return (
             <div
               key={i}
-              className="relative group"
+              className="relative"
               ref={(el) => {
                 dropdownRefs.current[itemId] = el
               }}
@@ -124,7 +124,6 @@ export default function Header({ headerData }: HeaderProps) {
                     isDropdownActive ? 'rotate-180' : '',
                   )}
                 />
-                <span className="absolute bottom-0 left-0 h-0.5 w-full bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left" />
               </Link>
 
               {isDropdownActive && (
@@ -147,14 +146,13 @@ export default function Header({ headerData }: HeaderProps) {
                         key={j}
                         href={subHref}
                         className={cn(
-                          'block px-4 py-2 text-sm font-medium transition-colors duration-200 relative group',
+                          'm-2 rounded-lg block px-4 py-2 text-sm font-medium transition-colors duration-200',
                           subActive
                             ? 'text-secondary bg-white/10'
-                            : 'opacity-90 hover:bg-white/10 hover:opacity-100',
+                            : 'opacity-90 hover:bg-[#1B1A17] hover:opacity-100',
                         )}
                       >
                         {subItem.label || 'Submenu Item'}
-                        <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left" />
                       </Link>
                     )
                   })}
@@ -170,16 +168,13 @@ export default function Header({ headerData }: HeaderProps) {
               key={i}
               href={href}
               className={cn(
-                'font-medium text-sm transition-colors duration-200 relative group',
+                'font-medium text-sm transition-colors duration-200',
                 active
                   ? 'text-secondary underline underline-offset-8'
                   : 'opacity-90 hover:opacity-100',
               )}
             >
               {item.label || 'Label'}
-              {!active && (
-                <span className="absolute bottom-0 left-0 h-0.5 w-full bg-white transform scale-x-0 origin-right transition-transform duration-300 ease-out group-hover:scale-x-100 group-hover:origin-left" />
-              )}
             </Link>
           )
         }
@@ -209,7 +204,7 @@ export default function Header({ headerData }: HeaderProps) {
           {headerData?.button?.label && (
             <Link
               href={headerData.button.link ?? '#'}
-              className="inline-flex items-center gap-2 rounded-2xl bg-[#1B1A17] px-4 py-2 text-sm font-semibold text-white transition active:scale-[0.99] hover:bg-white/10"
+              className="rounded-lg bg-[#1B1A17] px-3 py-2 text-sm font-semibold border border-[#1B1A17] hover:bg-transparent hover:text-white"
             >
               {headerData.button.label}
             </Link>
@@ -221,7 +216,7 @@ export default function Header({ headerData }: HeaderProps) {
           {headerData?.button?.label && (
             <Link
               href={headerData.button.link ?? '#'}
-              className="rounded-2xl bg-[#1B1A17] px-3 py-2 text-sm font-semibold"
+              className="rounded-lg bg-[#1B1A17] px-3 py-2 text-sm font-semibold border border-[#1B1A17] hover:border-[#1B1A17] hover:bg-transparent hover:text-white"
             >
               {headerData.button.label}
             </Link>
@@ -256,11 +251,11 @@ export default function Header({ headerData }: HeaderProps) {
 
             if (hasSubmenu) {
               return (
-                <div key={i} className="border-b border-white/10 last:border-b-0">
+                <div key={i} className="border-b border-[#1B1A17] last:border-b-0">
                   <button
                     type="button"
                     onClick={() => toggleMobileSubmenu(itemId)}
-                    className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-base font-medium opacity-90 transition-colors duration-200 hover:bg-white/10 hover:opacity-100"
+                    className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-base font-medium opacity-90 transition-colors duration-200 hover:bg-[#1B1A17] hover:opacity-100"
                   >
                     <span>{item.label || 'Label'}</span>
                     <ChevronDown
@@ -285,7 +280,7 @@ export default function Header({ headerData }: HeaderProps) {
                               'block rounded-2xl px-3 py-2 text-sm font-medium transition-colors duration-200',
                               subActive
                                 ? 'bg-white/10 text-secondary'
-                                : 'opacity-80 hover:bg-white/10 hover:opacity-100',
+                                : 'opacity-80 hover:bg-[#1B1A17] hover:opacity-100',
                             )}
                           >
                             {subItem.label || 'Submenu Item'}
@@ -308,7 +303,7 @@ export default function Header({ headerData }: HeaderProps) {
                     'block rounded-2xl px-3 py-3 text-base font-medium transition-colors duration-200 border-b border-white/10 last:border-b-0',
                     active
                       ? 'bg-white/10 text-secondary'
-                      : 'opacity-90 hover:bg-white/10 hover:opacity-100',
+                      : 'opacity-90 hover:bg-[#1B1A17] hover:opacity-100',
                   )}
                 >
                   {item.label || 'Label'}
