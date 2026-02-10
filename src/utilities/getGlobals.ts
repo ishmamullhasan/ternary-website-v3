@@ -24,3 +24,27 @@ export const getCachedGlobal = (slug: Global, depth = 0) =>
   unstable_cache(async () => getGlobal(slug, depth), [slug], {
     tags: [`global_${slug}`],
   })
+
+/**
+ * Fetches header global without caching (revalidate: 0).
+ * Use depth: 1 to populate logo media with URL.
+ */
+export async function getHeader() {
+  return getGlobal('header', 1)
+}
+
+/**
+ * Fetches footer global without caching (revalidate: 0).
+ * Use depth: 1 to populate logo media with URL.
+ */
+export async function getFooter() {
+  return getGlobal('footer', 1)
+}
+
+/**
+ * Fetches homepage global without caching (revalidate: 0).
+ * Use depth: 1 to populate media (hero image, icons, etc.).
+ */
+export async function getHomepage() {
+  return getGlobal('homepage' as Global, 1)
+}

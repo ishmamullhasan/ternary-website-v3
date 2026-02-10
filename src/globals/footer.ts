@@ -1,0 +1,244 @@
+import { revalidateTag } from 'next/cache'
+import { GlobalConfig } from 'payload'
+
+const Footer: GlobalConfig = {
+  slug: 'footer',
+  label: 'Footer',
+  hooks: {
+    afterChange: [
+      () => {
+        revalidateTag('global_footer')
+      },
+    ],
+  },
+  fields: [
+    // {
+    //   name: 'contact',
+    //   label: 'Contact Section',
+    //   type: 'group',
+    //   required: false,
+    //   fields: [
+    //     {
+    //       name: 'heading',
+    //       label: 'Heading',
+    //       type: 'text',
+    //       required: false,
+    //     },
+    //     {
+    //       name: 'subtext',
+    //       label: 'Subtext',
+    //       type: 'text',
+    //       required: false,
+    //     },
+    //     {
+    //       name: 'emailPlaceholder',
+    //       label: 'Email Placeholder',
+    //       type: 'text',
+    //       required: false,
+    //     },
+    //     {
+    //       name: 'privacyText',
+    //       label: 'Privacy Text',
+    //       type: 'textarea',
+    //       required: false,
+    //     },
+    //   ],
+    // },
+    {
+      name: 'logo',
+      label: 'Logo',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+    },
+    {
+      name: 'siteName',
+      type: 'text',
+    },
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'textarea',
+      required: false,
+    },
+    {
+      name: 'copyright',
+      label: 'Copyright',
+      type: 'text',
+      required: false,
+    },
+    
+    {
+      name: 'menu_1',
+      label: 'Menu 1',
+      type: 'group',
+      required: false,
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'menu',
+          label: 'Menu',
+          type: 'array',
+          required: false,
+          fields: [
+            {
+              name: 'label',
+              label: 'Label',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'menu_2',
+      label: 'Menu 2',
+      type: 'group',
+      required: false,
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'menu',
+          label: 'Menu',
+          type: 'array',
+          required: false,
+          fields: [
+            {
+              name: 'label',
+              label: 'Label',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'menu_3',
+      label: 'Menu 3',
+      type: 'group',
+      required: false,
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'menu',
+          label: 'Menu',
+          type: 'array',
+          required: false,
+          fields: [
+            {
+              name: 'label',
+              label: 'Label',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'menu_4',
+      label: 'Menu 4',
+      type: 'group',
+      required: false,
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'menu',
+          label: 'Menu',
+          type: 'array',
+          required: false,
+          fields: [
+            {
+              name: 'label',
+              label: 'Label',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'menu_5',
+      label: 'Menu 5',
+      type: 'group',
+      required: false,
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'menu',
+          label: 'Menu',
+          type: 'array',
+          required: false,
+          fields: [
+            {
+              name: 'label',
+              label: 'Label',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+}
+
+export default Footer

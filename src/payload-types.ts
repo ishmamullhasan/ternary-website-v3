@@ -112,10 +112,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    homepage: Homepage;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    homepage: HomepageSelect<false> | HomepageSelect<true>;
   };
   locale: null;
   user: User & {
@@ -1635,26 +1637,32 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: string;
-  navItems?:
+  logo?: (string | null) | Media;
+  siteName?: string | null;
+  menu?:
     | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: string | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: string | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
+        label?: string | null;
+        /**
+         * Optional. Leave empty if this item has sub-items.
+         */
+        link?: string | null;
+        /**
+         * Add sub-items for dropdown. If empty, this is a regular link.
+         */
+        subItems?:
+          | {
+              label?: string | null;
+              link?: string | null;
+              id?: string | null;
+            }[]
+          | null;
         id?: string | null;
       }[]
     | null;
+  button?: {
+    label?: string | null;
+    link?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1664,26 +1672,139 @@ export interface Header {
  */
 export interface Footer {
   id: string;
-  navItems?:
-    | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: string | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: string | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
-        id?: string | null;
-      }[]
-    | null;
+  logo?: (string | null) | Media;
+  siteName?: string | null;
+  description?: string | null;
+  copyright?: string | null;
+  menu_1?: {
+    heading?: string | null;
+    menu?:
+      | {
+          label?: string | null;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  menu_2?: {
+    heading?: string | null;
+    menu?:
+      | {
+          label?: string | null;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  menu_3?: {
+    heading?: string | null;
+    menu?:
+      | {
+          label?: string | null;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  menu_4?: {
+    heading?: string | null;
+    menu?:
+      | {
+          label?: string | null;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  menu_5?: {
+    heading?: string | null;
+    menu?:
+      | {
+          label?: string | null;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage".
+ */
+export interface Homepage {
+  id: string;
+  hero?: {
+    heading?: string | null;
+    image?: (string | null) | Media;
+  };
+  capabilities?: {
+    sectionTitle?: string | null;
+    sectionDescription?: string | null;
+    items?:
+      | {
+          title?: string | null;
+          description?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  solutions?: {
+    sectionTitle?: string | null;
+    sectionDescription?: string | null;
+    items?:
+      | {
+          title?: string | null;
+          description?: string | null;
+          icon?: (string | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  incubations?: {
+    sectionTitle?: string | null;
+    sectionDescription?: string | null;
+    items?:
+      | {
+          title?: string | null;
+          description?: string | null;
+          image?: (string | null) | Media;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  company?: {
+    sectionTitle?: string | null;
+    sectionDescription?: string | null;
+    teamSubtitle?: string | null;
+    teamDescription?: string | null;
+    journeySubtitle?: string | null;
+    journeyDescription?: string | null;
+    opportunitiesSubtitle?: string | null;
+    opportunitiesDescription?: string | null;
+  };
+  team?: {
+    items?:
+      | {
+          name?: string | null;
+          title?: string | null;
+          image?: (string | null) | Media;
+          linkedin?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  timeline?: {
+    items?:
+      | {
+          date?: string | null;
+          title?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1692,19 +1813,27 @@ export interface Footer {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
-  navItems?:
+  logo?: T;
+  siteName?: T;
+  menu?:
     | T
     | {
-        link?:
+        label?: T;
+        link?: T;
+        subItems?:
           | T
           | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
               label?: T;
+              link?: T;
+              id?: T;
             };
         id?: T;
+      };
+  button?:
+    | T
+    | {
+        label?: T;
+        link?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1715,19 +1844,162 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  navItems?:
+  logo?: T;
+  siteName?: T;
+  description?: T;
+  copyright?: T;
+  menu_1?:
     | T
     | {
-        link?:
+        heading?: T;
+        menu?:
           | T
           | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
               label?: T;
+              link?: T;
+              id?: T;
             };
-        id?: T;
+      };
+  menu_2?:
+    | T
+    | {
+        heading?: T;
+        menu?:
+          | T
+          | {
+              label?: T;
+              link?: T;
+              id?: T;
+            };
+      };
+  menu_3?:
+    | T
+    | {
+        heading?: T;
+        menu?:
+          | T
+          | {
+              label?: T;
+              link?: T;
+              id?: T;
+            };
+      };
+  menu_4?:
+    | T
+    | {
+        heading?: T;
+        menu?:
+          | T
+          | {
+              label?: T;
+              link?: T;
+              id?: T;
+            };
+      };
+  menu_5?:
+    | T
+    | {
+        heading?: T;
+        menu?:
+          | T
+          | {
+              label?: T;
+              link?: T;
+              id?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage_select".
+ */
+export interface HomepageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        heading?: T;
+        image?: T;
+      };
+  capabilities?:
+    | T
+    | {
+        sectionTitle?: T;
+        sectionDescription?: T;
+        items?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+      };
+  solutions?:
+    | T
+    | {
+        sectionTitle?: T;
+        sectionDescription?: T;
+        items?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              icon?: T;
+              id?: T;
+            };
+      };
+  incubations?:
+    | T
+    | {
+        sectionTitle?: T;
+        sectionDescription?: T;
+        items?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              image?: T;
+              link?: T;
+              id?: T;
+            };
+      };
+  company?:
+    | T
+    | {
+        sectionTitle?: T;
+        sectionDescription?: T;
+        teamSubtitle?: T;
+        teamDescription?: T;
+        journeySubtitle?: T;
+        journeyDescription?: T;
+        opportunitiesSubtitle?: T;
+        opportunitiesDescription?: T;
+      };
+  team?:
+    | T
+    | {
+        items?:
+          | T
+          | {
+              name?: T;
+              title?: T;
+              image?: T;
+              linkedin?: T;
+              id?: T;
+            };
+      };
+  timeline?:
+    | T
+    | {
+        items?:
+          | T
+          | {
+              date?: T;
+              title?: T;
+              id?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
