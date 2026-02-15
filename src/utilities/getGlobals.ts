@@ -48,3 +48,4 @@ export async function getFooter() {
 export async function getHomepage() {
   return getGlobal('homepage' as Global, 1)
 }
+

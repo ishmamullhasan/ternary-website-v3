@@ -1,19 +1,37 @@
-'use client'
-
+import AboutComp from '@/components/sections/aboutComp'
 import Capabilities from '@/components/sections/capabilities'
-import HeroSection from '@/components/sections/hero'
 import Incubations from '@/components/sections/incubations'
 import Section from '@/components/sections/section'
 import Solutions from '@/components/sections/solutions'
 import TeamSection from '@/components/sections/team'
 import Journey from '@/components/sections/timeline'
 import Journey_SM from '@/components/sections/timeline_sm'
+import type { Homepage, Media, Story } from '@/payload-types'
+import { getCachedGlobal } from '@/utilities/getGlobals'
+import type { JSX } from 'react'
 
-export default function Home() {
+export default async function Page(): Promise<JSX.Element> {
+  const homePageData = (await getCachedGlobal('homepage', 1)) as Homepage | null
+
+  if (!homePageData) {
+    return (
+      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">
+        Error loading data.
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-20 text-primary">
-      <HeroSection />
-
+      <section className="w-full">
+        <AboutComp
+          heading={homePageData.about?.heading}
+          description={homePageData.about?.description}
+          stories={homePageData.about?.stories as Story[] | null}
+          organizations={homePageData.about?.organizations as { heading?: string | null; organization?: { icon?: Media | null; name?: string | null; link?: string | null; }[] | null; } | null}
+          bottomDescription={homePageData.about?.bottomDescription}
+        />
+      </section>
       <Section
         id="capabilities"
         label="Capbilities"
@@ -72,9 +90,7 @@ export default function Home() {
           <div className="flex flex-col gap-6 w-full py-6">
             <div className="min-w-full lg:max-w-[70%] space-y-2">
               <h3 className="text-lg font-semibold">The Journey</h3>
-              <p className="text-sm opacity-70 ">
-                From small beginning and against all odds.
-              </p>
+              <p className="text-sm opacity-70 ">From small beginning and against all odds.</p>
             </div>
             {/* Timeline for large device */}
             <Journey className="col-span-4 pl-6 py-16 border border-muted rounded-xl hidden lg:block" />
@@ -84,9 +100,7 @@ export default function Home() {
           <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-5 w-full py-6">
             <div className="min-w-full lg:max-w-[70%] space-y-2">
               <h3 className="text-lg font-semibold">Opportunities</h3>
-              <p className="text-sm opacity-70 ">
-                Help us shape the lives of millions.
-              </p>
+              <p className="text-sm opacity-70 ">Help us shape the lives of millions.</p>
             </div>
           </div>
         </div>

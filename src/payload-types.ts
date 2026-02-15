@@ -72,6 +72,9 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    story: Story;
+    capability: Capability;
+    solution: Solution;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -94,6 +97,9 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    story: StorySelect<false> | StorySelect<true>;
+    capability: CapabilitySelect<false> | CapabilitySelect<true>;
+    solution: SolutionSelect<false> | SolutionSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -783,6 +789,102 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "story".
+ */
+export interface Story {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "capability".
+ */
+export interface Capability {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution".
+ */
+export interface Solution {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -990,6 +1092,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: string | User;
+      } | null)
+    | ({
+        relationTo: 'story';
+        value: string | Story;
+      } | null)
+    | ({
+        relationTo: 'capability';
+        value: string | Capability;
+      } | null)
+    | ({
+        relationTo: 'solution';
+        value: string | Solution;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1355,6 +1469,48 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "story_select".
+ */
+export interface StorySelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  excerpts?: T;
+  thumbnail?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "capability_select".
+ */
+export interface CapabilitySelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  excerpts?: T;
+  thumbnail?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution_select".
+ */
+export interface SolutionSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  excerpts?: T;
+  thumbnail?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1735,72 +1891,37 @@ export interface Footer {
  */
 export interface Homepage {
   id: string;
-  hero?: {
+  about?: {
     heading?: string | null;
-    image?: (string | null) | Media;
-  };
-  capabilities?: {
-    sectionTitle?: string | null;
-    sectionDescription?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          description?: string | null;
-          id?: string | null;
-        }[]
-      | null;
+    description?: string | null;
+    stories?: (string | null) | Story;
+    organizations?: {
+      heading?: string | null;
+      organization?:
+        | {
+            icon?: (string | null) | Media;
+            name?: string | null;
+            link?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    bottomDescription?: string | null;
   };
   solutions?: {
-    sectionTitle?: string | null;
-    sectionDescription?: string | null;
+    heading?: string | null;
+    description?: string | null;
+    image?: (string | null) | Media;
+    items?: (string | null) | Solution;
+  };
+  capabilities?: {
+    heading?: string | null;
+    description?: string | null;
+    capability?: (string | null) | Capability;
     items?:
       | {
           title?: string | null;
           description?: string | null;
-          icon?: (string | null) | Media;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  incubations?: {
-    sectionTitle?: string | null;
-    sectionDescription?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          description?: string | null;
-          image?: (string | null) | Media;
-          link?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  company?: {
-    sectionTitle?: string | null;
-    sectionDescription?: string | null;
-    teamSubtitle?: string | null;
-    teamDescription?: string | null;
-    journeySubtitle?: string | null;
-    journeyDescription?: string | null;
-    opportunitiesSubtitle?: string | null;
-    opportunitiesDescription?: string | null;
-  };
-  team?: {
-    items?:
-      | {
-          name?: string | null;
-          title?: string | null;
-          image?: (string | null) | Media;
-          linkedin?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  timeline?: {
-    items?:
-      | {
-          date?: string | null;
-          title?: string | null;
           id?: string | null;
         }[]
       | null;
@@ -1917,87 +2038,46 @@ export interface FooterSelect<T extends boolean = true> {
  * via the `definition` "homepage_select".
  */
 export interface HomepageSelect<T extends boolean = true> {
-  hero?:
+  about?:
     | T
     | {
         heading?: T;
-        image?: T;
-      };
-  capabilities?:
-    | T
-    | {
-        sectionTitle?: T;
-        sectionDescription?: T;
-        items?:
+        description?: T;
+        stories?: T;
+        organizations?:
           | T
           | {
-              title?: T;
-              description?: T;
-              id?: T;
+              heading?: T;
+              organization?:
+                | T
+                | {
+                    icon?: T;
+                    name?: T;
+                    link?: T;
+                    id?: T;
+                  };
             };
+        bottomDescription?: T;
       };
   solutions?:
     | T
     | {
-        sectionTitle?: T;
-        sectionDescription?: T;
+        heading?: T;
+        description?: T;
+        image?: T;
+        items?: T;
+      };
+  capabilities?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        capability?: T;
         items?:
           | T
           | {
               title?: T;
               description?: T;
-              icon?: T;
-              id?: T;
-            };
-      };
-  incubations?:
-    | T
-    | {
-        sectionTitle?: T;
-        sectionDescription?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              description?: T;
-              image?: T;
-              link?: T;
-              id?: T;
-            };
-      };
-  company?:
-    | T
-    | {
-        sectionTitle?: T;
-        sectionDescription?: T;
-        teamSubtitle?: T;
-        teamDescription?: T;
-        journeySubtitle?: T;
-        journeyDescription?: T;
-        opportunitiesSubtitle?: T;
-        opportunitiesDescription?: T;
-      };
-  team?:
-    | T
-    | {
-        items?:
-          | T
-          | {
-              name?: T;
-              title?: T;
-              image?: T;
-              linkedin?: T;
-              id?: T;
-            };
-      };
-  timeline?:
-    | T
-    | {
-        items?:
-          | T
-          | {
-              date?: T;
-              title?: T;
               id?: T;
             };
       };
