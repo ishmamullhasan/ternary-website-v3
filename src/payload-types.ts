@@ -1894,7 +1894,7 @@ export interface Homepage {
   about?: {
     heading?: string | null;
     description?: string | null;
-    stories?: (string | null) | Story;
+    stories?: (string | Story)[] | null;
     organizations?: {
       heading?: string | null;
       organization?:
@@ -1912,12 +1912,12 @@ export interface Homepage {
     heading?: string | null;
     description?: string | null;
     image?: (string | null) | Media;
-    items?: (string | null) | Solution;
+    items?: (string | Solution)[] | null;
   };
   capabilities?: {
     heading?: string | null;
     description?: string | null;
-    capability?: (string | null) | Capability;
+    capability?: (string | Capability)[] | null;
     items?:
       | {
           title?: string | null;

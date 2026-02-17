@@ -1,17 +1,17 @@
 import AboutComp from '@/components/sections/aboutComp'
-import Capabilities from '@/components/sections/capabilities'
+import CapabilitiesComp from '@/components/sections/capabilitiesComp'
 import Incubations from '@/components/sections/incubations'
 import Section from '@/components/sections/section'
-import Solutions from '@/components/sections/solutions'
+import SolutionsComp from '@/components/sections/solutionsComp'
 import TeamSection from '@/components/sections/team'
 import Journey from '@/components/sections/timeline'
 import Journey_SM from '@/components/sections/timeline_sm'
-import type { Homepage, Media, Story } from '@/payload-types'
+import type { Homepage, Media, Solution, Story } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
 
 export default async function Page(): Promise<JSX.Element> {
-  const homePageData = (await getCachedGlobal('homepage', 1)) as Homepage | null
+  const homePageData = (await getCachedGlobal('homepage', 1)()) as Homepage | null
 
   if (!homePageData) {
     return (
@@ -22,37 +22,46 @@ export default async function Page(): Promise<JSX.Element> {
   }
 
   return (
-    <div className="flex flex-col gap-20 text-primary">
+    <div className="flex flex-col gap-20 text-primary max-w-[1480px] mx-auto">
       <section className="w-full">
         <AboutComp
           heading={homePageData.about?.heading}
           description={homePageData.about?.description}
           stories={homePageData.about?.stories as Story[] | null}
-          organizations={homePageData.about?.organizations as { heading?: string | null; organization?: { icon?: Media | null; name?: string | null; link?: string | null; }[] | null; } | null}
+          organizations={
+            homePageData.about?.organizations as {
+              heading?: string | null
+              organization?:
+                | { icon?: Media | null; name?: string | null; link?: string | null }[]
+                | null
+            } | null
+          }
           bottomDescription={homePageData.about?.bottomDescription}
         />
       </section>
-      <Section
-        id="capabilities"
-        label="Capbilities"
-        title="Turning Ideas into Impact."
-        description="Our capabilities span the entire product lifecycle. We handle everything—from ideation and design to development and deployment—so you can focus on your vision."
-      >
-        <div>
-          <Capabilities />
-        </div>
-      </Section>
 
-      <Section
-        id="solutions"
-        label="Solutions"
-        title="Empowering Innovation Through Partnerships."
-        description="From engineering augmentation to strategic consulting and full-cycle product development, we adapt to your needs. Our engagement models are designed to help you innovate, accelerate, and succeed."
-      >
-        <div>
-          <Solutions />
-        </div>
-      </Section>
+      <section id="solutions" className="w-full">
+        <SolutionsComp
+          heading={homePageData.solutions?.heading ?? 'Empowering Innovation Through Partnerships.'}
+          description={
+            homePageData.solutions?.description ??
+            'From engineering augmentation to strategic consulting and full-cycle product development, we adapt to your needs. Our engagement models are designed to help you innovate, accelerate, and succeed.'
+          }
+          image={homePageData.solutions?.image as Media | null}
+          items={homePageData.solutions?.items as Solution[] | null}
+        />
+      </section>
+      <section id="capabilities" className="w-full">
+        <CapabilitiesComp
+          heading={homePageData.capabilities?.heading ?? 'Turning Ideas into Impact.'}
+          description={
+            homePageData.capabilities?.description ??
+            'Our capabilities span the entire product lifecycle. We handle everything—from ideation and design to development and deployment—so you can focus on your vision.'
+          }
+          items={homePageData.capabilities?.items ?? []}
+        />
+      </section>
+
       {/* <Section 
         id="stories" 
         label="Stories" 

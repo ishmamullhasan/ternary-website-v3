@@ -33,6 +33,7 @@ const Homepage: GlobalConfig = {
           label: 'Stories',
           type: 'relationship',
           relationTo: 'story',
+          hasMany: true,
           required: false,
         },
         {
@@ -108,6 +109,7 @@ const Homepage: GlobalConfig = {
           name: 'items',
           label: 'Solution',
           type: 'relationship',
+          hasMany: true,
           relationTo: 'solution',
           required: false,
         },
@@ -135,6 +137,7 @@ const Homepage: GlobalConfig = {
           label: 'capability',
           type: 'relationship',
           relationTo: 'capability',
+          hasMany: true,
           required: false,
         },
         {

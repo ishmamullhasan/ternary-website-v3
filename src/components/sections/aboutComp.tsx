@@ -29,81 +29,81 @@ export default function AboutComp({
   bottomDescription,
 }: AboutProps) {
   return (
-    <div className="flex flex-col justify-center items-center relative lg:max-w-7xl w-full mx-auto my-10 lg:pt-10 md:pt-10 pt-10 lg:p-10 md:p-8 p-4">
-      <h1 className="px-6 md:px-10 scroll-m-20 text-3xl md:text-4xl lg:text-5xl font-light tracking-tight max-w-[90%] md:max-w-[800px]">
-        {heading}
-      </h1>
+    <section className=" py-24 px-6">
+      <div className="max-w-[1480px] mx-auto flex flex-col items-center">
+        {/* heading */}
+        <h1 className="text-center text-3xl md:text-5xl font-light max-w-[900px] leading-tight">
+          {heading}
+        </h1>
 
-      <p className="text-[16px] lg:w-[1055px] text-center">{description}</p>
+        <p className="text-center text-white/70 mt-4 max-w-[700px]">{description}</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">
-        {(stories as Story[])?.map((item, index: number): JSX.Element => {
-          return (
-            <Link href={`/stories/${(item as Story)?.slug}`} key={index} className="lg:w-[365px]">
-              <div className="h-[375px] lg:w-[365px]">
-                <Image
-                  className="rounded-2xl h-full w-full object-cover"
-                  src={
-                    ((item as Story)?.thumbnail as Media)?.url ||
-                    'https://dummyimage.com/365x375/37624F/FFF2'
-                  }
-                  alt={((item as Story)?.thumbnail as Media)?.alt || 'Story'}
-                  width={((item as Story)?.thumbnail as Media)?.width || 365}
-                  height={((item as Story)?.thumbnail as Media)?.height || 375}
-                />
-                <div className="pt-2 lg:w-[365px] pb-5">
-                  <p className="lg:text-[24px] text-[20px]  font-bold">{(item as Story)?.title}</p>
-                  <p className="lg:text-[22px] text-[16px] ">
-                    {(item as Story)?.excerpts as string}
-                  </p>
+        {/* cards grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 w-full">
+          {(stories as Story[])?.map((item, index: number): JSX.Element => {
+            return (
+              <Link href={`/stories/${item.slug}`} key={index}>
+                {/* gradient card */}
+                <div className="relative w-[350px] h-[590px] rounded-2xl overflow-hidden group">
+                  {/* background image OR gradient */}
+                  {item.thumbnail ? (
+                    <Image
+                      src={(item.thumbnail as Media)?.url as string || 'https://dummyimage.com/350x590/37624F/FFF2'}
+                      alt={item.title || 'story'}
+                      height={590}
+                      width={350}
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
+                  )}
+
+                 
+                  {/* text */}
+                  <div className="absolute top-5 left-5 right-5">
+                   
+                    <h3 className="text-white text-lg leading-snug mt-1 max-w-[220px]">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-white/70">Stories</p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          )
-        })}
-      </div>
+              </Link>
+            )
+          })}
+        </div>
 
-      <h1 className="px-6 md:px-10 scroll-m-20 text-3xl md:text-4xl lg:text-5xl font-light tracking-tight max-w-[90%] md:max-w-[800px]">
-        {organizations?.heading}
-      </h1>
+        {/* organizations */}
+        {organizations?.heading && (
+          <p className="text-white/60 text-sm mt-20 mb-6">{organizations.heading}</p>
+        )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">
-        {(
-          organizations?.organization as {
-            icon?: Media | null
-            name?: string | null
-            link?: string | null
-          }[]
-        )?.map((item, index: number): JSX.Element => {
-          return (
-            <Link href={item.link || '#'} key={index}>
+        <div className="flex flex-row justify-center gap-8">
+          {organizations?.organization?.map((item, index) => (
+            <Link
+              href={item.link || '#'}
+              key={index}
+              className="flex flex-row items-center rounded-lg bg-[#1B1A17] px-3 py-2"
+            >
               <Image
-                src={item.icon?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
-                alt={item.name || 'Organization'}
-                width={365}
-                height={375}
+                src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
+                alt={(item.icon as Media)?.alt || 'org'}
+                width={30}
+                height={30}
+                className="object-contain grayscale hover:grayscale-0 transition"
               />
+              <p>{item.name}</p>
             </Link>
-          )
-        })}
+          ))}
+        </div>
+
+        {/* bottom text */}
+        {bottomDescription && (
+          <p className="text-center text-white/60 max-w-[600px] mt-16 text-sm leading-relaxed">
+            {bottomDescription}
+          </p>
+        )}
       </div>
-      <p className="text-[16px] lg:w-[1055px] text-center">{bottomDescription}</p>
-    </div>
+    </section>
   )
-}
-
-{
-  /* <section className="-my-10 lg:-my-0 flex flex-col gap-4 md:gap-10 w-full">
-<h1 className="px-6 md:px-10 scroll-m-20 text-3xl md:text-4xl lg:text-5xl font-light tracking-tight max-w-[90%] md:max-w-[800px]">
-  {heading}
-</h1>
-
-<Image
-  src={imageUrl}
-  alt="Hero Image"
-  className="object-cover border-t border-b border-white/20"
-  width={2560}
-  height={1000}
-/>
-</section> */
 }
