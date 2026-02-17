@@ -6,7 +6,7 @@ import SolutionsComp from '@/components/sections/solutionsComp'
 import TeamSection from '@/components/sections/team'
 import Journey from '@/components/sections/timeline'
 import Journey_SM from '@/components/sections/timeline_sm'
-import type { Homepage, Media, Solution, Story } from '@/payload-types'
+import type { Capability, Homepage, Media, Solution, Story } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
 
@@ -58,7 +58,11 @@ export default async function Page(): Promise<JSX.Element> {
             homePageData.capabilities?.description ??
             'Our capabilities span the entire product lifecycle. We handle everything—from ideation and design to development and deployment—so you can focus on your vision.'
           }
-          items={homePageData.capabilities?.items ?? []}
+          capability={homePageData.capabilities?.capability as Capability[] | null}
+            heading_2={homePageData.capabilities?.heading_2 ?? 'Leadership'}
+            description_2={homePageData.capabilities?.description_2 ?? 'Our leadership team is dedicated to delivering the best possible solutions to our clients.'}
+            image={homePageData.capabilities?.image as Media | null}
+          
         />
       </section>
 

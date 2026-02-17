@@ -44,11 +44,11 @@ export default function AboutComp({
             return (
               <Link href={`/stories/${item.slug}`} key={index}>
                 {/* gradient card */}
-                <div className="relative w-[350px] h-[590px] rounded-2xl overflow-hidden group">
+                <div className="relative w-[350px] h-[590px] rounded-2xl overflow-hidden">
                   {/* background image OR gradient */}
                   {item.thumbnail ? (
                     <Image
-                      src={(item.thumbnail as Media)?.url as string || 'https://dummyimage.com/350x590/37624F/FFF2'}
+                      src={(item.thumbnail as Media)?.url || 'https://dummyimage.com/350x590/37624F/FFF2'}
                       alt={item.title || 'story'}
                       height={590}
                       width={350}

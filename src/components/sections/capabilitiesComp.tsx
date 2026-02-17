@@ -1,27 +1,79 @@
-import Capabilities from '@/components/sections/capabilities'
+'use client'
+import type { Media, Capability } from '@/payload-types'
+import Image from 'next/image'
+import Link from 'next/link'
+import type { JSX } from 'react'
 
 interface CapabilitiesCompProps {
   heading?: string | null
   description?: string | null
-  items?: { title?: string | null; description?: string | null }[] | null
+  capability?: Capability[] | null
+  heading_2?: string | null
+  description_2?: string | null
+  image?: Media | null
 }
 
 export default function CapabilitiesComp({
   heading,
   description,
-  items = [],
+  capability,
+  heading_2,
+  description_2,
+  image,
 }: CapabilitiesCompProps) {
   return (
-    <div className="flex flex-col justify-center items-center relative lg:max-w-7xl w-full mx-auto my-10 lg:pt-10 md:pt-10 pt-10 lg:p-10 md:p-8 p-4">
-      <h1 className="px-6 md:px-10 scroll-m-20 text-3xl md:text-4xl lg:text-5xl font-light tracking-tight max-w-[90%] md:max-w-[800px]">
-        {heading}
-      </h1>
+  <section className="bg-[#1B1A17] w-[1480px] p-10 mx-auto">
+      <div className=" ">
+        {/* top header */}
+        <div className="mb-16">
+          <h2 className="text-2xl md:text-3xl font-light mb-4">{heading}</h2>
+          <p className="text-white/60 max-w-[500px]">{description}</p>
+        </div>
 
-      <p className="text-[16px] lg:w-[1055px] text-center">{description}</p>
+        {/* capabilities grid */}
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-10 gap-y-10 pt-10 w-[1200px]">
+          {capability?.map((item, index): JSX.Element => {
+            return (
+              <div key={index}>
+                <h3 className="text-[15px] mb-2">{item.title}</h3>
+                <p className="text-sm text-white/60 mb-4 leading-relaxed">
+                  {item.excerpts}
+                </p>
+                <Link href={`/solutions/${item.slug}`} key={index}>
+                  <button className="bg-primary text-primary-foreground shadow hover:bg-primary/90">
+                   Explore
+                  </button>
+                </Link>
+              </div>
+            )
+          })}
+        </div>
+       
+        {/* leadership section */}
+        <div className="flex flex-row  gap-10 mt-24 items-start">
+          
+          <div>
+            <h3 className="text-xl mb-3">{heading_2}</h3>
+            <p className="text-white/60 text-sm max-w-[260px]">
+              {description_2}
+            </p>
+          </div>
 
-      <div className="mt-10 w-full">
-        <Capabilities items={items} />
+          <div className="w-full h-[600px] rounded-xl overflow-hidden bg-neutral-200">
+            {image && (
+              <Image
+                src={image.url || ''}
+                alt={image.alt || 'leadership'}
+                width={1200}
+                height={600}
+                className="object-cover w-full h-full"
+              />
+            )}
+          </div>
+
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

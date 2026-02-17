@@ -1918,13 +1918,9 @@ export interface Homepage {
     heading?: string | null;
     description?: string | null;
     capability?: (string | Capability)[] | null;
-    items?:
-      | {
-          title?: string | null;
-          description?: string | null;
-          id?: string | null;
-        }[]
-      | null;
+    heading_2?: string | null;
+    description_2?: string | null;
+    image?: (string | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2073,13 +2069,9 @@ export interface HomepageSelect<T extends boolean = true> {
         heading?: T;
         description?: T;
         capability?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              description?: T;
-              id?: T;
-            };
+        heading_2?: T;
+        description_2?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;
