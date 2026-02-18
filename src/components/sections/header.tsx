@@ -216,7 +216,7 @@ export default function Header({ headerData }: HeaderProps) {
           {headerData?.button?.label && (
             <Link
               href={headerData.button.link ?? '#'}
-              className="rounded-lg bg-[#1B1A17] px-3 py-2 text-sm font-semibold border border-[#1B1A17] hover:border-[#1B1A17] hover:bg-transparent hover:text-white"
+              className="rounded-lg bg-[#1B1A17] px-3 py-2 text-sm font-semibold border border-[#1B1A17] 9hover:border-[#1B1A17] hover:bg-transparent hover:text-white"
             >
               {headerData.button.label}
             </Link>
