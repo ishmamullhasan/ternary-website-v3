@@ -75,6 +75,7 @@ export interface Config {
     story: Story;
     capability: Capability;
     solution: Solution;
+    industry: Industry;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -100,6 +101,7 @@ export interface Config {
     story: StorySelect<false> | StorySelect<true>;
     capability: CapabilitySelect<false> | CapabilitySelect<true>;
     solution: SolutionSelect<false> | SolutionSelect<true>;
+    industry: IndustrySelect<false> | IndustrySelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -885,6 +887,38 @@ export interface Solution {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "industry".
+ */
+export interface Industry {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1104,6 +1138,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'solution';
         value: string | Solution;
+      } | null)
+    | ({
+        relationTo: 'industry';
+        value: string | Industry;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1503,6 +1541,20 @@ export interface CapabilitySelect<T extends boolean = true> {
  * via the `definition` "solution_select".
  */
 export interface SolutionSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  excerpts?: T;
+  thumbnail?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "industry_select".
+ */
+export interface IndustrySelect<T extends boolean = true> {
   title?: T;
   generateSlug?: T;
   slug?: T;
@@ -1922,6 +1974,11 @@ export interface Homepage {
     description_2?: string | null;
     image?: (string | null) | Media;
   };
+  industries?: {
+    heading?: string | null;
+    description?: string | null;
+    industry?: (string | Industry)[] | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2072,6 +2129,13 @@ export interface HomepageSelect<T extends boolean = true> {
         heading_2?: T;
         description_2?: T;
         image?: T;
+      };
+  industries?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        industry?: T;
       };
   updatedAt?: T;
   createdAt?: T;

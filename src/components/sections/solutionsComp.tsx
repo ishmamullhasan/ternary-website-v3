@@ -35,7 +35,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
           {(items as Solution[])?.map((item, index: number): JSX.Element => {
             return (
-              <div className="">
+              <div  key={index}>
                 <hr className="border-[#F4F3EC] my-4"/>
                 <p className="text-lg font-semibold">{item.title}</p>
                 <p className="text-sm text-white/60 mb-2">{item.excerpts}</p>

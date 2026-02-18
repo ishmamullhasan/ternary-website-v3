@@ -48,7 +48,10 @@ export default function AboutComp({
                   {/* background image OR gradient */}
                   {item.thumbnail ? (
                     <Image
-                      src={(item.thumbnail as Media)?.url || 'https://dummyimage.com/350x590/37624F/FFF2'}
+                      src={
+                        (item.thumbnail as Media)?.url ||
+                        'https://dummyimage.com/350x590/37624F/FFF2'
+                      }
                       alt={item.title || 'story'}
                       height={590}
                       width={350}
@@ -58,10 +61,8 @@ export default function AboutComp({
                     <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
                   )}
 
-                 
                   {/* text */}
                   <div className="absolute top-5 left-5 right-5">
-                   
                     <h3 className="text-white text-lg leading-snug mt-1 max-w-[220px]">
                       {item.title}
                     </h3>
@@ -92,7 +93,7 @@ export default function AboutComp({
                 height={30}
                 className="object-contain grayscale hover:grayscale-0 transition"
               />
-              <p>{item.name}</p>
+              <p className="pl-2">{item.name}</p>
             </Link>
           ))}
         </div>

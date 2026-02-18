@@ -3,15 +3,16 @@ import CapabilitiesComp from '@/components/sections/capabilitiesComp'
 import Incubations from '@/components/sections/incubations'
 import Section from '@/components/sections/section'
 import SolutionsComp from '@/components/sections/solutionsComp'
+import IndustriesComp from '@/components/sections/industriesComp'
 import TeamSection from '@/components/sections/team'
 import Journey from '@/components/sections/timeline'
 import Journey_SM from '@/components/sections/timeline_sm'
-import type { Capability, Homepage, Media, Solution, Story } from '@/payload-types'
+import type { Capability, Homepage, Industry, Media, Solution, Story } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
 
 export default async function Page(): Promise<JSX.Element> {
-  const homePageData = (await getCachedGlobal('homepage', 1)()) as Homepage | null
+  const homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
 
   if (!homePageData) {
     return (
@@ -27,7 +28,7 @@ export default async function Page(): Promise<JSX.Element> {
         <AboutComp
           heading={homePageData.about?.heading}
           description={homePageData.about?.description}
-          stories={homePageData.about?.stories as Story[] | null}
+          stories={homePageData.about?.stories as Story[]}
           organizations={
             homePageData.about?.organizations as {
               heading?: string | null
@@ -51,7 +52,7 @@ export default async function Page(): Promise<JSX.Element> {
           items={homePageData.solutions?.items as Solution[] | null}
         />
       </section>
-      <section id="capabilities" className="w-full">
+      <section className="w-full">
         <CapabilitiesComp
           heading={homePageData.capabilities?.heading ?? 'Turning Ideas into Impact.'}
           description={
@@ -65,6 +66,16 @@ export default async function Page(): Promise<JSX.Element> {
           
         />
       </section>
+      <section  className="w-full">
+        <IndustriesComp
+          heading={homePageData.industries?.heading }
+          description={ homePageData.industries?.description }
+          industry={homePageData.industries?.industry as Industry[]}
+           
+          
+        />
+      </section>
+
 
       {/* <Section 
         id="stories" 

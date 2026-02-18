@@ -161,104 +161,33 @@ const Homepage: GlobalConfig = {
         },
       ],
     },
-    // {
-    //   name: 'solutions',
-    //   label: 'Solutions',
-    //   type: 'group',
-    //   fields: [
-    //     {
-    //       name: 'sectionTitle',
-    //       label: 'Section Title',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'sectionDescription',
-    //       label: 'Section Description',
-    //       type: 'textarea',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'items',
-    //       label: 'Items',
-    //       type: 'array',
-    //       required: false,
-    //       fields: [
-    //         {
-    //           name: 'title',
-    //           label: 'Title',
-    //           type: 'text',
-    //           required: false,
-    //         },
-    //         {
-    //           name: 'description',
-    //           label: 'Description',
-    //           type: 'textarea',
-    //           required: false,
-    //         },
-    //         {
-    //           name: 'icon',
-    //           label: 'Icon',
-    //           type: 'upload',
-    //           relationTo: 'media',
-    //           required: false,
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
-    // {
-    //   name: 'incubations',
-    //   label: 'Incubations',
-    //   type: 'group',
-    //   fields: [
-    //     {
-    //       name: 'sectionTitle',
-    //       label: 'Section Title',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'sectionDescription',
-    //       label: 'Section Description',
-    //       type: 'textarea',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'items',
-    //       label: 'Items',
-    //       type: 'array',
-    //       required: false,
-    //       fields: [
-    //         {
-    //           name: 'title',
-    //           label: 'Title',
-    //           type: 'text',
-    //           required: false,
-    //         },
-    //         {
-    //           name: 'description',
-    //           label: 'Description',
-    //           type: 'textarea',
-    //           required: false,
-    //         },
-    //         {
-    //           name: 'image',
-    //           label: 'Image',
-    //           type: 'upload',
-    //           relationTo: 'media',
-    //           required: false,
-    //         },
-    //         {
-    //           name: 'link',
-    //           label: 'Link',
-    //           type: 'text',
-    //           required: false,
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
+    {
+      name: 'industries',
+      label: 'Industries',
+      type: 'group',
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'textarea',
+          required: false,
+        },
+        {
+          name: 'industry',
+          label: 'Industry',
+          type: 'relationship',
+          relationTo: 'industry',
+          hasMany: true,
+          required: false,
+        },
+      ],
+    },
     // {
     //   name: 'company',
     //   label: 'Company',

@@ -31,8 +31,10 @@ export default function CapabilitiesComp({
         </div>
 
         {/* capabilities grid */}
+        <div className='flex flex-row '> 
+          <div className="w-1/5" >  </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-10 gap-y-10 pt-10 w-[1200px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-10 pt-10 w-4/5">
           {capability?.map((item, index): JSX.Element => {
             return (
               <div key={index}>
@@ -49,24 +51,25 @@ export default function CapabilitiesComp({
             )
           })}
         </div>
+        </div>
        
         {/* leadership section */}
-        <div className="flex flex-row  gap-10 mt-24 items-start">
+        <div className="flex flex-row  mt-24 items-start">
           
-          <div>
+          <div className="w-1/5">
             <h3 className="text-xl mb-3">{heading_2}</h3>
             <p className="text-white/60 text-sm max-w-[260px]">
               {description_2}
             </p>
           </div>
 
-          <div className="w-full h-[600px] rounded-xl overflow-hidden bg-neutral-200">
+          <div className="w-4/5 h-[600px] rounded-xl overflow-hidden bg-neutral-200">
             {image && (
               <Image
                 src={image.url || ''}
                 alt={image.alt || 'leadership'}
-                width={1200}
-                height={600}
+                width={image.width ||  1160}
+                height={image.height || 300}
                 className="object-cover w-full h-full"
               />
             )}
