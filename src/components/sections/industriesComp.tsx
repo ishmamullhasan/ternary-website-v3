@@ -38,7 +38,7 @@ export default function IndustryComp({ heading, description, industry }: Industr
                         }
                         alt={item.title || 'industry'}
                         height={(item.thumbnail as Media)?.height || 300}
-                        width={(item.thumbnail as Media)?.weight || 270}
+                        width={(item.thumbnail as Media)?.width || 270}
                         className="object-cover w-full h-full"
                       />
                     ) : (
