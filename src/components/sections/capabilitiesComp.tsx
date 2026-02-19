@@ -25,9 +25,9 @@ export default function CapabilitiesComp({
   <section className="bg-[#1B1A17] w-[1480px] p-10 mx-auto">
       <div className=" ">
         {/* top header */}
-        <div className="mb-16">
-          <h2 className="text-2xl md:text-3xl font-light mb-4">{heading}</h2>
-          <p className="text-white/60 max-w-[500px]">{description}</p>
+        <div className="mb-15">
+          <h2 className="text-3xl font-light mb-4">{heading}</h2>
+          <p className="text-base max-w-[500px]">{description}</p>
         </div>
 
         {/* capabilities grid */}
@@ -38,13 +38,13 @@ export default function CapabilitiesComp({
           {capability?.map((item, index): JSX.Element => {
             return (
               <div key={index}>
-                <h3 className="text-[15px] mb-2">{item.title}</h3>
-                <p className="text-sm text-white/60 mb-4 leading-relaxed">
+                <h3 className="text-base font-semibold mb-2">{item.title}</h3>
+                <p className="text-sm mb-4">
                   {item.excerpts}
                 </p>
                 <Link href={`/solutions/${item.slug}`} key={index}>
-                  <button className="bg-primary text-primary-foreground shadow hover:bg-primary/90">
-                   Explore
+                  <button className="text-sm ">
+                   <u>Explore</u>
                   </button>
                 </Link>
               </div>
@@ -57,13 +57,13 @@ export default function CapabilitiesComp({
         <div className="flex flex-row  mt-24 items-start">
           
           <div className="w-1/5">
-            <h3 className="text-xl mb-3">{heading_2}</h3>
-            <p className="text-white/60 text-sm max-w-[260px]">
+            <h3 className="text-2xl font-light mb-3">{heading_2}</h3>
+            <p className="text-base">
               {description_2}
             </p>
           </div>
 
-          <div className="w-4/5 h-[600px] rounded-xl overflow-hidden bg-neutral-200">
+          <div className="w-4/5 h-[600px] rounded-lg overflow-hidden">
             {image && (
               <Image
                 src={image.url || ''}

@@ -18,16 +18,16 @@ export default function SolutionsComp({ heading, description, image, items }: So
       <div className="flex justify-start">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
         <div className="flex flex-col w-[500px]">
-          <h2 className="text-3xl font-light lg:text-4xl">{heading}</h2>
-          {description && <p className="opacity-65">{description}</p>}
+          <h2 className="text-3xl font-light mb-4">{heading}</h2>
+          {description && <p className="text-base">{description}</p>}
         </div>
       </div>
       <div className="w-[1480] h-[400px] my-10">
         <Image
           src={(image as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
           alt={(image as Media)?.alt || 'image'}
-          width={1480}
-          height={400}
+          width={(image as Media)?.width || 1480}
+          height={(image as Media)?.height || 400}
           className="object-cover w-full h-full"
         />
       </div>
@@ -37,10 +37,10 @@ export default function SolutionsComp({ heading, description, image, items }: So
             return (
               <div  key={index}>
                 <hr className="border-[#F4F3EC] my-4"/>
-                <p className="text-lg font-semibold">{item.title}</p>
-                <p className="text-sm text-white/60 mb-2">{item.excerpts}</p>
+                <p className="text-base font-semibold">{item.title}</p>
+                <p className="text-sm ">{item.excerpts}</p>
                 <Link href={`/solutions/${item.slug}`} key={index}>
-                  <button className="bg-primary text-primary-foreground shadow hover:bg-primary/90">
+                  <button className="text-sm shadow">
                    <u>Learn More</u>
                   </button>
                 </Link>

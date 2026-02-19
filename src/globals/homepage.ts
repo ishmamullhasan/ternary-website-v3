@@ -188,6 +188,33 @@ const Homepage: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'scales',
+      label: 'Scales',
+      type: 'group',
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'textarea',
+          required: false,
+        },
+        {
+          name: 'scale',
+          label: 'Scale',
+          type: 'relationship',
+          relationTo: 'scale',
+          hasMany: true,
+          required: false,
+        },
+      ],
+    },
     // {
     //   name: 'company',
     //   label: 'Company',
