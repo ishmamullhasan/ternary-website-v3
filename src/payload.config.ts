@@ -18,6 +18,8 @@ import Story from './collections/story'
 import Capability from './collections/capability'
 import Solution from './collections/solution'
 import Industry from './collections/industry'
+import Scale from './collections/scale'
+import Model from './collections/model'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -63,7 +65,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Pages, Posts, Media, Categories, Users ,Story , Capability , Solution, Industry],
+  collections: [Pages, Posts, Media, Categories, Users ,Story , Capability , Solution, Industry, Scale, Model],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer, Homepage],
   plugins,

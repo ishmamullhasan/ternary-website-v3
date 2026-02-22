@@ -1,0 +1,51 @@
+'use client'
+
+import type { Media, Solution } from '@/payload-types'
+import Image from 'next/image'
+import Link from 'next/link'
+import type { JSX } from 'react'
+
+interface GlobalDeliveryCompProps {
+  heading?: string | null
+  description?: string | null
+  image?: Media | null
+  title?: string | null
+  excerpt?: string | null
+}
+
+export default function GlobalDeliveryComp({
+  heading,
+  description,
+  image,
+  title,
+  excerpt,
+}: GlobalDeliveryCompProps) {
+  return (
+    <div className="flex flex-col bg-[#1B1A17] p-10">
+      <div className="flex justify-start">
+        {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
+        <div className="flex flex-col w-2/5">
+          <h2 className="text-3xl font-light mb-3">{heading}</h2>
+          {description && <p className="text-base">{description}</p>}
+        </div>
+      </div>
+      <div className="flex justify-start mt-8">
+        {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
+        <div className="flex flex-col w-1/4">
+          <h2 className="text-2xl font-light mb-3">{title}</h2>
+          {excerpt && <p className="text-sm">{excerpt}</p>}
+        </div>
+      </div>
+      <div className="w-[1480] h-[770px] my-10">
+        <Image
+          src={'/globalDelivery.svg'}
+          alt={'globalDelivery'}
+          width={1480}
+          height={7700}
+          className="object-cover w-full h-full"
+        />
+        
+      </div>
+    </div>
+  )
+}

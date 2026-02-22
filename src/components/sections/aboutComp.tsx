@@ -32,19 +32,17 @@ export default function AboutComp({
     <section className=" py-24 px-6">
       <div className="max-w-[1480px] mx-auto flex flex-col items-center">
         {/* heading */}
-        <h1 className="text-center text-3xl md:text-5xl font-light max-w-[900px] leading-tight">
-          {heading}
-        </h1>
-
-        <p className="text-center text-white/70 mt-4 max-w-[700px]">{description}</p>
-
+        <div className="flex flex-col items-center w-[700px]">
+          <h1 className="text-center text-4xl font-light mb-3">{heading}</h1>
+          <p className="text-center text-base ">{description}</p>
+        </div>
         {/* cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 w-full">
           {(stories as Story[])?.map((item, index: number): JSX.Element => {
             return (
               <Link href={`/stories/${item.slug}`} key={index}>
                 {/* gradient card */}
-                <div className="relative w-[350px] h-[590px] rounded-2xl overflow-hidden">
+                <div className="relative w-[350px] h-[590px] rounded-lg overflow-hidden">
                   {/* background image OR gradient */}
                   {item.thumbnail ? (
                     <Image
@@ -53,8 +51,8 @@ export default function AboutComp({
                         'https://dummyimage.com/350x590/37624F/FFF2'
                       }
                       alt={item.title || 'story'}
-                      height={590}
-                      width={350}
+                      height={(item.thumbnail as Media)?.height || 590}
+                      width={(item.thumbnail as Media)?.width || 350}
                       className="object-cover w-full h-full"
                     />
                   ) : (
@@ -63,10 +61,10 @@ export default function AboutComp({
 
                   {/* text */}
                   <div className="absolute top-5 left-5 right-5">
-                    <h3 className="text-white text-lg leading-snug mt-1 max-w-[220px]">
+                    <h3 className="text-base">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-white/70">Stories</p>
+                    <p className="text-sm">Stories</p>
                   </div>
                 </div>
               </Link>
@@ -76,31 +74,34 @@ export default function AboutComp({
 
         {/* organizations */}
         {organizations?.heading && (
-          <p className="text-white/60 text-sm mt-20 mb-6">{organizations.heading}</p>
+          <p className="text-base mt-15 mb-4">{organizations.heading}</p>
         )}
 
-        <div className="flex flex-row justify-center gap-8">
+        <div className="flex flex-row justify-center gap-5">
           {organizations?.organization?.map((item, index) => (
             <Link
               href={item.link || '#'}
               key={index}
               className="flex flex-row items-center rounded-lg bg-[#1B1A17] px-3 py-2"
             >
-              <Image
-                src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
-                alt={(item.icon as Media)?.alt || 'org'}
-                width={30}
-                height={30}
-                className="object-contain grayscale hover:grayscale-0 transition"
-              />
-              <p className="pl-2">{item.name}</p>
+              <div className="w-[30px] h-[30px]">
+                <Image
+                  src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
+                  alt={(item.icon as Media)?.alt || 'org'}
+                  width={(item.icon as Media)?.width || 30}
+                  height={(item.icon as Media)?.height || 30}
+                  className="object-contain grayscale hover:grayscale-0 transition w-full h-full"
+                />
+              </div>
+
+              <p className="text-base pl-2">{item.name}</p>
             </Link>
           ))}
         </div>
 
         {/* bottom text */}
         {bottomDescription && (
-          <p className="text-center text-white/60 max-w-[600px] mt-16 text-sm leading-relaxed">
+          <p className="text-justify max-w-[600px] mt-15 text-sm">
             {bottomDescription}
           </p>
         )}

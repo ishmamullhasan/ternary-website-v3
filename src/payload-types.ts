@@ -76,6 +76,8 @@ export interface Config {
     capability: Capability;
     solution: Solution;
     industry: Industry;
+    scale: Scale;
+    model: Model;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -102,6 +104,8 @@ export interface Config {
     capability: CapabilitySelect<false> | CapabilitySelect<true>;
     solution: SolutionSelect<false> | SolutionSelect<true>;
     industry: IndustrySelect<false> | IndustrySelect<true>;
+    scale: ScaleSelect<false> | ScaleSelect<true>;
+    model: ModelSelect<false> | ModelSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -919,6 +923,70 @@ export interface Industry {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scale".
+ */
+export interface Scale {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "model".
+ */
+export interface Model {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1142,6 +1210,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'industry';
         value: string | Industry;
+      } | null)
+    | ({
+        relationTo: 'scale';
+        value: string | Scale;
+      } | null)
+    | ({
+        relationTo: 'model';
+        value: string | Model;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1566,6 +1642,34 @@ export interface IndustrySelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scale_select".
+ */
+export interface ScaleSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  excerpts?: T;
+  thumbnail?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "model_select".
+ */
+export interface ModelSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  excerpts?: T;
+  thumbnail?: T;
+  content?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -1979,6 +2083,36 @@ export interface Homepage {
     description?: string | null;
     industry?: (string | Industry)[] | null;
   };
+  scales?: {
+    heading?: string | null;
+    description?: string | null;
+    scale?: (string | Scale)[] | null;
+  };
+  engagement?: {
+    heading?: string | null;
+    description?: string | null;
+    model?: (string | Model)[] | null;
+  };
+  globalDelivery?: {
+    heading?: string | null;
+    description?: string | null;
+    title?: string | null;
+    excerpt?: string | null;
+    image?: (string | null) | Media;
+  };
+  team?: {
+    heading?: string | null;
+    description?: string | null;
+    members?:
+      | {
+          name?: string | null;
+          position?: string | null;
+          image?: (string | null) | Media;
+          linkedin?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2136,6 +2270,44 @@ export interface HomepageSelect<T extends boolean = true> {
         heading?: T;
         description?: T;
         industry?: T;
+      };
+  scales?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        scale?: T;
+      };
+  engagement?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        model?: T;
+      };
+  globalDelivery?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        title?: T;
+        excerpt?: T;
+        image?: T;
+      };
+  team?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        members?:
+          | T
+          | {
+              name?: T;
+              position?: T;
+              image?: T;
+              linkedin?: T;
+              id?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
