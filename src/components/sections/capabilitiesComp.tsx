@@ -26,7 +26,7 @@ export default function CapabilitiesComp({
       <div className=" ">
         {/* top header */}
         <div className="mb-15">
-          <h2 className="text-3xl font-light mb-4">{heading}</h2>
+          <h2 className="text-3xl font-light mb-3">{heading}</h2>
           <p className="text-base max-w-[500px]">{description}</p>
         </div>
 

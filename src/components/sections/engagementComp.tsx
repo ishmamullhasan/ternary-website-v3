@@ -4,13 +4,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { JSX } from 'react'
 
-interface SalesCompProps {
+interface EngagementCompProps {
   heading?: string | null
   description?: string | null
-  scales?: Scale[] | null
+  model?: Scale[] | null
 }
 
-export default function SalesComp({ heading, description, scales }: SalesCompProps) {
+export default function EngagementComp({ heading, description, model }: EngagementCompProps) {
   return (
     <section className="bg-[#1B1A17] w-[1480px] p-10 mx-auto">
       <div className="flex flex-row items-start">
@@ -21,9 +21,9 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/5">
-          {scales?.map((item, index): JSX.Element => {
+          {model?.map((item, index): JSX.Element => {
             return (
-              <Link href={`/sales/${item.slug}`} key={index}>
+              <Link href={`/model/${item.slug}`} key={index}>
                 {/* gradient card */}
                 <div className="relative w-[270px] h-[300px] rounded-lg overflow-hidden">
                   {/* background image OR gradient */}

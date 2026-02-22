@@ -33,8 +33,8 @@ export default function AboutComp({
       <div className="max-w-[1480px] mx-auto flex flex-col items-center">
         {/* heading */}
         <div className="flex flex-col items-center w-[700px]">
-          <h1 className="text-center text-4xl font-light">{heading}</h1>
-          <p className="text-center text-base mt-4 ">{description}</p>
+          <h1 className="text-center text-4xl font-light mb-3">{heading}</h1>
+          <p className="text-center text-base ">{description}</p>
         </div>
         {/* cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10 w-full">
@@ -74,7 +74,7 @@ export default function AboutComp({
 
         {/* organizations */}
         {organizations?.heading && (
-          <p className="text-base mt-15 mb-5">{organizations.heading}</p>
+          <p className="text-base mt-15 mb-4">{organizations.heading}</p>
         )}
 
         <div className="flex flex-row justify-center gap-5">

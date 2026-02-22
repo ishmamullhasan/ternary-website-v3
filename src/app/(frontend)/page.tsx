@@ -8,9 +8,11 @@ import ScalesComp from '@/components/sections/scalesComp'
 import TeamSection from '@/components/sections/team'
 import Journey from '@/components/sections/timeline'
 import Journey_SM from '@/components/sections/timeline_sm'
-import type { Capability, Homepage, Industry, Media, Scale, Solution, Story } from '@/payload-types'
+import type { Capability, Homepage, Industry, Media, Model, Scale, Solution, Story } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
+import EngagementComp from '@/components/sections/engagementComp'
+import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 
 export default async function Page(): Promise<JSX.Element> {
   const homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
@@ -81,6 +83,23 @@ export default async function Page(): Promise<JSX.Element> {
           heading={homePageData.scales?.heading}
           description={homePageData.scales?.description}
           scales={homePageData.scales?.scale as Scale[]}
+        />
+      </section>
+      <section className="w-full">
+        <EngagementComp
+          heading={homePageData.engagement?.heading}
+          description={homePageData.engagement?.description}
+          model={homePageData.engagement?.model as Model[]}
+        />
+      </section>
+       <section id="solutions" className="w-full">
+        <GlobalDeliveryComp
+          heading={homePageData.globalDelivery?.heading }
+          description={
+            homePageData.globalDelivery?.description   }
+            title={homePageData.globalDelivery?.title  }
+            excerpt={homePageData.globalDelivery?.excerpt}
+          image={homePageData.globalDelivery?.image as Media | null}
         />
       </section>
 

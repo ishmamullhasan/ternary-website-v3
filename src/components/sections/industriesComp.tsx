@@ -15,8 +15,8 @@ export default function IndustryComp({ heading, description, industry }: Industr
     <section className="bg-[#1B1A17] w-[1480px] p-10 mx-auto">
       <div className=" ">
         {/* top header */}
-        <div className="mb-15">
-          <h2 className="text-3xl font-light mb-4">{heading}</h2>
+        <div className="mb-15 w-2/5">
+          <h2 className="text-3xl font-light mb-3">{heading}</h2>
           <p className="text-base">{description}</p>
         </div>
 

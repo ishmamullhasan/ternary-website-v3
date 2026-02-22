@@ -18,7 +18,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
       <div className="flex justify-start">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
         <div className="flex flex-col w-[500px]">
-          <h2 className="text-3xl font-light mb-4">{heading}</h2>
+          <h2 className="text-3xl font-light mb-3">{heading}</h2>
           {description && <p className="text-base">{description}</p>}
         </div>
       </div>

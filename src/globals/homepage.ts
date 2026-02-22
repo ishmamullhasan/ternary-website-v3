@@ -215,6 +215,71 @@ const Homepage: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'engagement',
+      label: 'Engagement',
+      type: 'group',
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'textarea',
+          required: false,
+        },
+        {
+          name: 'model',
+          label: 'model',
+          type: 'relationship',
+          relationTo: 'model',
+          hasMany: true,
+          required: false,
+        },
+      ],
+    },
+    {
+      name: 'globalDelivery',
+      label: 'Global Delivery',
+      type: 'group',
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'textarea',
+          required: false,
+        },
+        {
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'excerpt',
+          label: 'Excerpt',
+          type: 'textarea',
+          required: false,
+        },
+        {
+          name: 'image',
+          label: 'Image',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+        }
+      ],
+    },
     // {
     //   name: 'company',
     //   label: 'Company',
@@ -270,46 +335,58 @@ const Homepage: GlobalConfig = {
     //     },
     //   ],
     // },
-    // {
-    //   name: 'team',
-    //   label: 'Team',
-    //   type: 'group',
-    //   fields: [
-    //     {
-    //       name: 'items',
-    //       label: 'Items',
-    //       type: 'array',
-    //       required: false,
-    //       fields: [
-    //         {
-    //           name: 'name',
-    //           label: 'Name',
-    //           type: 'text',
-    //           required: false,
-    //         },
-    //         {
-    //           name: 'title',
-    //           label: 'Title',
-    //           type: 'text',
-    //           required: false,
-    //         },
-    //         {
-    //           name: 'image',
-    //           label: 'Image',
-    //           type: 'upload',
-    //           relationTo: 'media',
-    //           required: false,
-    //         },
-    //         {
-    //           name: 'linkedin',
-    //           label: 'LinkedIn URL',
-    //           type: 'text',
-    //           required: false,
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // },
+    {
+      name: 'team',
+      label: 'Team',
+      type: 'group',
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'textarea',
+          required: false,
+        },
+        {
+          name: 'members',
+          label: 'Members',
+          type: 'array',
+          required: false,
+          fields: [
+            {
+              name: 'name',
+              label: 'Name',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'position',
+              label: 'Position',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'image',
+              label: 'Image',
+              type: 'upload',
+              relationTo: 'media',
+              required: false,
+            },
+            {
+              name: 'linkedin',
+              label: 'LinkedIn URL',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
     // {
     //   name: 'timeline',
     //   label: 'Timeline',
