@@ -5,14 +5,25 @@ import Section from '@/components/sections/section'
 import SolutionsComp from '@/components/sections/solutionsComp'
 import IndustriesComp from '@/components/sections/industriesComp'
 import ScalesComp from '@/components/sections/scalesComp'
-import TeamSection from '@/components/sections/team'
+import TeamComp from '@/components/sections/teamComp'
 import Journey from '@/components/sections/timeline'
 import Journey_SM from '@/components/sections/timeline_sm'
-import type { Capability, Homepage, Industry, Media, Model, Scale, Solution, Story } from '@/payload-types'
+import type {
+  Capability,
+  Homepage,
+  Industry,
+  Job,
+  Media,
+  Model,
+  Scale,
+  Solution,
+  Story,
+} from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
 import EngagementComp from '@/components/sections/engagementComp'
 import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
+import OpportunitiesComp from '@/components/sections/opportunitiesComp'
 
 export default async function Page(): Promise<JSX.Element> {
   const homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
@@ -46,29 +57,20 @@ export default async function Page(): Promise<JSX.Element> {
 
       <section id="solutions" className="w-full">
         <SolutionsComp
-          heading={homePageData.solutions?.heading ?? 'Empowering Innovation Through Partnerships.'}
-          description={
-            homePageData.solutions?.description ??
-            'From engineering augmentation to strategic consulting and full-cycle product development, we adapt to your needs. Our engagement models are designed to help you innovate, accelerate, and succeed.'
-          }
-          image={homePageData.solutions?.image as Media | null}
-          items={homePageData.solutions?.items as Solution[] | null}
+          heading={homePageData.solutions?.heading}
+          description={homePageData.solutions?.description}
+          image={homePageData.solutions?.image as Media}
+          items={homePageData.solutions?.items as Solution[]}
         />
       </section>
       <section className="w-full">
         <CapabilitiesComp
-          heading={homePageData.capabilities?.heading ?? 'Turning Ideas into Impact.'}
-          description={
-            homePageData.capabilities?.description ??
-            'Our capabilities span the entire product lifecycle. We handle everything—from ideation and design to development and deployment—so you can focus on your vision.'
-          }
-          capability={homePageData.capabilities?.capability as Capability[] | null}
-          heading_2={homePageData.capabilities?.heading_2 ?? 'Leadership'}
-          description_2={
-            homePageData.capabilities?.description_2 ??
-            'Our leadership team is dedicated to delivering the best possible solutions to our clients.'
-          }
-          image={homePageData.capabilities?.image as Media | null}
+          heading={homePageData.capabilities?.heading}
+          description={homePageData.capabilities?.description}
+          capability={homePageData.capabilities?.capability as Capability[]}
+          heading_2={homePageData.capabilities?.heading_2}
+          description_2={homePageData.capabilities?.description_2}
+          image={homePageData.capabilities?.image as Media}
         />
       </section>
       <section className="w-full">
@@ -92,17 +94,22 @@ export default async function Page(): Promise<JSX.Element> {
           model={homePageData.engagement?.model as Model[]}
         />
       </section>
-       <section id="solutions" className="w-full">
+      <section id="solutions" className="w-full">
         <GlobalDeliveryComp
-          heading={homePageData.globalDelivery?.heading }
-          description={
-            homePageData.globalDelivery?.description   }
-            title={homePageData.globalDelivery?.title  }
-            excerpt={homePageData.globalDelivery?.excerpt}
-          image={homePageData.globalDelivery?.image as Media | null}
+          heading={homePageData.globalDelivery?.heading}
+          description={homePageData.globalDelivery?.description}
+          title={homePageData.globalDelivery?.title}
+          excerpt={homePageData.globalDelivery?.excerpt}
+          image={homePageData.globalDelivery?.image as Media}
         />
       </section>
-
+      <section className="w-full">
+        <TeamComp
+          heading={homePageData.team?.heading}
+          description={homePageData.team?.description}
+          members={homePageData.team?.members}
+        />
+      </section>
       {/* <Section 
         id="stories" 
         label="Stories" 
@@ -118,42 +125,6 @@ export default async function Page(): Promise<JSX.Element> {
         description="Empowering innovation by crafting cutting-edge software solutions that address real-world challenges. We have incubated ideas and brought them to life—transforming visionary concepts into scalable, impactful products for industries worldwide."
       >
         <Incubations />
-      </Section>
-
-      <Section
-        id="company"
-        label="Company"
-        title="Shaping the Future with Global Expertise."
-        description="Behind every great product is a team driven by curiosity and innovation. Our global team brings diverse experiences and perspectives to solve complex challenges. We approach every project with care, creativity, and a commitment to excellence. Together, we're shaping solutions that impact millions around the world."
-      >
-        <div className="flex flex-col mt-4 gap-8">
-          <div className="flex flex-col gap-6 w-full ">
-            <div className="max-w-[70%] space-y-2">
-              <h3 className="text-lg font-semibold">The Team</h3>
-              <p className="text-sm opacity-70">
-                Bringing experience and capabilities from around the globe.
-              </p>
-            </div>
-            <TeamSection className="col-span-4 pl-6 py-6 justify-center border border-muted rounded-xl" />
-          </div>
-
-          <div className="flex flex-col gap-6 w-full py-6">
-            <div className="min-w-full lg:max-w-[70%] space-y-2">
-              <h3 className="text-lg font-semibold">The Journey</h3>
-              <p className="text-sm opacity-70 ">From small beginning and against all odds.</p>
-            </div>
-            {/* Timeline for large device */}
-            <Journey className="col-span-4 pl-6 py-16 border border-muted rounded-xl hidden lg:block" />
-            {/* Timeline for smaller device */}
-            <Journey_SM className="lg:hidden" />
-          </div>
-          <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-5 w-full py-6">
-            <div className="min-w-full lg:max-w-[70%] space-y-2">
-              <h3 className="text-lg font-semibold">Opportunities</h3>
-              <p className="text-sm opacity-70 ">Help us shape the lives of millions.</p>
-            </div>
-          </div>
-        </div>
       </Section>
     </div>
   )

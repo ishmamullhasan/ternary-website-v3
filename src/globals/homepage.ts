@@ -280,61 +280,34 @@ const Homepage: GlobalConfig = {
         }
       ],
     },
-    // {
-    //   name: 'company',
-    //   label: 'Company',
-    //   type: 'group',
-    //   fields: [
-    //     {
-    //       name: 'sectionTitle',
-    //       label: 'Section Title',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'sectionDescription',
-    //       label: 'Section Description',
-    //       type: 'textarea',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'teamSubtitle',
-    //       label: 'Team Subtitle',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'teamDescription',
-    //       label: 'Team Description',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'journeySubtitle',
-    //       label: 'Journey Subtitle',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'journeyDescription',
-    //       label: 'Journey Description',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'opportunitiesSubtitle',
-    //       label: 'Opportunities Subtitle',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //     {
-    //       name: 'opportunitiesDescription',
-    //       label: 'Opportunities Description',
-    //       type: 'text',
-    //       required: false,
-    //     },
-    //   ],
-    // },
+    {
+      name: 'processes',
+      label: 'Processes',
+      type: 'group',
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'textarea',
+          required: false,
+        },
+        // {
+        //   name: 'process',
+        //   label: 'process',
+        //   type: 'relationship',
+        //   relationTo: 'process',
+        //   hasMany: true,
+        //   required: false,
+        // },
+      ],
+    },
+   
     {
       name: 'team',
       label: 'Team',
@@ -385,6 +358,33 @@ const Homepage: GlobalConfig = {
             },
           ],
         },
+      ],
+    },
+    {
+      name: 'opportunities',
+      label: 'Opportunities',
+      type: 'group',
+      fields: [
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'textarea',
+          required: false,
+        },
+        {
+          name: 'opportunity',
+          label: 'opportunity',
+          type: 'relationship',
+          relationTo: 'job',
+          hasMany: true,
+          required: false,
+        }
       ],
     },
     // {
