@@ -78,6 +78,7 @@ export interface Config {
     industry: Industry;
     scale: Scale;
     model: Model;
+    job: Job;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -106,6 +107,7 @@ export interface Config {
     industry: IndustrySelect<false> | IndustrySelect<true>;
     scale: ScaleSelect<false> | ScaleSelect<true>;
     model: ModelSelect<false> | ModelSelect<true>;
+    job: JobSelect<false> | JobSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -987,6 +989,25 @@ export interface Model {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job".
+ */
+export interface Job {
+  id: string;
+  code: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  title?: string | null;
+  team?: string | null;
+  department?: string | null;
+  location?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1218,6 +1239,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'model';
         value: string | Model;
+      } | null)
+    | ({
+        relationTo: 'job';
+        value: string | Job;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1670,6 +1695,21 @@ export interface ModelSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job_select".
+ */
+export interface JobSelect<T extends boolean = true> {
+  code?: T;
+  generateSlug?: T;
+  slug?: T;
+  title?: T;
+  team?: T;
+  department?: T;
+  location?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -2100,6 +2140,10 @@ export interface Homepage {
     excerpt?: string | null;
     image?: (string | null) | Media;
   };
+  processes?: {
+    heading?: string | null;
+    description?: string | null;
+  };
   team?: {
     heading?: string | null;
     description?: string | null;
@@ -2112,6 +2156,11 @@ export interface Homepage {
           id?: string | null;
         }[]
       | null;
+  };
+  opportunities?: {
+    heading?: string | null;
+    description?: string | null;
+    opportunity?: (string | Job)[] | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2294,6 +2343,12 @@ export interface HomepageSelect<T extends boolean = true> {
         excerpt?: T;
         image?: T;
       };
+  processes?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+      };
   team?:
     | T
     | {
@@ -2308,6 +2363,13 @@ export interface HomepageSelect<T extends boolean = true> {
               linkedin?: T;
               id?: T;
             };
+      };
+  opportunities?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        opportunity?: T;
       };
   updatedAt?: T;
   createdAt?: T;
