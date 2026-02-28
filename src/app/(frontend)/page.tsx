@@ -24,6 +24,7 @@ import type { JSX } from 'react'
 import EngagementComp from '@/components/sections/engagementComp'
 import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 import OpportunitiesComp from '@/components/sections/opportunitiesComp'
+import ProcessComp from '@/components/sections/processComp'
 
 export default async function Page(): Promise<JSX.Element> {
   const homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
@@ -37,8 +38,8 @@ export default async function Page(): Promise<JSX.Element> {
   }
 
   return (
-    <div className="flex flex-col gap-20 text-primary max-w-[1480px] mx-auto">
-      <section className="w-full">
+    <div className="flex flex-col text-primary max-w-[1480px] mx-auto">
+      <section className="w-full mb-20">
         <AboutComp
           heading={homePageData.about?.heading}
           description={homePageData.about?.description}
@@ -55,7 +56,7 @@ export default async function Page(): Promise<JSX.Element> {
         />
       </section>
 
-      <section id="solutions" className="w-full">
+      <section id="solutions" className="w-full mb-20">
         <SolutionsComp
           heading={homePageData.solutions?.heading}
           description={homePageData.solutions?.description}
@@ -63,7 +64,7 @@ export default async function Page(): Promise<JSX.Element> {
           items={homePageData.solutions?.items as Solution[]}
         />
       </section>
-      <section className="w-full">
+      <section className="w-full mb-20">
         <CapabilitiesComp
           heading={homePageData.capabilities?.heading}
           description={homePageData.capabilities?.description}
@@ -73,28 +74,28 @@ export default async function Page(): Promise<JSX.Element> {
           image={homePageData.capabilities?.image as Media}
         />
       </section>
-      <section className="w-full">
+      <section className="w-full mb-20">
         <IndustriesComp
           heading={homePageData.industries?.heading}
           description={homePageData.industries?.description}
           industry={homePageData.industries?.industry as Industry[]}
         />
       </section>
-      <section className="w-full">
+      <section className="w-full mb-20">
         <ScalesComp
           heading={homePageData.scales?.heading}
           description={homePageData.scales?.description}
           scales={homePageData.scales?.scale as Scale[]}
         />
       </section>
-      <section className="w-full">
+      <section className="w-full mb-20">
         <EngagementComp
           heading={homePageData.engagement?.heading}
           description={homePageData.engagement?.description}
           model={homePageData.engagement?.model as Model[]}
         />
       </section>
-      <section id="solutions" className="w-full">
+      <section  className="w-full">
         <GlobalDeliveryComp
           heading={homePageData.globalDelivery?.heading}
           description={homePageData.globalDelivery?.description}
@@ -104,28 +105,32 @@ export default async function Page(): Promise<JSX.Element> {
         />
       </section>
       <section className="w-full">
+        <ProcessComp
+          heading={homePageData.processes?.heading}
+          description={homePageData.processes?.description}
+          image={homePageData.processes?.image as Media}
+          process={homePageData.processes?.process as { title?: string | null; description?: string | null }[]}
+        />
+      </section>
+
+      <section className="w-full mb-20 ">
         <TeamComp
           heading={homePageData.team?.heading}
           description={homePageData.team?.description}
           members={homePageData.team?.members}
         />
       </section>
-      {/* <Section 
-        id="stories" 
-        label="Stories" 
-        title="Real Stories, Real Impact."
-        description="Discover how we've partnered with clients across industries to create transformative solutions. Their successes are the true testament to our capabilities."
-        >
-        <div></div>
-      </Section> */}
-      <Section
-        id="incubations"
-        label="Incubations"
-        title="Our products that are delivering an impact today."
-        description="Empowering innovation by crafting cutting-edge software solutions that address real-world challenges. We have incubated ideas and brought them to life—transforming visionary concepts into scalable, impactful products for industries worldwide."
-      >
-        <Incubations />
-      </Section>
+      <section className="w-full ">
+        <OpportunitiesComp
+          heading={homePageData.opportunities?.heading}
+          description={homePageData.opportunities?.description}
+          opportunity={homePageData.opportunities?.opportunity as Job[]}
+        />
+      </section>
+
+      
+      
+    
     </div>
   )
 }

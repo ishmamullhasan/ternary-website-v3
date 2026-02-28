@@ -2143,6 +2143,28 @@ export interface Homepage {
   processes?: {
     heading?: string | null;
     description?: string | null;
+    image?: (string | null) | Media;
+    process?:
+      | {
+          title?: string | null;
+          description?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          id?: string | null;
+        }[]
+      | null;
   };
   team?: {
     heading?: string | null;
@@ -2348,6 +2370,14 @@ export interface HomepageSelect<T extends boolean = true> {
     | {
         heading?: T;
         description?: T;
+        image?: T;
+        process?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              id?: T;
+            };
       };
   team?:
     | T
