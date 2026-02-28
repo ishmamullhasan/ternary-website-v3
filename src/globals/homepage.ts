@@ -277,7 +277,7 @@ const Homepage: GlobalConfig = {
           type: 'upload',
           relationTo: 'media',
           required: false,
-        }
+        },
       ],
     },
     {
@@ -297,17 +297,35 @@ const Homepage: GlobalConfig = {
           type: 'textarea',
           required: false,
         },
-        // {
-        //   name: 'process',
-        //   label: 'process',
-        //   type: 'relationship',
-        //   relationTo: 'process',
-        //   hasMany: true,
-        //   required: false,
-        // },
+        {
+          name: 'image',
+          label: 'Image',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+        },
+        {
+          name: 'process',
+          label: 'Process',
+          type: 'array',
+          fields: [
+            {
+              name: 'title',
+              label: 'Title',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'description',
+              label: 'Description',
+              type: 'richText',
+              required: false,
+            },
+          ],
+        },
       ],
     },
-   
+
     {
       name: 'team',
       label: 'Team',
@@ -384,7 +402,7 @@ const Homepage: GlobalConfig = {
           relationTo: 'job',
           hasMany: true,
           required: false,
-        }
+        },
       ],
     },
     // {
