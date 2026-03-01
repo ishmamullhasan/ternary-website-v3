@@ -6,6 +6,7 @@ node_modules
 .next
 .vercel
 .cursor
+.cursor/debug.log
 
 # Payload default media upload directory
 public/media/
