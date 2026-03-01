@@ -50,8 +50,8 @@ export default function ProcessComp({
         {/* LEFT SIDE */}
         <div className="w-1/3 space-y-5">
           <div>
-            <h2 className="text-2xl font-light mb-4">{heading}</h2>
-            <p className="text-white/60 text-sm leading-relaxed max-w-[300px]">
+            <h2 className="text-3xl font-light mb-4">{heading}</h2>
+            <p className=" text-sm ">
               {description}
             </p>
           </div>
@@ -69,11 +69,11 @@ export default function ProcessComp({
             const isRichText = desc != null && typeof desc === 'object' && 'root' in desc
             return (
               <div key={index}>
-                <p className="text-white/40 text-xs mb-2">
+                <p className="text-base mb-2">
                   {`0${index + 1}`}
                 </p>
-                <h3 className="text-sm mb-3">{item.title}</h3>
-                <div className="text-white/60 text-xs leading-relaxed max-w-[320px] [&_.payload-richtext]:text-inherit [&_.payload-richtext]:text-xs">
+                <h3 className="text-base mb-3">{item.title}</h3>
+                <div className="">
                   {isRichText ? (
                     <RichText data={desc as DefaultTypedEditorState} enableGutter={false} enableProse={false} />
                   ) : (
@@ -106,11 +106,11 @@ export default function ProcessComp({
             const isRichText = desc != null && typeof desc === 'object' && 'root' in desc
             return (
               <div key={index}>
-                <p className="text-white/40 text-xs mb-2">
+                <p className="text-base mb-2">
                   {`0${index + 3}`}
                 </p>
                 <h3 className="text-sm mb-3">{item.title}</h3>
-                <div className="text-white/60 text-xs leading-relaxed max-w-[320px] [&_.payload-richtext]:text-inherit [&_.payload-richtext]:text-xs">
+                <div className="">
                   {isRichText ? (
                     <RichText data={desc as DefaultTypedEditorState} enableGutter={false} enableProse={false} />
                   ) : (
