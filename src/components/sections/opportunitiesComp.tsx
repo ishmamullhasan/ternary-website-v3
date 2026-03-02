@@ -16,7 +16,7 @@ export default function OpportunitiesComp({
   opportunity,
 }: OpportunitiesCompProps) {
   return (
-    <section className="bg-[#1B1A17] w-[1480px] p-10 mx-auto">
+    <section className="bg-[#1B1A17] w-full p-10 mx-auto">
       <div className=" ">
         {/* top header */}
         <div className="mb-15 w-2/5">

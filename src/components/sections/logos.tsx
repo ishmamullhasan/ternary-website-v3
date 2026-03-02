@@ -2,7 +2,7 @@
 
 const Logos = () => {
   return (
-    <section className="overflow-hidden max-w[1440px] mx-auto px-10 flex flex-col w-full">
+    <section className="overflow-hidden w-full mx-auto px-10 flex flex-col w-full">
       <div className="container">
         <h2 className="text-md font-light tracking-tight text-balance lg:text-xl">
           Powering the world&apos;s best product teams. <br />

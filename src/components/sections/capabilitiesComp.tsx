@@ -22,7 +22,7 @@ export default function CapabilitiesComp({
   image,
 }: CapabilitiesCompProps) {
   return (
-  <section className="bg-[#1B1A17] w-[1480px] p-10 mx-auto">
+  <section className="bg-[#1B1A17] w-full p-10 mx-auto">
       <div className=" ">
         {/* top header */}
         <div className="mb-15 w-2/5">
@@ -54,7 +54,7 @@ export default function CapabilitiesComp({
         </div>
        
         {/* leadership section */}
-        <div className="flex flex-row  mt-24 items-start">
+        <div className="flex flex-row  mt-20 items-start justify-between">
           
           <div className="w-1/5">
             <h3 className="text-2xl font-light mb-3">{heading_2}</h3>
@@ -63,12 +63,12 @@ export default function CapabilitiesComp({
             </p>
           </div>
 
-          <div className="w-4/5 h-[600px] rounded-lg overflow-hidden">
+          <div className="w-4/5 h-[600px] rounded-lg overflow-hidden ">
             {image && (
               <Image
                 src={image.url || ''}
                 alt={image.alt || 'leadership'}
-                width={image.width ||  1160}
+                width={image.width ||  1100}
                 height={image.height || 300}
                 className="object-cover w-full h-full"
               />

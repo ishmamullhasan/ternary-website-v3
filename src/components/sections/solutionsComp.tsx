@@ -22,11 +22,11 @@ export default function SolutionsComp({ heading, description, image, items }: So
           {description && <p className="text-base">{description}</p>}
         </div>
       </div>
-      <div className="w-[1480] h-[400px] my-10">
+      <div className="w-full h-[400px] my-10">
         <Image
           src={(image as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
           alt={(image as Media)?.alt || 'image'}
-          width={(image as Media)?.width || 1480}
+          width={(image as Media)?.width || 1380}
           height={(image as Media)?.height || 400}
           className="object-cover w-full h-full"
         />
