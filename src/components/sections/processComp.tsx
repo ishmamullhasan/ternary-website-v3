@@ -3,7 +3,6 @@
 import type { RichText } from '@/components/richtext'
 import RichTextComp from '@/components/richtext'
 import { Media } from '@/payload-types'
-import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
@@ -39,7 +38,7 @@ interface ProcessCompProps {
 export default function ProcessComp({ heading, description, image, process }: ProcessCompProps) {
   return (
     <section className=" bg-[#1B1A17] p-10 pb-20">
-      <div className="w-full mx-auto flex flex-row gap-16">
+      <div className="w-full mx-auto flex flex-row gap-10">
         {/* LEFT SIDE */}
         <div className="w-1/3 space-y-5">
           <div className="mb-12">
@@ -48,22 +47,7 @@ export default function ProcessComp({ heading, description, image, process }: Pr
           </div>
           <div className="space-y-10">
             {process?.slice(0, 2).map((item, index): JSX.Element => {
-              // #region agent log
-              DEBUG_LOG('process item.description before render', {
-                index,
-                descType: typeof item.description,
-                hasRoot:
-                  item.description != null &&
-                  typeof item.description === 'object' &&
-                  'root' in item.description,
-                keys:
-                  item.description != null && typeof item.description === 'object'
-                    ? Object.keys(item.description)
-                    : null,
-              })
-              // #endregion
-              const desc = item.description
-              const isRichText = desc != null && typeof desc === 'object' && 'root' in desc
+              
               return (
                 <div key={index}>
                   <p className="text-base mb-2">{`0${index + 1}`}</p>

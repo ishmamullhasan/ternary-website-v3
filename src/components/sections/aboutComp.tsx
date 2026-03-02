@@ -42,7 +42,7 @@ export default function AboutComp({
             return (
               <Link href={`/stories/${item.slug}`} key={index}>
                 {/* gradient card */}
-                <div className="relative w-[300px] h-[540px] rounded-lg overflow-hidden">
+                <div className="relative w-[300px] h-[480px] rounded-lg overflow-hidden">
                   {/* background image OR gradient */}
                   {item.thumbnail ? (
                     <Image
@@ -51,7 +51,7 @@ export default function AboutComp({
                         'https://dummyimage.com/350x590/37624F/FFF2'
                       }
                       alt={item.title || 'story'}
-                      height={(item.thumbnail as Media)?.height || 540}
+                      height={(item.thumbnail as Media)?.height || 480}
                       width={(item.thumbnail as Media)?.width || 300}
                       className="object-cover w-full h-full"
                     />

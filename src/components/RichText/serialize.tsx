@@ -186,7 +186,7 @@ export default function serialize(children) {
           }
           case 'paragraph':
             return (
-              <p className="mt-4 text-[#717B68] leading-relaxed" key={i}>
+              <p className="mt-4 text-[#F4F3EC] leading-relaxed" key={i}>
                 {serialize(node?.children)}
               </p>
             )
