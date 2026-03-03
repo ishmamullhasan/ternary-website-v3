@@ -1,13 +1,10 @@
 import AboutComp from '@/components/sections/aboutComp'
 import CapabilitiesComp from '@/components/sections/capabilitiesComp'
-import Incubations from '@/components/sections/incubations'
-import Section from '@/components/sections/section'
 import SolutionsComp from '@/components/sections/solutionsComp'
 import IndustriesComp from '@/components/sections/industriesComp'
 import ScalesComp from '@/components/sections/scalesComp'
 import TeamComp from '@/components/sections/teamComp'
-import Journey from '@/components/sections/timeline'
-import Journey_SM from '@/components/sections/timeline_sm'
+
 import type {
   Capability,
   Homepage,
@@ -25,6 +22,7 @@ import EngagementComp from '@/components/sections/engagementComp'
 import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 import OpportunitiesComp from '@/components/sections/opportunitiesComp'
 import ProcessComp from '@/components/sections/processComp'
+import { RichText } from '@/components/richtext'
 
 export default async function Page(): Promise<JSX.Element> {
   const homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
@@ -43,7 +41,7 @@ export default async function Page(): Promise<JSX.Element> {
         <AboutComp
           heading={homePageData.about?.heading}
           description={homePageData.about?.description}
-          stories={homePageData.about?.stories as Story[]}
+          items={homePageData.about?.items}
           organizations={
             homePageData.about?.organizations as {
               heading?: string | null
@@ -95,7 +93,7 @@ export default async function Page(): Promise<JSX.Element> {
           model={homePageData.engagement?.model as Model[]}
         />
       </section>
-      <section  className="w-full">
+      <section className="w-full">
         <GlobalDeliveryComp
           heading={homePageData.globalDelivery?.heading}
           description={homePageData.globalDelivery?.description}
@@ -109,7 +107,7 @@ export default async function Page(): Promise<JSX.Element> {
           heading={homePageData.processes?.heading}
           description={homePageData.processes?.description}
           image={homePageData.processes?.image as Media}
-          process={homePageData.processes?.process as { title?: string | null; description?: string | null }[]}
+          process={homePageData.processes?.process as { title?: string | null; description?: RichText | null }[] | null}
         />
       </section>
 
@@ -124,13 +122,9 @@ export default async function Page(): Promise<JSX.Element> {
         <OpportunitiesComp
           heading={homePageData.opportunities?.heading}
           description={homePageData.opportunities?.description}
-          opportunity={homePageData.opportunities?.opportunity as Job[]}
+          opportunity={homePageData.opportunities?.opportunity}
         />
       </section>
-
-      
-      
-    
     </div>
   )
 }

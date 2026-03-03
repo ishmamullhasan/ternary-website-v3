@@ -2054,7 +2054,30 @@ export interface Homepage {
   about?: {
     heading?: string | null;
     description?: string | null;
-    stories?: (string | Story)[] | null;
+    items?:
+      | (
+          | {
+              relationTo: 'capability';
+              value: string | Capability;
+            }
+          | {
+              relationTo: 'solution';
+              value: string | Solution;
+            }
+          | {
+              relationTo: 'industry';
+              value: string | Industry;
+            }
+          | {
+              relationTo: 'scale';
+              value: string | Scale;
+            }
+          | {
+              relationTo: 'model';
+              value: string | Model;
+            }
+        )[]
+      | null;
     organizations?: {
       heading?: string | null;
       organization?:
@@ -2223,7 +2246,7 @@ export interface HomepageSelect<T extends boolean = true> {
     | {
         heading?: T;
         description?: T;
-        stories?: T;
+        items?: T;
         organizations?:
           | T
           | {

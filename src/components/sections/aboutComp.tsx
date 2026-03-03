@@ -1,13 +1,20 @@
 'use client'
-import type { Media, Story } from '@/payload-types'
+import type { Industry, Capability, Media, Solution, Story, Model, Scale } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { JSX } from 'react'
 
+type MultiRelation =
+  | { relationTo: 'capability'; value: Capability }
+  | { relationTo: 'solution'; value: Solution }
+  | { relationTo: 'industry'; value: Industry }
+  | { relationTo: 'scale'; value: Scale }
+  | { relationTo: 'model'; value: Model }
+
 interface AboutProps {
   heading?: string | null
   description?: string | null
-  stories?: Story[] | null
+  items?: MultiRelation[] | null
   organizations?: {
     heading?: string | null
     organization?:
@@ -24,7 +31,7 @@ interface AboutProps {
 export default function AboutComp({
   heading,
   description,
-  stories,
+  items,
   organizations,
   bottomDescription,
 }: AboutProps) {
@@ -38,21 +45,21 @@ export default function AboutComp({
         </div>
         {/* cards grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
-          {(stories as Story[])?.map((item, index: number): JSX.Element => {
+          {(items as MultiRelation[])?.map((item, index: number): JSX.Element => {
             return (
-              <Link href={`/stories/${item.slug}`} key={index}>
+              <Link href={`/${item.value.slug}`} key={index}>
                 {/* gradient card */}
                 <div className="relative w-[300px] h-[480px] rounded-lg overflow-hidden">
                   {/* background image OR gradient */}
-                  {item.thumbnail ? (
+                  {item.value.thumbnail ? (
                     <Image
                       src={
-                        (item.thumbnail as Media)?.url ||
+                        (item.value.thumbnail as Media)?.url ||
                         'https://dummyimage.com/350x590/37624F/FFF2'
                       }
-                      alt={item.title || 'story'}
-                      height={(item.thumbnail as Media)?.height || 480}
-                      width={(item.thumbnail as Media)?.width || 300}
+                      alt={item.value.title || 'story'}
+                      height={(item.value.thumbnail as Media)?.height || 480}
+                      width={(item.value.thumbnail as Media)?.width || 300}
                       className="object-cover w-full h-full"
                     />
                   ) : (
@@ -61,9 +68,7 @@ export default function AboutComp({
 
                   {/* text */}
                   <div className="absolute top-5 left-5 right-5">
-                    <h3 className="text-base">
-                      {item.title}
-                    </h3>
+                    <h3 className="text-base">{item.value.title}</h3>
                     <p className="text-sm">Stories</p>
                   </div>
                 </div>
@@ -73,9 +78,7 @@ export default function AboutComp({
         </div>
 
         {/* organizations */}
-        {organizations?.heading && (
-          <p className="text-base mt-15 mb-4">{organizations.heading}</p>
-        )}
+        {organizations?.heading && <p className="text-base mt-15 mb-4">{organizations.heading}</p>}
 
         <div className="flex flex-row justify-center gap-5">
           {organizations?.organization?.map((item, index) => (
@@ -101,9 +104,7 @@ export default function AboutComp({
 
         {/* bottom text */}
         {bottomDescription && (
-          <p className="text-justify max-w-[600px] mt-15 text-sm">
-            {bottomDescription}
-          </p>
+          <p className="text-justify max-w-[600px] mt-15 text-sm">{bottomDescription}</p>
         )}
       </div>
     </section>
