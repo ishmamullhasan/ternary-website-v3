@@ -44,9 +44,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
 
                   {/* text */}
                   <div className="absolute bottom-5 left-5 right-5">
-                    <h3 className="text-base font-semibold">
-                      {item.title}
-                    </h3>
+                    <h3 className="text-base font-semibold">{item.title}</h3>
                     <p className="text-sm"> {item.excerpts}</p>
                   </div>
                 </div>

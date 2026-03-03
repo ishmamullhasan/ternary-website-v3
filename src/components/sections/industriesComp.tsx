@@ -20,7 +20,7 @@ export default function IndustryComp({ heading, description, industry }: Industr
           <p className="text-base">{description}</p>
         </div>
 
-        {/* induss grid */}   
+        {/* induss grid */}
         <div className="flex flex-row justify-between">
           <div className="w-1/5"> </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-15">
@@ -47,9 +47,7 @@ export default function IndustryComp({ heading, description, industry }: Industr
 
                     {/* text */}
                     <div className="absolute top-5 left-5 right-5">
-                      <h3 className=" text-base font-semibold">
-                        {item.title}
-                      </h3>
+                      <h3 className=" text-base font-semibold">{item.title}</h3>
                       <p className="text-sm"> {item.excerpts}</p>
                     </div>
                   </div>

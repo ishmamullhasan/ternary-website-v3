@@ -17,30 +17,38 @@ interface FooterProps {
       copyright?: string | null
     } | null
 
-    capabilities?: {
-      id: string
-      title?: string | null
-      slug?: string | null
-    }[] | null
+    capabilities?:
+      | {
+          id: string
+          title?: string | null
+          slug?: string | null
+        }[]
+      | null
 
-    solutions?: {
-      id: string
-      title?: string | null
-      slug?: string | null
-    }[] | null
+    solutions?:
+      | {
+          id: string
+          title?: string | null
+          slug?: string | null
+        }[]
+      | null
 
-    industries?: {
-      id: string
-      title?: string | null
-      slug?: string | null
-    }[] | null
+    industries?:
+      | {
+          id: string
+          title?: string | null
+          slug?: string | null
+        }[]
+      | null
 
     menu_4?: {
       heading?: string | null
-      menu?: {
-        label?: string | null
-        link?: string | null
-      }[] | null
+      menu?:
+        | {
+            label?: string | null
+            link?: string | null
+          }[]
+        | null
     } | null
   } | null
 }
@@ -65,21 +73,12 @@ function FooterMenuColumn({
 
   return (
     <div className="flex flex-col gap-3">
-      {heading && (
-        <span className="text-base font-medium">
-          {heading}
-        </span>
-      )}
+      {heading && <span className="text-base font-medium">{heading}</span>}
 
       <div className="flex flex-col gap-1">
         {menuItems.map((item, idx) => (
-          <Link
-            href={item.link ?? '#'}
-            key={`${prefix}-link-${idx}`}
-           
-          >
+          <Link href={item.link ?? '#'} key={`${prefix}-link-${idx}`}>
             <span className="font-light text-sm">{item.label}</span>
-            
           </Link>
         ))}
       </div>
@@ -92,11 +91,7 @@ export default function Footer({ footerData }: FooterProps) {
 
   return (
     <footer className="flex flex-col p-10 justify-between">
-
-      
-
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-4">
-
         {/* Column 1 — Logo + Description */}
         <div className="flex flex-col gap-3 h-full justify-between">
           <div className="flex flex-col gap-6">
@@ -109,9 +104,7 @@ export default function Footer({ footerData }: FooterProps) {
               />
             ) : (
               footerData?.menu_1?.siteName && (
-                <span className="text-3xl font-light">
-                  {footerData.menu_1.siteName}
-                </span>
+                <span className="text-3xl font-light">{footerData.menu_1.siteName}</span>
               )
             )}
 
@@ -123,9 +116,7 @@ export default function Footer({ footerData }: FooterProps) {
           </div>
 
           {footerData?.menu_1?.copyright && (
-            <span className="font-light text-xs md:text-sm">
-              {footerData.menu_1.copyright}
-            </span>
+            <span className="font-light text-xs md:text-sm">{footerData.menu_1.copyright}</span>
           )}
         </div>
 
@@ -167,7 +158,7 @@ export default function Footer({ footerData }: FooterProps) {
 
         {/* Company (menu_4) */}
         <FooterMenuColumn
-         heading="Company"
+          heading="Company"
           items={footerData?.menu_4?.menu ?? null}
           prefix="company"
         />
