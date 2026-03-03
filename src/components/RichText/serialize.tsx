@@ -3,7 +3,6 @@ import Image from 'next/image'
 import { Fragment } from 'react'
 import { Text } from 'slate'
 
-
 // import Link from 'next/link'
 // type Children = Leaf[]
 
@@ -191,7 +190,7 @@ export default function serialize(children) {
               </p>
             )
           default:
-            return <div key={i}>{serialize(node?.children)}</div>
+            return <span key={i}>{serialize(node?.children)}</span>
         }
       })) ||
     []

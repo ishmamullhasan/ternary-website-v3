@@ -38,14 +38,15 @@ interface ProcessCompProps {
 export default function ProcessComp({ heading, description, image, process }: ProcessCompProps) {
   return (
     <section className=" bg-[#1B1A17] p-10 pb-20">
-      <div className="w-full mx-auto flex flex-row gap-10">
+      <div className="w-full mx-auto flex flex-row gap-8">
         {/* LEFT SIDE */}
         <div className="w-1/3 space-y-5">
           <div className="mb-12">
-            <h2 className="text-3xl font-light mb-3">{heading}</h2>
+            <h2 className="text-2xl font-light mb-3">{heading}</h2>
             <p className=" text-sm ">{description}</p>
           </div>
           <div className="space-y-10">
+            <div ></div>
             {process?.slice(0, 2).map((item, index): JSX.Element => {
               
               return (

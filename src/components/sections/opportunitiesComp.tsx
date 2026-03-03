@@ -25,10 +25,10 @@ export default function OpportunitiesComp({
         </div>
 
         {/* capabilities grid */}
-        <div className="flex flex-row ">
+        <div className="flex flex-row justify-between">
           <div className="w-1/5"> </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-5 w-4/5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-5">
             {opportunity?.map((item, index): JSX.Element => {
               return (
                 <div key={index} className="bg-[#0F0E0E] p-4">

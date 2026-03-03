@@ -32,7 +32,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
         />
       </div>
       <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {(items as Solution[])?.map((item, index: number): JSX.Element => {
             return (
               <div  key={index}>

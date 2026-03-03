@@ -31,10 +31,10 @@ export default function CapabilitiesComp({
         </div>
 
         {/* capabilities grid */}
-        <div className='flex flex-row '> 
+        <div className='flex flex-row'> 
           <div className="w-1/5" >  </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-10 pt-10 w-4/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 pt-10 w-4/5 pl-8">
           {capability?.map((item, index): JSX.Element => {
             return (
               <div key={index}>
@@ -63,7 +63,7 @@ export default function CapabilitiesComp({
             </p>
           </div>
 
-          <div className="w-4/5 h-[600px] rounded-lg overflow-hidden ">
+          <div className="w-4/5 h-[600px] rounded-lg overflow-hidden pl-8">
             {image && (
               <Image
                 src={image.url || ''}

@@ -37,7 +37,7 @@ export default function AboutComp({
           <p className="text-center text-base ">{description}</p>
         </div>
         {/* cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
           {(stories as Story[])?.map((item, index: number): JSX.Element => {
             return (
               <Link href={`/stories/${item.slug}`} key={index}>

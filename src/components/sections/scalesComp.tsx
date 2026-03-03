@@ -13,14 +13,14 @@ interface SalesCompProps {
 export default function SalesComp({ heading, description, scales }: SalesCompProps) {
   return (
     <section className="bg-[#1B1A17] w-full p-10 mx-auto">
-      <div className="flex flex-row items-start">
+      <div className="flex flex-row justify-between items-start">
         {/* top header */}
         <div className="w-2/5">
           <h2 className="text-3xl font-light mb-3">{heading}</h2>
           <p className="text-base">{description}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {scales?.map((item, index): JSX.Element => {
             return (
               <Link href={`/sales/${item.slug}`} key={index}>
