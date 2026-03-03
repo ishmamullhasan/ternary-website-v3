@@ -23,7 +23,12 @@ import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 import OpportunitiesComp from '@/components/sections/opportunitiesComp'
 import ProcessComp from '@/components/sections/processComp'
 import { RichText } from '@/components/richtext'
-
+type MultiRelation =
+  | { relationTo: 'capability'; value: Capability }
+  | { relationTo: 'solution'; value: Solution }
+  | { relationTo: 'industry'; value: Industry }
+  | { relationTo: 'scale'; value: Scale }
+  | { relationTo: 'model'; value: Model }
 export default async function Page(): Promise<JSX.Element> {
   const homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
 
@@ -41,7 +46,7 @@ export default async function Page(): Promise<JSX.Element> {
         <AboutComp
           heading={homePageData.about?.heading}
           description={homePageData.about?.description}
-          items={homePageData.about?.items}
+          items={homePageData.about?.items as MultiRelation[] | null}
           organizations={
             homePageData.about?.organizations as {
               heading?: string | null
@@ -107,7 +112,11 @@ export default async function Page(): Promise<JSX.Element> {
           heading={homePageData.processes?.heading}
           description={homePageData.processes?.description}
           image={homePageData.processes?.image as Media}
-          process={homePageData.processes?.process as { title?: string | null; description?: RichText | null }[] | null}
+          process={
+            homePageData.processes?.process as
+              | { title?: string | null; description?: RichText | null }[]
+              | null
+          }
         />
       </section>
 
@@ -115,14 +124,23 @@ export default async function Page(): Promise<JSX.Element> {
         <TeamComp
           heading={homePageData.team?.heading}
           description={homePageData.team?.description}
-          members={homePageData.team?.members}
+          members={
+            homePageData.team?.members as
+              | {
+                  name?: string | null
+                  position?: string | null
+                  image?: Media | null
+                  linkedin?: string | null
+                }[]
+              | null
+          }
         />
       </section>
       <section className="w-full ">
         <OpportunitiesComp
           heading={homePageData.opportunities?.heading}
           description={homePageData.opportunities?.description}
-          opportunity={homePageData.opportunities?.opportunity}
+          opportunity={homePageData.opportunities?.opportunity as Job[] | null}
         />
       </section>
     </div>

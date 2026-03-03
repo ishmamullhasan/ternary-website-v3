@@ -46,7 +46,7 @@ export default function ProcessComp({ heading, description, image, process }: Pr
             <p className=" text-sm ">{description}</p>
           </div>
           <div className="space-y-10">
-            <div ></div>
+            {/* <div ></div> */}
             {process?.slice(0, 2).map((item, index): JSX.Element => {
               
               return (
