@@ -2024,52 +2024,16 @@ export interface Header {
  */
 export interface Footer {
   id: string;
-  logo?: (string | null) | Media;
-  siteName?: string | null;
-  description?: string | null;
-  copyright?: string | null;
   menu_1?: {
-    heading?: string | null;
-    menu?:
-      | {
-          label?: string | null;
-          link?: string | null;
-          id?: string | null;
-        }[]
-      | null;
+    logo?: (string | null) | Media;
+    siteName?: string | null;
+    description?: string | null;
+    copyright?: string | null;
   };
-  menu_2?: {
-    heading?: string | null;
-    menu?:
-      | {
-          label?: string | null;
-          link?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  menu_3?: {
-    heading?: string | null;
-    menu?:
-      | {
-          label?: string | null;
-          link?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
+  capabilities?: (string | Capability)[] | null;
+  solutions?: (string | Solution)[] | null;
+  industries?: (string | Industry)[] | null;
   menu_4?: {
-    heading?: string | null;
-    menu?:
-      | {
-          label?: string | null;
-          link?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  menu_5?: {
-    heading?: string | null;
     menu?:
       | {
           label?: string | null;
@@ -2090,7 +2054,30 @@ export interface Homepage {
   about?: {
     heading?: string | null;
     description?: string | null;
-    stories?: (string | Story)[] | null;
+    items?:
+      | (
+          | {
+              relationTo: 'capability';
+              value: string | Capability;
+            }
+          | {
+              relationTo: 'solution';
+              value: string | Solution;
+            }
+          | {
+              relationTo: 'industry';
+              value: string | Industry;
+            }
+          | {
+              relationTo: 'scale';
+              value: string | Scale;
+            }
+          | {
+              relationTo: 'model';
+              value: string | Model;
+            }
+        )[]
+      | null;
     organizations?: {
       heading?: string | null;
       organization?:
@@ -2223,62 +2210,20 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  logo?: T;
-  siteName?: T;
-  description?: T;
-  copyright?: T;
   menu_1?:
     | T
     | {
-        heading?: T;
-        menu?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-              id?: T;
-            };
+        logo?: T;
+        siteName?: T;
+        description?: T;
+        copyright?: T;
       };
-  menu_2?:
-    | T
-    | {
-        heading?: T;
-        menu?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-              id?: T;
-            };
-      };
-  menu_3?:
-    | T
-    | {
-        heading?: T;
-        menu?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-              id?: T;
-            };
-      };
+  capabilities?: T;
+  solutions?: T;
+  industries?: T;
   menu_4?:
     | T
     | {
-        heading?: T;
-        menu?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-              id?: T;
-            };
-      };
-  menu_5?:
-    | T
-    | {
-        heading?: T;
         menu?:
           | T
           | {
@@ -2301,7 +2246,7 @@ export interface HomepageSelect<T extends boolean = true> {
     | {
         heading?: T;
         description?: T;
-        stories?: T;
+        items?: T;
         organizations?:
           | T
           | {

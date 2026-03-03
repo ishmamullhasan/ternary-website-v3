@@ -36,12 +36,12 @@ export default function GlobalDeliveryComp({
           {excerpt && <p className="text-sm">{excerpt}</p>}
         </div>
       </div>
-      <div className="w-[1480] h-[770px] my-10">
+      <div className="w-[1100px] h-full my-10 mx-auto">
         <Image
           src={'/globalDelivery.svg'}
           alt={'globalDelivery'}
-          width={1480}
-          height={7700}
+          width={1100}
+          height={600}
           className="object-cover w-full h-full"
         />
         

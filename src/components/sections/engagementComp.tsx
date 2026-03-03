@@ -12,20 +12,20 @@ interface EngagementCompProps {
 
 export default function EngagementComp({ heading, description, model }: EngagementCompProps) {
   return (
-    <section className="bg-[#1B1A17] w-[1480px] p-10 mx-auto">
-      <div className="flex flex-row items-start">
+    <section className="bg-[#1B1A17] w-full p-10 mx-auto">
+      <div className="flex flex-row justify-between items-start">
         {/* top header */}
         <div className="w-2/5">
           <h2 className="text-3xl font-light mb-3">{heading}</h2>
           <p className="text-base">{description}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-3/5">
+        <div className="grid grid-cols-1  lg:grid-cols-3 gap-4">
           {model?.map((item, index): JSX.Element => {
             return (
               <Link href={`/model/${item.slug}`} key={index}>
                 {/* gradient card */}
-                <div className="relative w-[270px] h-[300px] rounded-lg overflow-hidden">
+                <div className="relative w-[220px] h-[250px] rounded-lg overflow-hidden">
                   {/* background image OR gradient */}
                   {item.thumbnail ? (
                     <Image
@@ -34,8 +34,8 @@ export default function EngagementComp({ heading, description, model }: Engageme
                         'https://dummyimage.com/280x300/37624F/FFF2'
                       }
                       alt={item.title || 'industry'}
-                      height={(item.thumbnail as Media)?.height || 300}
-                      width={(item.thumbnail as Media)?.width || 270}
+                      height={(item.thumbnail as Media)?.height || 250}
+                      width={(item.thumbnail as Media)?.width || 220}
                       className="object-cover w-full h-full"
                     />
                   ) : (

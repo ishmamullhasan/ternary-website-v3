@@ -29,10 +29,10 @@ const Homepage: GlobalConfig = {
           required: false,
         },
         {
-          name: 'stories',
-          label: 'Stories',
+          name: 'items',
+          label: 'Items',
           type: 'relationship',
-          relationTo: 'story',
+          relationTo: ['capability', 'solution', 'industry', 'scale', 'model'],
           hasMany: true,
           required: false,
         },

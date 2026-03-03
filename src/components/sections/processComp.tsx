@@ -1,8 +1,8 @@
 'use client'
 
-import RichText from '@/components/RichText'
+import type { RichText } from '@/components/richtext'
+import RichTextComp from '@/components/richtext'
 import { Media } from '@/payload-types'
-import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
@@ -23,8 +23,6 @@ const DEBUG_LOG = (msg: string, data: Record<string, unknown>) => {
 }
 // #endregion
 
-
-
 interface ProcessCompProps {
   heading?: string | null
   description?: string | null
@@ -32,96 +30,66 @@ interface ProcessCompProps {
   process?:
     | {
         title?: string | null
-        description?: richText | null
+        description?: RichText | null
       }[]
     | null
 }
 
-export default function ProcessComp({
-  heading,
-  description,
-  image,
-  process,
-}: ProcessCompProps) {
+export default function ProcessComp({ heading, description, image, process }: ProcessCompProps) {
   return (
     <section className=" bg-[#1B1A17] p-10 pb-20">
-      <div className="max-w-[1480px] mx-auto flex flex-row gap-16">
-
+      <div className="w-full mx-auto flex flex-row gap-8">
         {/* LEFT SIDE */}
         <div className="w-1/3 space-y-5">
-          <div>
-            <h2 className="text-2xl font-light mb-4">{heading}</h2>
-            <p className="text-white/60 text-sm leading-relaxed max-w-[300px]">
-              {description}
-            </p>
+          <div className="mb-12">
+            <h2 className="text-2xl font-light mb-3">{heading}</h2>
+            <p className=" text-sm ">{description}</p>
           </div>
-
-          {process?.slice(0, 2).map((item, index): JSX.Element => {
-            // #region agent log
-            DEBUG_LOG('process item.description before render', {
-              index,
-              descType: typeof item.description,
-              hasRoot: item.description != null && typeof item.description === 'object' && 'root' in item.description,
-              keys: item.description != null && typeof item.description === 'object' ? Object.keys(item.description) : null,
-            })
-            // #endregion
-            const desc = item.description
-            const isRichText = desc != null && typeof desc === 'object' && 'root' in desc
-            return (
-              <div key={index}>
-                <p className="text-white/40 text-xs mb-2">
-                  {`0${index + 1}`}
-                </p>
-                <h3 className="text-sm mb-3">{item.title}</h3>
-                <div className="text-white/60 text-xs leading-relaxed max-w-[320px] [&_.payload-richtext]:text-inherit [&_.payload-richtext]:text-xs">
-                  {isRichText ? (
-                    <RichText data={desc as DefaultTypedEditorState} enableGutter={false} enableProse={false} />
-                  ) : (
-                    typeof desc === 'string' ? desc : null
-                  )}
+          <div className="space-y-10">
+            <div ></div>
+            {process?.slice(0, 2).map((item, index): JSX.Element => {
+              
+              return (
+                <div key={index}>
+                  <p className="text-base mb-2">{`0${index + 1}`}</p>
+                  <h3 className="text-base mb-3">{item.title}</h3>
+                  <div className="">
+                    <RichTextComp content={item.description as RichText} />
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
-
         {/* CENTER IMAGE */}
         <div className="w-1/3 flex justify-center">
           <div className="bg-black rounded-xl w-[200px] h-[700px] p-12">
             <Image
-              src={(image as Media)?.url || "/process.svg"}
-              alt={(image as Media)?.alt || "Process Illustration"}
+              src={(image as Media)?.url || '/process.svg'}
+              alt={(image as Media)?.alt || 'Process Illustration'}
               width={(image as Media)?.width || 200}
               height={(image as Media)?.height || 700}
-              
               className="object-cover w-full h-full"
             />
-          </div>    
+          </div>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="w-1/3 space-y-16">
+        <div className="w-1/3 space-y-10">
           {process?.slice(2).map((item, index): JSX.Element => {
             const desc = item.description
             const isRichText = desc != null && typeof desc === 'object' && 'root' in desc
             return (
               <div key={index}>
-                <p className="text-white/40 text-xs mb-2">
-                  {`0${index + 3}`}
-                </p>
+                <p className="text-base mb-2">{`0${index + 3}`}</p>
                 <h3 className="text-sm mb-3">{item.title}</h3>
-                <div className="text-white/60 text-xs leading-relaxed max-w-[320px] [&_.payload-richtext]:text-inherit [&_.payload-richtext]:text-xs">
-                  {isRichText ? (
-                    <RichText data={desc as DefaultTypedEditorState} enableGutter={false} enableProse={false} />
-                  ) : (
-                    typeof desc === 'string' ? desc : null
-                  )}
+                <div className="">
+                  <RichTextComp content={item.description as RichText} />
                 </div>
               </div>
             )
           })}
         </div>
-
       </div>
     </section>
   )

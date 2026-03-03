@@ -22,17 +22,17 @@ export default function SolutionsComp({ heading, description, image, items }: So
           {description && <p className="text-base">{description}</p>}
         </div>
       </div>
-      <div className="w-[1480] h-[400px] my-10">
+      <div className="w-full h-[400px] my-10">
         <Image
           src={(image as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
           alt={(image as Media)?.alt || 'image'}
-          width={(image as Media)?.width || 1480}
+          width={(image as Media)?.width || 1380}
           height={(image as Media)?.height || 400}
           className="object-cover w-full h-full"
         />
       </div>
       <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {(items as Solution[])?.map((item, index: number): JSX.Element => {
             return (
               <div  key={index}>
