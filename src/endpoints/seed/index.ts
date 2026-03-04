@@ -2,7 +2,7 @@ import type { Payload, PayloadRequest } from 'payload'
 
 export const seed = async ({
   payload,
-  req,
+  req: _req,
 }: {
   payload: Payload
   req: PayloadRequest

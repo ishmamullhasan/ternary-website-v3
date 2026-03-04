@@ -6,23 +6,6 @@ import { Media } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
-// #region agent log
-const DEBUG_LOG = (msg: string, data: Record<string, unknown>) => {
-  fetch('http://127.0.0.1:7242/ingest/b90bc207-9987-4caa-8206-025e2946feb2', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '3ed136' },
-    body: JSON.stringify({
-      sessionId: '3ed136',
-      location: 'processComp.tsx',
-      message: msg,
-      data,
-      timestamp: Date.now(),
-      hypothesisId: 'A',
-    }),
-  }).catch(() => {})
-}
-// #endregion
-
 interface ProcessCompProps {
   heading?: string | null
   description?: string | null
@@ -76,10 +59,7 @@ export default function ProcessComp({ heading, description, image, process }: Pr
 
         {/* RIGHT SIDE */}
         <div className=" space-y-10 pt-30">
-          {process?.slice(2).map((item, index): JSX.Element => {
-            const desc = item.description
-            const isRichText = desc != null && typeof desc === 'object' && 'root' in desc
-            return (
+          {process?.slice(2).map((item, index): JSX.Element => (
               <div key={index}>
                 <p className="text-base mb-2">{`0${index + 3}`}</p>
                 <h3 className="text-sm mb-3">{item.title}</h3>
@@ -87,8 +67,7 @@ export default function ProcessComp({ heading, description, image, process }: Pr
                   <RichTextComp content={item.description as RichText} />
                 </div>
               </div>
-            )
-          })}
+          ))}
         </div>
       </div>
     </section>

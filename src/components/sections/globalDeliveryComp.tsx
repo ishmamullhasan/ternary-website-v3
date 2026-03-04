@@ -1,9 +1,7 @@
 'use client'
 
-import type { Media, Solution } from '@/payload-types'
+import type { Media } from '@/payload-types'
 import Image from 'next/image'
-import Link from 'next/link'
-import type { JSX } from 'react'
 
 interface GlobalDeliveryCompProps {
   heading?: string | null
@@ -16,7 +14,7 @@ interface GlobalDeliveryCompProps {
 export default function GlobalDeliveryComp({
   heading,
   description,
-  image,
+  image: _image,
   title,
   excerpt,
 }: GlobalDeliveryCompProps) {
