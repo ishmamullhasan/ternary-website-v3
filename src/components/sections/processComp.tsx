@@ -38,10 +38,10 @@ interface ProcessCompProps {
 export default function ProcessComp({ heading, description, image, process }: ProcessCompProps) {
   return (
     <section className=" bg-[#1B1A17] p-10 pb-20">
-      <div className="w-full mx-auto flex flex-row gap-8">
+      <div className="w-full flex flex-row justify-between space-x-8">
         {/* LEFT SIDE */}
-        <div className="w-1/3 space-y-5">
-          <div className="mb-12">
+        <div className=" space-y-5">
+          <div className="mb-20">
             <h2 className="text-2xl font-light mb-3">{heading}</h2>
             <p className=" text-sm ">{description}</p>
           </div>
@@ -62,20 +62,20 @@ export default function ProcessComp({ heading, description, image, process }: Pr
           </div>
         </div>
         {/* CENTER IMAGE */}
-        <div className="w-1/3 flex justify-center">
-          <div className="bg-black rounded-xl w-[200px] h-[700px] p-12">
+        <div className="">
+          <div className="bg-black rounded-xl w-[280px] h-[900px] p-4">
             <Image
               src={(image as Media)?.url || '/process.svg'}
               alt={(image as Media)?.alt || 'Process Illustration'}
               width={(image as Media)?.width || 200}
-              height={(image as Media)?.height || 700}
-              className="object-cover w-full h-full"
+              height={(image as Media)?.height || 900}
+              className="object-contain w-full h-full"
             />
           </div>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="w-1/3 space-y-10">
+        <div className=" space-y-10 pt-30">
           {process?.slice(2).map((item, index): JSX.Element => {
             const desc = item.description
             const isRichText = desc != null && typeof desc === 'object' && 'root' in desc
