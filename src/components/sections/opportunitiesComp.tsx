@@ -1,6 +1,5 @@
 'use client'
-import type { Media, Capability, Job } from '@/payload-types'
-import Image from 'next/image'
+import type { Job } from '@/payload-types'
 import Link from 'next/link'
 import type { JSX } from 'react'
 
