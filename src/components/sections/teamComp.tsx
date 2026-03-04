@@ -31,9 +31,9 @@ export default function TeamComp({
 
   return (
     <section className="bg-[#1B1A17] w-full p-10 mx-auto text-white">
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center space-x-8">
         {/* Left Header */}
-        <div className="w-1/5">
+        <div className="w-1/5 ">
           <h2 className="text-3xl font-light mb-3">{heading}</h2>
           <p className="text-base text-white/70">{description}</p>
         </div>
