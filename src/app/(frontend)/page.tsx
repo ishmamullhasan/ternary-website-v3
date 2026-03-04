@@ -14,7 +14,6 @@ import type {
   Model,
   Scale,
   Solution,
-  Story,
 } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
@@ -29,8 +28,16 @@ type MultiRelation =
   | { relationTo: 'industry'; value: Industry }
   | { relationTo: 'scale'; value: Scale }
   | { relationTo: 'model'; value: Model }
+
+export const dynamic = 'force-dynamic'
+
 export default async function Page(): Promise<JSX.Element> {
-  const homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
+  let homePageData: Homepage | null = null
+  try {
+    homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
+  } catch {
+    // Database may be unavailable during build
+  }
 
   if (!homePageData) {
     return (
