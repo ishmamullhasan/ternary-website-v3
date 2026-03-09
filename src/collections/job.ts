@@ -1,6 +1,5 @@
 import { revalidateTag } from 'next/cache'
-import { slugField } from 'payload'
-import { CollectionConfig } from 'payload'
+import { CollectionConfig, slugField } from 'payload'
 
 const Job: CollectionConfig = {
   slug: 'job',
@@ -45,7 +44,6 @@ const Job: CollectionConfig = {
       label: 'Location',
       type: 'text',
     },
-   
   ],
 }
 

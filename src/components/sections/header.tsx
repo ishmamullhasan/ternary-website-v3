@@ -1,12 +1,12 @@
 'use client'
 
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 type SubMenuItem = { label?: string | null; link?: string | null }
 type MenuItem = { label?: string | null; link?: string | null; subItems?: SubMenuItem[] | null }
@@ -195,9 +195,7 @@ export default function Header({ headerData }: HeaderProps) {
         </Link>
 
         {/* Desktop Navigation - center */}
-        <div className="hidden md:flex flex-1 justify-center">
-          {DesktopNav}
-        </div>
+        <div className="hidden md:flex flex-1 justify-center">{DesktopNav}</div>
 
         {/* Desktop Button - right (placeholder when no button keeps menu centered) */}
         <div className="hidden md:flex flex-shrink-0 min-w-[100px] justify-end">

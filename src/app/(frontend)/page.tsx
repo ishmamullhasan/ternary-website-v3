@@ -1,10 +1,15 @@
 import AboutComp from '@/components/sections/aboutComp'
 import CapabilitiesComp from '@/components/sections/capabilitiesComp'
-import SolutionsComp from '@/components/sections/solutionsComp'
 import IndustriesComp from '@/components/sections/industriesComp'
 import ScalesComp from '@/components/sections/scalesComp'
+import SolutionsComp from '@/components/sections/solutionsComp'
 import TeamComp from '@/components/sections/teamComp'
 
+import { RichText } from '@/components/RichText'
+import EngagementComp from '@/components/sections/engagementComp'
+import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
+import OpportunitiesComp from '@/components/sections/opportunitiesComp'
+import ProcessComp from '@/components/sections/processComp'
 import type {
   Capability,
   Homepage,
@@ -17,11 +22,6 @@ import type {
 } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
-import EngagementComp from '@/components/sections/engagementComp'
-import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
-import OpportunitiesComp from '@/components/sections/opportunitiesComp'
-import ProcessComp from '@/components/sections/processComp'
-import { RichText } from '@/components/richtext'
 type MultiRelation =
   | { relationTo: 'capability'; value: Capability }
   | { relationTo: 'solution'; value: Solution }

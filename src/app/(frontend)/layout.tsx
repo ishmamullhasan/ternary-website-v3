@@ -1,9 +1,9 @@
+import Footer from '@/components/sections/footer'
+import Header from '@/components/sections/header'
+import { getFooter, getHeader } from '@/utilities/getGlobals'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
-import Header from '@/components/sections/header'
-import Footer from '@/components/sections/footer'
-import { getHeader, getFooter } from '@/utilities/getGlobals'
 
 export const revalidate = 0
 
@@ -20,8 +20,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: 'Ternary Solutions ',
-  description:
-    'Building products that shape the lives of millions every single day',
+  description: 'Building products that shape the lives of millions every single day',
 }
 
 export default async function RootLayout({
