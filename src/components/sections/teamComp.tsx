@@ -1,7 +1,7 @@
 'use client'
+import type { Media } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
-import type { Media } from '@/payload-types'
 import { useState } from 'react'
 
 interface TeamCompProps {
@@ -18,16 +18,12 @@ interface TeamCompProps {
     | null
 }
 
-export default function TeamComp({
-  heading,
-  description,
-  members,
-}: TeamCompProps) {
+export default function TeamComp({ heading, description, members }: TeamCompProps) {
   const [showAll, setShowAll] = useState(false)
 
   const maxVisible = 3
   const total = members?.length || 0
-  const remaining = total - maxVisible 
+  const remaining = total - maxVisible
 
   return (
     <section className="bg-[#1B1A17] w-full p-10 mx-auto text-white">
@@ -40,19 +36,18 @@ export default function TeamComp({
 
         {/* RIGHT SIDE */}
         <div className="w-4/5">
-
           {/* COLLAPSED VIEW */}
           {!showAll && (
             <div className="grid grid-cols-4 gap-10">
-              {members?.slice(0, maxVisible ).map((member, index) => {
+              {members?.slice(0, maxVisible).map((member, index) => {
                 const media = member.image as Media | null
 
                 return (
                   <a
                     href={member.linkedin || '#'}
                     key={index}
-                    target='_blank'
-                    rel='noopener noreferrer'
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex flex-col items-center text-center w-[180px]"
                   >
                     <div className="w-[72px] h-[72px] rounded-full overflow-hidden mb-4 bg-neutral-300">
@@ -68,9 +63,7 @@ export default function TeamComp({
                     </div>
 
                     <p className="text-sm">{member.name}</p>
-                    <p className="text-base mt-1">
-                      {member.position}
-                    </p>
+                    <p className="text-base mt-1">{member.position}</p>
                   </a>
                 )
               })}
@@ -82,34 +75,30 @@ export default function TeamComp({
                   onClick={() => setShowAll(true)}
                 >
                   <div className="flex items-center mb-4">
-                    {members
-                      ?.slice(maxVisible, maxVisible + 3)
-                      .map((member, index) => {
-                        const media = member.image as Media | null
+                    {members?.slice(maxVisible, maxVisible + 3).map((member, index) => {
+                      const media = member.image as Media | null
 
-                        return (
-                          <div
-                            key={index}
-                            className="w-[72px] h-[72px] rounded-full overflow-hidden bg-neutral-300 border border-[#1B1A17] -ml-4 first:ml-0"
-                          >
-                            {media?.url && (
-                              <Image
-                                src={media.url}
-                                alt={member.name || 'member'}
-                                width={72}
-                                height={72}
-                                className="object-cover w-full h-full"
-                              />
-                            )}
-                          </div>
-                        )
-                      })}
+                      return (
+                        <div
+                          key={index}
+                          className="w-[72px] h-[72px] rounded-full overflow-hidden bg-neutral-300 border border-[#1B1A17] -ml-4 first:ml-0"
+                        >
+                          {media?.url && (
+                            <Image
+                              src={media.url}
+                              alt={member.name || 'member'}
+                              width={72}
+                              height={72}
+                              className="object-cover w-full h-full"
+                            />
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
 
                   <p className="text-sm">{remaining}+ Orchestrators</p>
-                  <p className="text-base mt-1">
-                    Meet the Team
-                  </p>
+                  <p className="text-base mt-1">Meet the Team</p>
                 </div>
               )}
             </div>
@@ -141,9 +130,7 @@ export default function TeamComp({
                       </div>
 
                       <p className="text-sm">{member.name}</p>
-                      <p className="text-base mt-1">
-                        {member.position}
-                      </p>
+                      <p className="text-base mt-1">{member.position}</p>
                     </Link>
                   )
                 })}

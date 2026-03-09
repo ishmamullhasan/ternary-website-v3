@@ -1,7 +1,7 @@
 'use client'
 
-import type { RichText } from '@/components/richtext'
-import RichTextComp from '@/components/richtext'
+import type { RichText } from '@/components/RichText'
+import RichTextComp from '@/components/RichText'
 import { Media } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
@@ -31,7 +31,6 @@ export default function ProcessComp({ heading, description, image, process }: Pr
           <div className="space-y-10">
             {/* <div ></div> */}
             {process?.slice(0, 2).map((item, index): JSX.Element => {
-              
               return (
                 <div key={index}>
                   <p className="text-base mb-2">{`0${index + 1}`}</p>
@@ -59,7 +58,8 @@ export default function ProcessComp({ heading, description, image, process }: Pr
 
         {/* RIGHT SIDE */}
         <div className=" space-y-10 pt-30">
-          {process?.slice(2).map((item, index): JSX.Element => (
+          {process?.slice(2).map(
+            (item, index): JSX.Element => (
               <div key={index}>
                 <p className="text-base mb-2">{`0${index + 3}`}</p>
                 <h3 className="text-sm mb-3">{item.title}</h3>
@@ -67,7 +67,8 @@ export default function ProcessComp({ heading, description, image, process }: Pr
                   <RichTextComp content={item.description as RichText} />
                 </div>
               </div>
-          ))}
+            ),
+          )}
         </div>
       </div>
     </section>

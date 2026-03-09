@@ -56,13 +56,11 @@ const Header: GlobalConfig = {
               name: 'label',
               label: 'Label',
               type: 'text',
-
             },
             {
               name: 'link',
               label: 'Link',
               type: 'text',
-            
             },
           ],
         },

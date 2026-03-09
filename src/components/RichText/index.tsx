@@ -1,8 +1,7 @@
 'use client'
 
-import { RichText as PayloadRichText } from '@payloadcms/richtext-lexical/react'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
-import React from 'react'
+import { RichText as PayloadRichText } from '@payloadcms/richtext-lexical/react'
 
 export interface RichText {
   root: {
@@ -28,11 +27,7 @@ interface RichTextProps {
   enableProse?: boolean
 }
 
-export default function RichText({
-  content,
-  data,
-  className,
-}: RichTextProps) {
+export default function RichText({ content, data, className }: RichTextProps) {
   const richContent = (content ?? data) as SerializedEditorState | null | undefined
   if (!richContent) {
     return null

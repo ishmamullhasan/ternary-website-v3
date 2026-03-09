@@ -1,8 +1,8 @@
 'use client'
 
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 type MenuItem = { label?: string | null; link?: string | null }
 type MediaWithUrl = { url?: string | null }

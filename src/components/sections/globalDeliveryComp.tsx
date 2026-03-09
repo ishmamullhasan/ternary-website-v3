@@ -42,7 +42,6 @@ export default function GlobalDeliveryComp({
           height={600}
           className="object-cover w-full h-full"
         />
-        
       </div>
     </div>
   )

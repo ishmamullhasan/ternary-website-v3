@@ -106,7 +106,6 @@ const Footer: GlobalConfig = {
       type: 'group',
       required: false,
       fields: [
-       
         {
           name: 'menu',
           label: 'Menu',
@@ -129,7 +128,6 @@ const Footer: GlobalConfig = {
         },
       ],
     },
-    
   ],
 }
 

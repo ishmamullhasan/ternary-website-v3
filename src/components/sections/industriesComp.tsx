@@ -1,5 +1,5 @@
 'use client'
-import type { Media, Industry } from '@/payload-types'
+import type { Industry, Media } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { JSX } from 'react'
