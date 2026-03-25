@@ -89,11 +89,11 @@ export default function Footer({ footerData }: FooterProps) {
   const logoUrl = getLogoUrl(footerData?.menu_1?.logo)
 
   return (
-    <footer className="flex flex-col p-10 justify-between">
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-4">
+    <footer className="flex flex-col lg:p-10 p-4 justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-5 lg:gap-6 gap-4">
         {/* Column 1 — Logo + Description */}
         <div className="flex flex-col gap-3 h-full justify-between">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col lg:gap-6 gap-4">
             {logoUrl ? (
               <Image
                 src={logoUrl}
@@ -103,19 +103,19 @@ export default function Footer({ footerData }: FooterProps) {
               />
             ) : (
               footerData?.menu_1?.siteName && (
-                <span className="text-3xl font-light">{footerData.menu_1.siteName}</span>
+                <span className="lg:text-3xl text-2xl font-light">{footerData.menu_1.siteName}</span>
               )
             )}
 
             {footerData?.menu_1?.description && (
-              <span className="font-light leading-5 text-sm md:text-base whitespace-pre-line">
+              <span className="font-light leading-5 text-sm lg:text-base whitespace-pre-line">
                 {footerData.menu_1.description}
               </span>
             )}
           </div>
 
           {footerData?.menu_1?.copyright && (
-            <span className="font-light text-xs md:text-sm">{footerData.menu_1.copyright}</span>
+            <span className="font-light text-xs lg:text-sm">{footerData.menu_1.copyright}</span>
           )}
         </div>
 

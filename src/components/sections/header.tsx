@@ -211,14 +211,14 @@ export default function Header({ headerData }: HeaderProps) {
 
         {/* Mobile: button + menu toggle - right */}
         <div className="flex items-center gap-2 md:hidden">
-          {headerData?.button?.label && (
+          {/* {headerData?.button?.label && (
             <Link
               href={headerData.button.link ?? '#'}
               className="rounded-lg bg-[#1B1A17] px-3 py-2 text-sm font-semibold border border-[#1B1A17] 9hover:border-[#1B1A17] hover:bg-transparent hover:text-white"
             >
               {headerData.button.label}
             </Link>
-          )}
+          )} */}
           <button
             type="button"
             aria-label={open ? 'Close menu' : 'Open menu'}
