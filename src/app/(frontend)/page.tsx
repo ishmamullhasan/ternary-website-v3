@@ -5,7 +5,7 @@ import ScalesComp from '@/components/sections/scalesComp'
 import SolutionsComp from '@/components/sections/solutionsComp'
 import TeamComp from '@/components/sections/teamComp'
 
-import { RichText } from '@/components/RichText'
+import { RichText } from '@/components/richtext'
 import EngagementComp from '@/components/sections/engagementComp'
 import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 import OpportunitiesComp from '@/components/sections/opportunitiesComp'
@@ -49,7 +49,7 @@ export default async function Page(): Promise<JSX.Element> {
 
   return (
     <div className="flex flex-col text-primary max-w-7xl mx-auto">
-      <section className="w-full mb-16">
+      <section className="w-full lg:mb-16 mb-6">
         <AboutComp
           heading={homePageData.about?.heading}
           description={homePageData.about?.description}
@@ -66,7 +66,7 @@ export default async function Page(): Promise<JSX.Element> {
         />
       </section>
 
-      <section id="solutions" className="w-full mb-16">
+      <section id="solutions" className="w-full lg:mb-16 mb-6">
         <SolutionsComp
           heading={homePageData.solutions?.heading}
           description={homePageData.solutions?.description}
@@ -74,7 +74,8 @@ export default async function Page(): Promise<JSX.Element> {
           items={homePageData.solutions?.items as Solution[]}
         />
       </section>
-      <section className="w-full mb-16">
+
+      <section className="w-full lg:mb-16 mb-6">
         <CapabilitiesComp
           heading={homePageData.capabilities?.heading}
           description={homePageData.capabilities?.description}
@@ -84,28 +85,29 @@ export default async function Page(): Promise<JSX.Element> {
           image={homePageData.capabilities?.image as Media}
         />
       </section>
-      <section className="w-full mb-16">
+
+      {/* <section className="w-full mb-16">
         <IndustriesComp
           heading={homePageData.industries?.heading}
           description={homePageData.industries?.description}
           industry={homePageData.industries?.industry as Industry[]}
         />
-      </section>
-      <section className="w-full mb-20">
+      </section> */}
+      {/* <section className="w-full mb-20">
         <ScalesComp
           heading={homePageData.scales?.heading}
           description={homePageData.scales?.description}
           scales={homePageData.scales?.scale as Scale[]}
         />
-      </section>
-      <section className="w-full mb-16">
+      </section> */}
+      {/* <section className="w-full mb-16">
         <EngagementComp
           heading={homePageData.engagement?.heading}
           description={homePageData.engagement?.description}
           model={homePageData.engagement?.model as Model[]}
         />
-      </section>
-      <section className="w-full">
+      </section> */}
+      {/* <section className="w-full">
         <GlobalDeliveryComp
           heading={homePageData.globalDelivery?.heading}
           description={homePageData.globalDelivery?.description}
@@ -113,8 +115,8 @@ export default async function Page(): Promise<JSX.Element> {
           excerpt={homePageData.globalDelivery?.excerpt}
           image={homePageData.globalDelivery?.image as Media}
         />
-      </section>
-      <section className="w-full">
+      </section> */}
+      {/* <section className="w-full">
         <ProcessComp
           heading={homePageData.processes?.heading}
           description={homePageData.processes?.description}
@@ -125,9 +127,9 @@ export default async function Page(): Promise<JSX.Element> {
               | null
           }
         />
-      </section>
+      </section> */}
 
-      <section className="w-full mb-16 ">
+      {/* <section className="w-full mb-16 ">
         <TeamComp
           heading={homePageData.team?.heading}
           description={homePageData.team?.description}
@@ -142,14 +144,14 @@ export default async function Page(): Promise<JSX.Element> {
               | null
           }
         />
-      </section>
-      <section className="w-full ">
+      </section> */}
+      {/* <section className="w-full ">
         <OpportunitiesComp
           heading={homePageData.opportunities?.heading}
           description={homePageData.opportunities?.description}
           opportunity={homePageData.opportunities?.opportunity as Job[] | null}
         />
-      </section>
+      </section> */}
     </div>
   )
 }
