@@ -14,15 +14,15 @@ interface SolutionsCompProps {
 
 export default function SolutionsComp({ heading, description, image, items }: SolutionsCompProps) {
   return (
-    <div className="flex flex-col bg-[#1B1A17] p-10">
+    <div className="flex flex-col bg-[#1B1A17] lg:p-10 lg:m-0 m-4 p-4">
       <div className="flex justify-start">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
-        <div className="flex flex-col w-[500px]">
-          <h2 className="text-3xl font-light mb-3">{heading}</h2>
-          {description && <p className="text-base">{description}</p>}
+        <div className="flex flex-col lg:w-[500px]">
+          <h2 className="lg:text-3xl text-2xl font-light mb-3">{heading}</h2>
+          {description && <p className="lg:text-base text-sm">{description}</p>}
         </div>
       </div>
-      <div className="w-full h-[400px] my-10">
+      <div className="w-full lg:h-[400px] h-[200px] lg:my-10 my-4">
         <Image
           src={(image as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
           alt={(image as Media)?.alt || 'image'}
@@ -32,15 +32,15 @@ export default function SolutionsComp({ heading, description, image, items }: So
         />
       </div>
       <div className="w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-4 lg:gap-5 gap-4">
           {(items as Solution[])?.map((item, index: number): JSX.Element => {
             return (
               <div key={index}>
-                <hr className="border-[#F4F3EC] my-4" />
+                <hr className="border-[#F4F3EC] lg:my-4 my-2" />
                 <p className="text-base font-semibold">{item.title}</p>
                 <p className="text-sm ">{item.excerpts}</p>
                 <Link href={`/solutions/${item.slug}`} key={index}>
-                  <button className="text-sm shadow">
+                  <button className="lg:text-sm text-xs shadow">
                     <u>Learn More</u>
                   </button>
                 </Link>
