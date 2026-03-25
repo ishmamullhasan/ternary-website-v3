@@ -12,20 +12,20 @@ interface EngagementCompProps {
 
 export default function EngagementComp({ heading, description, model }: EngagementCompProps) {
   return (
-    <section className="bg-[#1B1A17] w-full p-10 mx-auto">
-      <div className="flex flex-row justify-between items-start">
+    <section className="bg-[#1B1A17] lg:p-10 lg:m-0 m-4 p-4">
+      <div className="flex lg:flex-row flex-col lg:justify-between lg:items-start items-center">
         {/* top header */}
-        <div className="w-2/5">
-          <h2 className="text-3xl font-light mb-3">{heading}</h2>
-          <p className="text-base">{description}</p>
+        <div className="lg:w-2/5">
+          <h2 className="lg:text-3xl text-2xl font-light mb-3">{heading}</h2>
+          <p className="lg:text-base text-sm">{description}</p>
         </div>
 
-        <div className="grid grid-cols-1  lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4 gap-3 lg:pt-0 pt-4">
           {model?.map((item, index): JSX.Element => {
             return (
               <Link href={`/model/${item.slug}`} key={index}>
                 {/* gradient card */}
-                <div className="relative w-[220px] h-[250px] rounded-lg overflow-hidden">
+                <div className="relative lg:w-[220px] lg:h-[250px]  rounded-lg overflow-hidden">
                   {/* background image OR gradient */}
                   {item.thumbnail ? (
                     <Image
@@ -44,8 +44,8 @@ export default function EngagementComp({ heading, description, model }: Engageme
 
                   {/* text */}
                   <div className="absolute bottom-5 left-5 right-5">
-                    <h3 className="text-base font-semibold">{item.title}</h3>
-                    <p className="text-sm"> {item.excerpts}</p>
+                    <h3 className="lg:text-base text-sm font-semibold">{item.title}</h3>
+                    <p className="lg:text-sm text-xs"> {item.excerpts}</p>
                   </div>
                 </div>
               </Link>

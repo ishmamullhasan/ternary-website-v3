@@ -86,7 +86,7 @@ export default async function Page(): Promise<JSX.Element> {
         />
       </section>
 
-      <section className="w-full mb-16">
+      <section className="w-full lg:mb-16 mb-6">
         <IndustriesComp
           heading={homePageData.industries?.heading}
           description={homePageData.industries?.description}
@@ -94,21 +94,22 @@ export default async function Page(): Promise<JSX.Element> {
         />
       </section>
 
-      <section className="w-full mb-20">
+      <section className="w-full lg:mb-16 mb-6">
         <ScalesComp
           heading={homePageData.scales?.heading}
           description={homePageData.scales?.description}
           scales={homePageData.scales?.scale as Scale[]}
         />
       </section>
-      {/* <section className="w-full mb-16">
+
+      <section className="w-full lg:mb-16 mb-6">
         <EngagementComp
           heading={homePageData.engagement?.heading}
           description={homePageData.engagement?.description}
           model={homePageData.engagement?.model as Model[]}
         />
-      </section> */}
-      {/* <section className="w-full">
+      </section>
+      <section className="w-full">
         <GlobalDeliveryComp
           heading={homePageData.globalDelivery?.heading}
           description={homePageData.globalDelivery?.description}
@@ -116,8 +117,9 @@ export default async function Page(): Promise<JSX.Element> {
           excerpt={homePageData.globalDelivery?.excerpt}
           image={homePageData.globalDelivery?.image as Media}
         />
-      </section> */}
-      {/* <section className="w-full">
+      </section>
+
+      <section className="w-full">
         <ProcessComp
           heading={homePageData.processes?.heading}
           description={homePageData.processes?.description}
@@ -128,9 +130,9 @@ export default async function Page(): Promise<JSX.Element> {
               | null
           }
         />
-      </section> */}
+      </section>
 
-      {/* <section className="w-full mb-16 ">
+      <section className="w-full lg:mb-16 mb-6">
         <TeamComp
           heading={homePageData.team?.heading}
           description={homePageData.team?.description}
@@ -145,14 +147,14 @@ export default async function Page(): Promise<JSX.Element> {
               | null
           }
         />
-      </section> */}
-      {/* <section className="w-full ">
+      </section>
+      <section className="w-full ">
         <OpportunitiesComp
           heading={homePageData.opportunities?.heading}
           description={homePageData.opportunities?.description}
           opportunity={homePageData.opportunities?.opportunity as Job[] | null}
         />
-      </section> */}
+      </section>
     </div>
   )
 }
