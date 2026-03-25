@@ -93,14 +93,14 @@ export default async function Page(): Promise<JSX.Element> {
           industry={homePageData.industries?.industry as Industry[]}
         />
       </section>
-      
-      {/* <section className="w-full mb-20">
+
+      <section className="w-full mb-20">
         <ScalesComp
           heading={homePageData.scales?.heading}
           description={homePageData.scales?.description}
           scales={homePageData.scales?.scale as Scale[]}
         />
-      </section> */}
+      </section>
       {/* <section className="w-full mb-16">
         <EngagementComp
           heading={homePageData.engagement?.heading}
