@@ -36,7 +36,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased py-0 bg-black w-full overflow-x-hidden text-[#F4F3EC]`}
       >
         <Header headerData={headerData as React.ComponentProps<typeof Header>['headerData']} />
-        <main className="flex flex-col pt-10">{children}</main>
+        <main className="flex flex-col lg:pt-10 pt-4">{children}</main>
         <Footer footerData={footerData as React.ComponentProps<typeof Footer>['footerData']} />
       </body>
     </html>
