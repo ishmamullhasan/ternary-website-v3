@@ -7,9 +7,9 @@ const Model: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`model_${doc.slug}`)
+          revalidateTag(`model_${doc.slug}`, 'max')
         }
-        revalidateTag('model')
+        revalidateTag('model', 'max')
       },
     ],
   },

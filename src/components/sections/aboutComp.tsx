@@ -28,13 +28,7 @@ interface AboutProps {
   bottomDescription?: string | null
 }
 
-export default function AboutComp({
-  heading,
-  description,
-  items,
-  organizations,
-  bottomDescription,
-}: AboutProps) {
+export default function AboutComp({ heading, description, items, organizations, bottomDescription }: AboutProps) {
   return (
     <section className="lg:pb-16 pb-8">
       <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
@@ -53,10 +47,7 @@ export default function AboutComp({
                   {/* background image OR gradient */}
                   {item.value.thumbnail ? (
                     <Image
-                      src={
-                        (item.value.thumbnail as Media)?.url ||
-                        'https://dummyimage.com/350x590/37624F/FFF2'
-                      }
+                      src={(item.value.thumbnail as Media)?.url || 'https://dummyimage.com/350x590/37624F/FFF2'}
                       alt={item.value.title || 'story'}
                       height={(item.value.thumbnail as Media)?.height || 480}
                       width={(item.value.thumbnail as Media)?.width || 300}
@@ -78,7 +69,9 @@ export default function AboutComp({
         </div>
 
         {/* organizations */}
-        {organizations?.heading && <p className="lg:text-base text-xs lg:mt-15 mt-8 mb-4 text-center">{organizations.heading}</p>}
+        {organizations?.heading && (
+          <p className="lg:text-base text-xs lg:mt-15 mt-8 mb-4 text-center">{organizations.heading}</p>
+        )}
 
         <div className="lg:flex lg:flex-row grid grid-cols-2 justify-center lg:gap-5 gap-4">
           {organizations?.organization?.map((item, index) => (

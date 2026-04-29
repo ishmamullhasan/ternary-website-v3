@@ -119,10 +119,7 @@ export default function Header({ headerData }: HeaderProps) {
               >
                 <span>{item.label || 'Label'}</span>
                 <ChevronDown
-                  className={cn(
-                    'h-4 w-4 transition-transform duration-200',
-                    isDropdownActive ? 'rotate-180' : '',
-                  )}
+                  className={cn('h-4 w-4 transition-transform duration-200', isDropdownActive ? 'rotate-180' : '')}
                 />
               </Link>
 
@@ -147,9 +144,7 @@ export default function Header({ headerData }: HeaderProps) {
                         href={subHref}
                         className={cn(
                           'm-2 rounded-lg block px-4 py-2 text-sm font-medium transition-colors duration-200',
-                          subActive
-                            ? 'text-secondary bg-white/10'
-                            : 'opacity-90 hover:bg-[#1B1A17] hover:opacity-100',
+                          subActive ? 'text-secondary bg-white/10' : 'opacity-90 hover:bg-[#1B1A17] hover:opacity-100',
                         )}
                       >
                         {subItem.label || 'Submenu Item'}
@@ -169,9 +164,7 @@ export default function Header({ headerData }: HeaderProps) {
               href={href}
               className={cn(
                 'font-medium text-sm transition-colors duration-200',
-                active
-                  ? 'text-secondary underline underline-offset-8'
-                  : 'opacity-90 hover:opacity-100',
+                active ? 'text-secondary underline underline-offset-8' : 'opacity-90 hover:opacity-100',
               )}
             >
               {item.label || 'Label'}
@@ -257,10 +250,7 @@ export default function Header({ headerData }: HeaderProps) {
                   >
                     <span>{item.label || 'Label'}</span>
                     <ChevronDown
-                      className={cn(
-                        'h-4 w-4 transition-transform duration-200',
-                        isSubmenuOpen ? 'rotate-180' : '',
-                      )}
+                      className={cn('h-4 w-4 transition-transform duration-200', isSubmenuOpen ? 'rotate-180' : '')}
                     />
                   </button>
 
@@ -299,9 +289,7 @@ export default function Header({ headerData }: HeaderProps) {
                   onClick={() => setOpen(false)}
                   className={cn(
                     'block rounded-2xl px-3 py-3 text-base font-medium transition-colors duration-200 border-b border-white/10 last:border-b-0',
-                    active
-                      ? 'bg-white/10 text-secondary'
-                      : 'opacity-90 hover:bg-[#1B1A17] hover:opacity-100',
+                    active ? 'bg-white/10 text-secondary' : 'opacity-90 hover:bg-[#1B1A17] hover:opacity-100',
                   )}
                 >
                   {item.label || 'Label'}

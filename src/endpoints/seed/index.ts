@@ -1,12 +1,6 @@
 import type { Payload, PayloadRequest } from 'payload'
 
-export const seed = async ({
-  payload,
-  req: _req,
-}: {
-  payload: Payload
-  req: PayloadRequest
-}): Promise<void> => {
+export const seed = async ({ payload, req: _req }: { payload: Payload; req: PayloadRequest }): Promise<void> => {
   payload.logger.info('Seeding database...')
 
   payload.logger.info('— Seeding demo user...')

@@ -7,7 +7,7 @@ const Homepage: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('global_homepage')
+        revalidateTag('global_homepage', 'max')
       },
     ],
   },

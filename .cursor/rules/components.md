@@ -749,11 +749,7 @@ export default buildConfig({
 Use Payload's TypeScript types for components:
 
 ```tsx
-import type {
-  TextFieldServerComponent,
-  TextFieldClientComponent,
-  TextFieldCellComponent,
-} from 'payload'
+import type { TextFieldServerComponent, TextFieldClientComponent, TextFieldCellComponent } from 'payload'
 
 export const MyFieldComponent: TextFieldServerComponent = (props) => {
   // Fully typed props

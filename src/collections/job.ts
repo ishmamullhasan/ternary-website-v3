@@ -7,9 +7,9 @@ const Job: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`job_${doc.slug}`)
+          revalidateTag(`job_${doc.slug}`, 'max')
         }
-        revalidateTag('job')
+        revalidateTag('job', 'max')
       },
     ],
   },

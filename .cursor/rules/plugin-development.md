@@ -168,9 +168,7 @@ export const myPlugin =
     ]
 
     const fields =
-      options.fields && typeof options.fields === 'function'
-        ? options.fields({ defaultFields })
-        : defaultFields
+      options.fields && typeof options.fields === 'function' ? options.fields({ defaultFields }) : defaultFields
 
     return {
       ...config,
