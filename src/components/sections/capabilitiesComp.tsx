@@ -37,7 +37,7 @@ export default function CapabilitiesComp({
           <div className="grid grid-cols-2 lg:grid-cols-4 lg:gap-10 gap-4 lg:pt-10 pt-4 w-full lg:w-4/5 lg:pl-8">
             {capability?.map((item, index): JSX.Element => {
               return (
-                <div key={index}>
+                <div key={index} className=" lg:p-0  lg:bg-transparent bg-[#0F0E0E] p-4">
                   <h3 className="lg:text-base text-sm font-semibold mb-2">{item.title}</h3>
                   <p className="lg:text-sm text-xs lg:mb-4 mb-3">{item.excerpts}</p>
                   <Link href={`/solutions/${item.slug}`} key={index}>
