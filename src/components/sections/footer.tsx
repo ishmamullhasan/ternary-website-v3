@@ -95,12 +95,7 @@ export default function Footer({ footerData }: FooterProps) {
         <div className="flex flex-col gap-3 h-full justify-between">
           <div className="flex flex-col lg:gap-6 gap-4">
             {logoUrl ? (
-              <Image
-                src={logoUrl}
-                width={35}
-                height={35}
-                alt={footerData?.menu_1?.siteName ?? 'Logo'}
-              />
+              <Image src={logoUrl} width={35} height={35} alt={footerData?.menu_1?.siteName ?? 'Logo'} />
             ) : (
               footerData?.menu_1?.siteName && (
                 <span className="lg:text-3xl text-2xl font-light">{footerData.menu_1.siteName}</span>
@@ -156,11 +151,7 @@ export default function Footer({ footerData }: FooterProps) {
         />
 
         {/* Company (menu_4) */}
-        <FooterMenuColumn
-          heading="Company"
-          items={footerData?.menu_4?.menu ?? null}
-          prefix="company"
-        />
+        <FooterMenuColumn heading="Company" items={footerData?.menu_4?.menu ?? null} prefix="company" />
       </div>
     </footer>
   )

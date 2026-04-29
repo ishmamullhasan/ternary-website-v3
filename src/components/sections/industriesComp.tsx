@@ -32,10 +32,7 @@ export default function IndustryComp({ heading, description, industry }: Industr
                     {/* background image OR gradient */}
                     {item.thumbnail ? (
                       <Image
-                        src={
-                          (item.thumbnail as Media)?.url ||
-                          'https://dummyimage.com/280x300/37624F/FFF2'
-                        }
+                        src={(item.thumbnail as Media)?.url || 'https://dummyimage.com/280x300/37624F/FFF2'}
                         alt={item.title || 'industry'}
                         height={(item.thumbnail as Media)?.height || 250}
                         width={(item.thumbnail as Media)?.width || 220}

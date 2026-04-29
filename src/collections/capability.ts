@@ -7,9 +7,9 @@ const Capability: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`capability_${doc.slug}`)
+          revalidateTag(`capability_${doc.slug}`, 'max')
         }
-        revalidateTag('capability')
+        revalidateTag('capability', 'max')
       },
     ],
   },

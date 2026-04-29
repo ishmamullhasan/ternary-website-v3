@@ -9,11 +9,7 @@ interface OpportunitiesCompProps {
   opportunity?: Job[] | null
 }
 
-export default function OpportunitiesComp({
-  heading,
-  description,
-  opportunity,
-}: OpportunitiesCompProps) {
+export default function OpportunitiesComp({ heading, description, opportunity }: OpportunitiesCompProps) {
   return (
     <section className="bg-[#1B1A17]  lg:p-10 lg:m-0 m-4 p-4">
       <div className=" ">

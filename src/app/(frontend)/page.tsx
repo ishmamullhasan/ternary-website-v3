@@ -10,16 +10,7 @@ import EngagementComp from '@/components/sections/engagementComp'
 import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 import OpportunitiesComp from '@/components/sections/opportunitiesComp'
 import ProcessComp from '@/components/sections/processComp'
-import type {
-  Capability,
-  Homepage,
-  Industry,
-  Job,
-  Media,
-  Model,
-  Scale,
-  Solution,
-} from '@/payload-types'
+import type { Capability, Homepage, Industry, Job, Media, Model, Scale, Solution } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
 type MultiRelation =
@@ -41,9 +32,7 @@ export default async function Page(): Promise<JSX.Element> {
 
   if (!homePageData) {
     return (
-      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">
-        Error loading data.
-      </div>
+      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
     )
   }
 
@@ -57,9 +46,7 @@ export default async function Page(): Promise<JSX.Element> {
           organizations={
             homePageData.about?.organizations as {
               heading?: string | null
-              organization?:
-                | { icon?: Media | null; name?: string | null; link?: string | null }[]
-                | null
+              organization?: { icon?: Media | null; name?: string | null; link?: string | null }[] | null
             } | null
           }
           bottomDescription={homePageData.about?.bottomDescription}
@@ -124,11 +111,7 @@ export default async function Page(): Promise<JSX.Element> {
           heading={homePageData.processes?.heading}
           description={homePageData.processes?.description}
           image={homePageData.processes?.image as Media}
-          process={
-            homePageData.processes?.process as
-              | { title?: string | null; description?: RichText | null }[]
-              | null
-          }
+          process={homePageData.processes?.process as { title?: string | null; description?: RichText | null }[] | null}
         />
       </section>
 

@@ -7,9 +7,9 @@ const Story: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`story_${doc.slug}`)
+          revalidateTag(`story_${doc.slug}`, 'max')
         }
-        revalidateTag('story')
+        revalidateTag('story', 'max')
       },
     ],
   },

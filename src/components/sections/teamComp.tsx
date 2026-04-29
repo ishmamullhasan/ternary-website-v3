@@ -98,7 +98,9 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                   </div>
 
                   <p className="lg:text-sm text-xs">{remaining}+ Orchestrators</p>
-                  <p className="lg:text-base text-sm mt-1"><u>Meet the Team</u></p>
+                  <p className="lg:text-base text-sm mt-1">
+                    <u>Meet the Team</u>
+                  </p>
                 </div>
               )}
             </div>
@@ -112,11 +114,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                   const media = member.image as Media | null
 
                   return (
-                    <Link
-                      href={member.linkedin || '#'}
-                      key={index}
-                      className="flex flex-col items-center text-center"
-                    >
+                    <Link href={member.linkedin || '#'} key={index} className="flex flex-col items-center text-center">
                       <div className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden mb-4 bg-neutral-300">
                         {media?.url && (
                           <Image
@@ -142,7 +140,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                   onClick={() => setShowAll(false)}
                   className="lg:text-sm text-xs text-white/70 hover:text-white transition"
                 >
-                 <u>Show Less</u>
+                  <u>Show Less</u>
                 </button>
               </div>
             </>

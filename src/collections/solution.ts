@@ -7,9 +7,9 @@ const Solution: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`solution_${doc.slug}`)
+          revalidateTag(`solution_${doc.slug}`, 'max')
         }
-        revalidateTag('solution')
+        revalidateTag('solution', 'max')
       },
     ],
   },

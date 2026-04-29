@@ -171,8 +171,7 @@ function traverseFields(fields: Field[], callback: (field: Field) => void) {
 import { fieldAffectsData, fieldIsPresentationalOnly, fieldIsHiddenOrDisabled } from 'payload'
 
 const dataFields = fields.filter(
-  (field) =>
-    fieldAffectsData(field) && !fieldIsPresentationalOnly(field) && !fieldIsHiddenOrDisabled(field),
+  (field) => fieldAffectsData(field) && !fieldIsPresentationalOnly(field) && !fieldIsHiddenOrDisabled(field),
 )
 ```
 

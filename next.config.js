@@ -1,45 +1,43 @@
-import { withPayload } from '@payloadcms/next/withPayload'
-
-import redirects from './redirects.js'
-
-const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : undefined || process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000'
+import { withPayload } from "@payloadcms/next/withPayload";
+import path from "path";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
     remotePatterns: [
-      // existing allowed server
-      ...(NEXT_PUBLIC_SERVER_URL
-        ? [NEXT_PUBLIC_SERVER_URL].map((item) => {
-            const url = new URL(item)
-            return {
-              hostname: url.hostname,
-              protocol: url.protocol.replace(':', ''),
-            }
-          })
-        : []),
-
-      // ADD THIS 👇
       {
-        protocol: 'https',
-        hostname: 'dummyimage.com',
+        protocol: "https",
+        hostname: "dummyimage.com",
       },
     ],
   },
 
-  webpack: (webpackConfig) => {
-    webpackConfig.resolve.extensionAlias = {
-      '.cjs': ['.cts', '.cjs'],
-      '.js': ['.ts', '.tsx', '.js', '.jsx'],
-      '.mjs': ['.mts', '.mjs'],
-    }
-    return webpackConfig
+  sassOptions: {
+    includePaths: [
+      path.resolve(process.cwd(), "node_modules"),
+    ],
   },
 
-  reactStrictMode: true,
-  redirects,
-}
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@payload-config": path.resolve(process.cwd(), "./src/payload.config.ts"),
+    };
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+    // 🔧 Fix pnpm + sass + payload
+    config.resolve.symlinks = false;
+
+    // Ignore Console Ninja
+    if (config.externals) {
+      config.externals = Array.isArray(config.externals)
+        ? [...config.externals, /console-ninja/]
+        : [config.externals, /console-ninja/];
+    } else {
+      config.externals = [/console-ninja/];
+    }
+
+    return config;
+  },
+};
+
+export default withPayload(nextConfig);
