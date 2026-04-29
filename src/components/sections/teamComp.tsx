@@ -48,7 +48,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                     key={index}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="lg:p-0  lg:bg-transparent bg-[#0F0E0E] p-4 flex flex-col items-center text-center lg:w-[180px] w-[100px]"
+                    className="flex flex-col items-center text-center lg:w-[180px] w-[100px]"
                   >
                     <div className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden mb-4 bg-neutral-300">
                       {media?.url && (
