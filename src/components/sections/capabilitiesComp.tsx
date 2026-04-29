@@ -22,7 +22,7 @@ export default function CapabilitiesComp({
   image,
 }: CapabilitiesCompProps) {
   return (
-    <section className="bg-[#1B1A17] lg:p-10 lg:m-0 m-4 p-4">
+    <section className="bg-primary lg:p-10 lg:m-0 m-4 p-4">
       {/* top header */}
       <div className="lg:mb-15 mb-4 lg:w-2/5">
         <h2 className="lg:text-3xl text-2xl font-light mb-3">{heading}</h2>

@@ -20,7 +20,7 @@ interface ProcessCompProps {
 
 export default function ProcessComp({ heading, description, image, process }: ProcessCompProps) {
   return (
-    <section className=" bg-[#1B1A17] lg:p-10 p-4 lg:m-0 m-4 lg:pb-20 pb-6">
+    <section className=" bg-primary lg:p-10 p-4 lg:m-0 m-4 lg:pb-20 pb-6">
       <div className="w-full flex lg:flex-row flex-col lg:justify-between lg:space-x-8 space-y-4">
         {/* LEFT SIDE */}
         <div className="lg:space-y-5 space-y-4">

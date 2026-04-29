@@ -54,7 +54,7 @@ export default function AboutComp({ heading, description, items, organizations, 
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
+                    <div className="absolute inset-0 bg-linear-to-br from-pink-500 via-purple-500 to-blue-500" />
                   )}
 
                   {/* text */}
@@ -78,7 +78,7 @@ export default function AboutComp({ heading, description, items, organizations, 
             <Link
               href={item.link || '#'}
               key={index}
-              className="flex flex-row items-center rounded-lg bg-[#1B1A17] lg:px-3 lg:py-2 px-2 py-1"
+              className="flex flex-row items-center rounded-lg bg-primary lg:px-3 lg:py-2 px-2 py-1"
             >
               <div className="lg:w-[30px] lg:h-[30px] w-[20px] h-[20px]">
                 <Image

@@ -5,27 +5,30 @@ body {
   font-family: var(--font-geist-sans), sans-serif;
 }
 
-@layer base {
-  :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 22.2%;
-    --muted: 0 0% 11.2%;
-    --muted-foreground: 0 0% 78.9%;
-    --card: 0 0% 5.2%;
-    --card-foreground: 0 0% 88.2%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
-    --border: 0 0% 16.2%;
-    --input: 0 0% 22.2%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 22.2%;
-    --secondary-foreground: 0 0% 88.8%;
-    --accent: 0 0% 22.2%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 210 40% 98%;
-    --ring: 0 0% 22.2%;
-    --radius: 0.5rem;
-  }
+:root {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 22.2%;
+  --muted: 0 0% 11.2%;
+  --muted-foreground: 0 0% 78.9%;
+  --card: 0 0% 5.2%;
+  --card-foreground: 0 0% 88.2%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47.4% 11.2%;
+  --border: 0 0% 16.2%;
+  --input: 0 0% 22.2%;
+  --primary: #1b1a17;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 22.2%;
+  --secondary-foreground: 0 0% 88.8%;
+  --accent: 0 0% 22.2%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 0 0% 22.2%;
+  --radius: 0.5rem;
+}
+
+@theme {
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
 }

@@ -12,7 +12,7 @@ interface IndustriesCompProps {
 
 export default function IndustryComp({ heading, description, industry }: IndustriesCompProps) {
   return (
-    <section className="bg-[#1B1A17]  lg:p-10 lg:m-0 m-4 p-4">
+    <section className="bg-primary  lg:p-10 lg:m-0 m-4 p-4">
       <div className=" ">
         {/* top header */}
         <div className="lg:mb-15 mb-4 lg:w-2/5">
@@ -39,7 +39,7 @@ export default function IndustryComp({ heading, description, industry }: Industr
                         className="object-cover w-full h-full"
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
+                      <div className="absolute inset-0 bg-linear-to-br from-pink-500 via-purple-500 to-blue-500" />
                     )}
 
                     {/* text */}
