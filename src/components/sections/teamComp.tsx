@@ -26,7 +26,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
   const remaining = total - maxVisible
 
   return (
-    <section className="bg-primary lg:p-10 p-4 lg:m-0 m-4 text-white">
+    <section className="bg-main lg:p-10 p-4 lg:m-0 m-4 text-white">
       <div className="flex lg:flex-row flex-col lg:items-center lg:space-x-8 space-y-4">
         {/* Left Header */}
         <div className="lg:w-1/5 ">

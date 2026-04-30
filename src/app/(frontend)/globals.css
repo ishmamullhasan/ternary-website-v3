@@ -16,7 +16,7 @@ body {
   --popover-foreground: 222.2 47.4% 11.2%;
   --border: 0 0% 16.2%;
   --input: 0 0% 22.2%;
-  --primary: #1b1a17;
+  --primary: 0 0% 100%;
   --primary-foreground: 0 0% 0%;
   --secondary: 0 0% 22.2%;
   --secondary-foreground: 0 0% 88.8%;
@@ -26,9 +26,13 @@ body {
   --destructive-foreground: 210 40% 98%;
   --ring: 0 0% 22.2%;
   --radius: 0.5rem;
+  --main: #1b1a17;
+  --dark: #151515;
 }
 
 @theme {
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
+  --color-main: var(--main);
+  --color-dark: var(--dark);
 }

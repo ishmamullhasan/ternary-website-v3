@@ -12,7 +12,7 @@ interface IndustriesCompProps {
 
 export default function IndustryComp({ heading, description, industry }: IndustriesCompProps) {
   return (
-    <section className="bg-primary  lg:p-10 lg:m-0 m-4 p-4">
+    <section className="bg-main  lg:p-10 lg:m-0 m-4 p-4">
       <div className=" ">
         {/* top header */}
         <div className="lg:mb-15 mb-4 lg:w-2/5">

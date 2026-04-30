@@ -133,7 +133,7 @@ export default function Header({ headerData }: HeaderProps) {
                     if (timeoutRef.current) clearTimeout(timeoutRef.current)
                     timeoutRef.current = setTimeout(() => setActiveDropdown(null), 100)
                   }}
-                  className="absolute top-full left-0 mt-1 min-w-[200px] rounded-2xl border border-white/10 bg-primary/95 py-2 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-primary/80"
+                  className="absolute top-full left-0 mt-1 min-w-[200px] rounded-2xl border border-white/10 bg-main/95 py-2 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-main/80"
                 >
                   {item.subItems?.map((subItem, j) => {
                     const subHref = subItem.link || '#'
@@ -144,7 +144,7 @@ export default function Header({ headerData }: HeaderProps) {
                         href={subHref}
                         className={cn(
                           'm-2 rounded-lg block px-4 py-2 text-sm font-medium transition-colors duration-200',
-                          subActive ? 'text-secondary bg-white/10' : 'opacity-90 hover:bg-primary hover:opacity-100',
+                          subActive ? 'text-secondary bg-white/10' : 'opacity-90 hover:bg-main hover:opacity-100',
                         )}
                       >
                         {subItem.label || 'Submenu Item'}
@@ -195,7 +195,7 @@ export default function Header({ headerData }: HeaderProps) {
           {headerData?.button?.label && (
             <Link
               href={headerData.button.link ?? '#'}
-              className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold border border-primary hover:bg-transparent hover:text-white"
+              className="rounded-lg bg-main px-3 py-2 text-sm font-semibold border border-primary hover:bg-transparent hover:text-white"
             >
               {headerData.button.label}
             </Link>
@@ -207,7 +207,7 @@ export default function Header({ headerData }: HeaderProps) {
           {/* {headerData?.button?.label && (
             <Link
               href={headerData.button.link ?? '#'}
-              className="rounded-lg bg-primary px-3 py-2 text-sm font-semibold border border-primary 9hover:border-primary hover:bg-transparent hover:text-white"
+              className="rounded-lg bg-main px-3 py-2 text-sm font-semibold border border-primary 9hover:border-primary hover:bg-transparent hover:text-white"
             >
               {headerData.button.label}
             </Link>
@@ -230,7 +230,7 @@ export default function Header({ headerData }: HeaderProps) {
         id="mobile-nav"
         ref={panelRef}
         className={cn(
-          'fixed inset-x-0 top-16 z-110 w-full max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-primary/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-primary/80 md:hidden',
+          'fixed inset-x-0 top-16 z-110 w-full max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-main/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-main/80 md:hidden',
           open ? 'animate-[accordion-down_200ms_ease-out]' : 'hidden',
         )}
       >
@@ -246,7 +246,7 @@ export default function Header({ headerData }: HeaderProps) {
                   <button
                     type="button"
                     onClick={() => toggleMobileSubmenu(itemId)}
-                    className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-base font-medium opacity-90 transition-colors duration-200 hover:bg-primary hover:opacity-100"
+                    className="flex w-full items-center justify-between rounded-2xl px-3 py-3 text-base font-medium opacity-90 transition-colors duration-200 hover:bg-main hover:opacity-100"
                   >
                     <span>{item.label || 'Label'}</span>
                     <ChevronDown
@@ -266,9 +266,7 @@ export default function Header({ headerData }: HeaderProps) {
                             onClick={() => setOpen(false)}
                             className={cn(
                               'block rounded-2xl px-3 py-2 text-sm font-medium transition-colors duration-200',
-                              subActive
-                                ? 'bg-white/10 text-secondary'
-                                : 'opacity-80 hover:bg-primary hover:opacity-100',
+                              subActive ? 'bg-white/10 text-secondary' : 'opacity-80 hover:bg-main hover:opacity-100',
                             )}
                           >
                             {subItem.label || 'Submenu Item'}
@@ -289,7 +287,7 @@ export default function Header({ headerData }: HeaderProps) {
                   onClick={() => setOpen(false)}
                   className={cn(
                     'block rounded-2xl px-3 py-3 text-base font-medium transition-colors duration-200 border-b border-white/10 last:border-b-0',
-                    active ? 'bg-white/10 text-secondary' : 'opacity-90 hover:bg-primary hover:opacity-100',
+                    active ? 'bg-white/10 text-secondary' : 'opacity-90 hover:bg-main hover:opacity-100',
                   )}
                 >
                   {item.label || 'Label'}

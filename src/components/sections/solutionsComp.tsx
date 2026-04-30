@@ -14,7 +14,7 @@ interface SolutionsCompProps {
 
 export default function SolutionsComp({ heading, description, image, items }: SolutionsCompProps) {
   return (
-    <div className="flex flex-col bg-primary lg:p-10 lg:m-0 m-4 p-4">
+    <div className="flex flex-col bg-main lg:p-10 lg:m-0 m-4 p-4">
       <div className="flex justify-start">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
         <div className="flex flex-col lg:w-[500px]">

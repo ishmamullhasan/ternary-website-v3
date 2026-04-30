@@ -78,7 +78,7 @@ export default function AboutComp({ heading, description, items, organizations, 
             <Link
               href={item.link || '#'}
               key={index}
-              className="flex flex-row items-center rounded-lg bg-primary lg:px-3 lg:py-2 px-2 py-1"
+              className="flex flex-row items-center rounded-lg bg-main lg:px-3 lg:py-2 px-2 py-1"
             >
               <div className="lg:w-[30px] lg:h-[30px] w-[20px] h-[20px]">
                 <Image

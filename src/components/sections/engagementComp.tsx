@@ -12,7 +12,7 @@ interface EngagementCompProps {
 
 export default function EngagementComp({ heading, description, model }: EngagementCompProps) {
   return (
-    <section className="bg-primary lg:p-10 lg:m-0 m-4 p-4">
+    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4">
       <div className="flex lg:flex-row flex-col lg:justify-between lg:items-start items-center">
         {/* top header */}
         <div className="lg:w-2/5">
