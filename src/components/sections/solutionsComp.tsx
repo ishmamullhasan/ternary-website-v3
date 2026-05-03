@@ -18,8 +18,8 @@ export default function SolutionsComp({ heading, description, image, items }: So
       <div className="flex justify-start">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
         <div className="flex flex-col lg:w-[500px]">
-          <h2 className="lg:text-3xl text-2xl font-light mb-3">{heading}</h2>
-          {description && <p className="lg:text-base text-sm">{description}</p>}
+          {description && <p className="lg:text-base text-sm mb-3 text-[#D5D5D5]">{description}</p>}
+          <h2 className="lg:text-3xl text-2xl font-semibold">{heading}</h2>
         </div>
       </div>
       <div className="w-full lg:h-[400px] h-[200px] lg:my-10 my-4">
@@ -36,12 +36,14 @@ export default function SolutionsComp({ heading, description, image, items }: So
           {(items as Solution[])?.map((item, index: number): JSX.Element => {
             return (
               <div key={index}>
-                <hr className="border-[#F4F3EC] lg:my-4 my-2" />
+                <p className="text-sm text-[#D5D5D5] mb-1">{item.excerpts}</p>
+                <hr className="border-[#F4F3EC] lg:mb-4 mb-2" />
                 <p className="text-base font-semibold">{item.title}</p>
-                <p className="text-sm ">{item.excerpts}</p>
+
                 <Link href={`/solutions/${item.slug}`} key={index}>
-                  <button className="lg:text-sm text-xs shadow">
-                    <u>Learn More</u>
+                  <button className="lg:text-base text-sm shadow">
+                    {/* <u>Learn More</u> */}
+                    Learn More
                   </button>
                 </Link>
               </div>

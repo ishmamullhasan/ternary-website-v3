@@ -16,8 +16,8 @@ export default function EngagementComp({ heading, description, model }: Engageme
       <div className="flex lg:flex-row flex-col lg:justify-between lg:items-start items-center">
         {/* top header */}
         <div className="lg:w-2/5">
-          <h2 className="lg:text-3xl text-2xl font-light mb-3">{heading}</h2>
-          <p className="lg:text-base text-sm">{description}</p>
+          <p className="lg:text-base text-sm mb-3 text-[#D5D5D5]">{description}</p>
+          <h2 className="lg:text-3xl text-2xl font-semibold">{heading}</h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4 gap-3 lg:pt-0 pt-4">

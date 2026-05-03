@@ -10,6 +10,13 @@ const nextConfig = {
         hostname: "dummyimage.com",
       },
     ],
+    // Payload (and S3) media URLs use query strings (?prefix=…, cache tags, etc.).
+    // Omit `search` so any query string is allowed for this path.
+    localPatterns: [
+      {
+        pathname: "/api/media/file/**",
+      },
+    ],
   },
 
   sassOptions: {
