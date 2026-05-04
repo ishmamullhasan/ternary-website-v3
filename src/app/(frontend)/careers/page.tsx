@@ -3,7 +3,11 @@
 import 'swiper/css'
 
 import { cn } from '@/lib/utils'
-import { ArrowUpRight, ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { CareersPage } from '@/payload-types'
+import config from '@/payload.config'
+import { ArrowRight, ArrowUpRight, ChevronDown, ChevronLeft, ChevronRight, Play } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
+import { getPayload } from 'payload'
 import { useState, type JSX, type ReactNode } from 'react'
 import type { Swiper as SwiperType } from 'swiper'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -121,7 +125,23 @@ export function BentoCard({
   )
 }
 
-export default function App() {
+export default async function Page() {
+  const getCareersPageData = unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.findGlobal({ slug: 'careersPage' })
+    },
+    ['careersPage'],
+    { tags: ['careersPage'] },
+  )
+  const careersPageData: CareersPage | null = await getCareersPageData()
+
+  if (!careersPageData) {
+    return (
+      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
+    )
+  }
+
   const [swiper, setSwiper] = useState<SwiperType | null>(null)
   const [canScrollPrev, setCanScrollPrev] = useState(false)
   const [canScrollNext, setCanScrollNext] = useState(false)
@@ -189,6 +209,104 @@ export default function App() {
       quote: 'What stands out most is the trust. You are expected to lead initiatives and improve systems end-to-end.',
       author: 'Leo Martins',
       role: 'Staff Frontend Engineer',
+    },
+  ] as const
+
+  const mockOpenRoles = [
+    {
+      id: 1,
+      title: 'Software Engineer',
+      code: 'ENCS3X',
+      details: [
+        [
+          { label: 'Format', value: 'Hybrid' },
+          { label: 'Location', value: 'Dhaka, Bangladesh' },
+        ],
+        [
+          { label: 'Compensation', value: '360,000 to 1,080,000/Yearly' },
+          { label: 'Experience Level', value: '1 to 3 Years' },
+        ],
+        [
+          { label: 'Type', value: 'Individual Contributor' },
+          { label: 'Commitment', value: 'Full Time' },
+        ],
+      ],
+    },
+    {
+      id: 2,
+      title: 'Software Engineer',
+      code: 'ENCS3X',
+      details: [
+        [
+          { label: 'Format', value: 'Hybrid' },
+          { label: 'Location', value: 'Dhaka, Bangladesh' },
+        ],
+        [
+          { label: 'Compensation', value: '360,000 to 1,080,000/Yearly' },
+          { label: 'Experience Level', value: '1 to 3 Years' },
+        ],
+        [
+          { label: 'Type', value: 'Individual Contributor' },
+          { label: 'Commitment', value: 'Full Time' },
+        ],
+      ],
+    },
+    {
+      id: 3,
+      title: 'Software Engineer',
+      code: 'ENCS3X',
+      details: [
+        [
+          { label: 'Format', value: 'Hybrid' },
+          { label: 'Location', value: 'Dhaka, Bangladesh' },
+        ],
+        [
+          { label: 'Compensation', value: '360,000 to 1,080,000/Yearly' },
+          { label: 'Experience Level', value: '1 to 3 Years' },
+        ],
+        [
+          { label: 'Type', value: 'Individual Contributor' },
+          { label: 'Commitment', value: 'Full Time' },
+        ],
+      ],
+    },
+    {
+      id: 4,
+      title: 'Software Engineer',
+      code: 'ENCS3X',
+      details: [
+        [
+          { label: 'Format', value: 'Hybrid' },
+          { label: 'Location', value: 'Dhaka, Bangladesh' },
+        ],
+        [
+          { label: 'Compensation', value: '360,000 to 1,080,000/Yearly' },
+          { label: 'Experience Level', value: '1 to 3 Years' },
+        ],
+        [
+          { label: 'Type', value: 'Individual Contributor' },
+          { label: 'Commitment', value: 'Full Time' },
+        ],
+      ],
+    },
+    {
+      id: 5,
+      title: 'Software Engineer',
+      code: 'ENCS3X',
+      details: [
+        [
+          { label: 'Format', value: 'Hybrid' },
+          { label: 'Location', value: 'Dhaka, Bangladesh' },
+        ],
+        [
+          { label: 'Compensation', value: '360,000 to 1,080,000/Yearly' },
+          { label: 'Experience Level', value: '1 to 3 Years' },
+        ],
+        [
+          { label: 'Type', value: 'Individual Contributor' },
+          { label: 'Commitment', value: 'Full Time' },
+        ],
+      ],
     },
   ] as const
 
@@ -465,63 +583,86 @@ export default function App() {
         {/* Section 5: Open Roles */}
         <Section
           title="Open Roles"
-          desc="We are looking for passionate individuals to join our team. Explore our open positions and apply today."
+          desc="Openings for engineers wanting production ownership, technical growth, and operational impact. Roles include client collaboration, architecture, and system responsibility."
         >
-          <div className="flex flex-wrap gap-4 mb-8">
-            <select className="bg-[#0f0f0f] border border-white/10 text-white text-sm rounded-full px-4 py-2 appearance-none pr-10 relative cursor-pointer outline-none focus:border-white/30">
-              <option>All Departments</option>
-              <option>Engineering</option>
-              <option>Design</option>
-            </select>
-            <select className="bg-[#0f0f0f] border border-white/10 text-white text-sm rounded-full px-4 py-2 appearance-none pr-10 relative cursor-pointer outline-none focus:border-white/30">
-              <option>All Locations</option>
-              <option>Remote</option>
-              <option>San Francisco</option>
-            </select>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8">
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-zinc-400 font-medium">Filter</label>
+              <div className="relative">
+                <select
+                  className="appearance-none bg-transparent border border-zinc-700 text-zinc-300 py-2 pl-4 pr-10 rounded-md focus:outline-none focus:border-zinc-500 hover:border-zinc-600 transition-colors text-sm cursor-pointer min-w-[200px]"
+                  defaultValue="All Departments"
+                >
+                  <option value="All Departments">All Departments</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Product">Product</option>
+                  <option value="Design">Design</option>
+                </select>
+                <ChevronDown
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
+                  size={16}
+                  aria-hidden
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-zinc-400 font-medium">Experience Level</label>
+              <div className="relative">
+                <select
+                  className="appearance-none bg-transparent border border-zinc-700 text-zinc-300 py-2 pl-4 pr-10 rounded-md focus:outline-none focus:border-zinc-500 hover:border-zinc-600 transition-colors text-sm cursor-pointer min-w-[160px]"
+                  defaultValue="All"
+                >
+                  <option value="All">All</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Mid">Mid</option>
+                  <option value="Senior">Senior</option>
+                </select>
+                <ChevronDown
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
+                  size={16}
+                  aria-hidden
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 space-y-4">
-            {[
-              { title: 'Software Engineer', dept: 'Product, Applied Research', location: 'San Francisco, CA / Remote' },
-              {
-                title: 'Software Engineer',
-                dept: 'Infrastructure, Core Platform',
-                location: 'San Francisco, CA / Remote',
-              },
-              { title: 'Frontend Engineer', dept: 'Product, Web Experience', location: 'San Francisco, CA / Remote' },
-              { title: 'Machine Learning Engineer', dept: 'Applied Research', location: 'San Francisco, CA / Remote' },
-            ].map((job, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {mockOpenRoles.map((job) => (
               <div
-                key={i}
-                className="bg-main border border-white/5 rounded-lg p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-dark transition-colors cursor-pointer group"
+                key={job.id}
+                className="bg-main border border-zinc-800 rounded-xl p-6 flex flex-col hover:border-zinc-700 transition-colors duration-300"
               >
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-medium text-white">{job.title}</h3>
-                    <span className="text-[10px] uppercase tracking-wider px-2 py-1 bg-white/5 rounded-md text-zinc-400 font-medium">
-                      Remote
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-zinc-400">
-                    <span>{job.dept}</span>
-                    <span className="hidden md:inline">•</span>
-                    <span>{job.location}</span>
-                  </div>
-                  <p className="text-sm text-zinc-500 max-w-3xl mt-2 line-clamp-1">
-                    Join our team to build scalable systems, improve performance, and deliver exceptional experiences
-                    for our users globally.
-                  </p>
+                <div className="flex justify-between items-start mb-5 gap-3">
+                  <h3 className="text-xl font-semibold text-white tracking-tight">{job.title}</h3>
+                  <span className="shrink-0 bg-[#202020] text-zinc-300 px-3 py-1 rounded-full text-xs font-medium tracking-wide">
+                    {job.code}
+                  </span>
                 </div>
-                <button className="flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-lg border border-white/10 whitespace-nowrap group-hover:bg-white group-hover:text-black transition-all">
-                  Learn more <ArrowUpRight className="w-4 h-4" />
-                </button>
+
+                <div className="space-y-2 mb-6">
+                  {job.details.map((row, rowIndex) => (
+                    <div key={rowIndex} className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                      {row.map((item, itemIndex) => (
+                        <div key={itemIndex} className="flex items-center gap-1">
+                          <span className="text-zinc-400">{item.label}:</span>
+                          <span className="text-zinc-200">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-auto flex justify-end">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 border border-zinc-600 text-zinc-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all group"
+                  >
+                    Learn More
+                    <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" aria-hidden />
+                  </button>
+                </div>
               </div>
             ))}
-          </div>
-          <div className="flex justify-center mt-8">
-            <button className="text-sm font-medium text-white border-b border-white/20 pb-1 hover:border-white transition-colors">
-              View all open roles
-            </button>
           </div>
         </Section>
       </main>
