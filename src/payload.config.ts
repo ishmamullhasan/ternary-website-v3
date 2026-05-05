@@ -16,6 +16,7 @@ import Scale from './collections/scale'
 import Solution from './collections/solution'
 import Story from './collections/story'
 import { Users } from './collections/Users'
+import About from './globals/about'
 import { plugins } from './plugins'
 import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
@@ -58,7 +59,7 @@ export default buildConfig({
   }),
   collections: [Media, Users, Story, Capability, Solution, Industry, Scale, Model, Job],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, Homepage],
+  globals: [Header, Footer, Homepage, About],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,
