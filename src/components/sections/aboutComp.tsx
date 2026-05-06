@@ -34,8 +34,8 @@ export default function AboutComp({ heading, description, items, organizations, 
       <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
         {/* heading */}
         <div className="flex flex-col items-center lg:w-2/5">
-          <h1 className="text-center lg:text-4xl text-2xl font-light mb-3">{heading}</h1>
-          <p className="text-center lg:text-base text-sm ">{description}</p>
+          <p className="text-center lg:text-base text-sm mb-3 text-[#D5D5D5] ">{description}</p>
+          <h1 className="text-center lg:text-4xl text-2xl font-semibold">{heading}</h1>
         </div>
         {/* cards grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:mt-10 mt-4">
@@ -59,8 +59,8 @@ export default function AboutComp({ heading, description, items, organizations, 
 
                   {/* text */}
                   <div className="absolute top-5 left-5 right-5">
-                    <h3 className="lg:text-base text-sm">{item.value.title}</h3>
-                    <p className="lg:text-sm text-xs">Stories</p>
+                    <p className="lg:text-base text-xs">{item.value.excerpts}</p>
+                    <p className="lg:text-sm">{item.value.title}</p>
                   </div>
                 </div>
               </Link>
@@ -70,7 +70,7 @@ export default function AboutComp({ heading, description, items, organizations, 
 
         {/* organizations */}
         {organizations?.heading && (
-          <p className="lg:text-base text-xs lg:mt-15 mt-8 mb-4 text-center">{organizations.heading}</p>
+          <p className="lg:text-base text-xs lg:mt-15 mt-8 mb-6 text-center">{organizations.heading}</p>
         )}
 
         <div className="lg:flex lg:flex-row grid grid-cols-2 justify-center lg:gap-5 gap-4">
@@ -97,7 +97,7 @@ export default function AboutComp({ heading, description, items, organizations, 
 
         {/* bottom text */}
         {bottomDescription && (
-          <p className="text-justify lg:max-w-[600px] lg:mt-15 mt-8 lg:text-sm text-xs">{bottomDescription}</p>
+          <p className="text-center lg:max-w-[900px] lg:mt-15 mt-8 lg:text-sm text-xs">{bottomDescription}</p>
         )}
       </div>
     </section>

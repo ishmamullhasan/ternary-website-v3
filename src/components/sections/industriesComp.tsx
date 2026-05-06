@@ -16,8 +16,8 @@ export default function IndustryComp({ heading, description, industry }: Industr
       <div className=" ">
         {/* top header */}
         <div className="lg:mb-15 mb-4 lg:w-2/5">
-          <h2 className="lg:text-3xl text-2xl font-light mb-3">{heading}</h2>
-          <p className="lg:text-base text-sm">{description}</p>
+          <p className="lg:text-base text-sm mb-3 text-[#D5D5D5]">{description}</p>
+          <h2 className="lg:text-3xl text-2xl font-semibold">{heading}</h2>
         </div>
 
         {/* induss grid */}

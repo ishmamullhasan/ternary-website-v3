@@ -23,15 +23,15 @@ export default function GlobalDeliveryComp({
       <div className="flex justify-start">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
         <div className="flex flex-col lg:w-2/5">
-          <h2 className="lg:text-3xl text-2xl font-light mb-3">{heading}</h2>
-          {description && <p className="lg:text-base text-sm">{description}</p>}
+          {description && <p className="lg:text-base text-sm mb-3 text-[#D5D5D5]">{description}</p>}
+          <h2 className="lg:text-3xl text-2xl font-semibold">{heading}</h2>
         </div>
       </div>
-      <div className="flex justify-start lg:mt-8 mt-4">
+      <div className="flex justify-start lg:mt-10 mt-4">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
         <div className="flex flex-col lg:w-1/4">
-          <h2 className="lg:text-2xl text-xl font-light mb-3">{title}</h2>
-          {excerpt && <p className="lg:text-sm text-xs">{excerpt}</p>}
+          {excerpt && <p className="lg:text-sm text-xs text-[#D5D5D5] mb-3">{excerpt}</p>}
+          <h2 className="lg:text-2xl text-xl font-semibold ">{title}</h2>
         </div>
       </div>
       <div className="lg:w-[1100px] lg:h-full lg:my-10 lg:mx-auto w-full h-[300px] my-4 mx-auto">

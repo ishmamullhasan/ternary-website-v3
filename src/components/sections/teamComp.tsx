@@ -30,8 +30,8 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
       <div className="flex lg:flex-row flex-col lg:items-center lg:space-x-8 space-y-4">
         {/* Left Header */}
         <div className="lg:w-1/5 ">
-          <h2 className="lg:text-3xl text-2xl font-light mb-3">{heading}</h2>
-          <p className="lg:text-base text-sm text-white/70">{description}</p>
+          <p className="lg:text-base text-sm text-[#D5D5D5] mb-3">{description}</p>
+          <h2 className="lg:text-2xl text-xl font-semibold">{heading}</h2>
         </div>
 
         {/* RIGHT SIDE */}
@@ -62,8 +62,8 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                       )}
                     </div>
 
-                    <p className="lg:text-sm text-xs">{member.name}</p>
-                    <p className="lg:text-base text-sm mt-1">{member.position}</p>
+                    <p className="lg:text-base text-sm">{member.name}</p>
+                    <p className="lg:text-sm text-xs mt-1">{member.position}</p>
                   </a>
                 )
               })}
