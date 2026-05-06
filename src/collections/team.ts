@@ -15,7 +15,6 @@ const Team: CollectionConfig = {
     defaultColumns: ['name'],
     useAsTitle: 'name',
   },
-  auth: true,
   fields: [
     {
       name: 'name',

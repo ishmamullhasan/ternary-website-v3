@@ -31,21 +31,31 @@ const Job: CollectionConfig = {
       name: 'title',
       label: 'Title',
       type: 'text',
+      required: false,
     },
     {
       name: 'team',
       label: 'Team',
       type: 'text',
+      required: false,
     },
     {
       name: 'department',
       label: 'Department',
       type: 'text',
+      required: false,
     },
     {
       name: 'location',
       label: 'Location',
       type: 'text',
+      required: false,
+    },
+    {
+      name: 'excerpts',
+      label: 'Excerpts',
+      type: 'textarea',
+      required: false,
     },
     {
       name: 'description',
@@ -56,6 +66,20 @@ const Job: CollectionConfig = {
           return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
         },
       }),
+    },
+    {
+      name: 'level',
+      label: 'Experiencce Level',
+      type: 'select',
+      required: false,
+      defaultValue: 'Junior',
+      options: [
+        { label: 'Junior', value: 'Junior' },
+        { label: 'Mid', value: 'Mid' },
+        { label: 'Senior', value: 'Senior' },
+        { label: 'Lead', value: 'Lead' },
+        { label: 'C-Suite', value: 'C-Suite' },
+      ],
     },
     {
       name: 'opened',

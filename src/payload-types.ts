@@ -76,6 +76,7 @@ export interface Config {
     scale: Scale
     model: Model
     job: Job
+    team: Team
     'payload-kv': PayloadKv
     'payload-folders': FolderInterface
     'payload-locked-documents': PayloadLockedDocument
@@ -97,6 +98,7 @@ export interface Config {
     scale: ScaleSelect<false> | ScaleSelect<true>
     model: ModelSelect<false> | ModelSelect<true>
     job: JobSelect<false> | JobSelect<true>
+    team: TeamSelect<false> | TeamSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -111,11 +113,13 @@ export interface Config {
     header: Header
     footer: Footer
     homepage: Homepage
+    careersPage: CareersPage
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
     footer: FooterSelect<false> | FooterSelect<true>
     homepage: HomepageSelect<false> | HomepageSelect<true>
+    careersPage: CareersPageSelect<false> | CareersPageSelect<true>
   }
   locale: null
   widgets: {
@@ -499,6 +503,42 @@ export interface Job {
   team?: string | null
   department?: string | null
   location?: string | null
+  excerpts?: string | null
+  description?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  level?: ('Junior' | 'Mid' | 'Senior' | 'Lead' | 'C-Suite') | null
+  opened: string
+  closed?: string | null
+  image?: (string | null) | Media
+  active?: boolean | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: string
+  name: string
+  position: string
+  excerpt: string
+  description: string
+  image: string | Media
+  linkedin?: string | null
   updatedAt: string
   createdAt: string
 }
@@ -561,6 +601,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'job'
         value: string | Job
+      } | null)
+    | ({
+        relationTo: 'team'
+        value: string | Team
       } | null)
     | ({
         relationTo: 'payload-folders'
@@ -822,6 +866,27 @@ export interface JobSelect<T extends boolean = true> {
   team?: T
   department?: T
   location?: T
+  excerpts?: T
+  description?: T
+  level?: T
+  opened?: T
+  closed?: T
+  image?: T
+  active?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T
+  position?: T
+  excerpt?: T
+  description?: T
+  image?: T
+  linkedin?: T
   updatedAt?: T
   createdAt?: T
 }
@@ -1070,6 +1135,119 @@ export interface Homepage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "careersPage".
+ */
+export interface CareersPage {
+  id: string
+  hero?: {
+    heading?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    button?: {
+      label?: string | null
+      url?: string | null
+    }
+  }
+  section_2?: {
+    heading?: string | null
+    description?: string | null
+    item_1?: {
+      heading?: string | null
+      description?: string | null
+      image?: (string | null) | Media
+    }
+    item_2?: {
+      heading?: string | null
+      description?: string | null
+    }
+    item_3?: {
+      heading?: string | null
+      description?: string | null
+    }
+    item_4?: {
+      heading?: string | null
+      description?: string | null
+    }
+    item_5?: {
+      heading?: string | null
+      description?: string | null
+    }
+    item_6?: {
+      heading?: string | null
+      description?: string | null
+    }
+  }
+  section_3?: {
+    heading?: string | null
+    description?: string | null
+    item_1?: {
+      heading?: string | null
+      description?: string | null
+      image?: (string | null) | Media
+    }
+    item_2?: {
+      heading?: string | null
+      description?: string | null
+      image?: (string | null) | Media
+    }
+    item_3?: {
+      heading?: string | null
+      description?: string | null
+    }
+    item_4?: {
+      heading?: string | null
+      description?: string | null
+    }
+  }
+  section_4?: {
+    heading?: string | null
+    description?: string | null
+    item_1?: {
+      heading?: string | null
+      description?: string | null
+      levels?:
+        | {
+            name?: string | null
+            id?: string | null
+          }[]
+        | null
+    }
+    item_2?: {
+      heading?: string | null
+      description?: string | null
+      image?: (string | null) | Media
+    }
+    item_3?: {
+      heading?: string | null
+      description?: string | null
+      image?: (string | null) | Media
+    }
+    item_4?: {
+      heading?: string | null
+      description?: string | null
+      image?: (string | null) | Media
+    }
+    item_5?: {
+      heading?: string | null
+      description?: string | null
+      image?: (string | null) | Media
+    }
+  }
+  team?: {
+    heading?: string | null
+    description?: string | null
+    members?: (string | Team)[] | null
+  }
+  jobs?: {
+    heading?: string | null
+    description?: string | null
+    list?: (string | Job)[] | null
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1239,6 +1417,163 @@ export interface HomepageSelect<T extends boolean = true> {
         heading?: T
         description?: T
         opportunity?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "careersPage_select".
+ */
+export interface CareersPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        image?: T
+        button?:
+          | T
+          | {
+              label?: T
+              url?: T
+            }
+      }
+  section_2?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        item_1?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              image?: T
+            }
+        item_2?:
+          | T
+          | {
+              heading?: T
+              description?: T
+            }
+        item_3?:
+          | T
+          | {
+              heading?: T
+              description?: T
+            }
+        item_4?:
+          | T
+          | {
+              heading?: T
+              description?: T
+            }
+        item_5?:
+          | T
+          | {
+              heading?: T
+              description?: T
+            }
+        item_6?:
+          | T
+          | {
+              heading?: T
+              description?: T
+            }
+      }
+  section_3?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        item_1?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              image?: T
+            }
+        item_2?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              image?: T
+            }
+        item_3?:
+          | T
+          | {
+              heading?: T
+              description?: T
+            }
+        item_4?:
+          | T
+          | {
+              heading?: T
+              description?: T
+            }
+      }
+  section_4?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        item_1?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              levels?:
+                | T
+                | {
+                    name?: T
+                    id?: T
+                  }
+            }
+        item_2?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              image?: T
+            }
+        item_3?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              image?: T
+            }
+        item_4?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              image?: T
+            }
+        item_5?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              image?: T
+            }
+      }
+  team?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        members?: T
+      }
+  jobs?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        list?: T
       }
   updatedAt?: T
   createdAt?: T
