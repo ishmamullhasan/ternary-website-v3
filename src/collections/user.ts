@@ -1,8 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../../access/authenticated'
+import { authenticated } from '../access/authenticated'
 
-export const Users: CollectionConfig = {
+const User: CollectionConfig = {
   slug: 'users',
   access: {
     admin: authenticated,
@@ -24,3 +24,5 @@ export const Users: CollectionConfig = {
   ],
   timestamps: true,
 }
+
+export default User

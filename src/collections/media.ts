@@ -10,7 +10,7 @@ import { authenticated } from '../access/authenticated'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-export const Media: CollectionConfig = {
+const Media: CollectionConfig = {
   slug: 'media',
   folders: true,
   access: {
@@ -75,3 +75,5 @@ export const Media: CollectionConfig = {
     ],
   },
 }
+
+export default Media
