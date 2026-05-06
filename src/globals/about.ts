@@ -79,7 +79,7 @@ const About: GlobalConfig = {
         {
           name: 'paragraph',
           label: 'Paragraph',
-          type: 'richText',
+          type: 'textarea',
           required: false,
         },
       ],
