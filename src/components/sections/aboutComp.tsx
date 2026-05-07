@@ -1,4 +1,5 @@
 'use client'
+import Motion from '@/components/animation/motion'
 import type { Capability, Industry, Media, Model, Scale, Solution } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -28,6 +29,13 @@ interface AboutProps {
   bottomDescription?: string | null
 }
 
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
 export default function AboutComp({ heading, description, items, organizations, bottomDescription }: AboutProps) {
   return (
     <section className="lg:pb-16 pb-8">
@@ -43,7 +51,15 @@ export default function AboutComp({ heading, description, items, organizations, 
             return (
               <Link href={`/${item.value.slug}`} key={index}>
                 {/* gradient card */}
-                <div className="relative lg:w-[300px] lg:h-[480px] w-[280px]  rounded-lg overflow-hidden">
+                <Motion
+                  className="relative lg:w-[300px] lg:h-[480px] w-[280px]  rounded-lg overflow-hidden"
+                  {...motionGridItemProps}
+                  transition={{
+                    duration: 0.4,
+                    ease: 'easeOut',
+                    delay: index * 0.05,
+                  }}
+                >
                   {/* background image OR gradient */}
                   {item.value.thumbnail ? (
                     <Image
@@ -62,7 +78,7 @@ export default function AboutComp({ heading, description, items, organizations, 
                     <p className="lg:text-base text-xs">{item.value.excerpts}</p>
                     <p className="lg:text-sm">{item.value.title}</p>
                   </div>
-                </div>
+                </Motion>
               </Link>
             )
           })}
@@ -75,23 +91,30 @@ export default function AboutComp({ heading, description, items, organizations, 
 
         <div className="lg:flex lg:flex-row grid grid-cols-2 justify-center lg:gap-5 gap-4">
           {organizations?.organization?.map((item, index) => (
-            <Link
-              href={item.link || '#'}
+            <Motion
               key={index}
               className="flex flex-row items-center rounded-lg bg-main lg:px-3 lg:py-2 px-2 py-1"
+              {...motionGridItemProps}
+              transition={{
+                duration: 0.4,
+                ease: 'easeOut',
+                delay: index * 0.05,
+              }}
             >
-              <div className="lg:w-[30px] lg:h-[30px] w-[20px] h-[20px]">
-                <Image
-                  src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
-                  alt={(item.icon as Media)?.alt || 'org'}
-                  width={(item.icon as Media)?.width || 30}
-                  height={(item.icon as Media)?.height || 30}
-                  className="object-contain grayscale hover:grayscale-0 transition w-full h-full"
-                />
-              </div>
+              <Link href={item.link || '#'} className="flex flex-row items-center">
+                <div className="lg:w-[30px] lg:h-[30px] w-[20px] h-[20px]">
+                  <Image
+                    src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
+                    alt={(item.icon as Media)?.alt || 'org'}
+                    width={(item.icon as Media)?.width || 30}
+                    height={(item.icon as Media)?.height || 30}
+                    className="object-contain grayscale hover:grayscale-0 transition w-full h-full"
+                  />
+                </div>
 
-              <p className="lg:text-base text-sm pl-2">{item.name}</p>
-            </Link>
+                <p className="lg:text-base text-sm pl-2">{item.name}</p>
+              </Link>
+            </Motion>
           ))}
         </div>
 

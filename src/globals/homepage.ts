@@ -307,13 +307,6 @@ const Homepage: GlobalConfig = {
           required: false,
         },
         {
-          name: 'image',
-          label: 'Image',
-          type: 'upload',
-          relationTo: 'media',
-          required: false,
-        },
-        {
           name: 'process',
           label: 'Process',
           type: 'array',

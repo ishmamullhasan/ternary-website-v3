@@ -1106,7 +1106,6 @@ export interface Homepage {
   processes?: {
     heading?: string | null
     description?: string | null
-    image?: (string | null) | Media
     process?:
       | {
           title?: string | null
@@ -1543,7 +1542,6 @@ export interface HomepageSelect<T extends boolean = true> {
     | {
         heading?: T
         description?: T
-        image?: T
         process?:
           | T
           | {

@@ -1,4 +1,5 @@
 'use client'
+import Motion from '@/components/animation/motion'
 import type { Media } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -18,6 +19,13 @@ interface TeamCompProps {
     | null
 }
 
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
 export default function TeamComp({ heading, description, members }: TeamCompProps) {
   const [showAll, setShowAll] = useState(false)
 
@@ -26,7 +34,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
   const remaining = total - maxVisible
 
   return (
-    <section className="bg-main lg:p-10 p-4 lg:m-0 m-4 text-white">
+    <section className="bg-main lg:p-10 p-4 lg:m-0 m-4 text-white rounded-lg">
       <div className="flex lg:flex-row flex-col lg:items-center lg:space-x-8 space-y-4">
         {/* Left Header */}
         <div className="lg:w-1/5 ">
@@ -43,27 +51,31 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                 const media = member.image as Media | null
 
                 return (
-                  <a
-                    href={member.linkedin || '#'}
-                    key={index}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center text-center lg:w-[180px] w-[100px]"
-                  >
-                    <div className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden mb-4 bg-neutral-300">
-                      {media?.url && (
-                        <Image
-                          src={media.url}
-                          alt={member.name || 'member'}
-                          width={72}
-                          height={72}
-                          className="object-cover w-full h-full"
-                        />
-                      )}
-                    </div>
+                  <a href={member.linkedin || '#'} key={index} target="_blank" rel="noopener noreferrer">
+                    <Motion
+                      className="flex flex-col items-center text-center lg:w-[180px] w-[100px]"
+                      {...motionGridItemProps}
+                      transition={{
+                        duration: 0.4,
+                        ease: 'easeOut',
+                        delay: index * 0.05,
+                      }}
+                    >
+                      <div className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden mb-4 bg-neutral-300">
+                        {media?.url && (
+                          <Image
+                            src={media.url}
+                            alt={member.name || 'member'}
+                            width={72}
+                            height={72}
+                            className="object-cover w-full h-full"
+                          />
+                        )}
+                      </div>
 
-                    <p className="lg:text-base text-sm">{member.name}</p>
-                    <p className="lg:text-sm text-xs mt-1">{member.position}</p>
+                      <p className="lg:text-base text-sm">{member.name}</p>
+                      <p className="lg:text-sm text-xs mt-1">{member.position}</p>
+                    </Motion>
                   </a>
                 )
               })}
@@ -74,33 +86,43 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                   className="flex flex-col items-center text-center lg:w-[100px] w-[80px] cursor-pointer"
                   onClick={() => setShowAll(true)}
                 >
-                  <div className="flex items-center mb-4">
-                    {members?.slice(maxVisible, maxVisible + 3).map((member, index) => {
-                      const media = member.image as Media | null
+                  <Motion
+                    className="flex flex-col items-center text-center"
+                    {...motionGridItemProps}
+                    transition={{
+                      duration: 0.4,
+                      ease: 'easeOut',
+                      delay: maxVisible * 0.05,
+                    }}
+                  >
+                    <div className="flex items-center mb-4">
+                      {members?.slice(maxVisible, maxVisible + 3).map((member, index) => {
+                        const media = member.image as Media | null
 
-                      return (
-                        <div
-                          key={index}
-                          className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden bg-neutral-300 border border-primary -ml-4 first:ml-0"
-                        >
-                          {media?.url && (
-                            <Image
-                              src={media.url}
-                              alt={member.name || 'member'}
-                              width={72}
-                              height={72}
-                              className="object-cover w-full h-full"
-                            />
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
+                        return (
+                          <div
+                            key={index}
+                            className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden bg-neutral-300 border border-primary -ml-4 first:ml-0"
+                          >
+                            {media?.url && (
+                              <Image
+                                src={media.url}
+                                alt={member.name || 'member'}
+                                width={72}
+                                height={72}
+                                className="object-cover w-full h-full"
+                              />
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
 
-                  <p className="lg:text-sm text-xs">{remaining}+ Orchestrators</p>
-                  <p className="lg:text-base text-sm mt-1">
-                    <u>Meet the Team</u>
-                  </p>
+                    <p className="lg:text-sm text-xs">{remaining}+ Orchestrators</p>
+                    <p className="lg:text-base text-sm mt-1">
+                      <u>Meet the Team</u>
+                    </p>
+                  </Motion>
                 </div>
               )}
             </div>
@@ -115,20 +137,30 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
 
                   return (
                     <Link href={member.linkedin || '#'} key={index} className="flex flex-col items-center text-center">
-                      <div className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden mb-4 bg-neutral-300">
-                        {media?.url && (
-                          <Image
-                            src={media.url}
-                            alt={member.name || 'member'}
-                            width={72}
-                            height={72}
-                            className="object-cover w-full h-full"
-                          />
-                        )}
-                      </div>
+                      <Motion
+                        className="flex flex-col items-center text-center"
+                        {...motionGridItemProps}
+                        transition={{
+                          duration: 0.4,
+                          ease: 'easeOut',
+                          delay: index * 0.05,
+                        }}
+                      >
+                        <div className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden mb-4 bg-neutral-300">
+                          {media?.url && (
+                            <Image
+                              src={media.url}
+                              alt={member.name || 'member'}
+                              width={72}
+                              height={72}
+                              className="object-cover w-full h-full"
+                            />
+                          )}
+                        </div>
 
-                      <p className="lg:text-sm text-xs">{member.name}</p>
-                      <p className="lg:text-base text-sm mt-1">{member.position}</p>
+                        <p className="lg:text-sm text-xs">{member.name}</p>
+                        <p className="lg:text-base text-sm mt-1">{member.position}</p>
+                      </Motion>
                     </Link>
                   )
                 })}

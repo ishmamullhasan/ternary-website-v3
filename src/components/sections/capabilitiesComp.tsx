@@ -1,4 +1,5 @@
 'use client'
+import Motion from '@/components/animation/motion'
 import type { Capability, Media } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -13,6 +14,13 @@ interface CapabilitiesCompProps {
   image?: Media | null
 }
 
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
 export default function CapabilitiesComp({
   heading,
   description,
@@ -22,7 +30,7 @@ export default function CapabilitiesComp({
   image,
 }: CapabilitiesCompProps) {
   return (
-    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4">
+    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
       {/* top header */}
       <div className="lg:mb-15 mb-4 lg:w-2/5">
         <p className="lg:text-base text-sm lg:not-first:max-w-[500px] mb-3 text-[#D5D5D5]">{description}</p>
@@ -36,13 +44,22 @@ export default function CapabilitiesComp({
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:pt-10 pt-4 w-full lg:w-4/5 lg:pl-8">
           {capability?.map((item, index): JSX.Element => {
             return (
-              <div key={index} className="bg-[#0F0E0E] p-4">
+              <Motion
+                key={index}
+                className="bg-[#0F0E0E] p-4"
+                {...motionGridItemProps}
+                transition={{
+                  duration: 0.4,
+                  ease: 'easeOut',
+                  delay: index * 0.05,
+                }}
+              >
                 <h3 className="lg:text-base text-sm font-light mb-2">{item.title}</h3>
                 <p className="lg:text-sm text-xs lg:mb-4 mb-3">{item.excerpts}</p>
                 <Link href={`/solutions/${item.slug}`} key={index}>
                   <button className="lg:text-base text-xs mt-10">Explore</button>
                 </Link>
-              </div>
+              </Motion>
             )
           })}
         </div>
