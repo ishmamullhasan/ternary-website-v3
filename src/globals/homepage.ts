@@ -4,6 +4,9 @@ import { GlobalConfig } from 'payload'
 const Homepage: GlobalConfig = {
   slug: 'homepage',
   label: 'Homepage',
+  admin: {
+    group: 'Pages',
+  },
   hooks: {
     afterChange: [
       () => {
@@ -12,6 +15,12 @@ const Homepage: GlobalConfig = {
     ],
   },
   fields: [
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'richText',
+      required: false,
+    },
     {
       name: 'about',
       type: 'group',

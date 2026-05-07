@@ -8,7 +8,6 @@ import Solution from '@/collections/solution'
 import Story from '@/collections/story'
 import Team from '@/collections/team'
 import User from '@/collections/user'
-import { defaultLexical } from '@/fields/defaultLexical'
 import Footer from '@/globals/footer'
 import Header from '@/globals/header'
 import Homepage from '@/globals/homepage'
@@ -16,10 +15,12 @@ import CareersPage from '@/globals/pages/careers'
 import plugins from '@/plugins'
 import { getServerSideURL } from '@/utilities/getURL'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
+import About from './globals/about'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -53,14 +54,13 @@ export default buildConfig({
       ],
     },
   },
-  // This config helps us configure global or default features that the other editors can inherit
-  editor: defaultLexical,
+  editor: lexicalEditor(),
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
   collections: [Media, User, Story, Capability, Solution, Industry, Scale, Model, Job, Team],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, Homepage, CareersPage],
+  globals: [Header, Footer, Homepage, CareersPage, About],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,
