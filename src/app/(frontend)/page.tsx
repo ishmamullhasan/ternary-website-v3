@@ -1,3 +1,4 @@
+import Motion from '@/components/animation/motion'
 import AboutComp from '@/components/sections/aboutComp'
 import CapabilitiesComp from '@/components/sections/capabilitiesComp'
 import IndustriesComp from '@/components/sections/industriesComp'
@@ -36,9 +37,16 @@ export default async function Page(): Promise<JSX.Element> {
     )
   }
 
+  const motionSectionProps = {
+    initial: { opacity: 0, y: 12 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: false, amount: 0.2 as const },
+    transition: { duration: 0.4, ease: 'easeOut' as const },
+  }
+
   return (
-    <div className="flex flex-col text-primary max-w-7xl mx-auto">
-      <section className="w-full lg:mb-16 mb-6">
+    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <AboutComp
           heading={homePageData.about?.heading}
           description={homePageData.about?.description}
@@ -51,18 +59,20 @@ export default async function Page(): Promise<JSX.Element> {
           }
           bottomDescription={homePageData.about?.bottomDescription}
         />
-      </section>
+      </Motion>
 
-      <section id="solutions" className="w-full lg:mb-16 mb-6">
-        <SolutionsComp
-          heading={homePageData.solutions?.heading}
-          description={homePageData.solutions?.description}
-          image={homePageData.solutions?.image as Media}
-          items={homePageData.solutions?.items as Solution[]}
-        />
-      </section>
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
+        <div id="solutions">
+          <SolutionsComp
+            heading={homePageData.solutions?.heading}
+            description={homePageData.solutions?.description}
+            image={homePageData.solutions?.image as Media}
+            items={homePageData.solutions?.items as Solution[]}
+          />
+        </div>
+      </Motion>
 
-      <section className="w-full lg:mb-16 mb-6">
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <CapabilitiesComp
           heading={homePageData.capabilities?.heading}
           description={homePageData.capabilities?.description}
@@ -71,32 +81,32 @@ export default async function Page(): Promise<JSX.Element> {
           description_2={homePageData.capabilities?.description_2}
           image={homePageData.capabilities?.image as Media}
         />
-      </section>
+      </Motion>
 
-      <section className="w-full lg:mb-16 mb-6">
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <IndustriesComp
           heading={homePageData.industries?.heading}
           description={homePageData.industries?.description}
           industry={homePageData.industries?.industry as Industry[]}
         />
-      </section>
+      </Motion>
 
-      <section className="w-full lg:mb-16 mb-6">
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <ScalesComp
           heading={homePageData.scales?.heading}
           description={homePageData.scales?.description}
           scales={homePageData.scales?.scale as Scale[]}
         />
-      </section>
+      </Motion>
 
-      <section className="w-full lg:mb-16 mb-6">
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <EngagementComp
           heading={homePageData.engagement?.heading}
           description={homePageData.engagement?.description}
           model={homePageData.engagement?.model as Model[]}
         />
-      </section>
-      <section className="w-full">
+      </Motion>
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <GlobalDeliveryComp
           heading={homePageData.globalDelivery?.heading}
           description={homePageData.globalDelivery?.description}
@@ -104,18 +114,17 @@ export default async function Page(): Promise<JSX.Element> {
           excerpt={homePageData.globalDelivery?.excerpt}
           image={homePageData.globalDelivery?.image as Media}
         />
-      </section>
+      </Motion>
 
-      <section className="w-full">
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <ProcessComp
           heading={homePageData.processes?.heading}
           description={homePageData.processes?.description}
-          image={homePageData.processes?.image as Media}
           process={homePageData.processes?.process as { title?: string | null; description?: RichText | null }[] | null}
         />
-      </section>
+      </Motion>
 
-      <section className="w-full lg:mb-16 mb-6">
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <TeamComp
           heading={homePageData.team?.heading}
           description={homePageData.team?.description}
@@ -130,14 +139,14 @@ export default async function Page(): Promise<JSX.Element> {
               | null
           }
         />
-      </section>
-      <section className="w-full ">
+      </Motion>
+      <Motion tag="section" className="w-full" {...motionSectionProps}>
         <OpportunitiesComp
           heading={homePageData.opportunities?.heading}
           description={homePageData.opportunities?.description}
           opportunity={homePageData.opportunities?.opportunity as Job[] | null}
         />
-      </section>
+      </Motion>
     </div>
   )
 }

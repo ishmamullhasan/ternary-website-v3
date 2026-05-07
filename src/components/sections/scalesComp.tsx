@@ -1,4 +1,5 @@
 'use client'
+import Motion from '@/components/animation/motion'
 import type { Media, Scale } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,9 +11,16 @@ interface SalesCompProps {
   scales?: Scale[] | null
 }
 
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
 export default function SalesComp({ heading, description, scales }: SalesCompProps) {
   return (
-    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4">
+    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
       <div className="flex lg:flex-row flex-col lg:justify-between lg:items-start items-center">
         {/* top header */}
         <div className="lg:w-2/5">
@@ -25,7 +33,15 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
             return (
               <Link href={`/sales/${item.slug}`} key={index}>
                 {/* gradient card */}
-                <div className="relative lg:w-[220px] lg:h-[250px]  rounded-lg overflow-hidden">
+                <Motion
+                  className="relative lg:w-[220px] lg:h-[250px]  rounded-lg overflow-hidden"
+                  {...motionGridItemProps}
+                  transition={{
+                    duration: 0.4,
+                    ease: 'easeOut',
+                    delay: index * 0.05,
+                  }}
+                >
                   {/* background image OR gradient */}
                   {item.thumbnail ? (
                     <Image
@@ -44,7 +60,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
                     <h3 className="lg:text-base text-sm font-semibold">{item.title}</h3>
                     <p className="lg:text-sm text-xs"> {item.excerpts}</p>
                   </div>
-                </div>
+                </Motion>
               </Link>
             )
           })}

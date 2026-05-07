@@ -176,8 +176,10 @@ export default function serialize(children) {
                 {serialize(node?.children)}
               </p>
             )
+          case 'linebreak':
+            return <br key={i} />
           default:
-            return <div key={i}>{serialize(node?.children)}</div>
+            return <Fragment key={i}>{serialize(node?.children)}</Fragment>
         }
       })) ||
     []

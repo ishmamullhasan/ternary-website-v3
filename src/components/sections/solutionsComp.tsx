@@ -1,5 +1,6 @@
 'use client'
 
+import Motion from '@/components/animation/motion'
 import type { Media, Solution } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -12,9 +13,16 @@ interface SolutionsCompProps {
   items?: Solution[] | null
 }
 
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
 export default function SolutionsComp({ heading, description, image, items }: SolutionsCompProps) {
   return (
-    <div className="flex flex-col bg-main lg:p-10 lg:m-0 m-4 p-4">
+    <div className="flex flex-col bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
       <div className="flex justify-start">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
         <div className="flex flex-col lg:w-[500px]">
@@ -35,7 +43,15 @@ export default function SolutionsComp({ heading, description, image, items }: So
         <div className="grid grid-cols-1 lg:grid-cols-4 lg:gap-5 gap-4">
           {(items as Solution[])?.map((item, index: number): JSX.Element => {
             return (
-              <div key={index}>
+              <Motion
+                key={index}
+                {...motionGridItemProps}
+                transition={{
+                  duration: 0.4,
+                  ease: 'easeOut',
+                  delay: index * 0.05,
+                }}
+              >
                 <p className="text-sm text-[#D5D5D5] mb-1">{item.excerpts}</p>
                 <hr className="border-[#F4F3EC] lg:mb-4 mb-2" />
                 <p className="text-base font-semibold">{item.title}</p>
@@ -46,7 +62,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
                     Learn More
                   </button>
                 </Link>
-              </div>
+              </Motion>
             )
           })}
         </div>

@@ -1,14 +1,13 @@
 'use client'
 
+import Motion from '@/components/animation/motion'
 import type { RichText } from '@/components/richtext'
 import RichTextComp from '@/components/richtext'
-import { Media } from '@/payload-types'
 import type { JSX } from 'react'
 
 interface ProcessCompProps {
   heading?: string | null
   description?: string | null
-  image?: Media | null
   process?:
     | {
         title?: string | null
@@ -17,9 +16,16 @@ interface ProcessCompProps {
     | null
 }
 
-export default function ProcessComp({ heading, description, image, process }: ProcessCompProps) {
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
+export default function ProcessComp({ heading, description, process }: ProcessCompProps) {
   return (
-    <section className="bg-[#1B1A17] lg:p-10 lg:m-0 m-4 p-4">
+    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
       {/* top header */}
       <div className="lg:mb-15 mb-4 lg:w-2/5">
         <p className="lg:text-base text-sm lg:not-first:max-w-[500px] mb-3 text-[#D5D5D5]">{description}</p>
@@ -31,13 +37,21 @@ export default function ProcessComp({ heading, description, image, process }: Pr
         <div className="grid grid-cols-1 lg:grid-cols-2  gap-4 lg:pt-10 pt-4 w-full lg:w-4/5 lg:pl-8">
           {process?.map((item, index): JSX.Element => {
             return (
-              <div key={index}>
+              <Motion
+                key={index}
+                {...motionGridItemProps}
+                transition={{
+                  duration: 0.4,
+                  ease: 'easeOut',
+                  delay: index * 0.05,
+                }}
+              >
                 <p className="lg:text-base text-sm mb-2">{`0${index + 1}`}</p>
                 <h3 className="lg:text-base text-sm mb-3">{item.title}</h3>
                 <div className="">
                   <RichTextComp content={item.description as RichText} />
                 </div>
-              </div>
+              </Motion>
             )
           })}
         </div>

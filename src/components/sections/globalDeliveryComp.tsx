@@ -19,7 +19,7 @@ export default function GlobalDeliveryComp({
   excerpt,
 }: GlobalDeliveryCompProps) {
   return (
-    <div className="flex flex-col bg-main lg:p-10 lg:m-0 m-4 p-4">
+    <div className="flex flex-col bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
       <div className="flex justify-start">
         {/* {label && <Badge className="w-fit" variant="secondary">{label}</Badge>} */}
         <div className="flex flex-col lg:w-2/5">
