@@ -77,9 +77,9 @@ const About: GlobalConfig = {
           required: false,
         },
         {
-          name: 'paragraph',
-          label: 'Paragraph',
-          type: 'textarea',
+          name: 'content',
+          label: 'Description',
+          type: 'richText',
           required: false,
         },
       ],

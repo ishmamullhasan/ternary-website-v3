@@ -16,6 +16,12 @@ const Homepage: GlobalConfig = {
   },
   fields: [
     {
+      name: 'description',
+      label: 'Description',
+      type: 'richText',
+      required: false,
+    },
+    {
       name: 'about',
       type: 'group',
       fields: [

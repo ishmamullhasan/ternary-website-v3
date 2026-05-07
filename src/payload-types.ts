@@ -1012,6 +1012,21 @@ export interface Footer {
  */
 export interface Homepage {
   id: string
+  description?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
   about?: {
     heading?: string | null
     description?: string | null
@@ -1266,7 +1281,21 @@ export interface About {
   about?: {
     heading?: string | null
     description?: string | null
-    paragraph?: string | null
+    content?: {
+      root: {
+        type: string
+        children: {
+          type: any
+          version: number
+          [k: string]: unknown
+        }[]
+        direction: ('ltr' | 'rtl') | null
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+        indent: number
+        version: number
+      }
+      [k: string]: unknown
+    } | null
   }
   ourThesis?: {
     heading?: string | null
@@ -1439,6 +1468,7 @@ export interface FooterSelect<T extends boolean = true> {
  * via the `definition` "homepage_select".
  */
 export interface HomepageSelect<T extends boolean = true> {
+  description?: T
   about?:
     | T
     | {
@@ -1728,7 +1758,7 @@ export interface AboutSelect<T extends boolean = true> {
     | {
         heading?: T
         description?: T
-        paragraph?: T
+        content?: T
       }
   ourThesis?:
     | T

@@ -1,6 +1,8 @@
 import Motion from '@/components/animation/motion'
 import { BentoCard } from '@/components/layout/bentoCard'
 import { Section } from '@/components/layout/section'
+import RichTextComp, { type RichText } from '@/components/richtext'
+
 import { cn } from '@/lib/utils'
 import type { About, Media } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
@@ -81,14 +83,14 @@ export default async function Page(): Promise<JSX.Element> {
 
       {/* About Section */}
       <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-4 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
-        <div className="flex lg:flex-row flex-col lg:mt-20 mt-8 lg:items-start items-center lg:justify-between">
+        <div className="flex lg:flex-row flex-col  lg:items-start items-center lg:justify-between">
           <Motion className="lg:w-1/5" {...motionBlockProps}>
-            <h3 className="lg:text-2xl text-xl mb-3 font-semibold">{aboutData?.about?.heading}</h3>
-            <p className="lg:text-base text-sm text-[#D5D5D5]">{aboutData?.about?.description}</p>
+            <h3 className="lg:text-xl text-lg mb-3 font-semibold">{aboutData?.about?.heading}</h3>
+            <p className="lg:text-sm text-xs text-[#D5D5D5]">{aboutData?.about?.description}</p>
           </Motion>
 
-          <Motion className="lg:pl-8 pl-0 lg:pt-0 pt-4" {...motionBlockProps}>
-            <p className="text-lg text-[#D5D5D5]">{aboutData?.about?.paragraph}</p>
+          <Motion className="lg:pl-8 pl-0 lg:pt-0 pt-4 w-4/5" {...motionBlockProps}>
+            <RichTextComp content={aboutData?.about?.content as RichText} />
           </Motion>
         </div>
       </Motion>

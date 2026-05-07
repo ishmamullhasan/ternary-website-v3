@@ -1,7 +1,4 @@
-'use client'
-
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
-import { RichText as PayloadRichText } from '@payloadcms/richtext-lexical/react'
+import serialize from '@/components/richtext/serialize'
 
 export interface RichText {
   root: {
@@ -21,21 +18,16 @@ export interface RichText {
 
 interface RichTextProps {
   content?: RichText | null
-  data?: RichText | null
   className?: string
-  enableGutter?: boolean
-  enableProse?: boolean
 }
 
-export default function RichText({ content, data, className }: RichTextProps) {
-  const richContent = (content ?? data) as SerializedEditorState | null | undefined
-  if (!richContent) {
+export default function RichText({ content, className = '' }: RichTextProps) {
+  if (!content) {
     return null
   }
 
-  return (
-    <div className={className}>
-      <PayloadRichText data={richContent} />
-    </div>
-  )
+  // Extract the children array from the content.root structure
+  const contentToSerialize = content.root?.children || content
+
+  return <div className={className}>{serialize(contentToSerialize)}</div>
 }
