@@ -1,5 +1,7 @@
+import Motion from '@/components/animation/motion'
 import { BentoCard } from '@/components/layout/bentoCard'
 import { Section } from '@/components/layout/section'
+import { cn } from '@/lib/utils'
 import type { About, Media } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { Box, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react'
@@ -23,110 +25,232 @@ export default async function Page(): Promise<JSX.Element> {
     )
   }
 
-  const thesis = aboutData.ourThesis
-  const thesisItems = thesis?.items?.filter(Boolean) ?? []
-  const showOurThesis =
-    Boolean(thesis?.heading?.trim()) || Boolean(thesis?.description?.trim()) || thesisItems.length > 0
+  const motionSectionProps = {
+    initial: { opacity: 0, y: 12 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: false, amount: 0.2 as const },
+    transition: { duration: 0.4, ease: 'easeOut' as const },
+  }
+
+  const motionBlockProps = {
+    initial: { opacity: 0, y: 10 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: false, amount: 0.4 as const },
+    transition: { duration: 0.35, ease: 'easeOut' as const },
+  }
+
+  /** Careers hero image panel: scale + opacity in view */
+  const motionGridItemProps = {
+    initial: { opacity: 0, scale: 0.985 },
+    whileInView: { opacity: 1, scale: 1 },
+    viewport: { once: false, amount: 0.35 as const },
+    transition: { duration: 0.4, ease: 'easeOut' as const },
+  }
 
   return (
-    <div className="flex flex-col text-primary max-w-7xl mx-auto">
+    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
       {/* Hero Section */}
-      <section className="lg:pb-16 pb-8">
+      <Motion tag="section" className="lg:pb-16 pb-8" {...motionSectionProps}>
         <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
-          {/* heading */}
-          <div className="flex flex-col items-center lg:w-3/5">
+          <Motion className="flex flex-col items-center lg:w-3/5" {...motionBlockProps}>
             <h1 className="text-center lg:text-3xl text-2xl font-semibold mb-3">{aboutData?.heroSection?.heading}</h1>
             <p className="text-center lg:text-base text-sm text-[#D5D5D5] ">{aboutData?.heroSection?.description}</p>
-          </div>
+          </Motion>
         </div>
-      </section>
+      </Motion>
 
       {/* Funding Story Section */}
-      <section
-        className="lg:my-10 my-4 lg:py-16  py-8 lg:m-0 m-4 bg-cover bg-center rounded-lg"
+      <Motion
+        tag="section"
+        className="lg:m-0 m-4 lg:py-16 py-8 bg-cover bg-center rounded-lg overflow-hidden"
         style={{
           backgroundImage: `url(${
             (aboutData?.fundingStory?.backgroundImage as Media)?.url ||
             'https://hips.hearstapps.com/hmg-prod/images/summer-flowers-1648478322.jpg'
           })`,
         }}
+        {...motionSectionProps}
       >
         <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
-          <div className="flex flex-col items-center lg:w-4/5">
+          <Motion className="flex flex-col items-center lg:w-4/5" {...motionBlockProps}>
             <h1 className="text-center lg:text-3xl text-2xl font-semibold mb-3">{aboutData?.fundingStory?.heading}</h1>
             <p className="text-center lg:text-base text-sm text-[#D5D5D5]">{aboutData?.fundingStory?.description}</p>
-          </div>
+          </Motion>
         </div>
-      </section>
+      </Motion>
 
       {/* About Section */}
-      <section className="bg-[#1B1A17] lg:p-10 lg:m-0 m-4 p-4 lg:my-10 my-4">
-        <div className="flex  lg:flex-row flex-col lg:mt-20 mt-8 lg:items-start items-center lg:justify-between">
-          <div className="lg:w-1/5">
+      <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-4 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
+        <div className="flex lg:flex-row flex-col lg:mt-20 mt-8 lg:items-start items-center lg:justify-between">
+          <Motion className="lg:w-1/5" {...motionBlockProps}>
             <h3 className="lg:text-2xl text-xl mb-3 font-semibold">{aboutData?.about?.heading}</h3>
             <p className="lg:text-base text-sm text-[#D5D5D5]">{aboutData?.about?.description}</p>
-          </div>
+          </Motion>
 
-          <div className="lg:pl-8 pl-0 lg:pt-0 pt-4">
+          <Motion className="lg:pl-8 pl-0 lg:pt-0 pt-4" {...motionBlockProps}>
             <p className="text-lg text-[#D5D5D5]">{aboutData?.about?.paragraph}</p>
-          </div>
+          </Motion>
         </div>
-      </section>
+      </Motion>
 
       {/* Our Thesis */}
-      {showOurThesis && (
-        <Section title={thesis?.heading ?? ''} desc={thesis?.description ?? ''}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[240px]">
-            {thesisItems.map((item, index) => {
-              const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
-              const isFirst = index === 0
-              const isSixth = index === 5
-              const cardClass = [isFirst ? 'md:col-span-2 row-span-1' : '', isSixth ? 'md:col-span-2 relative' : '']
-                .filter(Boolean)
-                .join(' ')
+      {aboutData?.ourThesis?.heading && (
+        <div className="lg:p-0 p-4">
+          <Section title={aboutData?.ourThesis?.heading ?? ''} desc={aboutData?.ourThesis?.description ?? ''}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[240px]">
+              {aboutData?.ourThesis?.items?.map((item, index) => {
+                const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
+                const isFirst = index === 0
+                const isSixth = index === 5
+                const cardClass = [isFirst ? 'md:col-span-2 row-span-1' : '', isSixth ? 'md:col-span-2 relative' : '']
+                  .filter(Boolean)
+                  .join(' ')
 
-              return (
-                <BentoCard
-                  key={item.id ?? `thesis-${index}`}
-                  className={cardClass || undefined}
-                  title={item.title ?? undefined}
-                  desc={item.excerpt ?? undefined}
-                  imageBg={isFirst ? imageUrl : undefined}
-                >
-                  {isSixth ? (
-                    <div className="absolute right-8 top-1/2 -translate-y-1/2 w-32 h-32 hidden lg:block">
-                      <div className="absolute inset-0 rounded-full border border-white/10 border-dashed animate-[spin_20s_linear_infinite]"></div>
-                      <div className="absolute inset-4 rounded-full border border-white/20 animate-[spin_12s_linear_infinite_reverse]"></div>
-                      <div className="absolute inset-5 rounded-full border border-white/25 animate-ping animation-duration-[2.4s]"></div>
-                      <div className="absolute inset-5 rounded-full border border-white/20 animate-ping animation-duration-[2.4s] [animation-delay:0.8s]"></div>
-                      <div className="absolute inset-5 rounded-full border border-white/15 animate-ping animation-duration-[2.4s] [animation-delay:1.6s]"></div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm animate-pulse">
-                          <div className="w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white] animate-[ping_2s_ease-in-out_infinite]"></div>
+                return (
+                  <Motion
+                    key={item.id ?? `thesis-${index}`}
+                    className={cn('min-h-0 h-full', cardClass)}
+                    {...motionGridItemProps}
+                    transition={{
+                      duration: 0.4,
+                      ease: 'easeOut',
+                      delay: index * 0.05,
+                    }}
+                  >
+                    <BentoCard
+                      animated={false}
+                      className="h-full min-h-[240px]"
+                      title={item.title ?? undefined}
+                      desc={item.excerpt ?? undefined}
+                      imageBg={isFirst ? imageUrl : undefined}
+                    >
+                      {isSixth ? (
+                        <div className="absolute right-8 top-1/2 -translate-y-1/2 w-32 h-32 hidden lg:block">
+                          <div className="absolute inset-0 rounded-full border border-white/10 border-dashed animate-[spin_20s_linear_infinite]"></div>
+                          <div className="absolute inset-4 rounded-full border border-white/20 animate-[spin_12s_linear_infinite_reverse]"></div>
+                          <div className="absolute inset-5 rounded-full border border-white/25 animate-ping animation-duration-[2.4s]"></div>
+                          <div className="absolute inset-5 rounded-full border border-white/20 animate-ping animation-duration-[2.4s] [animation-delay:0.8s]"></div>
+                          <div className="absolute inset-5 rounded-full border border-white/15 animate-ping animation-duration-[2.4s] [animation-delay:1.6s]"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm animate-pulse">
+                              <div className="w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white] animate-[ping_2s_ease-in-out_infinite]"></div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ) : null}
-                </BentoCard>
-              )
-            })}
-          </div>
-        </Section>
+                      ) : null}
+                    </BentoCard>
+                  </Motion>
+                )
+              })}
+            </div>
+          </Section>
+        </div>
+      )}
+
+      {/* what we believe Section */}
+      {aboutData?.whatWeBelieve?.heading && (
+        <div className="lg:p-0 p-4">
+          <Section title={aboutData?.whatWeBelieve?.heading ?? ''} desc={aboutData?.whatWeBelieve?.description ?? ''}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[240px]">
+              {aboutData?.whatWeBelieve?.items?.map((item, index) => {
+                const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
+                const isFirst = index === 0
+                const isSixth = index === 5
+                const cardClass = [isFirst ? 'md:col-span-2 row-span-1' : '', isSixth ? 'md:col-span-2 relative' : '']
+                  .filter(Boolean)
+                  .join(' ')
+
+                return (
+                  <Motion
+                    key={item.id ?? `thesis-${index}`}
+                    className={cn('min-h-0 h-full', cardClass)}
+                    {...motionGridItemProps}
+                    transition={{
+                      duration: 0.4,
+                      ease: 'easeOut',
+                      delay: index * 0.05,
+                    }}
+                  >
+                    <BentoCard
+                      animated={false}
+                      className="h-full min-h-[240px]"
+                      title={item.title ?? undefined}
+                      desc={item.excerpt ?? undefined}
+                      imageBg={isFirst ? imageUrl : undefined}
+                    ></BentoCard>
+                  </Motion>
+                )
+              })}
+            </div>
+          </Section>
+        </div>
+      )}
+
+      {/* Our Approach Section */}
+      {aboutData?.ourApproach?.heading && (
+        <div className="lg:p-0 p-4">
+          <Section title={aboutData?.ourApproach?.heading ?? ''} desc={aboutData?.ourApproach?.description ?? ''}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[240px]">
+              {aboutData?.ourApproach?.items?.map((item, index) => {
+                const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
+                const isFirst = index === 0
+                const isFifth = index === 4
+                const cardClass = [
+                  isFirst ? 'md:col-span-2 md:row-span-2 col-span-1 row-span-1' : '',
+                  isFifth ? 'md:col-span-2 relative' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+
+                return (
+                  <Motion
+                    key={item.id ?? `approach-${index}`}
+                    className={cn('min-h-0 h-full', cardClass)}
+                    {...motionGridItemProps}
+                    transition={{
+                      duration: 0.4,
+                      ease: 'easeOut',
+                      delay: index * 0.05,
+                    }}
+                  >
+                    <BentoCard
+                      animated={false}
+                      className="h-full min-h-[240px]"
+                      title={item.title ?? undefined}
+                      desc={item.excerpt ?? undefined}
+                      imageBg={isFirst ? imageUrl : undefined}
+                    ></BentoCard>
+                  </Motion>
+                )
+              })}
+            </div>
+          </Section>
+        </div>
       )}
 
       {/* Proof at Scale Section */}
-      <section className="bg-[#1B1A17] lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
-        {/* Proof at Scale Section */}
+      <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-4 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
         <div className="mb-16">
-          <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{aboutData?.proofOfScale?.heading}</h2>
-          <p className="text-[#D5D5D5] text-base max-w-xl mb-12">{aboutData?.proofOfScale?.description}</p>
+          <Motion {...motionBlockProps}>
+            <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{aboutData?.proofOfScale?.heading}</h2>
+            <p className="text-[#D5D5D5] text-base max-w-xl mb-12">{aboutData?.proofOfScale?.description}</p>
+          </Motion>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {aboutData?.proofOfScale?.items?.map((stat, i) => (
-              <div key={i} className="text-center">
+              <Motion
+                key={i}
+                className="text-center"
+                {...motionGridItemProps}
+                transition={{
+                  duration: 0.4,
+                  ease: 'easeOut',
+                  delay: i * 0.05,
+                }}
+              >
                 <div className="lg:text-6xl text-4xl font-bold mb-2">{stat.value}</div>
                 <div className="text-lg">{stat.title}</div>
-              </div>
+              </Motion>
             ))}
           </div>
         </div>
@@ -139,12 +263,21 @@ export default async function Page(): Promise<JSX.Element> {
           <div className="lg:w-1/5"> </div>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:w-4/5">
             {aboutData?.proofOfScale?.company?.items?.map((item, index) => (
-              <div key={index} className="bg-[#0F0E0E] p-4 flex flex-col justify-between">
+              <Motion
+                key={index}
+                className="bg-[#0F0E0E] p-4 flex flex-col justify-between h-full"
+                {...motionGridItemProps}
+                transition={{
+                  duration: 0.4,
+                  ease: 'easeOut',
+                  delay: index * 0.05,
+                }}
+              >
                 <div>
                   <p className="text-base mb-3">{item.excerpt}</p>
                   <div className="flex gap-2">
-                    {item.stack?.map((tag, index) => (
-                      <span key={index} className="text-xs border border-[#757571] px-2 py-.5 rounded-full">
+                    {item.stack?.map((tag, tagIndex) => (
+                      <span key={tagIndex} className="text-xs border border-[#757571] px-2 py-.5 rounded-full">
                         {tag.name}
                       </span>
                     ))}
@@ -155,24 +288,37 @@ export default async function Page(): Promise<JSX.Element> {
                   <Box className="w-4 h-4 " />
                   <span className="text-lg">{item.name}</span>
                 </div>
-              </div>
+              </Motion>
             ))}
           </div>
         </div>
-      </section>
+      </Motion>
 
       {/* Leadership Section */}
 
-      <section className="bg-[#1B1A17] text-white lg:p-10 p-4 lg:my-10 my-4 rounded-lg">
+      <Motion
+        tag="section"
+        className="bg-[#1B1A17] text-white lg:p-10 p-4 rounded-lg lg:m-0 m-4"
+        {...motionSectionProps}
+      >
         {/* Header */}
         <div className="mb-4 lg:w-2/5">
           <h2 className="lg:text-4xl text-2xl font-bold mb-4">{aboutData?.leadership?.heading}</h2>
           <p className="lg:text-base text-sm text-[#D5D5D5]">{aboutData?.leadership?.description}</p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-4 lg:gap-4 gap-3 lg:pt-0 pt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:pt-0 pt-4">
           {aboutData?.leadership?.members?.map((member, index): JSX.Element => {
             return (
-              <div key={index} className="relative lg:w-[280px] lg:h-[430px] w-[250px]  rounded-lg overflow-hidden">
+              <Motion
+                key={index}
+                className="relative lg:w-[280px] lg:h-[430px] h-[280px] rounded-lg overflow-hidden"
+                {...motionGridItemProps}
+                transition={{
+                  duration: 0.4,
+                  ease: 'easeOut',
+                  delay: index * 0.05,
+                }}
+              >
                 {/* background image OR gradient */}
                 {member.image ? (
                   <Image
@@ -242,27 +388,30 @@ export default async function Page(): Promise<JSX.Element> {
                     </div>
                   )}
                 </div>
-              </div>
+              </Motion>
             )
           })}
         </div>
-      </section>
+      </Motion>
 
       {/* CTA */}
-      <section
-        className="max-w-7xl lg:my-10 my-4 lg:p-10 lg:m-0 m-4 p-4 bg-cover bg-center rounded-lg"
+      <Motion
+        tag="section"
+        className="lg:p-10 p-4 bg-cover bg-center rounded-lg overflow-hidden lg:m-0 m-4"
         style={{
           backgroundImage: `url(${
             (aboutData?.cta?.backgroundImage as Media)?.url ||
             'linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8))'
           })`,
         }}
+        {...motionSectionProps}
       >
-        <div className=" text-center">
-          {/* Subtle noise/texture overlay can be added here if you have a noise.png asset */}
-          <p className="text-xs mb-4">{aboutData?.cta?.subheading}</p>
-          <h2 className="lg:text-4xl text-2xl font-semibold mb-6">{aboutData?.cta?.heading}</h2>
-          <p className="text-base md:text-xl  max-w-2xl mx-auto mb-10">{aboutData?.cta?.description}</p>
+        <div className="text-center">
+          <Motion {...motionBlockProps}>
+            <p className="text-xs mb-4">{aboutData?.cta?.subheading}</p>
+            <h2 className="lg:text-4xl text-2xl font-semibold mb-6">{aboutData?.cta?.heading}</h2>
+            <p className="text-base md:text-xl max-w-2xl mx-auto mb-10">{aboutData?.cta?.description}</p>
+          </Motion>
 
           <div className="flex lg:flex-row flex-col gap-4 justify-center">
             {aboutData?.cta?.button_1?.label && (
@@ -283,7 +432,7 @@ export default async function Page(): Promise<JSX.Element> {
             )}
           </div>
         </div>
-      </section>
+      </Motion>
     </div>
   )
 }
