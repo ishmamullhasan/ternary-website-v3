@@ -75,7 +75,7 @@
     "geist": "^1.7.0",
     "graphql": "^16.14.0",
     "input-otp": "^1.4.2",
-    "lucide-react": "^1.14.0",
+    "lucide-react": "^0.543.0",
     "mongoose": "^9.6.1",
     "motion": "^12.38.0",
     "next": "16.2.4",

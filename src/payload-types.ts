@@ -114,12 +114,14 @@ export interface Config {
     footer: Footer
     homepage: Homepage
     careersPage: CareersPage
+    about: About
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
     footer: FooterSelect<false> | FooterSelect<true>
     homepage: HomepageSelect<false> | HomepageSelect<true>
     careersPage: CareersPageSelect<false> | CareersPageSelect<true>
+    about: AboutSelect<false> | AboutSelect<true>
   }
   locale: null
   widgets: {
@@ -1248,6 +1250,130 @@ export interface CareersPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about".
+ */
+export interface About {
+  id: string
+  heroSection?: {
+    heading?: string | null
+    description?: string | null
+  }
+  fundingStory?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+  }
+  about?: {
+    heading?: string | null
+    description?: string | null
+    paragraph?: string | null
+  }
+  ourThesis?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          image?: (string | null) | Media
+          id?: string | null
+        }[]
+      | null
+  }
+  whatWeBelieve?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          image?: (string | null) | Media
+          id?: string | null
+        }[]
+      | null
+  }
+  ourApproach?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          image?: (string | null) | Media
+          id?: string | null
+        }[]
+      | null
+  }
+  proofOfScale?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          value?: string | null
+          id?: string | null
+        }[]
+      | null
+    company?: {
+      heading?: string | null
+      description?: string | null
+      items?:
+        | {
+            name?: string | null
+            excerpt?: string | null
+            stack?:
+              | {
+                  name?: string | null
+                  id?: string | null
+                }[]
+              | null
+            id?: string | null
+          }[]
+        | null
+    }
+  }
+  leadership?: {
+    heading?: string | null
+    description?: string | null
+    members?:
+      | {
+          name?: string | null
+          position?: string | null
+          story?: string | null
+          specialization?: string | null
+          image?: (string | null) | Media
+          socials?:
+            | {
+                linkedin?: string | null
+                facebook?: string | null
+                instagram?: string | null
+                twitter?: string | null
+                id?: string | null
+              }[]
+            | null
+          id?: string | null
+        }[]
+      | null
+  }
+  cta?: {
+    subheading?: string | null
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1574,6 +1700,154 @@ export interface CareersPageSelect<T extends boolean = true> {
         heading?: T
         description?: T
         list?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about_select".
+ */
+export interface AboutSelect<T extends boolean = true> {
+  heroSection?:
+    | T
+    | {
+        heading?: T
+        description?: T
+      }
+  fundingStory?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+      }
+  about?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        paragraph?: T
+      }
+  ourThesis?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              image?: T
+              id?: T
+            }
+      }
+  whatWeBelieve?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              image?: T
+              id?: T
+            }
+      }
+  ourApproach?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              image?: T
+              id?: T
+            }
+      }
+  proofOfScale?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              value?: T
+              id?: T
+            }
+        company?:
+          | T
+          | {
+              heading?: T
+              description?: T
+              items?:
+                | T
+                | {
+                    name?: T
+                    excerpt?: T
+                    stack?:
+                      | T
+                      | {
+                          name?: T
+                          id?: T
+                        }
+                    id?: T
+                  }
+            }
+      }
+  leadership?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        members?:
+          | T
+          | {
+              name?: T
+              position?: T
+              story?: T
+              specialization?: T
+              image?: T
+              socials?:
+                | T
+                | {
+                    linkedin?: T
+                    facebook?: T
+                    instagram?: T
+                    twitter?: T
+                    id?: T
+                  }
+              id?: T
+            }
+      }
+  cta?:
+    | T
+    | {
+        subheading?: T
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
       }
   updatedAt?: T
   createdAt?: T

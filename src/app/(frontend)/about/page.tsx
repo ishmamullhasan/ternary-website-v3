@@ -1,3 +1,5 @@
+import { BentoCard } from '@/components/layout/bentoCard'
+import { Section } from '@/components/layout/section'
 import type { About, Media } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { Box, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react'
@@ -20,6 +22,11 @@ export default async function Page(): Promise<JSX.Element> {
       <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
     )
   }
+
+  const thesis = aboutData.ourThesis
+  const thesisItems = thesis?.items?.filter(Boolean) ?? []
+  const showOurThesis =
+    Boolean(thesis?.heading?.trim()) || Boolean(thesis?.description?.trim()) || thesisItems.length > 0
 
   return (
     <div className="flex flex-col text-primary max-w-7xl mx-auto">
@@ -65,6 +72,47 @@ export default async function Page(): Promise<JSX.Element> {
           </div>
         </div>
       </section>
+
+      {/* Our Thesis */}
+      {showOurThesis && (
+        <Section title={thesis?.heading ?? ''} desc={thesis?.description ?? ''}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[240px]">
+            {thesisItems.map((item, index) => {
+              const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
+              const isFirst = index === 0
+              const isSixth = index === 5
+              const cardClass = [isFirst ? 'md:col-span-2 row-span-1' : '', isSixth ? 'md:col-span-2 relative' : '']
+                .filter(Boolean)
+                .join(' ')
+
+              return (
+                <BentoCard
+                  key={item.id ?? `thesis-${index}`}
+                  className={cardClass || undefined}
+                  title={item.title ?? undefined}
+                  desc={item.excerpt ?? undefined}
+                  imageBg={isFirst ? imageUrl : undefined}
+                >
+                  {isSixth ? (
+                    <div className="absolute right-8 top-1/2 -translate-y-1/2 w-32 h-32 hidden lg:block">
+                      <div className="absolute inset-0 rounded-full border border-white/10 border-dashed animate-[spin_20s_linear_infinite]"></div>
+                      <div className="absolute inset-4 rounded-full border border-white/20 animate-[spin_12s_linear_infinite_reverse]"></div>
+                      <div className="absolute inset-5 rounded-full border border-white/25 animate-ping animation-duration-[2.4s]"></div>
+                      <div className="absolute inset-5 rounded-full border border-white/20 animate-ping animation-duration-[2.4s] [animation-delay:0.8s]"></div>
+                      <div className="absolute inset-5 rounded-full border border-white/15 animate-ping animation-duration-[2.4s] [animation-delay:1.6s]"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm animate-pulse">
+                          <div className="w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white] animate-[ping_2s_ease-in-out_infinite]"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </BentoCard>
+              )
+            })}
+          </div>
+        </Section>
+      )}
 
       {/* Proof at Scale Section */}
       <section className="bg-[#1B1A17] lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
