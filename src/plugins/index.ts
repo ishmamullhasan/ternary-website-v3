@@ -13,7 +13,7 @@ const generateURL = ({ doc }: { doc?: { slug?: string | null } }) => {
   return doc?.slug ? `${url}/${doc.slug}` : url
 }
 
-export const plugins: Plugin[] = [
+const plugins: Plugin[] = [
   payloadCloudPlugin(),
   s3Storage({
     collections: {
@@ -37,3 +37,5 @@ export const plugins: Plugin[] = [
     generateURL,
   }),
 ]
+
+export default plugins

@@ -26,7 +26,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
   const remaining = total - maxVisible
 
   return (
-    <section className="bg-[#1B1A17] lg:p-10 p-4 lg:m-0 m-4 text-white">
+    <section className="bg-main lg:p-10 p-4 lg:m-0 m-4 text-white">
       <div className="flex lg:flex-row flex-col lg:items-center lg:space-x-8 space-y-4">
         {/* Left Header */}
         <div className="lg:w-1/5 ">
@@ -81,7 +81,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                       return (
                         <div
                           key={index}
-                          className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden bg-neutral-300 border border-[#1B1A17] -ml-4 first:ml-0"
+                          className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden bg-neutral-300 border border-primary -ml-4 first:ml-0"
                         >
                           {media?.url && (
                             <Image

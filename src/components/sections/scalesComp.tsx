@@ -12,7 +12,7 @@ interface SalesCompProps {
 
 export default function SalesComp({ heading, description, scales }: SalesCompProps) {
   return (
-    <section className="bg-[#1B1A17] lg:p-10 lg:m-0 m-4 p-4">
+    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4">
       <div className="flex lg:flex-row flex-col lg:justify-between lg:items-start items-center">
         {/* top header */}
         <div className="lg:w-2/5">
@@ -36,7 +36,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
+                    <div className="absolute inset-0 bg-linear-to-br from-pink-500 via-purple-500 to-blue-500" />
                   )}
 
                   {/* text */}
