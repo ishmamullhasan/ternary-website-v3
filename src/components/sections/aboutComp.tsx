@@ -1,4 +1,5 @@
 'use client'
+import Motion from '@/components/animation/motion'
 import type { Capability, Industry, Media, Model, Scale, Solution } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -28,83 +29,98 @@ interface AboutProps {
   bottomDescription?: string | null
 }
 
-export default function AboutComp({
-  heading,
-  description,
-  items,
-  organizations,
-  bottomDescription,
-}: AboutProps) {
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
+export default function AboutComp({ heading, description, items, organizations, bottomDescription }: AboutProps) {
   return (
-    <section className="pb-16">
-      <div className="w-full mx-auto flex flex-col items-center">
+    <section className="lg:pb-16 pb-8">
+      <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
         {/* heading */}
-        <div className="flex flex-col items-center w-2/5">
-          <h1 className="text-center text-4xl font-light mb-3">{heading}</h1>
-          <p className="text-center text-base ">{description}</p>
+        <div className="flex flex-col items-center lg:w-2/5">
+          <p className="text-center lg:text-base text-sm mb-3 text-[#D5D5D5] ">{description}</p>
+          <h1 className="text-center lg:text-4xl text-2xl font-semibold">{heading}</h1>
         </div>
         {/* cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:mt-10 mt-4">
           {(items as MultiRelation[])?.map((item, index: number): JSX.Element => {
             return (
               <Link href={`/${item.value.slug}`} key={index}>
                 {/* gradient card */}
-                <div className="relative w-[300px] h-[480px] rounded-lg overflow-hidden">
+                <Motion
+                  className="relative lg:w-[300px] lg:h-[480px] w-[280px]  rounded-lg overflow-hidden"
+                  {...motionGridItemProps}
+                  transition={{
+                    duration: 0.4,
+                    ease: 'easeOut',
+                    delay: index * 0.05,
+                  }}
+                >
                   {/* background image OR gradient */}
                   {item.value.thumbnail ? (
                     <Image
-                      src={
-                        (item.value.thumbnail as Media)?.url ||
-                        'https://dummyimage.com/350x590/37624F/FFF2'
-                      }
+                      src={(item.value.thumbnail as Media)?.url || 'https://dummyimage.com/350x590/37624F/FFF2'}
                       alt={item.value.title || 'story'}
                       height={(item.value.thumbnail as Media)?.height || 480}
                       width={(item.value.thumbnail as Media)?.width || 300}
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
+                    <div className="absolute inset-0 bg-linear-to-br from-pink-500 via-purple-500 to-blue-500" />
                   )}
 
                   {/* text */}
                   <div className="absolute top-5 left-5 right-5">
-                    <h3 className="text-base">{item.value.title}</h3>
-                    <p className="text-sm">Stories</p>
+                    <p className="lg:text-base text-xs">{item.value.excerpts}</p>
+                    <p className="lg:text-sm">{item.value.title}</p>
                   </div>
-                </div>
+                </Motion>
               </Link>
             )
           })}
         </div>
 
         {/* organizations */}
-        {organizations?.heading && <p className="text-base mt-15 mb-4">{organizations.heading}</p>}
+        {organizations?.heading && (
+          <p className="lg:text-base text-xs lg:mt-15 mt-8 mb-6 text-center">{organizations.heading}</p>
+        )}
 
-        <div className="flex flex-row justify-center gap-5">
+        <div className="lg:flex lg:flex-row grid grid-cols-2 justify-center lg:gap-5 gap-4">
           {organizations?.organization?.map((item, index) => (
-            <Link
-              href={item.link || '#'}
+            <Motion
               key={index}
-              className="flex flex-row items-center rounded-lg bg-[#1B1A17] px-3 py-2"
+              className="flex flex-row items-center rounded-lg bg-main lg:px-3 lg:py-2 px-2 py-1"
+              {...motionGridItemProps}
+              transition={{
+                duration: 0.4,
+                ease: 'easeOut',
+                delay: index * 0.05,
+              }}
             >
-              <div className="w-[30px] h-[30px]">
-                <Image
-                  src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
-                  alt={(item.icon as Media)?.alt || 'org'}
-                  width={(item.icon as Media)?.width || 30}
-                  height={(item.icon as Media)?.height || 30}
-                  className="object-contain grayscale hover:grayscale-0 transition w-full h-full"
-                />
-              </div>
+              <Link href={item.link || '#'} className="flex flex-row items-center">
+                <div className="lg:w-[30px] lg:h-[30px] w-[20px] h-[20px]">
+                  <Image
+                    src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
+                    alt={(item.icon as Media)?.alt || 'org'}
+                    width={(item.icon as Media)?.width || 30}
+                    height={(item.icon as Media)?.height || 30}
+                    className="object-contain grayscale hover:grayscale-0 transition w-full h-full"
+                  />
+                </div>
 
-              <p className="text-base pl-2">{item.name}</p>
-            </Link>
+                <p className="lg:text-base text-sm pl-2">{item.name}</p>
+              </Link>
+            </Motion>
           ))}
         </div>
 
         {/* bottom text */}
         {bottomDescription && (
-          <p className="text-justify max-w-[600px] mt-15 text-sm">{bottomDescription}</p>
+          <p className="text-center lg:max-w-[900px] lg:mt-15 mt-8 lg:text-sm text-xs">{bottomDescription}</p>
         )}
       </div>
     </section>

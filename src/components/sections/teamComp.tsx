@@ -1,4 +1,5 @@
 'use client'
+import Motion from '@/components/animation/motion'
 import type { Media } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -18,6 +19,13 @@ interface TeamCompProps {
     | null
 }
 
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
 export default function TeamComp({ heading, description, members }: TeamCompProps) {
   const [showAll, setShowAll] = useState(false)
 
@@ -26,98 +34,34 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
   const remaining = total - maxVisible
 
   return (
-    <section className="bg-[#1B1A17] w-full p-10 mx-auto text-white">
-      <div className="flex flex-row items-center space-x-8">
+    <section className="bg-main lg:p-10 p-4 lg:m-0 m-4 text-white rounded-lg">
+      <div className="flex lg:flex-row flex-col lg:items-center lg:space-x-8 space-y-4">
         {/* Left Header */}
-        <div className="w-1/5 ">
-          <h2 className="text-3xl font-light mb-3">{heading}</h2>
-          <p className="text-base text-white/70">{description}</p>
+        <div className="lg:w-1/5 ">
+          <p className="lg:text-base text-sm text-[#D5D5D5] mb-3">{description}</p>
+          <h2 className="lg:text-2xl text-xl font-semibold">{heading}</h2>
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="w-4/5">
+        <div className="lg:w-4/5">
           {/* COLLAPSED VIEW */}
           {!showAll && (
-            <div className="grid grid-cols-4 gap-10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 lg:gap-10 gap-4">
               {members?.slice(0, maxVisible).map((member, index) => {
                 const media = member.image as Media | null
 
                 return (
-                  <a
-                    href={member.linkedin || '#'}
-                    key={index}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center text-center w-[180px]"
-                  >
-                    <div className="w-[72px] h-[72px] rounded-full overflow-hidden mb-4 bg-neutral-300">
-                      {media?.url && (
-                        <Image
-                          src={media.url}
-                          alt={member.name || 'member'}
-                          width={72}
-                          height={72}
-                          className="object-cover w-full h-full"
-                        />
-                      )}
-                    </div>
-
-                    <p className="text-sm">{member.name}</p>
-                    <p className="text-base mt-1">{member.position}</p>
-                  </a>
-                )
-              })}
-
-              {/* STACKED AVATARS */}
-              {remaining > 0 && (
-                <div
-                  className="flex flex-col items-center text-center w-[100px] cursor-pointer"
-                  onClick={() => setShowAll(true)}
-                >
-                  <div className="flex items-center mb-4">
-                    {members?.slice(maxVisible, maxVisible + 3).map((member, index) => {
-                      const media = member.image as Media | null
-
-                      return (
-                        <div
-                          key={index}
-                          className="w-[72px] h-[72px] rounded-full overflow-hidden bg-neutral-300 border border-[#1B1A17] -ml-4 first:ml-0"
-                        >
-                          {media?.url && (
-                            <Image
-                              src={media.url}
-                              alt={member.name || 'member'}
-                              width={72}
-                              height={72}
-                              className="object-cover w-full h-full"
-                            />
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  <p className="text-sm">{remaining}+ Orchestrators</p>
-                  <p className="text-base mt-1">Meet the Team</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* EXPANDED GRID VIEW */}
-          {showAll && (
-            <>
-              <div className="grid grid-cols-4 gap-10">
-                {members?.map((member, index) => {
-                  const media = member.image as Media | null
-
-                  return (
-                    <Link
-                      href={member.linkedin || '#'}
-                      key={index}
-                      className="flex flex-col items-center text-center"
+                  <a href={member.linkedin || '#'} key={index} target="_blank" rel="noopener noreferrer">
+                    <Motion
+                      className="flex flex-col items-center text-center lg:w-[180px] w-[100px]"
+                      {...motionGridItemProps}
+                      transition={{
+                        duration: 0.4,
+                        ease: 'easeOut',
+                        delay: index * 0.05,
+                      }}
                     >
-                      <div className="w-[72px] h-[72px] rounded-full overflow-hidden mb-4 bg-neutral-300">
+                      <div className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden mb-4 bg-neutral-300">
                         {media?.url && (
                           <Image
                             src={media.url}
@@ -129,20 +73,106 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                         )}
                       </div>
 
-                      <p className="text-sm">{member.name}</p>
-                      <p className="text-base mt-1">{member.position}</p>
+                      <p className="lg:text-base text-sm">{member.name}</p>
+                      <p className="lg:text-sm text-xs mt-1">{member.position}</p>
+                    </Motion>
+                  </a>
+                )
+              })}
+
+              {/* STACKED AVATARS */}
+              {remaining > 0 && (
+                <div
+                  className="flex flex-col items-center text-center lg:w-[100px] w-[80px] cursor-pointer"
+                  onClick={() => setShowAll(true)}
+                >
+                  <Motion
+                    className="flex flex-col items-center text-center"
+                    {...motionGridItemProps}
+                    transition={{
+                      duration: 0.4,
+                      ease: 'easeOut',
+                      delay: maxVisible * 0.05,
+                    }}
+                  >
+                    <div className="flex items-center mb-4">
+                      {members?.slice(maxVisible, maxVisible + 3).map((member, index) => {
+                        const media = member.image as Media | null
+
+                        return (
+                          <div
+                            key={index}
+                            className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden bg-neutral-300 border border-primary -ml-4 first:ml-0"
+                          >
+                            {media?.url && (
+                              <Image
+                                src={media.url}
+                                alt={member.name || 'member'}
+                                width={72}
+                                height={72}
+                                className="object-cover w-full h-full"
+                              />
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+
+                    <p className="lg:text-sm text-xs">{remaining}+ Orchestrators</p>
+                    <p className="lg:text-base text-sm mt-1">
+                      <u>Meet the Team</u>
+                    </p>
+                  </Motion>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* EXPANDED GRID VIEW */}
+          {showAll && (
+            <>
+              <div className="grid grid-cols-2 lg:grid-cols-4 lg:gap-10 gap-4">
+                {members?.map((member, index) => {
+                  const media = member.image as Media | null
+
+                  return (
+                    <Link href={member.linkedin || '#'} key={index} className="flex flex-col items-center text-center">
+                      <Motion
+                        className="flex flex-col items-center text-center"
+                        {...motionGridItemProps}
+                        transition={{
+                          duration: 0.4,
+                          ease: 'easeOut',
+                          delay: index * 0.05,
+                        }}
+                      >
+                        <div className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden mb-4 bg-neutral-300">
+                          {media?.url && (
+                            <Image
+                              src={media.url}
+                              alt={member.name || 'member'}
+                              width={72}
+                              height={72}
+                              className="object-cover w-full h-full"
+                            />
+                          )}
+                        </div>
+
+                        <p className="lg:text-sm text-xs">{member.name}</p>
+                        <p className="lg:text-base text-sm mt-1">{member.position}</p>
+                      </Motion>
                     </Link>
                   )
                 })}
               </div>
 
               {/* Collapse Button */}
-              <div className="flex justify-center mt-10">
+              <div className="flex justify-center lg:mt-10 mt-4">
                 <button
                   onClick={() => setShowAll(false)}
-                  className="text-sm text-white/70 hover:text-white transition"
+                  className="lg:text-sm text-xs text-white/70 hover:text-white transition"
                 >
-                  Show Less
+                  <u>Show Less</u>
                 </button>
               </div>
             </>

@@ -1,40 +1,36 @@
-import { defaultLexical } from '@/fields/defaultLexical'
+import Capability from '@/collections/capability'
+import Industry from '@/collections/industry'
+import Job from '@/collections/job'
+import Media from '@/collections/media'
+import Model from '@/collections/model'
+import Scale from '@/collections/scale'
+import Solution from '@/collections/solution'
+import Story from '@/collections/story'
+import Team from '@/collections/team'
+import User from '@/collections/user'
 import Footer from '@/globals/footer'
 import Header from '@/globals/header'
 import Homepage from '@/globals/homepage'
+import CareersPage from '@/globals/pages/careers'
+import plugins from '@/plugins'
+import { getServerSideURL } from '@/utilities/getURL'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
-import Capability from './collections/capability'
-import Industry from './collections/industry'
-import Job from './collections/job'
-import { Media } from './collections/Media'
-import Model from './collections/model'
-import Scale from './collections/scale'
-import Solution from './collections/solution'
-import Story from './collections/story'
-import { Users } from './collections/Users'
-import { plugins } from './plugins'
-import { getServerSideURL } from './utilities/getURL'
+import About from './globals/about'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    components: {
-      // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below.
-      beforeLogin: ['@/components/BeforeLogin'],
-      // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below.
-      beforeDashboard: ['@/components/BeforeDashboard'],
-    },
+    components: {},
     importMap: {
       baseDir: path.resolve(dirname),
     },
-    user: Users.slug,
+    user: User.slug,
     livePreview: {
       breakpoints: [
         {
@@ -58,14 +54,13 @@ export default buildConfig({
       ],
     },
   },
-  // This config helps us configure global or default features that the other editors can inherit
-  editor: defaultLexical,
+  editor: lexicalEditor(),
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Media, Users, Story, Capability, Solution, Industry, Scale, Model, Job],
+  collections: [Media, User, Story, Capability, Solution, Industry, Scale, Model, Job, Team],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, Homepage],
+  globals: [Header, Footer, Homepage, CareersPage, About],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

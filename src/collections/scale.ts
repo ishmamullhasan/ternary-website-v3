@@ -7,9 +7,9 @@ const Scale: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`scale_${doc.slug}`)
+          revalidateTag(`scale_${doc.slug}`, 'max')
         }
-        revalidateTag('scale')
+        revalidateTag('scale', 'max')
       },
     ],
   },

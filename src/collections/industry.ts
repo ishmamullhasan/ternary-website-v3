@@ -7,9 +7,9 @@ const Industry: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`industry_${doc.slug}`)
+          revalidateTag(`industry_${doc.slug}`, 'max')
         }
-        revalidateTag('industry')
+        revalidateTag('industry', 'max')
       },
     ],
   },

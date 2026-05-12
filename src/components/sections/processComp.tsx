@@ -1,15 +1,13 @@
 'use client'
 
-import type { RichText } from '@/components/RichText'
-import RichTextComp from '@/components/RichText'
-import { Media } from '@/payload-types'
-import Image from 'next/image'
+import Motion from '@/components/animation/motion'
+import type { RichText } from '@/components/richtext'
+import RichTextComp from '@/components/richtext'
 import type { JSX } from 'react'
 
 interface ProcessCompProps {
   heading?: string | null
   description?: string | null
-  image?: Media | null
   process?:
     | {
         title?: string | null
@@ -18,57 +16,44 @@ interface ProcessCompProps {
     | null
 }
 
-export default function ProcessComp({ heading, description, image, process }: ProcessCompProps) {
-  return (
-    <section className=" bg-[#1B1A17] p-10 pb-20">
-      <div className="w-full flex flex-row justify-between space-x-8">
-        {/* LEFT SIDE */}
-        <div className=" space-y-5">
-          <div className="mb-20">
-            <h2 className="text-2xl font-light mb-3">{heading}</h2>
-            <p className=" text-sm ">{description}</p>
-          </div>
-          <div className="space-y-10">
-            {/* <div ></div> */}
-            {process?.slice(0, 2).map((item, index): JSX.Element => {
-              return (
-                <div key={index}>
-                  <p className="text-base mb-2">{`0${index + 1}`}</p>
-                  <h3 className="text-base mb-3">{item.title}</h3>
-                  <div className="">
-                    <RichTextComp content={item.description as RichText} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-        {/* CENTER IMAGE */}
-        <div className="">
-          <div className="bg-black rounded-xl w-[280px] h-[900px] p-4">
-            <Image
-              src={(image as Media)?.url || '/process.svg'}
-              alt={(image as Media)?.alt || 'Process Illustration'}
-              width={(image as Media)?.width || 200}
-              height={(image as Media)?.height || 900}
-              className="object-contain w-full h-full"
-            />
-          </div>
-        </div>
+const motionGridItemProps = {
+  initial: { opacity: 0, scale: 0.985 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false, amount: 0.35 as const },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+}
 
-        {/* RIGHT SIDE */}
-        <div className=" space-y-10 pt-30">
-          {process?.slice(2).map(
-            (item, index): JSX.Element => (
-              <div key={index}>
-                <p className="text-base mb-2">{`0${index + 3}`}</p>
-                <h3 className="text-sm mb-3">{item.title}</h3>
+export default function ProcessComp({ heading, description, process }: ProcessCompProps) {
+  return (
+    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
+      {/* top header */}
+      <div className="lg:mb-15 mb-4 lg:w-2/5">
+        <p className="lg:text-base text-sm lg:not-first:max-w-[500px] mb-3 text-[#D5D5D5]">{description}</p>
+        <h2 className="lg:text-2xl text-xl font-semibold">{heading}</h2>
+      </div>
+      {/* process grid */}
+      <div className="flex flex-row">
+        <div className="lg:w-1/5"> </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2  gap-4 lg:pt-10 pt-4 w-full lg:w-4/5 lg:pl-8">
+          {process?.map((item, index): JSX.Element => {
+            return (
+              <Motion
+                key={index}
+                {...motionGridItemProps}
+                transition={{
+                  duration: 0.4,
+                  ease: 'easeOut',
+                  delay: index * 0.05,
+                }}
+              >
+                <p className="lg:text-base text-sm mb-2">{`0${index + 1}`}</p>
+                <h3 className="lg:text-base text-sm mb-3">{item.title}</h3>
                 <div className="">
                   <RichTextComp content={item.description as RichText} />
                 </div>
-              </div>
-            ),
-          )}
+              </Motion>
+            )
+          })}
         </div>
       </div>
     </section>

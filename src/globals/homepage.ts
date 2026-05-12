@@ -4,14 +4,23 @@ import { GlobalConfig } from 'payload'
 const Homepage: GlobalConfig = {
   slug: 'homepage',
   label: 'Homepage',
+  admin: {
+    group: 'Pages',
+  },
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('global_homepage')
+        revalidateTag('global_homepage', 'max')
       },
     ],
   },
   fields: [
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'richText',
+      required: false,
+    },
     {
       name: 'about',
       type: 'group',
@@ -295,13 +304,6 @@ const Homepage: GlobalConfig = {
           name: 'description',
           label: 'Description',
           type: 'textarea',
-          required: false,
-        },
-        {
-          name: 'image',
-          label: 'Image',
-          type: 'upload',
-          relationTo: 'media',
           required: false,
         },
         {
