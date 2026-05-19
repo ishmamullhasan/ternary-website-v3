@@ -77,6 +77,7 @@ export interface Config {
     model: Model
     job: Job
     team: Team
+    legal: Legal
     'payload-kv': PayloadKv
     'payload-folders': FolderInterface
     'payload-locked-documents': PayloadLockedDocument
@@ -99,6 +100,7 @@ export interface Config {
     model: ModelSelect<false> | ModelSelect<true>
     job: JobSelect<false> | JobSelect<true>
     team: TeamSelect<false> | TeamSelect<true>
+    legal: LegalSelect<false> | LegalSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -502,9 +504,15 @@ export interface Job {
   generateSlug?: boolean | null
   slug: string
   title?: string | null
+  button?: {
+    label?: string | null
+    link?: string | null
+  }
   team?: string | null
   department?: string | null
+  type?: string | null
   location?: string | null
+  salary?: string | null
   excerpts?: string | null
   description?: {
     root: {
@@ -526,6 +534,64 @@ export interface Job {
   closed?: string | null
   image?: (string | null) | Media
   active?: boolean | null
+  details?: {
+    item1?: {
+      title?: string | null
+      description?: string | null
+    }
+    item2?: {
+      title?: string | null
+      points?:
+        | {
+            point?: string | null
+            id?: string | null
+          }[]
+        | null
+    }
+    item3?: {
+      title?: string | null
+      points?:
+        | {
+            point?: string | null
+            id?: string | null
+          }[]
+        | null
+    }
+    item4?: {
+      title?: string | null
+      points?:
+        | {
+            point?: string | null
+            id?: string | null
+          }[]
+        | null
+    }
+  }
+  interviewProcess?: {
+    heading?: string | null
+    steps?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  openRoles?: {
+    heading?: string | null
+    description?: string | null
+    jobs?: (string | Job)[] | null
+  }
+  cta?: {
+    subheading?: string | null
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
   updatedAt: string
   createdAt: string
 }
@@ -541,6 +607,36 @@ export interface Team {
   description: string
   image: string | Media
   linkedin?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal".
+ */
+export interface Legal {
+  id: string
+  title?: string | null
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  content?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
   updatedAt: string
   createdAt: string
 }
@@ -607,6 +703,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'team'
         value: string | Team
+      } | null)
+    | ({
+        relationTo: 'legal'
+        value: string | Legal
       } | null)
     | ({
         relationTo: 'payload-folders'
@@ -865,9 +965,17 @@ export interface JobSelect<T extends boolean = true> {
   generateSlug?: T
   slug?: T
   title?: T
+  button?:
+    | T
+    | {
+        label?: T
+        link?: T
+      }
   team?: T
   department?: T
+  type?: T
   location?: T
+  salary?: T
   excerpts?: T
   description?: T
   level?: T
@@ -875,6 +983,82 @@ export interface JobSelect<T extends boolean = true> {
   closed?: T
   image?: T
   active?: T
+  details?:
+    | T
+    | {
+        item1?:
+          | T
+          | {
+              title?: T
+              description?: T
+            }
+        item2?:
+          | T
+          | {
+              title?: T
+              points?:
+                | T
+                | {
+                    point?: T
+                    id?: T
+                  }
+            }
+        item3?:
+          | T
+          | {
+              title?: T
+              points?:
+                | T
+                | {
+                    point?: T
+                    id?: T
+                  }
+            }
+        item4?:
+          | T
+          | {
+              title?: T
+              points?:
+                | T
+                | {
+                    point?: T
+                    id?: T
+                  }
+            }
+      }
+  interviewProcess?:
+    | T
+    | {
+        heading?: T
+        steps?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              id?: T
+            }
+      }
+  openRoles?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        jobs?: T
+      }
+  cta?:
+    | T
+    | {
+        subheading?: T
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
 }
@@ -889,6 +1073,18 @@ export interface TeamSelect<T extends boolean = true> {
   description?: T
   image?: T
   linkedin?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal_select".
+ */
+export interface LegalSelect<T extends boolean = true> {
+  title?: T
+  generateSlug?: T
+  slug?: T
+  content?: T
   updatedAt?: T
   createdAt?: T
 }

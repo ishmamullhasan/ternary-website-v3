@@ -4,6 +4,7 @@ import { Section } from '@/components/layout/section'
 import type { Job } from '@/payload-types'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { motion } from 'motion/react'
+import Link from 'next/link'
 import type { JSX } from 'react'
 import { useState } from 'react'
 
@@ -160,13 +161,15 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
                 </div>
 
                 <div className="mt-auto flex justify-end">
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 border border-zinc-600 text-zinc-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all group"
-                  >
-                    Learn More
-                    <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" aria-hidden />
-                  </button>
+                  <Link href={`/job/${job.slug}`} key={job.id}>
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 border border-zinc-600 text-zinc-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all group"
+                    >
+                      Learn More
+                      <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" aria-hidden />
+                    </button>
+                  </Link>
                 </div>
               </motion.div>
             ),

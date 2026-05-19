@@ -1,6 +1,7 @@
 import Capability from '@/collections/capability'
 import Industry from '@/collections/industry'
 import Job from '@/collections/job'
+import Legal from '@/collections/legal'
 import Media from '@/collections/media'
 import Model from '@/collections/model'
 import Scale from '@/collections/scale'
@@ -10,8 +11,8 @@ import Team from '@/collections/team'
 import User from '@/collections/user'
 import Footer from '@/globals/footer'
 import Header from '@/globals/header'
-import Homepage from '@/globals/homepage'
 import CareersPage from '@/globals/pages/careers'
+import Homepage from '@/globals/pages/homepage'
 import plugins from '@/plugins'
 import { getServerSideURL } from '@/utilities/getURL'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
@@ -20,7 +21,7 @@ import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
-import About from './globals/about'
+import About from './globals/pages/about'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -58,7 +59,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Media, User, Story, Capability, Solution, Industry, Scale, Model, Job, Team],
+  collections: [Media, User, Story, Capability, Solution, Industry, Scale, Model, Job, Team, Legal],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer, Homepage, CareersPage, About],
   plugins,

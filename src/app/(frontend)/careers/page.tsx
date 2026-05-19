@@ -4,13 +4,13 @@ import GridOne from '@/components/grids/one'
 import GridThree from '@/components/grids/three'
 import GridTwo from '@/components/grids/two'
 import { Section } from '@/components/layout/section'
+import Jobs from '@/components/sections/job'
 import type { Job, Media, Team } from '@/payload-types'
 import { CareersPage } from '@/payload-types'
 import config from '@/payload.config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
-import Jobs from './jobs'
 
 export default async function Page(): Promise<JSX.Element> {
   const getCareersPageData = unstable_cache(
