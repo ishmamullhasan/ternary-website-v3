@@ -567,12 +567,27 @@ export interface Job {
         | null
     }
   }
+  teamBox?: {
+    reportingToName?: string | null
+    reportingToRole?: string | null
+    podSize?: string | null
+    crossFunctional?: string | null
+  }
+  compensationBox?: {
+    base?: string | null
+    equity?: string | null
+    note?: string | null
+  }
   interviewProcess?: {
     heading?: string | null
     steps?:
       | {
           title?: string | null
           excerpt?: string | null
+          /**
+           * e.g. 30m, 1h
+           */
+          duration?: string | null
           id?: string | null
         }[]
       | null
@@ -1026,6 +1041,21 @@ export interface JobSelect<T extends boolean = true> {
                   }
             }
       }
+  teamBox?:
+    | T
+    | {
+        reportingToName?: T
+        reportingToRole?: T
+        podSize?: T
+        crossFunctional?: T
+      }
+  compensationBox?:
+    | T
+    | {
+        base?: T
+        equity?: T
+        note?: T
+      }
   interviewProcess?:
     | T
     | {
@@ -1035,6 +1065,7 @@ export interface JobSelect<T extends boolean = true> {
           | {
               title?: T
               excerpt?: T
+              duration?: T
               id?: T
             }
       }

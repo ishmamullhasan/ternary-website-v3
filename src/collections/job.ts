@@ -266,6 +266,66 @@ const Job: CollectionConfig = {
     },
 
     {
+      name: 'teamBox',
+      label: 'The Team (Sidebar)',
+      type: 'group',
+      required: false,
+      fields: [
+        {
+          name: 'reportingToName',
+          label: 'Reporting To (Name)',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'reportingToRole',
+          label: 'Reporting To (Role)',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'podSize',
+          label: 'Pod Size',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'crossFunctional',
+          label: 'Cross-Functional',
+          type: 'text',
+          required: false,
+        },
+      ],
+    },
+
+    {
+      name: 'compensationBox',
+      label: 'Compensation (Sidebar)',
+      type: 'group',
+      required: false,
+      fields: [
+        {
+          name: 'base',
+          label: 'Base Salary',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'equity',
+          label: 'Equity',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'note',
+          label: 'Note',
+          type: 'textarea',
+          required: false,
+        },
+      ],
+    },
+
+    {
       name: 'interviewProcess',
       label: 'Interview Process',
       type: 'group',
@@ -294,6 +354,15 @@ const Job: CollectionConfig = {
               label: 'Excerpt',
               type: 'textarea',
               required: false,
+            },
+            {
+              name: 'duration',
+              label: 'Duration',
+              type: 'text',
+              required: false,
+              admin: {
+                description: 'e.g. 30m, 1h',
+              },
             },
           ],
         },

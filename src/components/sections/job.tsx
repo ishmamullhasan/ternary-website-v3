@@ -1,6 +1,7 @@
 'use client'
 
 import { Section } from '@/components/layout/section'
+import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
 import type { Job } from '@/payload-types'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { motion } from 'motion/react'
@@ -10,6 +11,8 @@ import { useState } from 'react'
 
 interface JobsProps {
   jobs: Job[]
+  heading?: string
+  description?: string
 }
 
 const fadeUp = {
@@ -17,7 +20,7 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 }
 
-export default function Jobs({ jobs }: JobsProps): JSX.Element {
+export default function Jobs({ jobs, heading, description }: JobsProps): JSX.Element {
   if (!jobs) {
     return (
       <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
@@ -62,10 +65,17 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
     }
     return true
   })
+
+  const inputClass = `w-full bg-transparent border ${careersBorder.input} ${careersText.body} py-2 px-4 rounded-md focus:outline-none focus:border-[#757571] hover:border-[#52525b] transition-colors text-sm`
+  const selectClass = `appearance-none bg-transparent border ${careersBorder.input} ${careersText.body} py-2 pl-4 pr-10 rounded-md focus:outline-none focus:border-[#757571] hover:border-[#52525b] transition-colors text-sm cursor-pointer`
+
   return (
     <Section
-      title="Open Roles"
-      desc="Openings for engineers wanting production ownership, technical growth, and operational impact. Roles include client collaboration, architecture, and system responsibility."
+      title={heading || 'Open Roles'}
+      desc={
+        description ||
+        'Openings for engineers wanting production ownership, technical growth, and operational impact. Roles include client collaboration, architecture, and system responsibility.'
+      }
     >
       <motion.div
         className="flex flex-col lg:flex-row lg:items-center gap-6 mb-8"
@@ -84,14 +94,14 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search by title, code, department, level..."
-            className="w-full bg-transparent border border-zinc-700 text-zinc-300 py-2 px-4 rounded-md focus:outline-none focus:border-zinc-500 hover:border-zinc-600 transition-colors text-sm"
+            className={inputClass}
           />
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-sm text-zinc-400 font-medium">Filter</label>
+          <label className={`text-sm ${careersText.muted} font-medium`}>Filter</label>
           <div className="relative">
             <select
-              className="appearance-none bg-transparent border border-zinc-700 text-zinc-300 py-2 pl-4 pr-10 rounded-md focus:outline-none focus:border-zinc-500 hover:border-zinc-600 transition-colors text-sm cursor-pointer min-w-[200px]"
+              className={`${selectClass} min-w-[200px]`}
               value={selectedDepartment}
               onChange={(event) => setSelectedDepartment(event.target.value)}
             >
@@ -103,17 +113,17 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
               ))}
             </select>
             <ChevronDown
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
+              className={`absolute right-3 top-1/2 -translate-y-1/2 ${careersText.muted} pointer-events-none`}
               size={16}
               aria-hidden
             />
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-sm text-zinc-400 font-medium">Experience Level</label>
+          <label className={`text-sm ${careersText.muted} font-medium`}>Experience Level</label>
           <div className="relative">
             <select
-              className="appearance-none bg-transparent border border-zinc-700 text-zinc-300 py-2 pl-4 pr-10 rounded-md focus:outline-none focus:border-zinc-500 hover:border-zinc-600 transition-colors text-sm cursor-pointer min-w-[160px]"
+              className={`${selectClass} min-w-[160px]`}
               value={selectedLevel}
               onChange={(event) => setSelectedLevel(event.target.value)}
             >
@@ -125,7 +135,7 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
               ))}
             </select>
             <ChevronDown
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
+              className={`absolute right-3 top-1/2 -translate-y-1/2 ${careersText.muted} pointer-events-none`}
               size={16}
               aria-hidden
             />
@@ -139,15 +149,17 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
             (job: Job): JSX.Element => (
               <motion.div
                 key={job.id}
-                className="bg-main border border-zinc-800 rounded-xl p-6 flex flex-col hover:border-zinc-700 transition-colors duration-300"
+                className={`${careersBg.card} border ${careersBorder.subtle} rounded-xl p-6 flex flex-col transition-colors duration-300`}
                 initial={fadeUp.initial}
                 animate={fadeUp.animate}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 whileHover={{ y: -2 }}
               >
                 <div className="flex justify-between items-start mb-5 gap-3">
-                  <h3 className="text-xl font-semibold text-white tracking-tight">{job.title}</h3>
-                  <span className="shrink-0 bg-[#202020] text-zinc-300 px-3 py-1 rounded-full text-xs font-medium tracking-wide">
+                  <h3 className={`text-xl font-semibold ${careersText.white} tracking-tight`}>{job.title}</h3>
+                  <span
+                    className={`shrink-0 ${careersBg.badge} ${careersText.body} px-3 py-1 rounded-full text-xs font-medium tracking-wide`}
+                  >
                     {job.code}
                   </span>
                 </div>
@@ -155,7 +167,7 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
                 <div className="space-y-2 mb-6">
                   {job.excerpts && (
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                      <div className="text-zinc-400 flex items-center gap-1">{job.excerpts}</div>
+                      <div className={`${careersText.muted} flex items-center gap-1`}>{job.excerpts}</div>
                     </div>
                   )}
                 </div>
@@ -164,7 +176,7 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
                   <Link href={`/job/${job.slug}`} key={job.id}>
                     <button
                       type="button"
-                      className="flex items-center gap-2 border border-zinc-600 text-zinc-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-800 hover:text-white transition-all group"
+                      className={`flex items-center gap-2 border ${careersBorder.muted} ${careersText.body} px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#0F0E0E] hover:text-white transition-all group`}
                     >
                       Learn More
                       <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" aria-hidden />
@@ -176,13 +188,13 @@ export default function Jobs({ jobs }: JobsProps): JSX.Element {
           )
         ) : (
           <motion.div
-            className="col-span-full text-center text-zinc-400"
+            className={`col-span-full text-center ${careersText.muted}`}
             initial={fadeUp.initial}
             animate={fadeUp.animate}
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
-            <p className="text-lg font-medium text-zinc-400">No jobs found.</p>
-            <p className="text-sm text-zinc-400">Please try again later.</p>
+            <p className={`text-lg font-medium ${careersText.muted}`}>No jobs found.</p>
+            <p className={`text-sm ${careersText.muted}`}>Please try again later.</p>
           </motion.div>
         )}
       </div>
