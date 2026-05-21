@@ -33,7 +33,7 @@ export function Section({ title = '', desc = '', children, className = '' }: Sec
               {title}
             </h2>
           ) : null}
-          {desc?.trim() ? <p className="max-w-none lg:max-w-2xl text-zinc-400 lg:text-base text-sm">{desc}</p> : null}
+          {desc?.trim() ? <p className="max-w-none lg:max-w-2xl text-[#D5D5D5] lg:text-base text-sm">{desc}</p> : null}
         </Motion>
       ) : null}
       {children}
