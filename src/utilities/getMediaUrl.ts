@@ -18,6 +18,11 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     return cacheTag ? `${url}?${cacheTag}` : url
   }
 
+  // Same-origin relative paths must stay relative so SSR and client hydration match.
+  if (url.startsWith('/')) {
+    return cacheTag ? `${url}?${cacheTag}` : url
+  }
+
   // Otherwise prepend client-side URL
   const baseUrl = getClientSideURL()
   return cacheTag ? `${baseUrl}${url}?${cacheTag}` : `${baseUrl}${url}`
