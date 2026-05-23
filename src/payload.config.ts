@@ -21,6 +21,7 @@ import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
+import LegalCenter from './globals/legal-center'
 import About from './globals/pages/about'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -61,7 +62,7 @@ export default buildConfig({
   }),
   collections: [Media, User, Story, Capability, Solution, Industry, Scale, Model, Job, Team, Legal],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, Homepage, CareersPage, About],
+  globals: [Header, Footer, Homepage, CareersPage, About, LegalCenter],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

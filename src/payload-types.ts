@@ -117,6 +117,7 @@ export interface Config {
     homepage: Homepage
     careersPage: CareersPage
     about: About
+    'legal-center': LegalCenter
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
@@ -124,6 +125,7 @@ export interface Config {
     homepage: HomepageSelect<false> | HomepageSelect<true>
     careersPage: CareersPageSelect<false> | CareersPageSelect<true>
     about: AboutSelect<false> | AboutSelect<true>
+    'legal-center': LegalCenterSelect<false> | LegalCenterSelect<true>
   }
   locale: null
   widgets: {
@@ -637,6 +639,21 @@ export interface Legal {
    */
   generateSlug?: boolean | null
   slug: string
+  code?: string | null
+  lastupdated?: string | null
+  downloadLink?: string | null
+  /**
+   * Optional. Falls back to the page title in the Legal Center sidebar.
+   */
+  menuLabel?: string | null
+  /**
+   * Optional icon shown beside this page in the Legal Center sidebar.
+   */
+  menuIcon?: ('shield' | 'file-text' | 'scale') | null
+  /**
+   * Lower numbers appear first in the sidebar. Leave empty to sort by title.
+   */
+  menuOrder?: number | null
   content?: {
     root: {
       type: string
@@ -652,6 +669,19 @@ export interface Legal {
     }
     [k: string]: unknown
   } | null
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
   updatedAt: string
   createdAt: string
 }
@@ -1115,7 +1145,32 @@ export interface LegalSelect<T extends boolean = true> {
   title?: T
   generateSlug?: T
   slug?: T
+  code?: T
+  lastupdated?: T
+  downloadLink?: T
+  menuLabel?: T
+  menuIcon?: T
+  menuOrder?: T
   content?: T
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
 }
@@ -1629,6 +1684,20 @@ export interface About {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal-center".
+ */
+export interface LegalCenter {
+  id: string
+  heading?: string | null
+  description?: string | null
+  menuTitle?: string | null
+  noticeTitle?: string | null
+  noticeDescription?: string | null
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2104,6 +2173,20 @@ export interface AboutSelect<T extends boolean = true> {
               link?: T
             }
       }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal-center_select".
+ */
+export interface LegalCenterSelect<T extends boolean = true> {
+  heading?: T
+  description?: T
+  menuTitle?: T
+  noticeTitle?: T
+  noticeDescription?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T
