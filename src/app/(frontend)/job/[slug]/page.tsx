@@ -1,9 +1,10 @@
 import Motion from '@/components/animation/motion'
+import InterviewProcess from '@/components/sections/interviewProcess'
 import Jobs from '@/components/sections/job'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
 import type { Job, Media } from '@/payload-types'
 import config from '@/payload.config'
-import { ArrowLeft, ArrowRight, Clock, DollarSign, GitCommitHorizontal, Minus, ShieldAlert, Users } from 'lucide-react'
+import { ArrowLeft, ArrowRight, DollarSign, GitCommitHorizontal, Minus, ShieldAlert, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
@@ -119,9 +120,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             <Motion className="flex items-center justify-between mb-10" {...motionBlockProps}>
               <Link
                 href="/careers"
-                className={`flex items-center gap-2 text-sm ${careersText.muted} hover:text-[#D5D5D5] transition-colors group`}
+                className={`flex items-center gap-2 text-base ${careersText.muted} hover:text-[#D5D5D5] transition-colors group`}
               >
-                <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+                <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform " />
                 Careers Hub
               </Link>
 
@@ -132,14 +133,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 {jobData.button?.label && jobData.button.link ? (
                   <Link
                     href={jobData.button.link}
-                    className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-sm px-5 py-2.5 rounded-lg transition-colors duration-200`}
+                    className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-base px-5 py-2.5 rounded-lg transition-colors duration-200`}
                   >
                     {jobData.button.label}
                   </Link>
                 ) : (
                   <button
                     type="button"
-                    className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-sm px-5 py-2.5 rounded-lg transition-colors duration-200`}
+                    className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-base px-5 py-2.5 rounded-lg transition-colors duration-200`}
                   >
                     {jobData.button?.label || 'Apply Now'}
                   </button>
@@ -153,7 +154,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               transition={{ ...motionBlockProps.transition, delay: 0.06 }}
             >
               <h1 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">{jobData.title}</h1>
-              <ul className="flex flex-wrap items-center gap-x-4 gap-y-2 list-none text-xs md:text-sm text-[#757571]">
+              <ul className="flex flex-wrap items-center gap-x-4 gap-y-2 list-none text-base text-[#757571]">
                 {jobData.type && (
                   <li className="flex items-center gap-1.5 before:content-['•'] before:text-[#757571]">
                     Type: <span className="text-[#D5D5D5] font-medium">{jobData.type}</span>
@@ -195,7 +196,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             <div className="lg:col-span-2 space-y-16">
               {jobData.details?.item1 && (jobData.details.item1.title || jobData.details.item1.description) && (
                 <Motion className="space-y-4" {...motionBlockProps}>
-                  <h2 className="text-sm font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
+                  <h2 className="text-xs font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
                     <Minus size={16} className="text-[#757571]" aria-hidden="true" />
                     {jobData.details.item1.title || 'The Mission'}
                   </h2>
@@ -211,13 +212,16 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                   {...motionBlockProps}
                   transition={{ ...motionBlockProps.transition, delay: 0.05 }}
                 >
-                  <h2 className="text-sm font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
+                  <h2 className="text-xs font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
                     <Minus size={20} className="text-[#757571]" aria-hidden="true" />
                     {jobData.details.item2.title || "What you'll do"}
                   </h2>
                   <ul className="space-y-3.5">
                     {jobData.details.item2.points.map((p, idx) => (
-                      <li key={p.id || idx} className="flex items-center gap-3 text-sm text-[#D5D5D5] leading-relaxed">
+                      <li
+                        key={p.id || idx}
+                        className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed"
+                      >
                         <ArrowRight size={16} className="text-[#757571] shrink-0" aria-hidden="true" />
                         <span>{p.point}</span>
                       </li>
@@ -232,13 +236,16 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                   {...motionBlockProps}
                   transition={{ ...motionBlockProps.transition, delay: 0.08 }}
                 >
-                  <h2 className="text-sm font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
+                  <h2 className="text-xs font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
                     <Minus size={20} className="text-[#757571]" aria-hidden="true" />
                     {jobData.details.item3.title || 'Who you are (Must-Haves)'}
                   </h2>
                   <ul className="space-y-3.5">
                     {jobData.details.item3.points.map((p, idx) => (
-                      <li key={p.id || idx} className="flex items-center gap-3 text-sm text-[#D5D5D5] leading-relaxed">
+                      <li
+                        key={p.id || idx}
+                        className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed"
+                      >
                         <ShieldAlert size={16} className="text-[#757571] shrink-0" aria-hidden="true" />
                         <span>{p.point}</span>
                       </li>
@@ -253,13 +260,16 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                   {...motionBlockProps}
                   transition={{ ...motionBlockProps.transition, delay: 0.1 }}
                 >
-                  <h2 className="text-sm font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
+                  <h2 className="text-xs font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
                     <Minus size={20} className="text-[#757571]" aria-hidden="true" />
                     {jobData.details.item4.title || 'Nice-to-Haves:'}
                   </h2>
                   <ul className="space-y-3.5">
                     {jobData.details.item4.points.map((p, idx) => (
-                      <li key={p.id || idx} className="flex items-center gap-3 text-sm text-[#D5D5D5] leading-relaxed">
+                      <li
+                        key={p.id || idx}
+                        className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed"
+                      >
                         <GitCommitHorizontal size={16} className="text-[#757571] shrink-0" aria-hidden="true" />
                         <span>{p.point}</span>
                       </li>
@@ -277,22 +287,22 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                     {...motionBlockProps}
                     transition={{ ...motionBlockProps.transition, delay: 0.06 }}
                   >
-                    <div className="flex items-center gap-2.5 pb-2 border-b border-[#27272a] text-[#D5D5D5]">
-                      <Users size={18} className="text-[#757571]" />
-                      <h3 className="text-sm font-medium">The Team</h3>
+                    <div className="flex items-center gap-2.5 pb-2 text-[#D5D5D5]">
+                      <Users size={18} className="" />
+                      <h3 className="text-base font-medium">The Team</h3>
                     </div>
 
-                    <div className="space-y-4 text-xs">
+                    <div className="space-y-4">
                       {(jobData.teamBox?.reportingToName || jobData.teamBox?.reportingToRole) && (
                         <div>
-                          <span className="text-[#757571] block mb-1">Reporting to</span>
+                          <span className="text-[#757571] block mb-1 text-sm">Reporting to</span>
                           {jobData.teamBox?.reportingToName && (
-                            <span className="text-[#D5D5D5] block text-sm font-medium">
+                            <span className="text-[#D5D5D5] block text-base font-medium">
                               {jobData.teamBox.reportingToName}
                             </span>
                           )}
                           {jobData.teamBox?.reportingToRole && (
-                            <span className="text-[#757571] block">{jobData.teamBox.reportingToRole}</span>
+                            <span className="text-[#757571]  text-base block">{jobData.teamBox.reportingToRole}</span>
                           )}
                         </div>
                       )}
@@ -303,8 +313,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                             <hr className="border-[#757571]" />
                           )}
                           <div>
-                            <span className="text-[#757571] block mb-1">Pod Size</span>
-                            <span className="text-[#D5D5D5] block text-sm font-medium">{jobData.teamBox.podSize}</span>
+                            <span className="text-[#757571] block mb-1 text-sm">Pod Size</span>
+                            <span className="text-[#D5D5D5] block text-base font-medium">
+                              {jobData.teamBox.podSize}
+                            </span>
                           </div>
                         </>
                       )}
@@ -313,8 +325,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                         <>
                           <hr className="border-[#757571]" />
                           <div>
-                            <span className="text-[#757571] block mb-1">Cross-Functional</span>
-                            <span className="text-[#D5D5D5] block text-sm font-medium">
+                            <span className="text-[#757571] block mb-1 text-sm">Cross-Functional</span>
+                            <span className="text-[#D5D5D5] block text-base font-medium">
                               {jobData.teamBox.crossFunctional}
                             </span>
                           </div>
@@ -331,15 +343,15 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                     transition={{ ...motionBlockProps.transition, delay: 0.1 }}
                   >
                     <div className="flex items-center gap-2.5 pb-2 text-[#D5D5D5]">
-                      <DollarSign size={18} className="text-[#757571]" />
-                      <h3 className="text-sm font-medium">Compensation</h3>
+                      <DollarSign size={18} />
+                      <h3 className="text-base font-medium">Compensation</h3>
                     </div>
 
-                    <div className="space-y-3.5 text-xs">
+                    <div className="space-y-3.5 ">
                       {compensationBase && (
                         <div className="flex justify-between items-center gap-4">
-                          <span className="text-[#757571]">Base</span>
-                          <span className="text-[#D5D5D5] font-mono text-sm font-medium text-right">
+                          <span className="text-[#757571] text-sm">Base</span>
+                          <span className="text-[#D5D5D5] font-mono text-base font-medium text-right">
                             {compensationBase}
                           </span>
                         </div>
@@ -349,8 +361,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                         <>
                           {compensationBase && <hr className="border-[#757571]" />}
                           <div className="flex justify-between items-center gap-4 pb-4">
-                            <span className="text-[#757571]">Equity</span>
-                            <span className="text-[#D5D5D5] font-mono text-sm font-medium text-right">
+                            <span className="text-[#757571] text-sm">Equity</span>
+                            <span className="text-[#D5D5D5] font-mono text-base font-medium text-right">
                               {jobData.compensationBox.equity}
                             </span>
                           </div>
@@ -358,7 +370,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                       )}
 
                       {jobData.compensationBox?.note && (
-                        <p className="text-[#757571] bg-[#0F0E0E] p-2 leading-relaxed text-[11px] font-normal">
+                        <p className="text-[#757571] bg-[#0F0E0E] p-2 leading-relaxed text-sm font-normal">
                           {jobData.compensationBox.note}
                         </p>
                       )}
@@ -370,69 +382,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           </div>
         </Motion>
 
+        <InterviewProcess interviewProcess={jobData.interviewProcess} />
+
         {relatedJobs.length > 0 && (
           <Jobs
             jobs={relatedJobs}
             heading={jobData.openRoles?.heading || undefined}
             description={jobData.openRoles?.description || undefined}
           />
-        )}
-
-        {jobData.interviewProcess?.steps && jobData.interviewProcess.steps.length > 0 && (
-          <Motion tag="section" {...motionSectionProps}>
-            <div className={`w-full ${careersBg.card} border ${careersBorder.subtle} rounded-xl p-8 md:p-10`}>
-              <Motion className="flex items-center gap-3 mb-10 text-[#D5D5D5]" {...motionBlockProps}>
-                <Clock size={20} className="text-[#757571]" />
-                <h2 className="text-lg font-medium tracking-tight">
-                  {jobData.interviewProcess?.heading || 'Interview Process'}
-                </h2>
-              </Motion>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-                {jobData.interviewProcess.steps.map((step, index) => {
-                  const isLast = index === (jobData.interviewProcess?.steps?.length || 0) - 1
-
-                  return (
-                    <Motion
-                      key={step.id || index}
-                      className="flex flex-col relative"
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: false, amount: 0.2 }}
-                      transition={{ duration: 0.4, delay: index * 0.1, ease: 'easeOut' }}
-                    >
-                      <div className="flex items-center w-full mb-4 relative">
-                        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-transparent border border-[#3f3f46] text-[#757571] text-xs font-medium z-10 shrink-0">
-                          {index + 1}
-                        </div>
-
-                        {!isLast && (
-                          <div className="hidden md:block absolute left-7 right-0 h-px bg-linear-to-r from-[#3f3f46] to-[#27272a]" />
-                        )}
-                      </div>
-
-                      <div className="space-y-1.5 pr-4">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <h3 className="text-sm font-semibold text-[#D5D5D5] tracking-tight">
-                            {step.title || 'Initial Screen'}
-                          </h3>
-                          {step.duration && (
-                            <span className="text-xs text-[#757571] font-mono font-medium whitespace-nowrap">
-                              {step.duration}
-                            </span>
-                          )}
-                        </div>
-
-                        {step.excerpt && (
-                          <p className="text-sm text-[#757571] leading-relaxed max-w-[220px]">{step.excerpt}</p>
-                        )}
-                      </div>
-                    </Motion>
-                  )
-                })}
-              </div>
-            </div>
-          </Motion>
         )}
 
         {jobData.cta?.heading && (

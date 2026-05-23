@@ -637,6 +637,23 @@ export interface Legal {
    */
   generateSlug?: boolean | null
   slug: string
+  code?: string | null
+  lastupdated?: string | null
+  downloadLink?: string | null
+  legalMenu?: {
+    heading?: string | null
+    description?: string | null
+    title?: string | null
+    menuItems?:
+      | {
+          label?: string | null
+          link?: string | null
+          id?: string | null
+        }[]
+      | null
+    noticeTitle?: string | null
+    noticeDescription?: string | null
+  }
   content?: {
     root: {
       type: string
@@ -652,6 +669,15 @@ export interface Legal {
     }
     [k: string]: unknown
   } | null
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
   updatedAt: string
   createdAt: string
 }
@@ -1115,7 +1141,39 @@ export interface LegalSelect<T extends boolean = true> {
   title?: T
   generateSlug?: T
   slug?: T
+  code?: T
+  lastupdated?: T
+  downloadLink?: T
+  legalMenu?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        title?: T
+        menuItems?:
+          | T
+          | {
+              label?: T
+              link?: T
+              id?: T
+            }
+        noticeTitle?: T
+        noticeDescription?: T
+      }
   content?: T
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
 }
