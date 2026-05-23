@@ -42,69 +42,37 @@ const Legal: CollectionConfig = {
       required: false,
     },
     {
-      name: 'legalMenu',
-      type: 'group',
-      fields: [
-        { name: 'heading', type: 'text' },
-        { name: 'description', type: 'text' },
-
-        {
-          name: 'title',
-          label: 'Title',
-          type: 'text',
-          required: false,
-        },
-        {
-          name: 'menuItems',
-          type: 'array',
-          required: false,
-          fields: [
-            {
-              name: 'label',
-              type: 'text',
-              admin: {
-                description: 'Optional. Falls back to the linked legal page title.',
-              },
-            },
-            {
-              name: 'icon',
-              label: 'Icon',
-              type: 'select',
-              required: false,
-              options: [
-                { label: 'Shield', value: 'shield' },
-                { label: 'File text', value: 'file-text' },
-                { label: 'Scale', value: 'scale' },
-              ],
-              admin: {
-                description: 'Lucide icon shown beside the menu label.',
-              },
-            },
-            {
-              name: 'page',
-              label: 'Legal page',
-              type: 'relationship',
-              relationTo: 'legal',
-              required: true,
-            },
-          ],
-        },
-
-        {
-          name: 'noticeTitle',
-          label: 'Notice Title',
-          type: 'text',
-          required: false,
-        },
-        {
-          name: 'noticeDescription',
-          label: 'Notice Description',
-          type: 'text',
-          required: false,
-        },
-      ],
+      name: 'menuLabel',
+      label: 'Menu label',
+      type: 'text',
+      required: false,
+      admin: {
+        description: 'Optional. Falls back to the page title in the Legal Center sidebar.',
+      },
     },
-
+    {
+      name: 'menuIcon',
+      label: 'Menu icon',
+      type: 'select',
+      required: false,
+      options: [
+        { label: 'Shield', value: 'shield' },
+        { label: 'File text', value: 'file-text' },
+        { label: 'Scale', value: 'scale' },
+      ],
+      admin: {
+        description: 'Optional icon shown beside this page in the Legal Center sidebar.',
+      },
+    },
+    {
+      name: 'menuOrder',
+      label: 'Menu order',
+      type: 'number',
+      required: false,
+      admin: {
+        description: 'Lower numbers appear first in the sidebar. Leave empty to sort by title.',
+      },
+    },
     {
       name: 'content',
       label: 'Page Content',
@@ -136,8 +104,28 @@ const Legal: CollectionConfig = {
         },
 
         {
-          name: 'button',
-          label: 'Button',
+          name: 'button_1',
+          label: 'Button 1',
+          type: 'group',
+          required: false,
+          fields: [
+            {
+              name: 'label',
+              label: 'Label',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+        {
+          name: 'button_2',
+          label: 'Button 2',
           type: 'group',
           required: false,
           fields: [
