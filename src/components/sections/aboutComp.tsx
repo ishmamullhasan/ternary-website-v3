@@ -68,6 +68,7 @@ export default function AboutComp({ heading, description, items, organizations, 
                       height={(item.value.thumbnail as Media)?.height || 480}
                       width={(item.value.thumbnail as Media)?.width || 300}
                       className="object-cover w-full h-full"
+                      priority={index === 0}
                     />
                   ) : (
                     <div className="absolute inset-0 bg-linear-to-br from-pink-500 via-purple-500 to-blue-500" />

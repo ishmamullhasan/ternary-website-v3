@@ -94,12 +94,13 @@ export default function Footer({ footerData }: FooterProps) {
         {/* Column 1 — Logo + Description */}
         <div className="flex flex-col gap-3 h-full justify-between">
           <div className="flex flex-col lg:gap-6 gap-4">
-            {logoUrl ? (
-              <Image src={logoUrl} width={35} height={35} alt={footerData?.menu_1?.siteName ?? 'Logo'} />
-            ) : (
-              footerData?.menu_1?.siteName && (
-                <span className="lg:text-3xl text-2xl font-light">{footerData.menu_1.siteName}</span>
-              )
+            {(logoUrl || footerData?.menu_1?.siteName) && (
+              <div className="flex items-center gap-2">
+                {logoUrl && <Image src={logoUrl} width={35} height={35} alt={footerData?.menu_1?.siteName ?? 'Logo'} />}
+                {footerData?.menu_1?.siteName && (
+                  <span className="lg:text-2xl text-xl font-medium">{footerData.menu_1.siteName}</span>
+                )}
+              </div>
             )}
 
             {footerData?.menu_1?.description && (

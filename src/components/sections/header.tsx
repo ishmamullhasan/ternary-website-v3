@@ -186,19 +186,16 @@ export default function Header({ headerData }: HeaderProps) {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 w-full pt-3 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
+        'sticky top-0 z-50 w-full transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
         scrolled &&
           'border-b border-white/10 bg-main/70 shadow-lg backdrop-blur-md supports-[backdrop-filter]:bg-main/50',
       )}
     >
       <div className="flex flex-row w-full justify-between items-center px-5 md:px-10 py-3">
-        {/* Logo */}
-        <Link href="/" className="shrink-0 pt-3">
-          {logoUrl ? (
-            <Image src={logoUrl} width={100} height={30} alt={headerData?.siteName ?? 'Logo'} />
-          ) : (
-            <span className="text-lg font-medium">{headerData?.siteName ?? ''}</span>
-          )}
+        {/* Logo + Site Name */}
+        <Link href="/" className="flex shrink-0 items-center gap-2">
+          {logoUrl && <Image src={logoUrl} width={35} height={35} alt={headerData?.siteName ?? 'Logo'} />}
+          {headerData?.siteName && <span className="text-lg font-medium">{headerData.siteName}</span>}
         </Link>
 
         {/* Desktop Navigation - center */}
