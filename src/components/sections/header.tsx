@@ -186,9 +186,8 @@ export default function Header({ headerData }: HeaderProps) {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 w-full transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
-        scrolled &&
-          'border-b border-white/10 bg-main/70 shadow-lg backdrop-blur-md supports-[backdrop-filter]:bg-main/50',
+        'sticky top-0 z-50 w-full transition-[background-color,box-shadow,backdrop-filter] duration-300',
+        scrolled && 'bg-main/70 shadow-lg backdrop-blur-md supports-[backdrop-filter]:bg-main/50',
       )}
     >
       <div className="flex flex-row w-full justify-between items-center px-5 md:px-10 py-3">
