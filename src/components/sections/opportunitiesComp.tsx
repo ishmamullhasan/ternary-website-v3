@@ -52,7 +52,7 @@ export default function OpportunitiesComp({ heading, description, opportunity }:
                   {item.department} <br />
                   {item.location} <br />
                 </p>
-                <Link href={`/solutions/${item.slug}`} key={index}>
+                <Link href={`/job/${item.slug}`} key={index}>
                   <button className="lg:text-base text-xs mt-8">Explore Role</button>
                 </Link>
               </Motion>

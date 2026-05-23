@@ -33,6 +33,7 @@ function getLogoUrl(logo: MediaWithUrl | string | null | undefined): string | nu
 export default function Header({ headerData }: HeaderProps) {
   const path = usePathname()
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<{ [key: string]: boolean }>({})
   const panelRef = useRef<HTMLDivElement>(null)
@@ -47,6 +48,13 @@ export default function Header({ headerData }: HeaderProps) {
     setActiveDropdown(null)
     setMobileSubmenuOpen({})
   }, [path])
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -176,7 +184,13 @@ export default function Header({ headerData }: HeaderProps) {
   )
 
   return (
-    <header className="w-full pt-3">
+    <header
+      className={cn(
+        'sticky top-0 z-50 w-full pt-3 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300',
+        scrolled &&
+          'border-b border-white/10 bg-main/70 shadow-lg backdrop-blur-md supports-[backdrop-filter]:bg-main/50',
+      )}
+    >
       <div className="flex flex-row w-full justify-between items-center px-5 md:px-10 py-3">
         {/* Logo */}
         <Link href="/" className="shrink-0 pt-3">

@@ -77,6 +77,7 @@ export interface Config {
     model: Model
     job: Job
     team: Team
+    legal: Legal
     'payload-kv': PayloadKv
     'payload-folders': FolderInterface
     'payload-locked-documents': PayloadLockedDocument
@@ -99,6 +100,7 @@ export interface Config {
     model: ModelSelect<false> | ModelSelect<true>
     job: JobSelect<false> | JobSelect<true>
     team: TeamSelect<false> | TeamSelect<true>
+    legal: LegalSelect<false> | LegalSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -115,6 +117,7 @@ export interface Config {
     homepage: Homepage
     careersPage: CareersPage
     about: About
+    'legal-center': LegalCenter
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
@@ -122,6 +125,7 @@ export interface Config {
     homepage: HomepageSelect<false> | HomepageSelect<true>
     careersPage: CareersPageSelect<false> | CareersPageSelect<true>
     about: AboutSelect<false> | AboutSelect<true>
+    'legal-center': LegalCenterSelect<false> | LegalCenterSelect<true>
   }
   locale: null
   widgets: {
@@ -502,9 +506,15 @@ export interface Job {
   generateSlug?: boolean | null
   slug: string
   title?: string | null
+  button?: {
+    label?: string | null
+    link?: string | null
+  }
   team?: string | null
   department?: string | null
+  type?: string | null
   location?: string | null
+  salary?: string | null
   excerpts?: string | null
   description?: {
     root: {
@@ -526,6 +536,79 @@ export interface Job {
   closed?: string | null
   image?: (string | null) | Media
   active?: boolean | null
+  details?: {
+    item1?: {
+      title?: string | null
+      description?: string | null
+    }
+    item2?: {
+      title?: string | null
+      points?:
+        | {
+            point?: string | null
+            id?: string | null
+          }[]
+        | null
+    }
+    item3?: {
+      title?: string | null
+      points?:
+        | {
+            point?: string | null
+            id?: string | null
+          }[]
+        | null
+    }
+    item4?: {
+      title?: string | null
+      points?:
+        | {
+            point?: string | null
+            id?: string | null
+          }[]
+        | null
+    }
+  }
+  teamBox?: {
+    reportingToName?: string | null
+    reportingToRole?: string | null
+    podSize?: string | null
+    crossFunctional?: string | null
+  }
+  compensationBox?: {
+    base?: string | null
+    equity?: string | null
+    note?: string | null
+  }
+  interviewProcess?: {
+    heading?: string | null
+    steps?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          /**
+           * e.g. 30m, 1h
+           */
+          duration?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  openRoles?: {
+    heading?: string | null
+    description?: string | null
+    jobs?: (string | Job)[] | null
+  }
+  cta?: {
+    subheading?: string | null
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
   updatedAt: string
   createdAt: string
 }
@@ -541,6 +624,64 @@ export interface Team {
   description: string
   image: string | Media
   linkedin?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal".
+ */
+export interface Legal {
+  id: string
+  title?: string | null
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  code?: string | null
+  lastupdated?: string | null
+  downloadLink?: string | null
+  /**
+   * Optional. Falls back to the page title in the Legal Center sidebar.
+   */
+  menuLabel?: string | null
+  /**
+   * Optional icon shown beside this page in the Legal Center sidebar.
+   */
+  menuIcon?: ('shield' | 'file-text' | 'scale') | null
+  /**
+   * Lower numbers appear first in the sidebar. Leave empty to sort by title.
+   */
+  menuOrder?: number | null
+  content?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
   updatedAt: string
   createdAt: string
 }
@@ -607,6 +748,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'team'
         value: string | Team
+      } | null)
+    | ({
+        relationTo: 'legal'
+        value: string | Legal
       } | null)
     | ({
         relationTo: 'payload-folders'
@@ -865,9 +1010,17 @@ export interface JobSelect<T extends boolean = true> {
   generateSlug?: T
   slug?: T
   title?: T
+  button?:
+    | T
+    | {
+        label?: T
+        link?: T
+      }
   team?: T
   department?: T
+  type?: T
   location?: T
+  salary?: T
   excerpts?: T
   description?: T
   level?: T
@@ -875,6 +1028,98 @@ export interface JobSelect<T extends boolean = true> {
   closed?: T
   image?: T
   active?: T
+  details?:
+    | T
+    | {
+        item1?:
+          | T
+          | {
+              title?: T
+              description?: T
+            }
+        item2?:
+          | T
+          | {
+              title?: T
+              points?:
+                | T
+                | {
+                    point?: T
+                    id?: T
+                  }
+            }
+        item3?:
+          | T
+          | {
+              title?: T
+              points?:
+                | T
+                | {
+                    point?: T
+                    id?: T
+                  }
+            }
+        item4?:
+          | T
+          | {
+              title?: T
+              points?:
+                | T
+                | {
+                    point?: T
+                    id?: T
+                  }
+            }
+      }
+  teamBox?:
+    | T
+    | {
+        reportingToName?: T
+        reportingToRole?: T
+        podSize?: T
+        crossFunctional?: T
+      }
+  compensationBox?:
+    | T
+    | {
+        base?: T
+        equity?: T
+        note?: T
+      }
+  interviewProcess?:
+    | T
+    | {
+        heading?: T
+        steps?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              duration?: T
+              id?: T
+            }
+      }
+  openRoles?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        jobs?: T
+      }
+  cta?:
+    | T
+    | {
+        subheading?: T
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
 }
@@ -889,6 +1134,43 @@ export interface TeamSelect<T extends boolean = true> {
   description?: T
   image?: T
   linkedin?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal_select".
+ */
+export interface LegalSelect<T extends boolean = true> {
+  title?: T
+  generateSlug?: T
+  slug?: T
+  code?: T
+  lastupdated?: T
+  downloadLink?: T
+  menuLabel?: T
+  menuIcon?: T
+  menuOrder?: T
+  content?: T
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
 }
@@ -1402,6 +1684,20 @@ export interface About {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal-center".
+ */
+export interface LegalCenter {
+  id: string
+  heading?: string | null
+  description?: string | null
+  menuTitle?: string | null
+  noticeTitle?: string | null
+  noticeDescription?: string | null
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -1877,6 +2173,20 @@ export interface AboutSelect<T extends boolean = true> {
               link?: T
             }
       }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal-center_select".
+ */
+export interface LegalCenterSelect<T extends boolean = true> {
+  heading?: T
+  description?: T
+  menuTitle?: T
+  noticeTitle?: T
+  noticeDescription?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T
