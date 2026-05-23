@@ -1,7 +1,7 @@
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Legal, Media } from '@/payload-types'
 import config from '@/payload.config'
-import { Download } from 'lucide-react'
+import { Download, FileText, Scale, Shield, type LucideIcon } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
@@ -22,6 +22,36 @@ const getLegalList = unstable_cache(
   { tags: ['legal'] },
 )
 
+function getMenuItemSlug(page: string | Legal | null | undefined): string | null {
+  if (!page || typeof page === 'string') return null
+  return page.slug ?? null
+}
+
+function getMenuItemHref(page: string | Legal | null | undefined): string {
+  const pageSlug = getMenuItemSlug(page)
+  return pageSlug ? `/legals/${pageSlug}` : '#'
+}
+
+function getMenuItemLabel(label: string | null | undefined, page: string | Legal | null | undefined): string {
+  if (label) return label
+  if (page && typeof page === 'object' && page.title) return page.title
+  return 'Untitled'
+}
+
+const LEGAL_MENU_ICONS = {
+  shield: Shield,
+  'file-text': FileText,
+  scale: Scale,
+} as const satisfies Record<string, LucideIcon>
+
+type LegalMenuIconKey = keyof typeof LEGAL_MENU_ICONS
+
+function LegalMenuIcon({ icon }: { icon: string | null | undefined }) {
+  if (!icon || !(icon in LEGAL_MENU_ICONS)) return null
+  const Icon = LEGAL_MENU_ICONS[icon as LegalMenuIconKey]
+  return <Icon size={18} strokeWidth={1.75} aria-hidden className="shrink-0" />
+}
+
 function getLegalBySlug(slug: string) {
   return unstable_cache(
     async () => {
@@ -33,6 +63,7 @@ function getLegalBySlug(slug: string) {
             equals: slug,
           },
         },
+        depth: 2,
         limit: 1,
       })
     },
@@ -65,36 +96,56 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-[#D5D5D5] antialiased">
       <div className="max-w-[1400px] mx-auto w-full px-4 md:px-8 py-12 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-12 lg:gap-24 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-12 lg:gap-24 items-stretch">
           {/* LEFT SIDEBAR: Legal Center Menu & Notice Box */}
-          <aside className="lg:sticky lg:top-12 flex flex-col justify-between h-auto lg:min-h-[calc(100vh-160px)] gap-16">
+          <aside className="flex h-full flex-col justify-between gap-16">
             <div className="space-y-10">
               {/* Header Info */}
               <div>
-                <h2 className="text-xl font-semibold text-white tracking-tight mb-2">
+                <h2 className="text-3xl font-semibold text-white tracking-tight mb-2">
                   {menu?.heading || 'Legal Center'}
                 </h2>
-                <p className="text-sm text-[#757571] leading-relaxed">
+                <p className="text-base text-[#757571] leading-relaxed">
                   {menu?.description || 'Institutional-grade transparency. Reviewed by external counsel.'}
                 </p>
               </div>
 
               {/* Navigation Menu Links */}
               {menu?.menuItems && menu.menuItems.length > 0 && (
-                <nav className="flex flex-col gap-1">
+                <nav className="flex flex-col gap-1.5">
+                  {menu.title && (
+                    <h3 className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-[#555551]">
+                      {menu.title}
+                    </h3>
+                  )}
                   {menu.menuItems.map((item, idx) => {
-                    const isActive = item.link === `/legal/${slug}` || item.link === slug
+                    const itemSlug = getMenuItemSlug(item.page)
+                    const isActive = itemSlug === slug
+                    const hasIcon = Boolean(item.icon && item.icon in LEGAL_MENU_ICONS)
+
                     return (
                       <Link
-                        key={idx}
-                        href={item.link || '#'}
-                        className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 block ${
+                        key={item.id ?? idx}
+                        href={getMenuItemHref(item.page)}
+                        aria-current={isActive ? 'page' : undefined}
+                        className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                           isActive
-                            ? 'bg-[#1A1A1A] text-white border border-[#2A2A2A]'
-                            : 'text-[#757571] hover:text-white hover:bg-[#121212]'
+                            ? 'border border-[#2A2A2A] bg-[#1A1A1A] text-white'
+                            : 'border border-transparent text-[#757571] hover:border-[#1F1F1F] hover:bg-[#121212] hover:text-white'
                         }`}
                       >
-                        {item.label}
+                        {hasIcon && (
+                          <span
+                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                              isActive
+                                ? 'border-[#3A3A3A] bg-[#252525] text-white'
+                                : 'border-[#1F1F1F] bg-[#0F0F0F] text-[#757571] group-hover:border-[#2A2A2A] group-hover:text-white'
+                            }`}
+                          >
+                            <LegalMenuIcon icon={item.icon} />
+                          </span>
+                        )}
+                        <span className="leading-snug">{getMenuItemLabel(item.label, item.page)}</span>
                       </Link>
                     )
                   })}
@@ -104,11 +155,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
             {/* Bottom Compliance Box */}
             {(menu?.noticeTitle || menu?.noticeDescription) && (
-              <div className="p-5 rounded-xl bg-[#121212] border border-[#222] space-y-2">
-                <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
+              <div className="space-y-2 rounded-xl border border-[#222] bg-[#121212] p-5">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-white">
                   {menu.noticeTitle || 'Compliance Notice'}
                 </h4>
-                <p className="text-xs text-[#757571] leading-relaxed">
+                <p className="text-xs leading-relaxed text-[#757571]">
                   {menu.noticeDescription ||
                     'These documents are strictly for procurement review. Do not consider them legal advice.'}
                 </p>

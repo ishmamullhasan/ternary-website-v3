@@ -646,8 +646,15 @@ export interface Legal {
     title?: string | null
     menuItems?:
       | {
+          /**
+           * Optional. Falls back to the linked legal page title.
+           */
           label?: string | null
-          link?: string | null
+          /**
+           * Lucide icon shown beside the menu label.
+           */
+          icon?: ('shield' | 'file-text' | 'scale') | null
+          page: string | Legal
           id?: string | null
         }[]
       | null
@@ -1154,7 +1161,8 @@ export interface LegalSelect<T extends boolean = true> {
           | T
           | {
               label?: T
-              link?: T
+              icon?: T
+              page?: T
               id?: T
             }
         noticeTitle?: T

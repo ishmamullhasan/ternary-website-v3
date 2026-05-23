@@ -59,8 +59,34 @@ const Legal: CollectionConfig = {
           type: 'array',
           required: false,
           fields: [
-            { name: 'label', type: 'text' },
-            { name: 'link', type: 'text' },
+            {
+              name: 'label',
+              type: 'text',
+              admin: {
+                description: 'Optional. Falls back to the linked legal page title.',
+              },
+            },
+            {
+              name: 'icon',
+              label: 'Icon',
+              type: 'select',
+              required: false,
+              options: [
+                { label: 'Shield', value: 'shield' },
+                { label: 'File text', value: 'file-text' },
+                { label: 'Scale', value: 'scale' },
+              ],
+              admin: {
+                description: 'Lucide icon shown beside the menu label.',
+              },
+            },
+            {
+              name: 'page',
+              label: 'Legal page',
+              type: 'relationship',
+              relationTo: 'legal',
+              required: true,
+            },
           ],
         },
 
