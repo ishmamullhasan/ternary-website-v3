@@ -117,7 +117,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <div className="min-h-screen antialiased">
-      <div className="max-w-[1400px] mx-auto w-full px-4 md:px-8 flex flex-col gap-16 lg:gap-24  pb-12 lg:pb-20">
+      <div className="max-w-7xl mx-auto w-full px-4 md:px-8 flex flex-col gap-16 lg:gap-24  pb-12 lg:pb-20">
         <Motion tag="section" {...motionSectionProps}>
           <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-12 lg:gap-24 items-stretch">
             {/* LEFT SIDEBAR: Legal Center Menu & Notice Box */}
