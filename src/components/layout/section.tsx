@@ -9,7 +9,7 @@ type SectionProps = {
   className?: string
 }
 
-export function Section({ title = '', desc = '', children, className = '' }: SectionProps): JSX.Element {
+export default function Section({ title = '', desc = '', children, className = '' }: SectionProps): JSX.Element {
   const showHeader = Boolean(title?.trim()) || Boolean(desc?.trim())
 
   return (
