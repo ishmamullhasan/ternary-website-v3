@@ -1,8 +1,7 @@
 import Motion from '@/components/animation/motion'
 import { BentoCard } from '@/components/layout/bentoCard'
-import { Section } from '@/components/layout/section'
+import Section from '@/components/layout/section'
 import RichTextComp, { type RichText } from '@/components/richtext'
-
 import { cn } from '@/lib/utils'
 import type { About, Media } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'

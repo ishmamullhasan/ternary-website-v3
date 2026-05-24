@@ -1,6 +1,6 @@
 import Corousel from '@/components/animation/corousel'
 import { BentoCard } from '@/components/layout/bentoCard'
-import { Section } from '@/components/layout/section'
+import Section from '@/components/layout/section'
 import type { CareersPage, Media } from '@/payload-types'
 import type { JSX } from 'react'
 

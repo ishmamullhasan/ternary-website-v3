@@ -1,6 +1,6 @@
 'use client'
 
-import { Section } from '@/components/layout/section'
+import Section from '@/components/layout/section'
 import type { Job } from '@/payload-types'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { motion } from 'motion/react'
