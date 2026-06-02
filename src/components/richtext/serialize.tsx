@@ -110,10 +110,10 @@ export default function serialize(children) {
             const id = slugify(text)
             const Tag = node.tag
             const classNames = {
-              h1: 'lg:text-4xl text-3xl mb-8 font-semibold',
-              h2: 'lg:text-3xl text-2xl mb-8 font-semibold',
-              h3: 'lg:text-2xl text-xl mb-8 font-semibold',
-              h4: 'text-xl  mb-8 font-semibold',
+              h1: 'lg:text-4xl text-3xl mb-8 font-medium',
+              h2: 'lg:text-3xl text-2xl mb-8 font-medium',
+              h3: 'lg:text-2xl text-xl mb-8 font-medium',
+              h4: 'text-xl  mb-8 font-medium',
               h5: 'lg:text-lg text-base ',
               h6: 'lg:text-base text-sm',
               p: 'lg:text-base text-sm text-[#D5D5D5]',

@@ -93,7 +93,7 @@ export default function AboutComp({ heading, description, items, organizations, 
           {organizations?.organization?.map((item, index) => (
             <Motion
               key={index}
-              className="flex flex-row items-center rounded-lg bg-main lg:px-3 lg:py-2 px-2 py-1"
+              className="flex flex-row items-center lg:px-3 lg:py-2 px-2 py-1"
               {...motionGridItemProps}
               transition={{
                 duration: 0.4,
@@ -102,12 +102,12 @@ export default function AboutComp({ heading, description, items, organizations, 
               }}
             >
               <Link href={item.link || '#'} className="flex flex-row items-center">
-                <div className="lg:w-[30px] lg:h-[30px] w-[20px] h-[20px]">
+                <div className="lg:w-auto lg:h-[35px] h-[30px]">
                   <Image
                     src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
                     alt={(item.icon as Media)?.alt || 'org'}
-                    width={(item.icon as Media)?.width || 30}
-                    height={(item.icon as Media)?.height || 30}
+                    width={(item.icon as Media)?.width || 40}
+                    height={(item.icon as Media)?.height || 35}
                     className="object-contain grayscale hover:grayscale-0 transition w-full h-full"
                   />
                 </div>

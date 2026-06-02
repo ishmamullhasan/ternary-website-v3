@@ -37,7 +37,7 @@ export default function IndustryComp({ heading, description, industry }: Industr
                 <Link href={`/industry/${item.slug}`} key={index}>
                   {/* gradient card */}
                   <Motion
-                    className="relative lg:w-[220px] lg:h-[250px]   rounded-lg overflow-hidden"
+                    className="relative lg:w-[220px] lg:h-[300px]   rounded-lg overflow-hidden"
                     {...motionGridItemProps}
                     transition={{
                       duration: 0.4,
@@ -50,7 +50,7 @@ export default function IndustryComp({ heading, description, industry }: Industr
                       <Image
                         src={(item.thumbnail as Media)?.url || 'https://dummyimage.com/280x300/37624F/FFF2'}
                         alt={item.title || 'industry'}
-                        height={(item.thumbnail as Media)?.height || 250}
+                        height={(item.thumbnail as Media)?.height || 300}
                         width={(item.thumbnail as Media)?.width || 220}
                         className="object-cover w-full h-full"
                       />
