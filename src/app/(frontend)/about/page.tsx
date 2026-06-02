@@ -54,7 +54,7 @@ export default async function Page(): Promise<JSX.Element> {
       <Motion tag="section" className="lg:pb-16 pb-8" {...motionSectionProps}>
         <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
           <Motion className="flex flex-col items-center lg:w-3/5" {...motionBlockProps}>
-            <h1 className="text-center lg:text-3xl text-2xl font-semibold mb-3">{aboutData?.heroSection?.heading}</h1>
+            <h1 className="text-center lg:text-3xl text-2xl font-medium mb-3">{aboutData?.heroSection?.heading}</h1>
             <p className="text-center lg:text-base text-sm text-[#D5D5D5] ">{aboutData?.heroSection?.description}</p>
           </Motion>
         </div>
@@ -74,7 +74,7 @@ export default async function Page(): Promise<JSX.Element> {
       >
         <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
           <Motion className="flex flex-col items-center lg:w-4/5" {...motionBlockProps}>
-            <h1 className="text-center lg:text-3xl text-2xl font-semibold mb-3">{aboutData?.fundingStory?.heading}</h1>
+            <h1 className="text-center lg:text-3xl text-2xl font-medium mb-3">{aboutData?.fundingStory?.heading}</h1>
             <p className="text-center lg:text-base text-sm text-[#D5D5D5]">{aboutData?.fundingStory?.description}</p>
           </Motion>
         </div>
@@ -84,7 +84,7 @@ export default async function Page(): Promise<JSX.Element> {
       <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-4 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
         <div className="flex lg:flex-row flex-col  lg:items-start items-center lg:justify-between">
           <Motion className="lg:w-1/5" {...motionBlockProps}>
-            <h3 className="lg:text-2xl text-xl mb-3 font-semibold">{aboutData?.about?.heading}</h3>
+            <h3 className="lg:text-2xl text-xl mb-3 font-medium">{aboutData?.about?.heading}</h3>
             <p className="lg:text-sm text-xs text-[#D5D5D5]">{aboutData?.about?.description}</p>
           </Motion>
 
