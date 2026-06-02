@@ -618,11 +618,16 @@ export interface Job {
  */
 export interface Team {
   id: string
-  name: string
-  position: string
-  excerpt: string
-  description: string
-  image: string | Media
+  name?: string | null
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  position?: string | null
+  excerpt?: string | null
+  description?: string | null
+  image?: (string | null) | Media
   linkedin?: string | null
   updatedAt: string
   createdAt: string
@@ -1129,6 +1134,8 @@ export interface JobSelect<T extends boolean = true> {
  */
 export interface TeamSelect<T extends boolean = true> {
   name?: T
+  generateSlug?: T
+  slug?: T
   position?: T
   excerpt?: T
   description?: T

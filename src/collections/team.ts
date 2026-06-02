@@ -1,18 +1,19 @@
-import type { CollectionConfig } from 'payload'
-
-import { authenticated } from '../access/authenticated'
+import { revalidateTag } from 'next/cache'
+import { CollectionConfig, slugField } from 'payload'
 
 const Team: CollectionConfig = {
   slug: 'team',
-  access: {
-    admin: authenticated,
-    create: authenticated,
-    delete: authenticated,
-    read: authenticated,
-    update: authenticated,
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`team_${doc.slug}`, 'max')
+        }
+        revalidateTag('team', 'max')
+      },
+    ],
   },
   admin: {
-    defaultColumns: ['name'],
     useAsTitle: 'name',
   },
   fields: [
@@ -20,41 +21,35 @@ const Team: CollectionConfig = {
       name: 'name',
       label: 'Name',
       type: 'text',
-      required: true,
     },
+    slugField({ fieldToUse: 'name' }),
     {
       name: 'position',
       label: 'Position',
       type: 'text',
-      required: true,
     },
     {
       name: 'excerpt',
       label: 'Excerpt',
       type: 'textarea',
-      required: true,
     },
     {
       name: 'description',
       label: 'Description',
       type: 'textarea',
-      required: true,
     },
     {
       name: 'image',
       label: 'Image',
-      type: 'relationship',
+      type: 'upload',
       relationTo: 'media',
-      required: true,
     },
     {
       name: 'linkedin',
       label: 'LinkedIn URL',
       type: 'text',
-      required: false,
     },
   ],
-  timestamps: true,
 }
 
 export default Team
