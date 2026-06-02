@@ -63,7 +63,7 @@ export default async function Page(): Promise<JSX.Element> {
       {/* Funding Story Section */}
       <Motion
         tag="section"
-        className="lg:m-0 m-4 lg:py-16 py-8 bg-cover bg-center rounded-lg overflow-hidden"
+        className="lg:m-0 m-4 lg:py-16 py-8 bg-cover bg-center flex items-center justify-center rounded-lg overflow-hidden h-[400px]"
         style={{
           backgroundImage: `url(${
             (aboutData?.fundingStory?.backgroundImage as Media)?.url ||

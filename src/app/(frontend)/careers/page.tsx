@@ -48,13 +48,13 @@ export default async function Page(): Promise<JSX.Element> {
             viewport={{ once: false, amount: 0.4 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
           >
+            <h1 className="text-3xl lg:text-[40px] font-medium text-white tracking-tighter leading-[1.1]">
+              {careersPageData.hero?.heading || 'Agentic Engineering. Human Orchestration.'}
+            </h1>
             <p className="text-[#D5D5D5] text-base">
               {careersPageData.hero?.description ||
                 'Welcome to our company. We build tools that help you work better. Join our team to make an impact.'}
             </p>
-            <h1 className="text-3xl lg:text-[40px] font-medium text-white tracking-tighter leading-[1.1]">
-              {careersPageData.hero?.heading || 'Agentic Engineering. Human Orchestration.'}
-            </h1>
             <button className="bg-[#F4F3EC] text-[#0F0E0E] px-6 py-3 rounded-lg font-medium hover:bg-[#E8E7DF] transition-colors">
               View Open Roles
             </button>
