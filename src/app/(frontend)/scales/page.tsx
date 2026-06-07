@@ -1,7 +1,7 @@
 import Motion from '@/components/animation/motion'
-import type { Media, ScalesPage } from '@/payload-types'
+import type { Media, Scale, ScalesPage } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
-import { Activity, BookCheck, ShieldCheck, Workflow, type LucideIcon } from 'lucide-react'
+import { Activity, BookCheck, Building2, ShieldCheck, Workflow, type LucideIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { JSX } from 'react'
@@ -61,21 +61,19 @@ export default async function Page(): Promise<JSX.Element> {
 
   return (
     <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
-      <Motion tag="section" className="w-full text-white lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
+      <Motion tag="section" className="w-full lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
         <div className="w-full mx-auto flex flex-col px-4 lg:px-0">
           {/* Header Block */}
           <Motion className="flex flex-col items-start text-left max-w-4xl" {...motionBlockProps}>
-            <h1 className="lg:text-5xl text-3xl font-medium tracking-tight mb-6 max-w-2xl leading-[1.15]">
+            <h1 className="lg:text-4xl text-3xl font-medium tracking-tight mb-6 max-w-2xl leading-[1.15]">
               {scalesData?.heroSection?.heading}
             </h1>
-            <p className="lg:text-sm text-xs text-[#9a9a9a] max-w-xl leading-relaxed font-normal">
-              {scalesData?.heroSection?.description}
-            </p>
+            <p className="lg:text-base text-sm text-[#D5D5D5] max-w-xl">{scalesData?.heroSection?.description}</p>
           </Motion>
 
           {/* Hero cards — layout perfectly aligned with the screenshot */}
           {scalesData?.heroSection?.items && scalesData?.heroSection?.items.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:pt-10 pt-4 w-full mt-6">
+            <div className="grid rounded-lg grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:pt-10 pt-4 w-full mt-6">
               {scalesData?.heroSection?.items.map((item, index) => (
                 <Motion
                   key={item.id ?? `hero-card-${index}`}
@@ -90,11 +88,11 @@ export default async function Page(): Promise<JSX.Element> {
                   {/* Top Text Content Container */}
                   <div className="flex flex-col items-start mb-8">
                     {/* Card Index (e.g., 01) */}
-                    <span className="text-[10px] text-[#9a9a9a] font-mono tracking-wider mb-3">
+                    <span className="text-[10px] text-[#D5D5D5]  tracking-wider mb-3">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     {/* Card Title */}
-                    <h3 className="lg:text-base text-sm font-medium tracking-tight text-white">{item.title}</h3>
+                    <h3 className="lg:text-sm text-xs font-medium tracking-tight ">{item.title}</h3>
                   </div>
 
                   {/* Card Image Block */}
@@ -116,10 +114,10 @@ export default async function Page(): Promise<JSX.Element> {
         </div>
       </Motion>
 
-      <Motion tag="section" className="bg-main lg:p-10 p-4 rounded-lg lg:m-0 m-4 text-white" {...motionSectionProps}>
+      <Motion tag="section" className="bg-main p-10 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
         {/* Structured Content Grid Layout (Matching image_42113f.png blueprint) */}
         <div className="flex flex-col lg:flex-row w-full">
-          <div className="w-2/8  lg:pl-8  mb-6">
+          <div className="lg:w-2/8 pr-4  mb-6">
             <h2 className="lg:text-3xl text-2xl font-semibold mb-3 tracking-tight max-w-xl leading-tight">
               {scalesData?.qualityBar?.heading}
             </h2>
@@ -129,12 +127,12 @@ export default async function Page(): Promise<JSX.Element> {
           </div>
 
           {/* 4-column card grid containing elements configured via Payload CMS schemas */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:w-6/8 lg:pl-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:w-6/8 ">
             {scalesData?.qualityBar?.items?.map((item, index) => {
               return (
                 <Motion
                   key={item.id ?? `scale-${index}`}
-                  className="bg-[#0F0E0E] p-6 rounded-md flex flex-col justify-start min-h-[280px]"
+                  className="bg-[#0F0E0E] p-10 rounded-md flex flex-col justify-start min-h-[280px]"
                   {...motionGridItemProps}
                   transition={{
                     duration: 0.4,
@@ -149,7 +147,7 @@ export default async function Page(): Promise<JSX.Element> {
                   {/* Text Layout Metadata */}
                   <h3 className="lg:text-lg text-base font-medium mb-3 tracking-wide text-white">{item.title}</h3>
 
-                  <p className="lg:text-xs text-[11px] text-[#A0A0A0] leading-relaxed font-normal">{item.excerpt}</p>
+                  <p className="lg:text-xs text-[11px] text-[#D5D5D5]">{item.excerpt}</p>
                 </Motion>
               )
             })}
@@ -157,10 +155,82 @@ export default async function Page(): Promise<JSX.Element> {
         </div>
       </Motion>
 
+      {(scalesData.scale as Scale[])?.map((item, scaleIndex) => {
+        const tagsList = item.tags
+          ? item.tags
+              .split(/[•,|]/)
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+          : []
+
+        return (
+          <Motion
+            key={item.id ?? `scale-${scaleIndex}`}
+            tag="section"
+            className="w-full bg-[#1B1A17] p-10 rounded-lg flex justify-center"
+            {...motionSectionProps}
+          >
+            <div className="w-full flex flex-col">
+              <Motion className="flex flex-col items-start text-left mb-8" {...motionBlockProps}>
+                {item.subTitle && (
+                  <span className="inline-block border border-[#757571] text-lg  px-4 py-0.5 rounded-full text-[#d4d4d4] mb-6">
+                    {item.subTitle}
+                  </span>
+                )}
+
+                <h2 className="lg:text-3xl text-2xl font-medium tracking-tight mb-6 max-w-2xl leading-[1.15]">
+                  {item.title}
+                </h2>
+
+                {item.description && <p className="text-base text-[#D5D5D5] max-w-2xl mb-4">{item.description}</p>}
+
+                <div className="flex flex-wrap items-center gap-2 text-xs text-[#757571]">
+                  <span className="flex items-center gap-2">
+                    <Building2 size={18} strokeWidth={1.75} aria-hidden className="shrink-0" />
+                    {item.tags}
+                  </span>
+                </div>
+              </Motion>
+
+              {(item.image as Media)?.url && (
+                <div className="w-full mb-4">
+                  <div className="relative w-full lg:h-[200px] h-[150px]">
+                    <Image
+                      src={(item.image as Media).url || ''}
+                      alt={(item.image as Media).alt || item.title || 'Scale graphic'}
+                      priority={scaleIndex === 0}
+                      className="object-contain object-center"
+                      height={(item.image as Media).height || 200}
+                      width={(item.image as Media).width || 1000}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <hr className="border-[#757571] w-full mt-8" />
+
+              {item.podSize && item.podSize.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                  {item.podSize.map((metric, idx) => (
+                    <div
+                      key={metric.id ?? idx}
+                      className={`flex flex-col gap-2 ${idx > 0 ? 'md:border-l md:border-[#757571] md:pl-4' : ''}`}
+                    >
+                      <span className="text-xs text-[#757571] pt-4 capitalize">{metric.title}</span>
+                      <span className="text-xl lg:text-2xl font-medium text-white tracking-tight">{metric.value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Motion>
+        )
+      })}
+
       {/* CTA Section */}
       <Motion
         tag="section"
-        className="lg:p-14 p-6 rounded-xl overflow-hidden lg:m-0 m-4 relative border border-white/[0.04]"
+        className="lg:p-10 p-6 rounded-lg overflow-hidden lg:m-0 m-4 relative border border-white/[0.04]"
         style={{
           background: (scalesData?.cta?.backgroundImage as Media)?.url
             ? `url(${(scalesData?.cta?.backgroundImage as Media)?.url}) center/cover no-repeat`
@@ -195,7 +265,7 @@ export default async function Page(): Promise<JSX.Element> {
             {scalesData?.cta?.button_2?.label && (
               <Link
                 href={scalesData?.cta?.button_2?.link as string}
-                className="px-8 py-3 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
+                className="px-5 sm:w-auto w-full py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
               >
                 {scalesData?.cta?.button_2?.label}
               </Link>
