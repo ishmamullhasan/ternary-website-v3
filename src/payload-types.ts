@@ -118,6 +118,7 @@ export interface Config {
     careersPage: CareersPage
     about: About
     'legal-center': LegalCenter
+    scalesPage: ScalesPage
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
@@ -126,6 +127,7 @@ export interface Config {
     careersPage: CareersPageSelect<false> | CareersPageSelect<true>
     about: AboutSelect<false> | AboutSelect<true>
     'legal-center': LegalCenterSelect<false> | LegalCenterSelect<true>
+    scalesPage: ScalesPageSelect<false> | ScalesPageSelect<true>
   }
   locale: null
   widgets: {
@@ -443,21 +445,17 @@ export interface Scale {
   slug: string
   excerpts?: string | null
   thumbnail?: (string | null) | Media
-  content?: {
-    root: {
-      type: string
-      children: {
-        type: any
-        version: number
-        [k: string]: unknown
+  subTitle?: string | null
+  description?: string | null
+  tags?: string | null
+  image?: (string | null) | Media
+  podSize?:
+    | {
+        title?: string | null
+        value?: string | null
+        id?: string | null
       }[]
-      direction: ('ltr' | 'rtl') | null
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
-      indent: number
-      version: number
-    }
-    [k: string]: unknown
-  } | null
+    | null
   updatedAt: string
   createdAt: string
 }
@@ -988,7 +986,17 @@ export interface ScaleSelect<T extends boolean = true> {
   slug?: T
   excerpts?: T
   thumbnail?: T
-  content?: T
+  subTitle?: T
+  description?: T
+  tags?: T
+  image?: T
+  podSize?:
+    | T
+    | {
+        title?: T
+        value?: T
+        id?: T
+      }
   updatedAt?: T
   createdAt?: T
 }
@@ -1705,6 +1713,55 @@ export interface LegalCenter {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scalesPage".
+ */
+export interface ScalesPage {
+  id: string
+  heroSection?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          image?: (string | null) | Media
+          id?: string | null
+        }[]
+      | null
+  }
+  qualityBar?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          /**
+           * Lucide icon shown at the top of the quality bar card.
+           */
+          icon?: ('activity' | 'shield-check' | 'workflow' | 'book-check') | null
+          id?: string | null
+        }[]
+      | null
+  }
+  scale?: (string | Scale)[] | null
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2194,6 +2251,62 @@ export interface LegalCenterSelect<T extends boolean = true> {
   menuTitle?: T
   noticeTitle?: T
   noticeDescription?: T
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scalesPage_select".
+ */
+export interface ScalesPageSelect<T extends boolean = true> {
+  heroSection?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              image?: T
+              id?: T
+            }
+      }
+  qualityBar?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              icon?: T
+              id?: T
+            }
+      }
+  scale?: T
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
   globalType?: T

@@ -262,7 +262,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               {legal.cta?.button_1?.label && (
                 <Link
                   href={legal.cta?.button_1?.link as string}
-                  className="px-8 py-3 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
+                  className="px-5 py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
                 >
                   {legal.cta?.button_1?.label}
                 </Link>
@@ -270,7 +270,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               {legal.cta?.button_2?.label && (
                 <Link
                   href={legal.cta?.button_2?.link as string}
-                  className="px-8 py-3 bg-[#14120B] font-medium rounded-2xl text-base"
+                  className="px-5 py-2.5 bg-[#14120B] font-medium rounded-2xl text-base"
                 >
                   {legal.cta?.button_2?.label}
                 </Link>

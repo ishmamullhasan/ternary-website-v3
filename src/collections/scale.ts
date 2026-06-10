@@ -28,6 +28,7 @@ const Scale: CollectionConfig = {
       label: 'Excerpts',
       type: 'textarea',
     },
+
     {
       name: 'thumbnail',
       label: 'Thumbnail',
@@ -35,9 +36,43 @@ const Scale: CollectionConfig = {
       relationTo: 'media',
     },
     {
-      name: 'content',
-      label: 'Content',
-      type: 'richText',
+      name: 'subTitle',
+      label: 'Sub Title',
+      type: 'text',
+    },
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'textarea',
+      required: false,
+    },
+    {
+      name: 'tags',
+      type: 'text',
+    },
+
+    {
+      name: 'image',
+      label: 'Scale Image',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+    },
+    {
+      name: 'podSize',
+      type: 'array',
+      fields: [
+        {
+          name: 'title',
+          label: 'Title',
+          type: 'text',
+        },
+        {
+          name: 'value',
+          label: 'Value',
+          type: 'text',
+        },
+      ],
     },
   ],
 }
