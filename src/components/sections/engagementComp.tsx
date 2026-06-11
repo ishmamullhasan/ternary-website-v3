@@ -2,7 +2,6 @@
 import Motion from '@/components/animation/motion'
 import type { Media, Scale } from '@/payload-types'
 import Image from 'next/image'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 interface EngagementCompProps {
@@ -31,7 +30,7 @@ export default function EngagementComp({ heading, description, model }: Engageme
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4 gap-3 lg:pt-0 pt-4">
           {model?.map((item, index): JSX.Element => {
             return (
-              <Link href={`/model/${item.slug}`} key={index}>
+              <div key={index}>
                 {/* gradient card */}
                 <Motion
                   className="relative lg:w-[220px] lg:h-[250px]  rounded-lg overflow-hidden"
@@ -61,7 +60,7 @@ export default function EngagementComp({ heading, description, model }: Engageme
                     <p className="lg:text-sm text-xs"> {item.excerpts}</p>
                   </div>
                 </Motion>
-              </Link>
+              </div>
             )
           })}
         </div>

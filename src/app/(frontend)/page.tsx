@@ -11,7 +11,7 @@ import EngagementComp from '@/components/sections/engagementComp'
 import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 import OpportunitiesComp from '@/components/sections/opportunitiesComp'
 import ProcessComp from '@/components/sections/processComp'
-import type { Capability, Homepage, Industry, Job, Media, Model, Scale, Solution } from '@/payload-types'
+import type { Capability, Homepage, Industry, Job, Media, Model, Scale, Solution, Team } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import type { JSX } from 'react'
 type MultiRelation =
@@ -128,16 +128,7 @@ export default async function Page(): Promise<JSX.Element> {
         <TeamComp
           heading={homePageData.team?.heading}
           description={homePageData.team?.description}
-          members={
-            homePageData.team?.members as
-              | {
-                  name?: string | null
-                  position?: string | null
-                  image?: Media | null
-                  linkedin?: string | null
-                }[]
-              | null
-          }
+          members={(homePageData.team?.members as Team[]) || null}
         />
       </Motion>
       <Motion tag="section" className="w-full" {...motionSectionProps}>
