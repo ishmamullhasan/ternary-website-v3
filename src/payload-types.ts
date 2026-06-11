@@ -349,21 +349,137 @@ export interface Capability {
   slug: string
   excerpts?: string | null
   thumbnail?: (string | null) | Media
-  content?: {
-    root: {
-      type: string
-      children: {
-        type: any
-        version: number
-        [k: string]: unknown
-      }[]
-      direction: ('ltr' | 'rtl') | null
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
-      indent: number
-      version: number
+  heroSection?: {
+    /**
+     * Pill label shown above the heading (e.g. Digital Experiences).
+     */
+    badge?: string | null
+    heading?: string | null
+    description?: string | null
+    heroImage?: (string | null) | Media
+    button?: {
+      label?: string | null
+      link?: string | null
     }
-    [k: string]: unknown
-  } | null
+  }
+  whatThisMeansToUs?: {
+    /**
+     * e.g. Section 01
+     */
+    sectionLabel?: string | null
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  howWeDoIt?: {
+    sectionLabel?: string | null
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          stack?:
+            | {
+                name?: string | null
+                id?: string | null
+              }[]
+            | null
+          id?: string | null
+        }[]
+      | null
+  }
+  caseStudies?: {
+    sectionLabel?: string | null
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          /**
+           * e.g. 2025 · Insurance
+           */
+          meta?: string | null
+          title?: string | null
+          problem?: string | null
+          approach?: string | null
+          outcome?: string | null
+          /**
+           * e.g. 4h
+           */
+          metricValue?: string | null
+          /**
+           * e.g. from 6 days
+           */
+          metricLabel?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  practiceLead?: {
+    sectionLabel?: string | null
+    member?: (string | null) | Team
+    bio?: string | null
+    credentials?:
+      | {
+          text?: string | null
+          id?: string | null
+        }[]
+      | null
+    writings?:
+      | {
+          title?: string | null
+          category?: string | null
+          link?: string | null
+          id?: string | null
+        }[]
+      | null
+    email?: string | null
+    github?: string | null
+  }
+  relatedCapabilities?: {
+    sectionLabel?: string | null
+    heading?: string | null
+    capabilities?: (string | Capability)[] | null
+  }
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: string
+  name?: string | null
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  position?: string | null
+  excerpt?: string | null
+  description?: string | null
+  image?: (string | null) | Media
+  linkedin?: string | null
   updatedAt: string
   createdAt: string
 }
@@ -607,26 +723,6 @@ export interface Job {
       link?: string | null
     }
   }
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team".
- */
-export interface Team {
-  id: string
-  name?: string | null
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null
-  slug: string
-  position?: string | null
-  excerpt?: string | null
-  description?: string | null
-  image?: (string | null) | Media
-  linkedin?: string | null
   updatedAt: string
   createdAt: string
 }
@@ -944,7 +1040,122 @@ export interface CapabilitySelect<T extends boolean = true> {
   slug?: T
   excerpts?: T
   thumbnail?: T
-  content?: T
+  heroSection?:
+    | T
+    | {
+        badge?: T
+        heading?: T
+        description?: T
+        heroImage?: T
+        button?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
+  whatThisMeansToUs?:
+    | T
+    | {
+        sectionLabel?: T
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              id?: T
+            }
+      }
+  howWeDoIt?:
+    | T
+    | {
+        sectionLabel?: T
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              stack?:
+                | T
+                | {
+                    name?: T
+                    id?: T
+                  }
+              id?: T
+            }
+      }
+  caseStudies?:
+    | T
+    | {
+        sectionLabel?: T
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              meta?: T
+              title?: T
+              problem?: T
+              approach?: T
+              outcome?: T
+              metricValue?: T
+              metricLabel?: T
+              id?: T
+            }
+      }
+  practiceLead?:
+    | T
+    | {
+        sectionLabel?: T
+        member?: T
+        bio?: T
+        credentials?:
+          | T
+          | {
+              text?: T
+              id?: T
+            }
+        writings?:
+          | T
+          | {
+              title?: T
+              category?: T
+              link?: T
+              id?: T
+            }
+        email?: T
+        github?: T
+      }
+  relatedCapabilities?:
+    | T
+    | {
+        sectionLabel?: T
+        heading?: T
+        capabilities?: T
+      }
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
   updatedAt?: T
   createdAt?: T
 }
@@ -1428,15 +1639,7 @@ export interface Homepage {
   team?: {
     heading?: string | null
     description?: string | null
-    members?:
-      | {
-          name?: string | null
-          position?: string | null
-          image?: (string | null) | Media
-          linkedin?: string | null
-          id?: string | null
-        }[]
-      | null
+    members?: (string | Team)[] | null
   }
   opportunities?: {
     heading?: string | null
@@ -1915,15 +2118,7 @@ export interface HomepageSelect<T extends boolean = true> {
     | {
         heading?: T
         description?: T
-        members?:
-          | T
-          | {
-              name?: T
-              position?: T
-              image?: T
-              linkedin?: T
-              id?: T
-            }
+        members?: T
       }
   opportunities?:
     | T

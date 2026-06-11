@@ -348,35 +348,10 @@ const Homepage: GlobalConfig = {
         {
           name: 'members',
           label: 'Members',
-          type: 'array',
+          type: 'relationship',
+          relationTo: 'team',
+          hasMany: true,
           required: false,
-          fields: [
-            {
-              name: 'name',
-              label: 'Name',
-              type: 'text',
-              required: false,
-            },
-            {
-              name: 'position',
-              label: 'Position',
-              type: 'text',
-              required: false,
-            },
-            {
-              name: 'image',
-              label: 'Image',
-              type: 'upload',
-              relationTo: 'media',
-              required: false,
-            },
-            {
-              name: 'linkedin',
-              label: 'LinkedIn URL',
-              type: 'text',
-              required: false,
-            },
-          ],
         },
       ],
     },
