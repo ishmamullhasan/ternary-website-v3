@@ -56,7 +56,7 @@ export default function CapabilitiesComp({
               >
                 <h3 className="lg:text-base text-sm font-light mb-2">{item.title}</h3>
                 <p className="lg:text-sm text-xs lg:mb-4 mb-3">{item.excerpts}</p>
-                <Link href={`/capability/${item.slug}`} key={index}>
+                <Link href={`/capabilities/${item.slug}`} key={index}>
                   <button className="lg:text-base text-xs mt-10">Explore</button>
                 </Link>
               </Motion>

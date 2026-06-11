@@ -454,7 +454,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}
               >
                 <Link
-                  href={`/capability/${item.slug}`}
+                  href={`/capabilities/${item.slug}`}
                   className="bg-[#0F0E0E] p-6 rounded flex flex-col gap-2 group hover:bg-[#14120B] transition-colors h-full"
                 >
                   <div className="flex items-start justify-between gap-4">
