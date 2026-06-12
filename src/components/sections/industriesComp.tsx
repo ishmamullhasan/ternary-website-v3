@@ -34,7 +34,7 @@ export default function IndustryComp({ heading, description, industry }: Industr
           <div className="grid grid-cols-1 lg:grid-cols-4 lg:gap-4 gap-3">
             {industry?.map((item, index): JSX.Element => {
               return (
-                <Link href={`/industries`} key={index}>
+                <Link href={`/industries`} key={item.id ?? index}>
                   {/* gradient card */}
                   <Motion
                     className="relative lg:w-[220px] lg:h-[300px]   rounded-lg overflow-hidden"
