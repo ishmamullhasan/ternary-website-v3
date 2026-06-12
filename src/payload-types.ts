@@ -119,6 +119,7 @@ export interface Config {
     about: About
     'legal-center': LegalCenter
     scalesPage: ScalesPage
+    industriesPage: IndustriesPage
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
@@ -128,6 +129,7 @@ export interface Config {
     about: AboutSelect<false> | AboutSelect<true>
     'legal-center': LegalCenterSelect<false> | LegalCenterSelect<true>
     scalesPage: ScalesPageSelect<false> | ScalesPageSelect<true>
+    industriesPage: IndustriesPageSelect<false> | IndustriesPageSelect<true>
   }
   locale: null
   widgets: {
@@ -1965,6 +1967,102 @@ export interface ScalesPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "industriesPage".
+ */
+export interface IndustriesPage {
+  id: string
+  heroSection?: {
+    heading?: string | null
+    description?: string | null
+  }
+  industryList?: {
+    heading?: string | null
+    description?: string | null
+    industry?: (string | Industry)[] | null
+  }
+  details?: {
+    heading?: string | null
+    description?: string | null
+    content?: {
+      root: {
+        type: string
+        children: {
+          type: any
+          version: number
+          [k: string]: unknown
+        }[]
+        direction: ('ltr' | 'rtl') | null
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+        indent: number
+        version: number
+      }
+      [k: string]: unknown
+    } | null
+  }
+  perIndustryPanels?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          industry?: (string | null) | Industry
+          title?: string | null
+          description?: string | null
+          image?: (string | null) | Media
+          tags?:
+            | {
+                name?: string | null
+                id?: string | null
+              }[]
+            | null
+          id?: string | null
+        }[]
+      | null
+  }
+  crossIndustryPatterns?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          image?: (string | null) | Media
+          id?: string | null
+        }[]
+      | null
+  }
+  regulatoryPosture?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          excerpt?: string | null
+          /**
+           * Lucide icon shown at the top of the regulatory posture card.
+           */
+          icon?: ('lock' | 'activity' | 'check') | null
+          id?: string | null
+        }[]
+      | null
+  }
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2483,6 +2581,103 @@ export interface ScalesPageSelect<T extends boolean = true> {
             }
       }
   scale?: T
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "industriesPage_select".
+ */
+export interface IndustriesPageSelect<T extends boolean = true> {
+  heroSection?:
+    | T
+    | {
+        heading?: T
+        description?: T
+      }
+  industryList?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        industry?: T
+      }
+  details?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        content?: T
+      }
+  perIndustryPanels?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              industry?: T
+              title?: T
+              description?: T
+              image?: T
+              tags?:
+                | T
+                | {
+                    name?: T
+                    id?: T
+                  }
+              id?: T
+            }
+      }
+  crossIndustryPatterns?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              image?: T
+              id?: T
+            }
+      }
+  regulatoryPosture?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              excerpt?: T
+              icon?: T
+              id?: T
+            }
+      }
   cta?:
     | T
     | {
