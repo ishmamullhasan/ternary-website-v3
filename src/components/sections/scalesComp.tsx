@@ -31,7 +31,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4 gap-3 lg:pt-0 pt-4">
           {scales?.map((item, index): JSX.Element => {
             return (
-              <Link href={`/sales/${item.slug}`} key={index}>
+              <Link href={`/scales`} key={index}>
                 {/* gradient card */}
                 <Motion
                   className="relative lg:w-[220px] lg:h-[250px]  rounded-lg overflow-hidden"

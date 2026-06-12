@@ -56,7 +56,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
                 <hr className="border-[#F4F3EC] lg:mb-4 mb-2" />
                 <p className="text-base font-semibold">{item.title}</p>
 
-                <Link href={`/solutions/${item.slug}`} key={index}>
+                <Link href={`/solutions`} key={index}>
                   <button className="lg:text-base text-sm shadow">
                     {/* <u>Learn More</u> */}
                     Learn More

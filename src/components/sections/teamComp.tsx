@@ -1,6 +1,6 @@
 'use client'
 import Motion from '@/components/animation/motion'
-import type { Media } from '@/payload-types'
+import type { Media, Team } from '@/payload-types'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -8,15 +8,7 @@ import { useState } from 'react'
 interface TeamCompProps {
   heading?: string | null
   description?: string | null
-  members?:
-    | {
-        name?: string | null
-        position?: string | null
-        image?: Media | null
-        linkedin?: string | null
-        id?: string | null
-      }[]
-    | null
+  members?: Team[] | null
 }
 
 const motionGridItemProps = {
@@ -48,10 +40,10 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
           {!showAll && (
             <div className="grid grid-cols-2 lg:grid-cols-4 lg:gap-10 gap-4">
               {members?.slice(0, maxVisible).map((member, index) => {
-                const media = member.image as Media | null
+                const media = (typeof member.image === 'object' ? member.image : null) as Media | null
 
                 return (
-                  <a href={member.linkedin || '#'} key={index} target="_blank" rel="noopener noreferrer">
+                  <a href={member.linkedin || '#'} key={member.id ?? index} target="_blank" rel="noopener noreferrer">
                     <Motion
                       className="flex flex-col items-center text-center lg:w-[180px] w-[100px]"
                       {...motionGridItemProps}
@@ -97,11 +89,11 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                   >
                     <div className="flex items-center mb-4">
                       {members?.slice(maxVisible, maxVisible + 3).map((member, index) => {
-                        const media = member.image as Media | null
+                        const media = (typeof member.image === 'object' ? member.image : null) as Media | null
 
                         return (
                           <div
-                            key={index}
+                            key={member.id ?? index}
                             className="lg:w-[72px] lg:h-[72px] w-[50px] h-[50px] rounded-full overflow-hidden bg-neutral-300 border border-primary -ml-4 first:ml-0"
                           >
                             {media?.url && (
@@ -133,10 +125,14 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
             <>
               <div className="grid grid-cols-2 lg:grid-cols-4 lg:gap-10 gap-4">
                 {members?.map((member, index) => {
-                  const media = member.image as Media | null
+                  const media = (typeof member.image === 'object' ? member.image : null) as Media | null
 
                   return (
-                    <Link href={member.linkedin || '#'} key={index} className="flex flex-col items-center text-center">
+                    <Link
+                      href={member.linkedin || '#'}
+                      key={member.id ?? index}
+                      className="flex flex-col items-center text-center"
+                    >
                       <Motion
                         className="flex flex-col items-center text-center"
                         {...motionGridItemProps}
