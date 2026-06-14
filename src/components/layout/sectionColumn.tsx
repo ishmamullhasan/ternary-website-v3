@@ -63,7 +63,7 @@ export default function ColumnSection({
         viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
-        <div className="grid lg:grid-cols-2 gap-4 items-center">
+        <div className="grid lg:grid-cols-2 gap-4 items-start">
           <div className={primaryColClass}>
             {headerBlock}
             {children}

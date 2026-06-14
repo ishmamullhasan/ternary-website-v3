@@ -120,6 +120,7 @@ export interface Config {
     'legal-center': LegalCenter
     scalesPage: ScalesPage
     industriesPage: IndustriesPage
+    solutionsPage: SolutionsPage
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
@@ -130,6 +131,7 @@ export interface Config {
     'legal-center': LegalCenterSelect<false> | LegalCenterSelect<true>
     scalesPage: ScalesPageSelect<false> | ScalesPageSelect<true>
     industriesPage: IndustriesPageSelect<false> | IndustriesPageSelect<true>
+    solutionsPage: SolutionsPageSelect<false> | SolutionsPageSelect<true>
   }
   locale: null
   widgets: {
@@ -2063,6 +2065,146 @@ export interface IndustriesPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solutionsPage".
+ */
+export interface SolutionsPage {
+  id: string
+  hero?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    /**
+     * Four cards shown over the hero image. The isometric icon for each card is fixed in code by position.
+     */
+    cards?:
+      | {
+          title?: string | null
+          description?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  /**
+   * Layout: main on left. Decorative isometric graphic is fixed in code.
+   */
+  section_2?: {
+    badge?: string | null
+    title?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    trajectory?: {
+      label?: string | null
+      steps?:
+        | {
+            label?: string | null
+            active?: boolean | null
+            id?: string | null
+          }[]
+        | null
+    }
+    whoTitle?: string | null
+    whoDescription?: string | null
+    shapeTitle?: string | null
+    shapeDescription?: string | null
+  }
+  /**
+   * Layout: main on right. Decorative isometric graphic is fixed in code.
+   */
+  section_3?: {
+    badge?: string | null
+    title?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    whoTitle?: string | null
+    whoDescription?: string | null
+    shapeTitle?: string | null
+    shapeDescription?: string | null
+  }
+  /**
+   * Layout: main on left. Decorative isometric graphic is fixed in code.
+   */
+  section_4?: {
+    badge?: string | null
+    title?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    techStack?: {
+      label?: string | null
+      items?:
+        | {
+            label?: string | null
+            highlight?: boolean | null
+            id?: string | null
+          }[]
+        | null
+    }
+    whoTitle?: string | null
+    whoDescription?: string | null
+    shapeTitle?: string | null
+    shapeDescription?: string | null
+  }
+  /**
+   * Layout: main on right. Decorative isometric graphic is fixed in code.
+   */
+  section_5?: {
+    badge?: string | null
+    title?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    incident?: {
+      label?: string | null
+      historyLabel?: string | null
+      /**
+       * Number of cells in the history grid.
+       */
+      totalCells?: number | null
+      /**
+       * Cell positions (1-based) to highlight as incidents.
+       */
+      activeCells?:
+        | {
+            position?: number | null
+            id?: string | null
+          }[]
+        | null
+    }
+    whoTitle?: string | null
+    whoDescription?: string | null
+    shapeTitle?: string | null
+    shapeDescription?: string | null
+  }
+  engage?: {
+    heading?: string | null
+    description?: string | null
+    /**
+     * Three engagement models. Card colors are fixed in code by position.
+     */
+    cards?:
+      | {
+          title?: string | null
+          subtitle?: string | null
+          description?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2684,6 +2826,146 @@ export interface IndustriesPageSelect<T extends boolean = true> {
         heading?: T
         description?: T
         backgroundImage?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solutionsPage_select".
+ */
+export interface SolutionsPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        cards?:
+          | T
+          | {
+              title?: T
+              description?: T
+              id?: T
+            }
+      }
+  section_2?:
+    | T
+    | {
+        badge?: T
+        title?: T
+        description?: T
+        image?: T
+        trajectory?:
+          | T
+          | {
+              label?: T
+              steps?:
+                | T
+                | {
+                    label?: T
+                    active?: T
+                    id?: T
+                  }
+            }
+        whoTitle?: T
+        whoDescription?: T
+        shapeTitle?: T
+        shapeDescription?: T
+      }
+  section_3?:
+    | T
+    | {
+        badge?: T
+        title?: T
+        description?: T
+        image?: T
+        whoTitle?: T
+        whoDescription?: T
+        shapeTitle?: T
+        shapeDescription?: T
+      }
+  section_4?:
+    | T
+    | {
+        badge?: T
+        title?: T
+        description?: T
+        image?: T
+        techStack?:
+          | T
+          | {
+              label?: T
+              items?:
+                | T
+                | {
+                    label?: T
+                    highlight?: T
+                    id?: T
+                  }
+            }
+        whoTitle?: T
+        whoDescription?: T
+        shapeTitle?: T
+        shapeDescription?: T
+      }
+  section_5?:
+    | T
+    | {
+        badge?: T
+        title?: T
+        description?: T
+        image?: T
+        incident?:
+          | T
+          | {
+              label?: T
+              historyLabel?: T
+              totalCells?: T
+              activeCells?:
+                | T
+                | {
+                    position?: T
+                    id?: T
+                  }
+            }
+        whoTitle?: T
+        whoDescription?: T
+        shapeTitle?: T
+        shapeDescription?: T
+      }
+  engage?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        cards?:
+          | T
+          | {
+              title?: T
+              subtitle?: T
+              description?: T
+              id?: T
+            }
+      }
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
         button_1?:
           | T
           | {
