@@ -15,7 +15,10 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'Ternary Solutions ',
+  title: {
+    template: '%s | Ternary Solutions',
+    default: 'Ternary Solutions',
+  },
   description: 'Building products that shape the lives of millions every single day',
 }
 

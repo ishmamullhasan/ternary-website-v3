@@ -78,6 +78,8 @@ export interface Config {
     job: Job
     team: Team
     legal: Legal
+    forms: Form
+    'form-submissions': FormSubmission
     'payload-kv': PayloadKv
     'payload-folders': FolderInterface
     'payload-locked-documents': PayloadLockedDocument
@@ -101,6 +103,8 @@ export interface Config {
     job: JobSelect<false> | JobSelect<true>
     team: TeamSelect<false> | TeamSelect<true>
     legal: LegalSelect<false> | LegalSelect<true>
+    forms: FormsSelect<false> | FormsSelect<true>
+    'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -121,6 +125,7 @@ export interface Config {
     scalesPage: ScalesPage
     industriesPage: IndustriesPage
     solutionsPage: SolutionsPage
+    contact: Contact
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
@@ -132,6 +137,7 @@ export interface Config {
     scalesPage: ScalesPageSelect<false> | ScalesPageSelect<true>
     industriesPage: IndustriesPageSelect<false> | IndustriesPageSelect<true>
     solutionsPage: SolutionsPageSelect<false> | SolutionsPageSelect<true>
+    contact: ContactSelect<false> | ContactSelect<true>
   }
   locale: null
   widgets: {
@@ -790,6 +796,224 @@ export interface Legal {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms".
+ */
+export interface Form {
+  id: string
+  title: string
+  fields?:
+    | (
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            defaultValue?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'checkbox'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'country'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'email'
+          }
+        | {
+            message?: {
+              root: {
+                type: string
+                children: {
+                  type: any
+                  version: number
+                  [k: string]: unknown
+                }[]
+                direction: ('ltr' | 'rtl') | null
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+                indent: number
+                version: number
+              }
+              [k: string]: unknown
+            } | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'message'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: number | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'number'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: string | null
+            placeholder?: string | null
+            options?:
+              | {
+                  label: string
+                  value: string
+                  id?: string | null
+                }[]
+              | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'select'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'state'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: string | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'text'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: string | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'textarea'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            defaultValue?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'date'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: string | null
+            options?:
+              | {
+                  label: string
+                  value: string
+                  id?: string | null
+                }[]
+              | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'radio'
+          }
+      )[]
+    | null
+  submitButtonLabel?: string | null
+  /**
+   * Choose whether to display an on-page message or redirect to a different page after they submit the form.
+   */
+  confirmationType?: ('message' | 'redirect') | null
+  confirmationMessage?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  redirect?: {
+    url: string
+  }
+  /**
+   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
+   */
+  emails?:
+    | {
+        emailTo?: string | null
+        cc?: string | null
+        bcc?: string | null
+        replyTo?: string | null
+        emailFrom?: string | null
+        subject: string
+        /**
+         * Enter the message that should be sent in this email.
+         */
+        message?: {
+          root: {
+            type: string
+            children: {
+              type: any
+              version: number
+              [k: string]: unknown
+            }[]
+            direction: ('ltr' | 'rtl') | null
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+            indent: number
+            version: number
+          }
+          [k: string]: unknown
+        } | null
+        id?: string | null
+      }[]
+    | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions".
+ */
+export interface FormSubmission {
+  id: string
+  form: string | Form
+  submissionData?:
+    | {
+        field: string
+        value: string
+        id?: string | null
+      }[]
+    | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -855,6 +1079,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'legal'
         value: string | Legal
+      } | null)
+    | ({
+        relationTo: 'forms'
+        value: string | Form
+      } | null)
+    | ({
+        relationTo: 'form-submissions'
+        value: string | FormSubmission
       } | null)
     | ({
         relationTo: 'payload-folders'
@@ -1400,6 +1632,184 @@ export interface LegalSelect<T extends boolean = true> {
               label?: T
               link?: T
             }
+      }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms_select".
+ */
+export interface FormsSelect<T extends boolean = true> {
+  title?: T
+  fields?:
+    | T
+    | {
+        checkbox?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              defaultValue?: T
+              id?: T
+              blockName?: T
+            }
+        country?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        email?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        message?:
+          | T
+          | {
+              message?: T
+              id?: T
+              blockName?: T
+            }
+        number?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        select?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              placeholder?: T
+              options?:
+                | T
+                | {
+                    label?: T
+                    value?: T
+                    id?: T
+                  }
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        state?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        text?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        textarea?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        date?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              defaultValue?: T
+              id?: T
+              blockName?: T
+            }
+        radio?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              options?:
+                | T
+                | {
+                    label?: T
+                    value?: T
+                    id?: T
+                  }
+              required?: T
+              id?: T
+              blockName?: T
+            }
+      }
+  submitButtonLabel?: T
+  confirmationType?: T
+  confirmationMessage?: T
+  redirect?:
+    | T
+    | {
+        url?: T
+      }
+  emails?:
+    | T
+    | {
+        emailTo?: T
+        cc?: T
+        bcc?: T
+        replyTo?: T
+        emailFrom?: T
+        subject?: T
+        message?: T
+        id?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions_select".
+ */
+export interface FormSubmissionsSelect<T extends boolean = true> {
+  form?: T
+  submissionData?:
+    | T
+    | {
+        field?: T
+        value?: T
+        id?: T
       }
   updatedAt?: T
   createdAt?: T
@@ -2205,6 +2615,103 @@ export interface SolutionsPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact".
+ */
+export interface Contact {
+  id: string
+  hero?: {
+    heading?: string | null
+    description?: string | null
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  /**
+   * Response-time cards shown below the hero.
+   */
+  stats?:
+    | {
+        value?: string | null
+        label?: string | null
+        detail?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * The icon and gradient for each route is fixed in code by position.
+   */
+  routes?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          description?: string | null
+          email?: string | null
+          replyWindow?: string | null
+          cta?: string | null
+          info?: boolean | null
+          bestFor?:
+            | {
+                item?: string | null
+                id?: string | null
+              }[]
+            | null
+          id?: string | null
+        }[]
+      | null
+  }
+  offices?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          city?: string | null
+          tag?: string | null
+          timezone?: string | null
+          hours?: string | null
+          email?: string | null
+          phone?: string | null
+          address?:
+            | {
+                line?: string | null
+                id?: string | null
+              }[]
+            | null
+          id?: string | null
+        }[]
+      | null
+  }
+  /**
+   * Pick a form to show a "Send us a message" section. Leave empty to hide the section.
+   */
+  form?: {
+    heading?: string | null
+    description?: string | null
+    form?: (string | null) | Form
+  }
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2960,6 +3467,112 @@ export interface SolutionsPageSelect<T extends boolean = true> {
               description?: T
               id?: T
             }
+      }
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact_select".
+ */
+export interface ContactSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
+  stats?:
+    | T
+    | {
+        value?: T
+        label?: T
+        detail?: T
+        id?: T
+      }
+  routes?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              description?: T
+              email?: T
+              replyWindow?: T
+              cta?: T
+              info?: T
+              bestFor?:
+                | T
+                | {
+                    item?: T
+                    id?: T
+                  }
+              id?: T
+            }
+      }
+  offices?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              city?: T
+              tag?: T
+              timezone?: T
+              hours?: T
+              email?: T
+              phone?: T
+              address?:
+                | T
+                | {
+                    line?: T
+                    id?: T
+                  }
+              id?: T
+            }
+      }
+  form?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        form?: T
       }
   cta?:
     | T

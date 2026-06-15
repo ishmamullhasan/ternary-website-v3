@@ -2,7 +2,7 @@
 
 import Section from '@/components/layout/section'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
-import type { Job } from '@/payload-types'
+import type { JobListing } from '@/lib/jobs-data'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
@@ -10,7 +10,7 @@ import type { JSX } from 'react'
 import { useState } from 'react'
 
 interface JobsProps {
-  jobs: Job[]
+  jobs: JobListing[]
   heading?: string
   description?: string
 }
@@ -30,31 +30,31 @@ export default function Jobs({ jobs, heading, description }: JobsProps): JSX.Ele
   const uniqueDepartments = [
     ...new Set(
       jobs
-        .map((job: Job) => job.department)
-        .filter((department): department is NonNullable<Job['department']> => Boolean(department && department.trim())),
+        .map((job: JobListing) => job.department)
+        .filter((department): department is string => Boolean(department && department.trim())),
     ),
   ]
   const uniqueLevels = [
     ...new Set(
       jobs
-        .map((job: Job) => job.level)
-        .filter((level): level is NonNullable<Job['level']> => Boolean(level && level.trim())),
+        .map((job: JobListing) => job.seniority_level)
+        .filter((level): level is string => Boolean(level && level.trim())),
     ),
   ]
   const [selectedDepartment, setSelectedDepartment] = useState<string>('All Departments')
   const [selectedLevel, setSelectedLevel] = useState<string>('All Levels')
   const [searchTerm, setSearchTerm] = useState<string>('')
 
-  const filteredJobs = jobs.filter((job: Job) => {
+  const filteredJobs = jobs.filter((job: JobListing) => {
     if (selectedDepartment !== 'All Departments' && job.department !== selectedDepartment) {
       return false
     }
-    if (selectedLevel !== 'All Levels' && job.level !== selectedLevel) {
+    if (selectedLevel !== 'All Levels' && job.seniority_level !== selectedLevel) {
       return false
     }
     const normalizedSearchTerm = searchTerm.trim().toLowerCase()
     if (normalizedSearchTerm) {
-      const searchableText = [job.title, job.code, job.department, job.level, job.excerpts]
+      const searchableText = [job.title, job.code, job.department, job.seniority_level, job.excerpt]
         .filter(Boolean)
         .join(' ')
         .toLowerCase()
@@ -146,7 +146,7 @@ export default function Jobs({ jobs, heading, description }: JobsProps): JSX.Ele
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {filteredJobs.length > 0 ? (
           filteredJobs.map(
-            (job: Job): JSX.Element => (
+            (job: JobListing): JSX.Element => (
               <motion.div
                 key={job.id}
                 className={`${careersBg.card} border ${careersBorder.subtle} rounded-xl p-6 flex flex-col transition-colors duration-300`}
@@ -165,9 +165,9 @@ export default function Jobs({ jobs, heading, description }: JobsProps): JSX.Ele
                 </div>
 
                 <div className="space-y-2 mb-6">
-                  {job.excerpts && (
+                  {job.excerpt && (
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
-                      <div className={`${careersText.muted} flex items-center gap-1`}>{job.excerpts}</div>
+                      <div className={`${careersText.muted} flex items-center gap-1`}>{job.excerpt}</div>
                     </div>
                   )}
                 </div>
