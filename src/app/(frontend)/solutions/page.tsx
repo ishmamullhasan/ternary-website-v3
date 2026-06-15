@@ -1,17 +1,28 @@
 import Section from '@/components/layout/section'
 import ColumnSection from '@/components/layout/sectionColumn'
 import type { Media, SolutionsPage } from '@/payload-types'
-import { getCachedGlobal } from '@/utilities/getGlobals'
+import config from '@/payload.config'
 import { ArrowRight } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
+import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Page(): Promise<JSX.Element> {
+  const getSolutionsData = unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.findGlobal({ slug: 'solutionsPage', depth: 2 })
+    },
+    ['solutionsPage'],
+    { tags: ['solutionsPage'] },
+  )
+
   let data: SolutionsPage | null = null
   try {
-    data = (await getCachedGlobal('solutionsPage', 2)()) as SolutionsPage | null
+    data = (await getSolutionsData()) as SolutionsPage | null
   } catch {
     // Database may be unavailable during build.
   }

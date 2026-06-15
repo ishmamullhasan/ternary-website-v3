@@ -5,7 +5,8 @@ import GridThree from '@/components/grids/three'
 import GridTwo from '@/components/grids/two'
 import Section from '@/components/layout/section'
 import Jobs from '@/components/sections/job'
-import type { Job, Media, Team } from '@/payload-types'
+import { getJobs } from '@/lib/jobs-data'
+import type { Media, Team } from '@/payload-types'
 import { CareersPage } from '@/payload-types'
 import config from '@/payload.config'
 import { unstable_cache } from 'next/cache'
@@ -28,6 +29,9 @@ export default async function Page(): Promise<JSX.Element> {
       <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
     )
   }
+
+  // Open roles list from the recruiting API (✅ GET /jobs).
+  const openRoles = await getJobs()
 
   return (
     <div className="min-h-screen bg-[#050505] font-sans selection:bg-white/20">
@@ -60,7 +64,7 @@ export default async function Page(): Promise<JSX.Element> {
             </button>
           </Motion>
           <Motion
-            className="aspect-4/3 rounded-3xl overflow-hidden relative border border-white/10"
+            className="aspect-4/3 rounded-lg overflow-hidden relative border border-white/10"
             initial={{ opacity: 0, scale: 0.985 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.35 }}
@@ -94,8 +98,12 @@ export default async function Page(): Promise<JSX.Element> {
           <Corousel items={(careersPageData.team?.members as Team[]) || []} />
         </Section>
 
-        {/* Section 5: Open Roles */}
-        <Jobs jobs={(careersPageData.jobs?.list as Job[]) || []} />
+        {/* Section 5: Open Roles — list from API (✅ GET /jobs); heading/description from CMS */}
+        <Jobs
+          jobs={openRoles}
+          heading={careersPageData.jobs?.heading || undefined}
+          description={careersPageData.jobs?.description || undefined}
+        />
       </main>
     </div>
   )

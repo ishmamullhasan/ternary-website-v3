@@ -2,10 +2,12 @@ import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { cn } from '@/lib/utils'
 import type { IndustriesPage, Industry, Media } from '@/payload-types'
-import { getCachedGlobal } from '@/utilities/getGlobals'
+import config from '@/payload.config'
 import { Activity, Building2, Check, CheckCircle2, Lock, Smile, Zap, type LucideIcon } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
 export const dynamic = 'force-dynamic'
@@ -25,9 +27,18 @@ function RegulatoryPostureIcon({ icon }: { icon: string | null | undefined }) {
 }
 
 export default async function Page(): Promise<JSX.Element> {
+  const getIndustriesData = unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.findGlobal({ slug: 'industriesPage', depth: 2 })
+    },
+    ['industriesPage'],
+    { tags: ['industriesPage'] },
+  )
+
   let industriesData: IndustriesPage | null = null
   try {
-    industriesData = (await getCachedGlobal('industriesPage', 2)()) as IndustriesPage | null
+    industriesData = (await getIndustriesData()) as IndustriesPage | null
   } catch {
     // Database may be unavailable during build
   }

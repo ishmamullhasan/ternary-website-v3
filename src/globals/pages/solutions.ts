@@ -3,14 +3,14 @@ import { GlobalConfig } from 'payload'
 
 const SolutionsPage: GlobalConfig = {
   slug: 'solutionsPage',
-  label: 'Solutions Page',
+  label: 'Solutions',
   admin: {
     group: 'Pages',
   },
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('global_solutionsPage', 'max')
+        revalidateTag('solutionsPage', 'max')
       },
     ],
   },

@@ -3,19 +3,30 @@ import { BentoCard } from '@/components/layout/bentoCard'
 import Section from '@/components/layout/section'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { cn } from '@/lib/utils'
-import type { About, Media } from '@/payload-types'
-import { getCachedGlobal } from '@/utilities/getGlobals'
+import type { AboutPage, Media } from '@/payload-types'
+import config from '@/payload.config'
 import { Box, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Page(): Promise<JSX.Element> {
-  let aboutData: About | null = null
+  const getAboutData = unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.findGlobal({ slug: 'aboutPage', depth: 2 })
+    },
+    ['aboutPage'],
+    { tags: ['aboutPage'] },
+  )
+
+  let aboutData: AboutPage | null = null
   try {
-    aboutData = (await getCachedGlobal('about', 2)()) as About | null
+    aboutData = (await getAboutData()) as AboutPage | null
   } catch {
     // Database may be unavailable during build
   }

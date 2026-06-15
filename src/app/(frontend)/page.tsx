@@ -11,8 +11,10 @@ import EngagementComp from '@/components/sections/engagementComp'
 import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 import OpportunitiesComp from '@/components/sections/opportunitiesComp'
 import ProcessComp from '@/components/sections/processComp'
-import type { Capability, Homepage, Industry, Job, Media, Model, Scale, Solution, Team } from '@/payload-types'
-import { getCachedGlobal } from '@/utilities/getGlobals'
+import type { Capability, HomePage, Industry, Job, Media, Model, Scale, Solution, Team } from '@/payload-types'
+import config from '@/payload.config'
+import { unstable_cache } from 'next/cache'
+import { getPayload } from 'payload'
 import type { JSX } from 'react'
 type MultiRelation =
   | { relationTo: 'capability'; value: Capability }
@@ -24,9 +26,18 @@ type MultiRelation =
 export const dynamic = 'force-dynamic'
 
 export default async function Page(): Promise<JSX.Element> {
-  let homePageData: Homepage | null = null
+  const getHomePageData = unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.findGlobal({ slug: 'homePage', depth: 2 })
+    },
+    ['homePage'],
+    { tags: ['homePage'] },
+  )
+
+  let homePageData: HomePage | null = null
   try {
-    homePageData = (await getCachedGlobal('homepage', 2)()) as Homepage | null
+    homePageData = (await getHomePageData()) as HomePage | null
   } catch {
     // Database may be unavailable during build
   }

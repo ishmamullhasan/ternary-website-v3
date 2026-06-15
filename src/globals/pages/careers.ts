@@ -3,6 +3,7 @@ import { GlobalConfig } from 'payload'
 
 const CareersPage: GlobalConfig = {
   slug: 'careersPage',
+  label: 'Careers',
   admin: {
     group: 'Pages',
   },

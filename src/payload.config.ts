@@ -23,10 +23,12 @@ import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
-import LegalCenter from './globals/legal-center'
+import LegalCenter from './globals/legalCenter'
 import About from './globals/pages/about'
+import ContactPage from './globals/pages/contact'
 import IndustriesPage from './globals/pages/industriesPage'
 import ScalesPage from './globals/pages/scalesPage'
+
 import SolutionsPage from './globals/pages/solutions'
 import StoriesPage from './globals/pages/storiesPage'
 const filename = fileURLToPath(import.meta.url)
@@ -92,6 +94,7 @@ export default buildConfig({
     ScalesPage,
     IndustriesPage,
     SolutionsPage,
+    ContactPage,
     StoriesPage,
   ],
   plugins,

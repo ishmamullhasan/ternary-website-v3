@@ -1,8 +1,8 @@
 import { revalidateTag } from 'next/cache'
 import { GlobalConfig } from 'payload'
 
-const About: GlobalConfig = {
-  slug: 'about',
+const AboutPage: GlobalConfig = {
+  slug: 'aboutPage',
   label: 'About',
   admin: {
     group: 'Pages',
@@ -10,7 +10,7 @@ const About: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('global_about', 'max')
+        revalidateTag('aboutPage', 'max')
       },
     ],
   },
@@ -487,4 +487,4 @@ const About: GlobalConfig = {
   ],
 }
 
-export default About
+export default AboutPage

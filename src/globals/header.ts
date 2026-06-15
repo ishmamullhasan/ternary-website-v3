@@ -3,11 +3,11 @@ import { GlobalConfig } from 'payload'
 
 const Header: GlobalConfig = {
   slug: 'header',
-  label: 'header',
+  label: 'Header',
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('global_header', 'max')
+        revalidateTag('header', 'max')
       },
     ],
   },

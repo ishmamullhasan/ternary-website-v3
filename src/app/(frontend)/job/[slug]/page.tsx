@@ -2,63 +2,31 @@ import Motion from '@/components/animation/motion'
 import InterviewProcess from '@/components/sections/interviewProcess'
 import Jobs from '@/components/sections/job'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
-import type { Job, Media } from '@/payload-types'
-import config from '@/payload.config'
+import { formatComp, getJob, getJobs, getRelatedJobs } from '@/lib/jobs-data'
 import { ArrowLeft, ArrowRight, DollarSign, GitCommitHorizontal, Minus, ShieldAlert, Users } from 'lucide-react'
 import type { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-const getJobList = unstable_cache(
-  async () => {
-    const payload = await getPayload({ config })
-    const result = await payload.find({
-      collection: 'job',
-      limit: 100,
-      depth: 0,
-    })
-    return result.docs
-  },
-  ['job'],
-  { tags: ['job'] },
-)
-
-function getJobBySlug(slug: string) {
-  return unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      const result = await payload.find({
-        collection: 'job',
-        where: { slug: { equals: slug } },
-        limit: 1,
-        depth: 2,
-      })
-      return result.docs[0] ?? null
-    },
-    [`job_${slug}`],
-    { tags: [`job_${slug}`, 'job'] },
-  )
-}
+// Data comes from `@/lib/jobs-data` (mock mirror of the public recruiting API).
+// ✅ = live on the API · 🟡 = Payload CMS copy · 🔒 = internal-only (see jobs-data.ts).
 
 export async function generateStaticParams() {
-  const jobs = await getJobList()
-  return jobs.map((job) => ({
-    slug: job.slug,
-  }))
+  const jobs = await getJobs()
+  return jobs.map((job) => ({ slug: job.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const jobData = await getJobBySlug(slug)()
+  const jobData = await getJob(slug)
 
   if (!jobData) return {}
 
   return {
     title: jobData.title ? `${jobData.title} | Ternary Solutions` : 'Job | Ternary Solutions',
-    description: jobData.excerpts || undefined,
+    // ✅ excerpt (API) → fall back to body_markdown
+    description: jobData.excerpt || jobData.body_markdown || undefined,
   }
 }
 
@@ -76,40 +44,37 @@ const motionBlockProps = {
   transition: { duration: 0.35, ease: 'easeOut' as const },
 }
 
-function getRelatedJobs(jobs: (string | Job)[] | null | undefined): Job[] {
-  if (!jobs?.length) return []
-  return jobs.filter((job): job is Job => typeof job === 'object' && job !== null)
-}
-
-function hasTeamBoxContent(teamBox: Job['teamBox']): boolean {
-  if (!teamBox) return false
-  return Boolean(
-    teamBox.reportingToName?.trim() ||
-    teamBox.reportingToRole?.trim() ||
-    teamBox.podSize?.trim() ||
-    teamBox.crossFunctional?.trim(),
-  )
-}
-
-function hasCompensationBoxContent(compensationBox: Job['compensationBox'], salary?: string | null): boolean {
-  if (compensationBox) {
-    if (compensationBox.base?.trim() || compensationBox.equity?.trim() || compensationBox.note?.trim()) {
-      return true
-    }
-  }
-  return Boolean(salary?.trim())
-}
-
 export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
   const { slug } = await params
-  const jobData = await getJobBySlug(slug)()
+  const jobData = await getJob(slug)
 
-  if (!jobData) notFound()
+  if (!jobData) notFound() // maps to API 404 {"detail": "role not open or no active JD"}
 
-  const relatedJobs = getRelatedJobs(jobData.openRoles?.jobs)
-  const showTeamBox = hasTeamBoxContent(jobData.teamBox)
-  const showCompensationBox = hasCompensationBoxContent(jobData.compensationBox, jobData.salary)
-  const compensationBase = jobData.compensationBox?.base?.trim() || jobData.salary
+  const relatedJobs = await getRelatedJobs(slug)
+
+  // ✅ Compensation from the API band; facets are nullable (render only when present).
+  const compDisplay = formatComp(jobData.comp_band_min, jobData.comp_band_max, jobData.comp_currency)
+  const employmentType = jobData.employment_type
+  const seniority = jobData.seniority_level
+  const equity = jobData.comp_equity
+  const compNote = jobData.comp_note
+
+  // JD body + lists are ✅ API-backed; section titles are 🟡 CMS.
+  const missionTitle = jobData.details?.item1?.title || 'The Mission'
+  const missionBody = jobData.body_markdown || jobData.details?.item1?.description
+  const responsibilities = jobData.responsibilities ?? []
+  const requirements = jobData.requirements ?? []
+  const niceToHaves = jobData.nice_to_haves ?? []
+
+  // 🟡 CMS sidebar blocks.
+  const showTeamBox = Boolean(
+    jobData.teamBox?.reportingToName?.trim() ||
+    jobData.teamBox?.reportingToRole?.trim() ||
+    jobData.teamBox?.podSize?.trim() ||
+    jobData.teamBox?.crossFunctional?.trim(),
+  )
+  const compensationBase = compDisplay
+  const showCompensationBox = Boolean(compensationBase || equity || compNote)
 
   return (
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
@@ -127,24 +92,19 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               </Link>
 
               <div className="flex items-center gap-6">
-                {jobData.code && (
-                  <span className="text-xs text-[#757571] font-mono tracking-wider uppercase">{jobData.code}</span>
+                {/* 🔒 code — internal-only; shown per design, falls back to slug */}
+                {(jobData.code || jobData.slug) && (
+                  <span className="text-xs text-[#757571] font-mono tracking-wider uppercase">
+                    {jobData.code || jobData.slug}
+                  </span>
                 )}
-                {jobData.button?.label && jobData.button.link ? (
-                  <Link
-                    href={jobData.button.link}
-                    className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-base px-5 py-2.5 rounded-lg transition-colors duration-200`}
-                  >
-                    {jobData.button.label}
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-base px-5 py-2.5 rounded-lg transition-colors duration-200`}
-                  >
-                    {jobData.button?.label || 'Apply Now'}
-                  </button>
-                )}
+                {/* Apply button → in-app form (POST /applications/{slug}). applyButton.* is 🟡 CMS override. */}
+                <Link
+                  href={jobData.applyButton?.link || `/job/${jobData.slug}/apply`}
+                  className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-base px-5 py-2.5 rounded-lg transition-colors duration-200`}
+                >
+                  {jobData.applyButton?.label || 'Apply Now'}
+                </Link>
               </div>
             </Motion>
 
@@ -155,34 +115,40 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             >
               <h1 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">{jobData.title}</h1>
               <ul className="flex flex-wrap items-center gap-x-4 gap-y-2 list-none text-base text-[#757571]">
-                {jobData.type && (
+                {/* Type — ✅ employment_type */}
+                {employmentType && (
                   <li className="flex items-center gap-1.5 before:content-['•'] before:text-[#757571]">
-                    Type: <span className="text-[#D5D5D5] font-medium">{jobData.type}</span>
+                    Type: <span className="text-[#D5D5D5] font-medium">{employmentType}</span>
                   </li>
                 )}
+                {/* Department — ✅ API */}
                 {jobData.department && (
                   <li className="flex items-center gap-1.5 before:content-['•'] before:text-[#757571]">
                     Department: <span className="text-[#D5D5D5] font-medium">{jobData.department}</span>
                   </li>
                 )}
+                {/* Location — ✅ API */}
                 {jobData.location && (
                   <li className="flex items-center gap-1.5 before:content-['•'] before:text-[#757571]">
                     Location: <span className="text-[#D5D5D5] font-medium">{jobData.location}</span>
                   </li>
                 )}
-                {jobData.level && (
+                {/* Experience Level — ✅ seniority_level */}
+                {seniority && (
                   <li className="flex items-center gap-1.5 before:content-['•'] before:text-[#757571]">
-                    Experience Level: <span className="text-[#D5D5D5] font-medium">{jobData.level}</span>
+                    Experience Level: <span className="text-[#D5D5D5] font-medium">{seniority}</span>
                   </li>
                 )}
+                {/* Team — ✅ API */}
                 {jobData.team && (
                   <li className="flex items-center gap-1.5 before:content-['•'] before:text-[#757571]">
                     Team: <span className="text-[#D5D5D5] font-medium">{jobData.team}</span>
                   </li>
                 )}
-                {jobData.salary && (
+                {/* Compensation — ✅ API band (formatted) */}
+                {compDisplay && (
                   <li className="flex items-center gap-1.5 before:content-['•'] before:text-[#757571]">
-                    Compensation: <span className="text-[#D5D5D5] font-medium">{jobData.salary}</span>
+                    Compensation: <span className="text-[#D5D5D5] font-medium">{compDisplay}</span>
                   </li>
                 )}
               </ul>
@@ -194,19 +160,29 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <Motion tag="section" className={`w-full ${careersText.body}`} {...motionSectionProps}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
             <div className="lg:col-span-2 space-y-16">
-              {jobData.details?.item1 && (jobData.details.item1.title || jobData.details.item1.description) && (
+              {/* The Mission — ✅ body_markdown (plain paragraphs; full Markdown rendering = TODO) */}
+              {missionBody && (
                 <Motion className="space-y-4" {...motionBlockProps}>
                   <h2 className="text-xs font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
                     <Minus size={16} className="text-[#757571]" aria-hidden="true" />
-                    {jobData.details.item1.title || 'The Mission'}
+                    {missionTitle}
                   </h2>
-                  <p className="text-[#D5D5D5] text-base leading-relaxed font-normal">
-                    {jobData.details.item1.description}
-                  </p>
+                  <div className="space-y-3">
+                    {missionBody
+                      .split('\n')
+                      .map((line) => line.trim())
+                      .filter(Boolean)
+                      .map((line, idx) => (
+                        <p key={idx} className="text-[#D5D5D5] text-base leading-relaxed font-normal">
+                          {line.replace(/^#+\s*/, '')}
+                        </p>
+                      ))}
+                  </div>
                 </Motion>
               )}
 
-              {jobData.details?.item2 && jobData.details.item2.points && jobData.details.item2.points.length > 0 && (
+              {/* What you'll do — ✅ responsibilities[] */}
+              {responsibilities.length > 0 && (
                 <Motion
                   className="space-y-4"
                   {...motionBlockProps}
@@ -214,23 +190,21 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 >
                   <h2 className="text-xs font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
                     <Minus size={20} className="text-[#757571]" aria-hidden="true" />
-                    {jobData.details.item2.title || "What you'll do"}
+                    {jobData.details?.item2?.title || "What you'll do"}
                   </h2>
                   <ul className="space-y-3.5">
-                    {jobData.details.item2.points.map((p, idx) => (
-                      <li
-                        key={p.id || idx}
-                        className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed"
-                      >
+                    {responsibilities.map((point, idx) => (
+                      <li key={idx} className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed">
                         <ArrowRight size={16} className="text-[#757571] shrink-0" aria-hidden="true" />
-                        <span>{p.point}</span>
+                        <span>{point}</span>
                       </li>
                     ))}
                   </ul>
                 </Motion>
               )}
 
-              {jobData.details?.item3 && jobData.details.item3.points && jobData.details.item3.points.length > 0 && (
+              {/* Who you are — ✅ requirements[] */}
+              {requirements.length > 0 && (
                 <Motion
                   className="space-y-4"
                   {...motionBlockProps}
@@ -238,23 +212,21 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 >
                   <h2 className="text-xs font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
                     <Minus size={20} className="text-[#757571]" aria-hidden="true" />
-                    {jobData.details.item3.title || 'Who you are (Must-Haves)'}
+                    {jobData.details?.item3?.title || 'Who you are (Must-Haves)'}
                   </h2>
                   <ul className="space-y-3.5">
-                    {jobData.details.item3.points.map((p, idx) => (
-                      <li
-                        key={p.id || idx}
-                        className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed"
-                      >
+                    {requirements.map((point, idx) => (
+                      <li key={idx} className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed">
                         <ShieldAlert size={16} className="text-[#757571] shrink-0" aria-hidden="true" />
-                        <span>{p.point}</span>
+                        <span>{point}</span>
                       </li>
                     ))}
                   </ul>
                 </Motion>
               )}
 
-              {jobData.details?.item4 && jobData.details.item4.points && jobData.details.item4.points.length > 0 && (
+              {/* Nice-to-Haves — ✅ nice_to_haves[] */}
+              {niceToHaves.length > 0 && (
                 <Motion
                   className="space-y-4"
                   {...motionBlockProps}
@@ -262,16 +234,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 >
                   <h2 className="text-xs font-semibold tracking-wider uppercase text-[#757571] flex flex-row items-center gap-2">
                     <Minus size={20} className="text-[#757571]" aria-hidden="true" />
-                    {jobData.details.item4.title || 'Nice-to-Haves:'}
+                    {jobData.details?.item4?.title || 'Nice-to-Haves:'}
                   </h2>
                   <ul className="space-y-3.5">
-                    {jobData.details.item4.points.map((p, idx) => (
-                      <li
-                        key={p.id || idx}
-                        className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed"
-                      >
+                    {niceToHaves.map((point, idx) => (
+                      <li key={idx} className="flex items-center gap-3 text-base text-[#D5D5D5] leading-relaxed">
                         <GitCommitHorizontal size={16} className="text-[#757571] shrink-0" aria-hidden="true" />
-                        <span>{p.point}</span>
+                        <span>{point}</span>
                       </li>
                     ))}
                   </ul>
@@ -279,6 +248,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               )}
             </div>
 
+            {/* Sidebar — Team box is 🟡 CMS; Compensation box mixes ✅ API band + ✅ equity/note */}
             {(showTeamBox || showCompensationBox) && (
               <div className="space-y-6 lg:sticky lg:top-32">
                 {showTeamBox && (
@@ -348,6 +318,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                     </div>
 
                     <div className="space-y-3.5 ">
+                      {/* Base — ✅ derived from API comp band */}
                       {compensationBase && (
                         <div className="flex justify-between items-center gap-4">
                           <span className="text-[#757571] text-sm">Base</span>
@@ -357,21 +328,21 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                         </div>
                       )}
 
-                      {jobData.compensationBox?.equity && (
+                      {/* Equity — ✅ comp_equity */}
+                      {equity && (
                         <>
                           {compensationBase && <hr className="border-[#757571]" />}
                           <div className="flex justify-between items-center gap-4 pb-4">
                             <span className="text-[#757571] text-sm">Equity</span>
-                            <span className="text-[#D5D5D5] font-mono text-base font-medium text-right">
-                              {jobData.compensationBox.equity}
-                            </span>
+                            <span className="text-[#D5D5D5] font-mono text-base font-medium text-right">{equity}</span>
                           </div>
                         </>
                       )}
 
-                      {jobData.compensationBox?.note && (
+                      {/* Note — ✅ comp_note */}
+                      {compNote && (
                         <p className="text-[#757571] bg-[#0F0E0E] p-2 leading-relaxed text-sm font-normal">
-                          {jobData.compensationBox.note}
+                          {compNote}
                         </p>
                       )}
                     </div>
@@ -382,8 +353,10 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           </div>
         </Motion>
 
+        {/* Interview Process — 🟡 CMS (API never exposes internal workflow) */}
         <InterviewProcess interviewProcess={jobData.interviewProcess} />
 
+        {/* Other Open Roles — derived from list (✅ GET /jobs); heading/description are 🟡 CMS */}
         {relatedJobs.length > 0 && (
           <Jobs
             jobs={relatedJobs}
@@ -392,14 +365,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           />
         )}
 
+        {/* CTA — 🟡 CMS (no API source) */}
         {jobData.cta?.heading && (
           <Motion
             tag="section"
             className="lg:p-10 p-4 bg-cover bg-center rounded-lg overflow-hidden"
             style={{
               backgroundImage: `url(${
-                (jobData.cta.backgroundImage as Media)?.url ||
-                'linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8))'
+                jobData.cta.backgroundImage || 'linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8))'
               })`,
             }}
             {...motionSectionProps}

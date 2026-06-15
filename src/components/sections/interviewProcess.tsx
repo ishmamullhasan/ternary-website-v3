@@ -1,15 +1,15 @@
 ﻿'use client'
 
 import { careersBg, careersBorder } from '@/lib/careers-colors'
-import type { Job } from '@/payload-types'
+import type { JobInterviewStep, JobListing } from '@/lib/jobs-data'
 import { Clock } from 'lucide-react'
 import type { JSX, MouseEvent } from 'react'
 import { useRef, useState } from 'react'
 
-type InterviewStep = NonNullable<NonNullable<Job['interviewProcess']>['steps']>[number]
+type InterviewStep = JobInterviewStep
 
 interface InterviewProcessProps {
-  interviewProcess?: Job['interviewProcess']
+  interviewProcess?: JobListing['interviewProcess']
 }
 
 const gridColsClass: Record<number, string> = {

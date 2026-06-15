@@ -2,7 +2,7 @@ import Motion from '@/components/animation/motion'
 import AllStoriesGrid, { type StoryGridItem } from '@/components/sections/stories/AllStoriesGrid'
 import SubscribeForm from '@/components/sections/stories/SubscribeForm'
 import type { Media, PressRelease, StoriesPage, Story } from '@/payload-types'
-import { getCachedGlobal } from '@/utilities/getGlobals'
+import config from '@/payload.config'
 import {
   ArrowRight,
   ArrowUpRight,
@@ -13,8 +13,10 @@ import {
   Newspaper,
   type LucideIcon,
 } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
 export const dynamic = 'force-dynamic'
@@ -42,10 +44,19 @@ function CategoryLandingIcon({ icon }: { icon: string | null | undefined }) {
 }
 
 export default async function Page(): Promise<JSX.Element> {
+  const getStoriesData = unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.findGlobal({ slug: 'storiesPage', depth: 2 })
+    },
+    ['storiesPage'],
+    { tags: ['storiesPage'] },
+  )
+
   let storiesData: StoriesPage | null = null
 
   try {
-    storiesData = (await getCachedGlobal('storiesPage', 2)()) as StoriesPage | null
+    storiesData = (await getStoriesData()) as StoriesPage | null
   } catch {
     // Database may be unavailable during build
   }
