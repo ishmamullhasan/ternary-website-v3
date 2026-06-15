@@ -7,6 +7,7 @@ import type { ElementType, JSX, ReactNode } from 'react'
 interface MotionWrapperProps extends MotionProps {
   tag?: ElementType
   className?: string
+  id?: string
   children?: ReactNode
 }
 

@@ -2,7 +2,7 @@ import { revalidateTag } from 'next/cache'
 import type { GlobalConfig } from 'payload'
 
 const LegalCenter: GlobalConfig = {
-  slug: 'legal-center',
+  slug: 'legalCenter',
   label: 'Legal Menu Sidebar',
   hooks: {
     afterChange: [

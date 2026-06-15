@@ -1,16 +1,16 @@
 import { revalidateTag } from 'next/cache'
 import { GlobalConfig } from 'payload'
 
-const Homepage: GlobalConfig = {
-  slug: 'homepage',
-  label: 'Homepage',
+const HomePage: GlobalConfig = {
+  slug: 'homePage',
+  label: 'Home',
   admin: {
     group: 'Pages',
   },
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('global_homepage', 'max')
+        revalidateTag('homePage', 'max')
       },
     ],
   },
@@ -412,4 +412,4 @@ const Homepage: GlobalConfig = {
   ],
 }
 
-export default Homepage
+export default HomePage

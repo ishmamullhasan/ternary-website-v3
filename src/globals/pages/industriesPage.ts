@@ -3,14 +3,14 @@ import { GlobalConfig } from 'payload'
 
 const IndustriesPage: GlobalConfig = {
   slug: 'industriesPage',
-  label: 'Industries Page',
+  label: 'Industries',
   admin: {
     group: 'Pages',
   },
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('global_industriesPage', 'max')
+        revalidateTag('industriesPage', 'max')
       },
     ],
   },

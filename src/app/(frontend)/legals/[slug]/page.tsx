@@ -36,10 +36,10 @@ const getLegalList = unstable_cache(
 const getLegalCenter = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
-    return payload.findGlobal({ slug: 'legal-center' })
+    return payload.findGlobal({ slug: 'legalCenter' })
   },
-  ['legal-center'],
-  { tags: ['legal-center', 'legal'] },
+  ['legalCenter'],
+  { tags: ['legalCenter', 'legal'] },
 )
 
 function sortLegalMenuItems(docs: Legal[]): Legal[] {

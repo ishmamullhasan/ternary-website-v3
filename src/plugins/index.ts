@@ -1,5 +1,6 @@
 import { getServerSideURL } from '@/utilities/getURL'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { Plugin } from 'payload'
@@ -15,6 +16,22 @@ const generateURL = ({ doc }: { doc?: { slug?: string | null } }) => {
 
 const plugins: Plugin[] = [
   payloadCloudPlugin(),
+  formBuilderPlugin({
+    fields: {
+      text: true,
+      textarea: true,
+      select: true,
+      email: true,
+      state: true,
+      country: true,
+      checkbox: true,
+      number: true,
+      message: true,
+      date: true,
+      radio: true,
+      payment: false,
+    },
+  }),
   s3Storage({
     collections: {
       media: {

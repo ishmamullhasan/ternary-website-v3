@@ -1,9 +1,11 @@
 import Motion from '@/components/animation/motion'
 import type { Media, Scale, ScalesPage } from '@/payload-types'
-import { getCachedGlobal } from '@/utilities/getGlobals'
+import config from '@/payload.config'
 import { Activity, BookCheck, Building2, ShieldCheck, Workflow, type LucideIcon } from 'lucide-react'
+import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
 export const dynamic = 'force-dynamic'
@@ -24,9 +26,18 @@ function QualityBarIcon({ icon }: { icon: string | null | undefined }) {
 }
 
 export default async function Page(): Promise<JSX.Element> {
+  const getScalesData = unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.findGlobal({ slug: 'scalesPage', depth: 2 })
+    },
+    ['scalesPage'],
+    { tags: ['scalesPage'] },
+  )
+
   let scalesData: ScalesPage | null = null
   try {
-    scalesData = (await getCachedGlobal('scalesPage', 2)()) as ScalesPage | null
+    scalesData = (await getScalesData()) as ScalesPage | null
   } catch {
     // Database may be unavailable during build
   }

@@ -70,6 +70,8 @@ export interface Config {
     media: Media
     users: User
     story: Story
+    insight: Insight
+    pressRelease: PressRelease
     capability: Capability
     solution: Solution
     industry: Industry
@@ -78,6 +80,8 @@ export interface Config {
     job: Job
     team: Team
     legal: Legal
+    forms: Form
+    'form-submissions': FormSubmission
     'payload-kv': PayloadKv
     'payload-folders': FolderInterface
     'payload-locked-documents': PayloadLockedDocument
@@ -93,6 +97,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>
     users: UsersSelect<false> | UsersSelect<true>
     story: StorySelect<false> | StorySelect<true>
+    insight: InsightSelect<false> | InsightSelect<true>
+    pressRelease: PressReleaseSelect<false> | PressReleaseSelect<true>
     capability: CapabilitySelect<false> | CapabilitySelect<true>
     solution: SolutionSelect<false> | SolutionSelect<true>
     industry: IndustrySelect<false> | IndustrySelect<true>
@@ -101,6 +107,8 @@ export interface Config {
     job: JobSelect<false> | JobSelect<true>
     team: TeamSelect<false> | TeamSelect<true>
     legal: LegalSelect<false> | LegalSelect<true>
+    forms: FormsSelect<false> | FormsSelect<true>
+    'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>
@@ -114,22 +122,28 @@ export interface Config {
   globals: {
     header: Header
     footer: Footer
-    homepage: Homepage
+    homePage: HomePage
     careersPage: CareersPage
-    about: About
-    'legal-center': LegalCenter
+    aboutPage: AboutPage
+    legalCenter: LegalCenter
     scalesPage: ScalesPage
     industriesPage: IndustriesPage
+    solutionsPage: SolutionsPage
+    contactPage: ContactPage
+    storiesPage: StoriesPage
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
     footer: FooterSelect<false> | FooterSelect<true>
-    homepage: HomepageSelect<false> | HomepageSelect<true>
+    homePage: HomePageSelect<false> | HomePageSelect<true>
     careersPage: CareersPageSelect<false> | CareersPageSelect<true>
-    about: AboutSelect<false> | AboutSelect<true>
-    'legal-center': LegalCenterSelect<false> | LegalCenterSelect<true>
+    aboutPage: AboutPageSelect<false> | AboutPageSelect<true>
+    legalCenter: LegalCenterSelect<false> | LegalCenterSelect<true>
     scalesPage: ScalesPageSelect<false> | ScalesPageSelect<true>
     industriesPage: IndustriesPageSelect<false> | IndustriesPageSelect<true>
+    solutionsPage: SolutionsPageSelect<false> | SolutionsPageSelect<true>
+    contactPage: ContactPageSelect<false> | ContactPageSelect<true>
+    storiesPage: StoriesPageSelect<false> | StoriesPageSelect<true>
   }
   locale: null
   widgets: {
@@ -317,6 +331,75 @@ export interface Story {
    */
   generateSlug?: boolean | null
   slug: string
+  excerpts?: string | null
+  thumbnail?: (string | null) | Media
+  content?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "insight".
+ */
+export interface Insight {
+  id: string
+  title?: string | null
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  excerpts?: string | null
+  thumbnail?: (string | null) | Media
+  content?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pressRelease".
+ */
+export interface PressRelease {
+  id: string
+  title?: string | null
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  /**
+   * e.g. CS-014
+   */
+  code?: string | null
+  releaseDate?: string | null
   excerpts?: string | null
   thumbnail?: (string | null) | Media
   content?: {
@@ -788,6 +871,224 @@ export interface Legal {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms".
+ */
+export interface Form {
+  id: string
+  title: string
+  fields?:
+    | (
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            defaultValue?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'checkbox'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'country'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'email'
+          }
+        | {
+            message?: {
+              root: {
+                type: string
+                children: {
+                  type: any
+                  version: number
+                  [k: string]: unknown
+                }[]
+                direction: ('ltr' | 'rtl') | null
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+                indent: number
+                version: number
+              }
+              [k: string]: unknown
+            } | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'message'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: number | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'number'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: string | null
+            placeholder?: string | null
+            options?:
+              | {
+                  label: string
+                  value: string
+                  id?: string | null
+                }[]
+              | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'select'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'state'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: string | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'text'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: string | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'textarea'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            required?: boolean | null
+            defaultValue?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'date'
+          }
+        | {
+            name: string
+            label?: string | null
+            width?: number | null
+            defaultValue?: string | null
+            options?:
+              | {
+                  label: string
+                  value: string
+                  id?: string | null
+                }[]
+              | null
+            required?: boolean | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'radio'
+          }
+      )[]
+    | null
+  submitButtonLabel?: string | null
+  /**
+   * Choose whether to display an on-page message or redirect to a different page after they submit the form.
+   */
+  confirmationType?: ('message' | 'redirect') | null
+  confirmationMessage?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  redirect?: {
+    url: string
+  }
+  /**
+   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
+   */
+  emails?:
+    | {
+        emailTo?: string | null
+        cc?: string | null
+        bcc?: string | null
+        replyTo?: string | null
+        emailFrom?: string | null
+        subject: string
+        /**
+         * Enter the message that should be sent in this email.
+         */
+        message?: {
+          root: {
+            type: string
+            children: {
+              type: any
+              version: number
+              [k: string]: unknown
+            }[]
+            direction: ('ltr' | 'rtl') | null
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+            indent: number
+            version: number
+          }
+          [k: string]: unknown
+        } | null
+        id?: string | null
+      }[]
+    | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions".
+ */
+export interface FormSubmission {
+  id: string
+  form: string | Form
+  submissionData?:
+    | {
+        field: string
+        value: string
+        id?: string | null
+      }[]
+    | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -823,6 +1124,14 @@ export interface PayloadLockedDocument {
         value: string | Story
       } | null)
     | ({
+        relationTo: 'insight'
+        value: string | Insight
+      } | null)
+    | ({
+        relationTo: 'pressRelease'
+        value: string | PressRelease
+      } | null)
+    | ({
         relationTo: 'capability'
         value: string | Capability
       } | null)
@@ -853,6 +1162,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'legal'
         value: string | Legal
+      } | null)
+    | ({
+        relationTo: 'forms'
+        value: string | Form
+      } | null)
+    | ({
+        relationTo: 'form-submissions'
+        value: string | FormSubmission
       } | null)
     | ({
         relationTo: 'payload-folders'
@@ -1026,6 +1343,36 @@ export interface StorySelect<T extends boolean = true> {
   title?: T
   generateSlug?: T
   slug?: T
+  excerpts?: T
+  thumbnail?: T
+  content?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "insight_select".
+ */
+export interface InsightSelect<T extends boolean = true> {
+  title?: T
+  generateSlug?: T
+  slug?: T
+  excerpts?: T
+  thumbnail?: T
+  content?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pressRelease_select".
+ */
+export interface PressReleaseSelect<T extends boolean = true> {
+  title?: T
+  generateSlug?: T
+  slug?: T
+  code?: T
+  releaseDate?: T
   excerpts?: T
   thumbnail?: T
   content?: T
@@ -1404,6 +1751,184 @@ export interface LegalSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms_select".
+ */
+export interface FormsSelect<T extends boolean = true> {
+  title?: T
+  fields?:
+    | T
+    | {
+        checkbox?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              defaultValue?: T
+              id?: T
+              blockName?: T
+            }
+        country?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        email?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        message?:
+          | T
+          | {
+              message?: T
+              id?: T
+              blockName?: T
+            }
+        number?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        select?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              placeholder?: T
+              options?:
+                | T
+                | {
+                    label?: T
+                    value?: T
+                    id?: T
+                  }
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        state?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        text?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        textarea?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              required?: T
+              id?: T
+              blockName?: T
+            }
+        date?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              required?: T
+              defaultValue?: T
+              id?: T
+              blockName?: T
+            }
+        radio?:
+          | T
+          | {
+              name?: T
+              label?: T
+              width?: T
+              defaultValue?: T
+              options?:
+                | T
+                | {
+                    label?: T
+                    value?: T
+                    id?: T
+                  }
+              required?: T
+              id?: T
+              blockName?: T
+            }
+      }
+  submitButtonLabel?: T
+  confirmationType?: T
+  confirmationMessage?: T
+  redirect?:
+    | T
+    | {
+        url?: T
+      }
+  emails?:
+    | T
+    | {
+        emailTo?: T
+        cc?: T
+        bcc?: T
+        replyTo?: T
+        emailFrom?: T
+        subject?: T
+        message?: T
+        id?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions_select".
+ */
+export interface FormSubmissionsSelect<T extends boolean = true> {
+  form?: T
+  submissionData?:
+    | T
+    | {
+        field?: T
+        value?: T
+        id?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1518,9 +2043,9 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage".
+ * via the `definition` "homePage".
  */
-export interface Homepage {
+export interface HomePage {
   id: string
   description?: {
     root: {
@@ -1766,9 +2291,9 @@ export interface CareersPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "about".
+ * via the `definition` "aboutPage".
  */
-export interface About {
+export interface AboutPage {
   id: string
   heroSection?: {
     heading?: string | null
@@ -1904,7 +2429,7 @@ export interface About {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "legal-center".
+ * via the `definition` "legalCenter".
  */
 export interface LegalCenter {
   id: string
@@ -2063,6 +2588,351 @@ export interface IndustriesPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solutionsPage".
+ */
+export interface SolutionsPage {
+  id: string
+  hero?: {
+    heading?: string | null
+    description?: string | null
+    backgroundImage?: (string | null) | Media
+    /**
+     * Four cards shown over the hero image. The isometric icon for each card is fixed in code by position.
+     */
+    cards?:
+      | {
+          title?: string | null
+          description?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  /**
+   * Layout: main on left. Decorative isometric graphic is fixed in code.
+   */
+  section_2?: {
+    badge?: string | null
+    title?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    trajectory?: {
+      label?: string | null
+      steps?:
+        | {
+            label?: string | null
+            active?: boolean | null
+            id?: string | null
+          }[]
+        | null
+    }
+    whoTitle?: string | null
+    whoDescription?: string | null
+    shapeTitle?: string | null
+    shapeDescription?: string | null
+  }
+  /**
+   * Layout: main on right. Decorative isometric graphic is fixed in code.
+   */
+  section_3?: {
+    badge?: string | null
+    title?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    whoTitle?: string | null
+    whoDescription?: string | null
+    shapeTitle?: string | null
+    shapeDescription?: string | null
+  }
+  /**
+   * Layout: main on left. Decorative isometric graphic is fixed in code.
+   */
+  section_4?: {
+    badge?: string | null
+    title?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    techStack?: {
+      label?: string | null
+      items?:
+        | {
+            label?: string | null
+            highlight?: boolean | null
+            id?: string | null
+          }[]
+        | null
+    }
+    whoTitle?: string | null
+    whoDescription?: string | null
+    shapeTitle?: string | null
+    shapeDescription?: string | null
+  }
+  /**
+   * Layout: main on right. Decorative isometric graphic is fixed in code.
+   */
+  section_5?: {
+    badge?: string | null
+    title?: string | null
+    description?: string | null
+    image?: (string | null) | Media
+    incident?: {
+      label?: string | null
+      historyLabel?: string | null
+      /**
+       * Number of cells in the history grid.
+       */
+      totalCells?: number | null
+      /**
+       * Cell positions (1-based) to highlight as incidents.
+       */
+      activeCells?:
+        | {
+            position?: number | null
+            id?: string | null
+          }[]
+        | null
+    }
+    whoTitle?: string | null
+    whoDescription?: string | null
+    shapeTitle?: string | null
+    shapeDescription?: string | null
+  }
+  engage?: {
+    heading?: string | null
+    description?: string | null
+    /**
+     * Three engagement models. Card colors are fixed in code by position.
+     */
+    cards?:
+      | {
+          title?: string | null
+          subtitle?: string | null
+          description?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contactPage".
+ */
+export interface ContactPage {
+  id: string
+  hero?: {
+    heading?: string | null
+    description?: string | null
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  /**
+   * Response-time cards shown below the hero.
+   */
+  stats?:
+    | {
+        value?: string | null
+        label?: string | null
+        detail?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * The icon and gradient for each route is fixed in code by position.
+   */
+  routes?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          title?: string | null
+          description?: string | null
+          email?: string | null
+          replyWindow?: string | null
+          cta?: string | null
+          info?: boolean | null
+          bestFor?:
+            | {
+                item?: string | null
+                id?: string | null
+              }[]
+            | null
+          id?: string | null
+        }[]
+      | null
+  }
+  offices?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | {
+          city?: string | null
+          tag?: string | null
+          timezone?: string | null
+          hours?: string | null
+          email?: string | null
+          phone?: string | null
+          address?:
+            | {
+                line?: string | null
+                id?: string | null
+              }[]
+            | null
+          id?: string | null
+        }[]
+      | null
+  }
+  /**
+   * Pick a form to show a "Send us a message" section. Leave empty to hide the section.
+   */
+  form?: {
+    heading?: string | null
+    description?: string | null
+    form?: (string | null) | Form
+  }
+  cta?: {
+    heading?: string | null
+    description?: string | null
+    button_1?: {
+      label?: string | null
+      link?: string | null
+    }
+    button_2?: {
+      label?: string | null
+      link?: string | null
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "storiesPage".
+ */
+export interface StoriesPage {
+  id: string
+  heroSection?: {
+    heading?: string | null
+    description?: string | null
+  }
+  featureCaseStudy?: {
+    heading?: string | null
+    description?: string | null
+    story?: (string | null) | Story
+    stats?:
+      | {
+          value?: string | null
+          label?: string | null
+          id?: string | null
+        }[]
+      | null
+    highlights?:
+      | {
+          text?: string | null
+          id?: string | null
+        }[]
+      | null
+    /**
+     * e.g. "12 min"
+     */
+    readTime?: string | null
+    /**
+     * e.g. "Engineering Studio"
+     */
+    categoryLabel?: string | null
+    buttonLabel?: string | null
+  }
+  allStoriesGrid?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | (
+          | {
+              relationTo: 'story'
+              value: string | Story
+            }
+          | {
+              relationTo: 'insight'
+              value: string | Insight
+            }
+        )[]
+      | null
+    /**
+     * Press releases shown at the bottom of the stories grid.
+     */
+    pressRelease?: (string | PressRelease)[] | null
+  }
+  categoryLanding?: {
+    heading?: string | null
+    description?: string | null
+    categories?:
+      | {
+          title?: string | null
+          description?: string | null
+          /**
+           * Lucide icon shown at the top of the category card.
+           */
+          icon?: ('newspaper' | 'flask-conical' | 'lightbulb' | 'file-text') | null
+          image?: (string | null) | Media
+          link?: string | null
+          /**
+           * e.g. "Open section"
+           */
+          linkLabel?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  subscribe?: {
+    heading?: string | null
+    description?: string | null
+    followHint?: string | null
+    followOptions?:
+      | {
+          label?: string | null
+          id?: string | null
+        }[]
+      | null
+    emailPlaceholder?: string | null
+    buttonLabel?: string | null
+    disclaimer?: string | null
+    preview?: {
+      issueLabel?: string | null
+      heading?: string | null
+      items?:
+        | {
+            text?: string | null
+            id?: string | null
+          }[]
+        | null
+      subscribersLabel?: string | null
+      readTimeLabel?: string | null
+      backgroundImage?: (string | null) | Media
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2125,9 +2995,9 @@ export interface FooterSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "homepage_select".
+ * via the `definition` "homePage_select".
  */
-export interface HomepageSelect<T extends boolean = true> {
+export interface HomePageSelect<T extends boolean = true> {
   description?: T
   about?:
     | T
@@ -2388,9 +3258,9 @@ export interface CareersPageSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "about_select".
+ * via the `definition` "aboutPage_select".
  */
-export interface AboutSelect<T extends boolean = true> {
+export interface AboutPageSelect<T extends boolean = true> {
   heroSection?:
     | T
     | {
@@ -2536,7 +3406,7 @@ export interface AboutSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "legal-center_select".
+ * via the `definition` "legalCenter_select".
  */
 export interface LegalCenterSelect<T extends boolean = true> {
   heading?: T
@@ -2695,6 +3565,346 @@ export interface IndustriesPageSelect<T extends boolean = true> {
           | {
               label?: T
               link?: T
+            }
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solutionsPage_select".
+ */
+export interface SolutionsPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        backgroundImage?: T
+        cards?:
+          | T
+          | {
+              title?: T
+              description?: T
+              id?: T
+            }
+      }
+  section_2?:
+    | T
+    | {
+        badge?: T
+        title?: T
+        description?: T
+        image?: T
+        trajectory?:
+          | T
+          | {
+              label?: T
+              steps?:
+                | T
+                | {
+                    label?: T
+                    active?: T
+                    id?: T
+                  }
+            }
+        whoTitle?: T
+        whoDescription?: T
+        shapeTitle?: T
+        shapeDescription?: T
+      }
+  section_3?:
+    | T
+    | {
+        badge?: T
+        title?: T
+        description?: T
+        image?: T
+        whoTitle?: T
+        whoDescription?: T
+        shapeTitle?: T
+        shapeDescription?: T
+      }
+  section_4?:
+    | T
+    | {
+        badge?: T
+        title?: T
+        description?: T
+        image?: T
+        techStack?:
+          | T
+          | {
+              label?: T
+              items?:
+                | T
+                | {
+                    label?: T
+                    highlight?: T
+                    id?: T
+                  }
+            }
+        whoTitle?: T
+        whoDescription?: T
+        shapeTitle?: T
+        shapeDescription?: T
+      }
+  section_5?:
+    | T
+    | {
+        badge?: T
+        title?: T
+        description?: T
+        image?: T
+        incident?:
+          | T
+          | {
+              label?: T
+              historyLabel?: T
+              totalCells?: T
+              activeCells?:
+                | T
+                | {
+                    position?: T
+                    id?: T
+                  }
+            }
+        whoTitle?: T
+        whoDescription?: T
+        shapeTitle?: T
+        shapeDescription?: T
+      }
+  engage?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        cards?:
+          | T
+          | {
+              title?: T
+              subtitle?: T
+              description?: T
+              id?: T
+            }
+      }
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contactPage_select".
+ */
+export interface ContactPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
+  stats?:
+    | T
+    | {
+        value?: T
+        label?: T
+        detail?: T
+        id?: T
+      }
+  routes?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              title?: T
+              description?: T
+              email?: T
+              replyWindow?: T
+              cta?: T
+              info?: T
+              bestFor?:
+                | T
+                | {
+                    item?: T
+                    id?: T
+                  }
+              id?: T
+            }
+      }
+  offices?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?:
+          | T
+          | {
+              city?: T
+              tag?: T
+              timezone?: T
+              hours?: T
+              email?: T
+              phone?: T
+              address?:
+                | T
+                | {
+                    line?: T
+                    id?: T
+                  }
+              id?: T
+            }
+      }
+  form?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        form?: T
+      }
+  cta?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        button_1?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+        button_2?:
+          | T
+          | {
+              label?: T
+              link?: T
+            }
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "storiesPage_select".
+ */
+export interface StoriesPageSelect<T extends boolean = true> {
+  heroSection?:
+    | T
+    | {
+        heading?: T
+        description?: T
+      }
+  featureCaseStudy?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        story?: T
+        stats?:
+          | T
+          | {
+              value?: T
+              label?: T
+              id?: T
+            }
+        highlights?:
+          | T
+          | {
+              text?: T
+              id?: T
+            }
+        readTime?: T
+        categoryLabel?: T
+        buttonLabel?: T
+      }
+  allStoriesGrid?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?: T
+        pressRelease?: T
+      }
+  categoryLanding?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        categories?:
+          | T
+          | {
+              title?: T
+              description?: T
+              icon?: T
+              image?: T
+              link?: T
+              linkLabel?: T
+              id?: T
+            }
+      }
+  subscribe?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        followHint?: T
+        followOptions?:
+          | T
+          | {
+              label?: T
+              id?: T
+            }
+        emailPlaceholder?: T
+        buttonLabel?: T
+        disclaimer?: T
+        preview?:
+          | T
+          | {
+              issueLabel?: T
+              heading?: T
+              items?:
+                | T
+                | {
+                    text?: T
+                    id?: T
+                  }
+              subscribersLabel?: T
+              readTimeLabel?: T
+              backgroundImage?: T
             }
       }
   updatedAt?: T

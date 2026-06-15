@@ -44,7 +44,7 @@ export const seed = async ({ payload, req: _req }: { payload: Payload; req: Payl
       context: { disableRevalidate: true },
     }),
     payload.updateGlobal({
-      slug: 'homepage',
+      slug: 'homePage',
       data: {},
       context: { disableRevalidate: true },
     }),
