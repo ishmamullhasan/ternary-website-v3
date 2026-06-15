@@ -1,9 +1,11 @@
 import Capability from '@/collections/capability'
 import Industry from '@/collections/industry'
+import Insight from '@/collections/insight'
 import Job from '@/collections/job'
 import Legal from '@/collections/legal'
 import Media from '@/collections/media'
 import Model from '@/collections/model'
+import PressRelease from '@/collections/pressRelease'
 import Scale from '@/collections/scale'
 import Solution from '@/collections/solution'
 import Story from '@/collections/story'
@@ -26,6 +28,7 @@ import About from './globals/pages/about'
 import IndustriesPage from './globals/pages/industriesPage'
 import ScalesPage from './globals/pages/scalesPage'
 import SolutionsPage from './globals/pages/solutions'
+import StoriesPage from './globals/pages/storiesPage'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -63,9 +66,34 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Media, User, Story, Capability, Solution, Industry, Scale, Model, Job, Team, Legal],
+  collections: [
+    Media,
+    User,
+    Story,
+    Insight,
+    PressRelease,
+    Capability,
+    Solution,
+    Industry,
+    Scale,
+    Model,
+    Job,
+    Team,
+    Legal,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, Homepage, CareersPage, About, LegalCenter, ScalesPage, IndustriesPage, SolutionsPage],
+  globals: [
+    Header,
+    Footer,
+    Homepage,
+    CareersPage,
+    About,
+    LegalCenter,
+    ScalesPage,
+    IndustriesPage,
+    SolutionsPage,
+    StoriesPage,
+  ],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,
