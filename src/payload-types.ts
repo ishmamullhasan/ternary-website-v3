@@ -70,6 +70,8 @@ export interface Config {
     media: Media
     users: User
     story: Story
+    insight: Insight
+    pressRelease: PressRelease
     capability: Capability
     solution: Solution
     industry: Industry
@@ -93,6 +95,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>
     users: UsersSelect<false> | UsersSelect<true>
     story: StorySelect<false> | StorySelect<true>
+    insight: InsightSelect<false> | InsightSelect<true>
+    pressRelease: PressReleaseSelect<false> | PressReleaseSelect<true>
     capability: CapabilitySelect<false> | CapabilitySelect<true>
     solution: SolutionSelect<false> | SolutionSelect<true>
     industry: IndustrySelect<false> | IndustrySelect<true>
@@ -121,6 +125,7 @@ export interface Config {
     scalesPage: ScalesPage
     industriesPage: IndustriesPage
     solutionsPage: SolutionsPage
+    storiesPage: StoriesPage
   }
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>
@@ -132,6 +137,7 @@ export interface Config {
     scalesPage: ScalesPageSelect<false> | ScalesPageSelect<true>
     industriesPage: IndustriesPageSelect<false> | IndustriesPageSelect<true>
     solutionsPage: SolutionsPageSelect<false> | SolutionsPageSelect<true>
+    storiesPage: StoriesPageSelect<false> | StoriesPageSelect<true>
   }
   locale: null
   widgets: {
@@ -319,6 +325,75 @@ export interface Story {
    */
   generateSlug?: boolean | null
   slug: string
+  excerpts?: string | null
+  thumbnail?: (string | null) | Media
+  content?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "insight".
+ */
+export interface Insight {
+  id: string
+  title?: string | null
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  excerpts?: string | null
+  thumbnail?: (string | null) | Media
+  content?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pressRelease".
+ */
+export interface PressRelease {
+  id: string
+  title?: string | null
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  /**
+   * e.g. CS-014
+   */
+  code?: string | null
+  releaseDate?: string | null
   excerpts?: string | null
   thumbnail?: (string | null) | Media
   content?: {
@@ -825,6 +900,14 @@ export interface PayloadLockedDocument {
         value: string | Story
       } | null)
     | ({
+        relationTo: 'insight'
+        value: string | Insight
+      } | null)
+    | ({
+        relationTo: 'pressRelease'
+        value: string | PressRelease
+      } | null)
+    | ({
         relationTo: 'capability'
         value: string | Capability
       } | null)
@@ -1028,6 +1111,36 @@ export interface StorySelect<T extends boolean = true> {
   title?: T
   generateSlug?: T
   slug?: T
+  excerpts?: T
+  thumbnail?: T
+  content?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "insight_select".
+ */
+export interface InsightSelect<T extends boolean = true> {
+  title?: T
+  generateSlug?: T
+  slug?: T
+  excerpts?: T
+  thumbnail?: T
+  content?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pressRelease_select".
+ */
+export interface PressReleaseSelect<T extends boolean = true> {
+  title?: T
+  generateSlug?: T
+  slug?: T
+  code?: T
+  releaseDate?: T
   excerpts?: T
   thumbnail?: T
   content?: T
@@ -2205,6 +2318,114 @@ export interface SolutionsPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "storiesPage".
+ */
+export interface StoriesPage {
+  id: string
+  heroSection?: {
+    heading?: string | null
+    description?: string | null
+  }
+  featureCaseStudy?: {
+    heading?: string | null
+    description?: string | null
+    story?: (string | null) | Story
+    stats?:
+      | {
+          value?: string | null
+          label?: string | null
+          id?: string | null
+        }[]
+      | null
+    highlights?:
+      | {
+          text?: string | null
+          id?: string | null
+        }[]
+      | null
+    /**
+     * e.g. "12 min"
+     */
+    readTime?: string | null
+    /**
+     * e.g. "Engineering Studio"
+     */
+    categoryLabel?: string | null
+    buttonLabel?: string | null
+  }
+  allStoriesGrid?: {
+    heading?: string | null
+    description?: string | null
+    items?:
+      | (
+          | {
+              relationTo: 'story'
+              value: string | Story
+            }
+          | {
+              relationTo: 'insight'
+              value: string | Insight
+            }
+        )[]
+      | null
+    /**
+     * Press releases shown at the bottom of the stories grid.
+     */
+    pressRelease?: (string | PressRelease)[] | null
+  }
+  categoryLanding?: {
+    heading?: string | null
+    description?: string | null
+    categories?:
+      | {
+          title?: string | null
+          description?: string | null
+          /**
+           * Lucide icon shown at the top of the category card.
+           */
+          icon?: ('newspaper' | 'flask-conical' | 'lightbulb' | 'file-text') | null
+          image?: (string | null) | Media
+          link?: string | null
+          /**
+           * e.g. "Open section"
+           */
+          linkLabel?: string | null
+          id?: string | null
+        }[]
+      | null
+  }
+  subscribe?: {
+    heading?: string | null
+    description?: string | null
+    followHint?: string | null
+    followOptions?:
+      | {
+          label?: string | null
+          id?: string | null
+        }[]
+      | null
+    emailPlaceholder?: string | null
+    buttonLabel?: string | null
+    disclaimer?: string | null
+    preview?: {
+      issueLabel?: string | null
+      heading?: string | null
+      items?:
+        | {
+            text?: string | null
+            id?: string | null
+          }[]
+        | null
+      subscribersLabel?: string | null
+      readTimeLabel?: string | null
+      backgroundImage?: (string | null) | Media
+    }
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2977,6 +3198,100 @@ export interface SolutionsPageSelect<T extends boolean = true> {
           | {
               label?: T
               link?: T
+            }
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "storiesPage_select".
+ */
+export interface StoriesPageSelect<T extends boolean = true> {
+  heroSection?:
+    | T
+    | {
+        heading?: T
+        description?: T
+      }
+  featureCaseStudy?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        story?: T
+        stats?:
+          | T
+          | {
+              value?: T
+              label?: T
+              id?: T
+            }
+        highlights?:
+          | T
+          | {
+              text?: T
+              id?: T
+            }
+        readTime?: T
+        categoryLabel?: T
+        buttonLabel?: T
+      }
+  allStoriesGrid?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        items?: T
+        pressRelease?: T
+      }
+  categoryLanding?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        categories?:
+          | T
+          | {
+              title?: T
+              description?: T
+              icon?: T
+              image?: T
+              link?: T
+              linkLabel?: T
+              id?: T
+            }
+      }
+  subscribe?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        followHint?: T
+        followOptions?:
+          | T
+          | {
+              label?: T
+              id?: T
+            }
+        emailPlaceholder?: T
+        buttonLabel?: T
+        disclaimer?: T
+        preview?:
+          | T
+          | {
+              issueLabel?: T
+              heading?: T
+              items?:
+                | T
+                | {
+                    text?: T
+                    id?: T
+                  }
+              subscribersLabel?: T
+              readTimeLabel?: T
+              backgroundImage?: T
             }
       }
   updatedAt?: T

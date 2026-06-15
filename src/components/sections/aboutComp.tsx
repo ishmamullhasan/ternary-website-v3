@@ -36,6 +36,25 @@ const motionGridItemProps = {
   transition: { duration: 0.4, ease: 'easeOut' as const },
 }
 
+function getItemHref(item: MultiRelation): string {
+  if (typeof item.value === 'string' || !item.value.slug) return '#'
+
+  switch (item.relationTo) {
+    case 'capability':
+      return `/capabilities/${item.value.slug}`
+    case 'solution':
+      return `/solutions/${item.value.slug}`
+    case 'industry':
+      return `/industries/${item.value.slug}`
+    case 'scale':
+      return '/scales'
+    case 'model':
+      return '/solutions'
+    default:
+      return '#'
+  }
+}
+
 export default function AboutComp({ heading, description, items, organizations, bottomDescription }: AboutProps) {
   return (
     <section className="lg:pb-16 pb-8">
@@ -49,7 +68,7 @@ export default function AboutComp({ heading, description, items, organizations, 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:mt-10 mt-4">
           {(items as MultiRelation[])?.map((item, index: number): JSX.Element => {
             return (
-              <Link href={`/${item.value.slug}`} key={index}>
+              <Link href={getItemHref(item)} key={index}>
                 {/* gradient card */}
                 <Motion
                   className="relative lg:w-[300px] lg:h-[480px] w-[280px]  rounded-lg overflow-hidden"
