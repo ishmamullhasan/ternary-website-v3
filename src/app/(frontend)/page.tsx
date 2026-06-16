@@ -1,29 +1,27 @@
 import Motion from '@/components/animation/motion'
+import { RichText } from '@/components/richtext'
 import AboutComp from '@/components/sections/aboutComp'
 import CapabilitiesComp from '@/components/sections/capabilitiesComp'
+import EngagementComp from '@/components/sections/engagementComp'
+import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
 import IndustriesComp from '@/components/sections/industriesComp'
+import OpportunitiesComp from '@/components/sections/opportunitiesComp'
+import ProcessComp from '@/components/sections/processComp'
 import ScalesComp from '@/components/sections/scalesComp'
 import SolutionsComp from '@/components/sections/solutionsComp'
 import TeamComp from '@/components/sections/teamComp'
-
-import { RichText } from '@/components/richtext'
-import EngagementComp from '@/components/sections/engagementComp'
-import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
-import OpportunitiesComp from '@/components/sections/opportunitiesComp'
-import ProcessComp from '@/components/sections/processComp'
 import type { Capability, HomePage, Industry, Job, Media, Model, Scale, Solution, Team } from '@/payload-types'
 import config from '@/payload.config'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
+
 type MultiRelation =
   | { relationTo: 'capability'; value: Capability }
   | { relationTo: 'solution'; value: Solution }
   | { relationTo: 'industry'; value: Industry }
   | { relationTo: 'scale'; value: Scale }
   | { relationTo: 'model'; value: Model }
-
-export const dynamic = 'force-dynamic'
 
 export default async function Page(): Promise<JSX.Element> {
   const getHomePageData = unstable_cache(
@@ -35,12 +33,7 @@ export default async function Page(): Promise<JSX.Element> {
     { tags: ['homePage'] },
   )
 
-  let homePageData: HomePage | null = null
-  try {
-    homePageData = (await getHomePageData()) as HomePage | null
-  } catch {
-    // Database may be unavailable during build
-  }
+  const homePageData: HomePage | null = await getHomePageData()
 
   if (!homePageData) {
     return (

@@ -2,6 +2,7 @@ import Motion from '@/components/animation/motion'
 import type { Media, Scale, ScalesPage } from '@/payload-types'
 import config from '@/payload.config'
 import { Activity, BookCheck, Building2, ShieldCheck, Workflow, type LucideIcon } from 'lucide-react'
+import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -9,6 +10,12 @@ import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Scale',
+  description:
+    'From founding teams to global institutions — how Ternary scales engineering to fit every stage of growth.',
+}
 
 const QUALITY_BAR_ICONS = {
   activity: Activity,
@@ -26,7 +33,7 @@ function QualityBarIcon({ icon }: { icon: string | null | undefined }) {
 }
 
 export default async function Page(): Promise<JSX.Element> {
-  const getScalesData = unstable_cache(
+  const getScalesPageData = unstable_cache(
     async () => {
       const payload = await getPayload({ config })
       return payload.findGlobal({ slug: 'scalesPage', depth: 2 })
@@ -35,14 +42,9 @@ export default async function Page(): Promise<JSX.Element> {
     { tags: ['scalesPage'] },
   )
 
-  let scalesData: ScalesPage | null = null
-  try {
-    scalesData = (await getScalesData()) as ScalesPage | null
-  } catch {
-    // Database may be unavailable during build
-  }
+  const scalesPageData: ScalesPage | null = await getScalesPageData()
 
-  if (!scalesData) {
+  if (!scalesPageData) {
     return (
       <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
     )
@@ -77,15 +79,15 @@ export default async function Page(): Promise<JSX.Element> {
           {/* Header Block */}
           <Motion className="flex flex-col items-start text-left max-w-4xl" {...motionBlockProps}>
             <h1 className="lg:text-4xl text-3xl font-medium tracking-tight mb-6 max-w-2xl leading-[1.15]">
-              {scalesData?.heroSection?.heading}
+              {scalesPageData?.heroSection?.heading}
             </h1>
-            <p className="lg:text-base text-sm text-[#D5D5D5] max-w-xl">{scalesData?.heroSection?.description}</p>
+            <p className="lg:text-base text-sm text-[#D5D5D5] max-w-xl">{scalesPageData?.heroSection?.description}</p>
           </Motion>
 
           {/* Hero cards — layout perfectly aligned with the screenshot */}
-          {scalesData?.heroSection?.items && scalesData?.heroSection?.items.length > 0 && (
+          {scalesPageData?.heroSection?.items && scalesPageData?.heroSection?.items.length > 0 && (
             <div className="grid rounded-lg grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:pt-10 pt-4 w-full mt-6">
-              {scalesData?.heroSection?.items.map((item, index) => (
+              {scalesPageData?.heroSection?.items.map((item, index) => (
                 <Motion
                   key={item.id ?? `hero-card-${index}`}
                   className="bg-[#0F0E0E] p-6 flex flex-col justify-between"
@@ -130,16 +132,16 @@ export default async function Page(): Promise<JSX.Element> {
         <div className="flex flex-col lg:flex-row w-full">
           <div className="lg:w-2/8 pr-4  mb-6">
             <h2 className="lg:text-3xl text-2xl font-semibold mb-3 tracking-tight max-w-xl leading-tight">
-              {scalesData?.qualityBar?.heading}
+              {scalesPageData?.qualityBar?.heading}
             </h2>
             <p className="lg:text-sm text-xs text-[#D5D5D5] max-w-2xl leading-relaxed">
-              {scalesData?.qualityBar?.description}
+              {scalesPageData?.qualityBar?.description}
             </p>
           </div>
 
           {/* 4-column card grid containing elements configured via Payload CMS schemas */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:w-6/8 ">
-            {scalesData?.qualityBar?.items?.map((item, index) => {
+            {scalesPageData?.qualityBar?.items?.map((item, index) => {
               return (
                 <Motion
                   key={item.id ?? `scale-${index}`}
@@ -166,7 +168,7 @@ export default async function Page(): Promise<JSX.Element> {
         </div>
       </Motion>
 
-      {(scalesData.scale as Scale[])?.map((item, scaleIndex) => {
+      {(scalesPageData.scale as Scale[])?.map((item, scaleIndex) => {
         const tagsList = item.tags
           ? item.tags
               .split(/[•,|]/)
@@ -243,8 +245,8 @@ export default async function Page(): Promise<JSX.Element> {
         tag="section"
         className="lg:p-10 p-6 rounded-lg overflow-hidden lg:m-0 m-4 relative border border-white/[0.04]"
         style={{
-          background: (scalesData?.cta?.backgroundImage as Media)?.url
-            ? `url(${(scalesData?.cta?.backgroundImage as Media)?.url}) center/cover no-repeat`
+          background: (scalesPageData?.cta?.backgroundImage as Media)?.url
+            ? `url(${(scalesPageData?.cta?.backgroundImage as Media)?.url}) center/cover no-repeat`
             : 'linear-gradient(135deg, #1e3a5f 0%, #4c1d95 60%, #2e1065 100%)', // Fallback matching image_4c91c8.jpg
         }}
         {...motionSectionProps}
@@ -256,29 +258,29 @@ export default async function Page(): Promise<JSX.Element> {
           {/* Left Side: Typography */}
           <Motion className="flex flex-col items-start text-left lg:max-w-xl" {...motionBlockProps}>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-white leading-[1.2]">
-              {scalesData?.cta?.heading}
+              {scalesPageData?.cta?.heading}
             </h2>
             <p className="text-xs md:text-sm text-[#D5D5D5]/80 max-w-lg leading-relaxed">
-              {scalesData?.cta?.description}
+              {scalesPageData?.cta?.description}
             </p>
           </Motion>
 
           {/* Right Side: Action Buttons */}
           <div className="flex sm:flex-row flex-col gap-3 items-center shrink-0 lg:ml-auto">
-            {scalesData?.cta?.button_1?.label && (
+            {scalesPageData?.cta?.button_1?.label && (
               <Link
-                href={scalesData?.cta?.button_1?.link as string}
+                href={scalesPageData?.cta?.button_1?.link as string}
                 className="w-full sm:w-auto px-5 py-2.5 bg-[#14120B] font-medium rounded-2xl text-base"
               >
-                {scalesData?.cta?.button_1?.label}
+                {scalesPageData?.cta?.button_1?.label}
               </Link>
             )}
-            {scalesData?.cta?.button_2?.label && (
+            {scalesPageData?.cta?.button_2?.label && (
               <Link
-                href={scalesData?.cta?.button_2?.link as string}
+                href={scalesPageData?.cta?.button_2?.link as string}
                 className="px-5 sm:w-auto w-full py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
               >
-                {scalesData?.cta?.button_2?.label}
+                {scalesPageData?.cta?.button_2?.label}
               </Link>
             )}
           </div>

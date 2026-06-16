@@ -9,9 +9,15 @@ import { getJobs } from '@/lib/jobs-data'
 import type { Media, Team } from '@/payload-types'
 import { CareersPage } from '@/payload-types'
 import config from '@/payload.config'
+import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
+
+export const metadata: Metadata = {
+  title: 'Careers',
+  description: 'Join Ternary. Explore open roles and help build the next generation of agentic systems.',
+}
 
 export default async function Page(): Promise<JSX.Element> {
   const getCareersPageData = unstable_cache(

@@ -3,6 +3,7 @@ import ColumnSection from '@/components/layout/sectionColumn'
 import type { Media, SolutionsPage } from '@/payload-types'
 import config from '@/payload.config'
 import { ArrowRight } from 'lucide-react'
+import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import { getPayload } from 'payload'
@@ -10,8 +11,13 @@ import type { JSX } from 'react'
 
 export const dynamic = 'force-dynamic'
 
+export const metadata: Metadata = {
+  title: 'Solutions',
+  description: 'Discover what Ternary builds — the types of products and projects we take on.',
+}
+
 export default async function Page(): Promise<JSX.Element> {
-  const getSolutionsData = unstable_cache(
+  const getSolutionsPageData = unstable_cache(
     async () => {
       const payload = await getPayload({ config })
       return payload.findGlobal({ slug: 'solutionsPage', depth: 2 })
@@ -20,12 +26,7 @@ export default async function Page(): Promise<JSX.Element> {
     { tags: ['solutionsPage'] },
   )
 
-  let data: SolutionsPage | null = null
-  try {
-    data = (await getSolutionsData()) as SolutionsPage | null
-  } catch {
-    // Database may be unavailable during build.
-  }
+  const solutionsPageData: SolutionsPage | null = await getSolutionsPageData()
 
   const InfoCard = ({
     title,
@@ -216,15 +217,15 @@ export default async function Page(): Promise<JSX.Element> {
   ]
 
   // --- CMS data ---
-  const hero = data?.hero
+  const hero = solutionsPageData?.hero
   const heroCards = hero?.cards ?? []
-  const s0 = data?.section_2
-  const s1 = data?.section_3
-  const s2 = data?.section_4
-  const s3 = data?.section_5
-  const engage = data?.engage
+  const s0 = solutionsPageData?.section_2
+  const s1 = solutionsPageData?.section_3
+  const s2 = solutionsPageData?.section_4
+  const s3 = solutionsPageData?.section_5
+  const engage = solutionsPageData?.engage
   const engageCards = engage?.cards ?? []
-  const cta = data?.cta
+  const cta = solutionsPageData?.cta
 
   return (
     <main className="min-h-screen pt-32 pb-24 max-w-7xl mx-auto px-4 lg:px-6 space-y-32">
