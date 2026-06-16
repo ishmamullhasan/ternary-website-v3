@@ -1,23 +1,30 @@
-build
-dist / media
-node_modules
-.DS_Store
+# Build and dist directories
+build/
+dist/
+media/
+
+# Node modules directory
+node_modules/
+
+# Cursor and Claude directories
+.DS_Store/
+.next/
+.vercel/
+.cursor/
+.claude/
+
+# Environment variables
 .env
-.next
-.vercel
-.cursor
-.claude
-.cursor/debug.log
 
-# Payload default media upload directory
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Public directories
 public/media/
-
 public/robots.txt
 public/sitemap*.xml
 
-
 # Playwright
-node_modules/
 /test-results/
 /playwright-report/
 /blob-report/

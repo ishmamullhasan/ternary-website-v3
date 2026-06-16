@@ -3,7 +3,7 @@
 import Motion from '@/components/animation/motion'
 import { cn } from '@/lib/utils'
 import type { Insight, Media, PressRelease, Story } from '@/payload-types'
-import { ArrowRight, BookOpen, Clock, FileText, Filter, Newspaper, Search } from 'lucide-react'
+import { ArrowUpRight, BookOpen, Clock, FileText, Filter, Newspaper, Search } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState, type JSX } from 'react'
@@ -122,13 +122,12 @@ function StoryCard({ item, index }: { item: StoryGridItem; index: number }) {
         {doc.excerpts && <p className="text-sm text-[#D5D5D5] leading-relaxed line-clamp-3 mb-auto">{doc.excerpts}</p>}
 
         <div className="flex items-center justify-between pt-5 mt-5 border-t border-zinc-800/60 text-xs text-[#757571]">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <Clock size={12} className="shrink-0" />
-            <span>12 min</span>
-            <span>· {category}</span>
+            <span className="truncate">12 min · {category}</span>
           </div>
-          <span className="flex items-center gap-1 text-sm text-white group-hover:gap-2 transition-all">
-            Read <ArrowRight size={14} />
+          <span className="flex items-center gap-1 text-sm text-white shrink-0 group-hover:gap-2 transition-all">
+            Read <ArrowUpRight size={14} />
           </span>
         </div>
       </Motion>
@@ -164,9 +163,19 @@ function PressReleaseCard({ item, index }: { item: PressRelease; index: number }
           </div>
         )}
 
-        <div className="flex items-center justify-end pt-5 mt-5 border-t border-zinc-800/60 text-xs text-[#757571]">
-          <span className="flex items-center gap-1 text-sm text-white group-hover:gap-2 transition-all">
-            Read <ArrowRight size={14} />
+        <div className="flex items-center justify-between pt-5 mt-5 border-t border-zinc-800/60 text-xs text-[#757571]">
+          {(item.readTime || item.categoryLabel) && (
+            <div className="flex items-center gap-2 min-w-0">
+              <Clock size={12} className="shrink-0" />
+              <span className="truncate">
+                {item.readTime}
+                {item.readTime && item.categoryLabel ? ' · ' : ''}
+                {item.categoryLabel}
+              </span>
+            </div>
+          )}
+          <span className="flex items-center gap-1 text-sm text-white shrink-0 ml-auto group-hover:gap-2 transition-all">
+            Read <ArrowUpRight size={14} />
           </span>
         </div>
       </Motion>

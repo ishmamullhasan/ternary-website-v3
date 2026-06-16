@@ -32,7 +32,7 @@ const motionBlockProps = {
 }
 
 export default async function Page(): Promise<JSX.Element> {
-  const getContactData = unstable_cache(
+  const getContactPageData = unstable_cache(
     async () => {
       const payload = await getPayload({ config })
       return payload.findGlobal({ slug: 'contactPage', depth: 2 })
@@ -41,20 +41,20 @@ export default async function Page(): Promise<JSX.Element> {
     { tags: ['contactPage'] },
   )
 
-  const data: ContactPage | null = await getContactData()
+  const contactPageData: ContactPage | null = await getContactPageData()
 
-  if (!data) {
+  if (!contactPageData) {
     return (
       <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
     )
   }
 
-  const hero = data?.hero
-  const stats = data?.stats ?? []
-  const formGroup = data?.form
+  const hero = contactPageData?.hero
+  const stats = contactPageData?.stats ?? []
+  const formGroup = contactPageData?.form
   // With depth>=1 the relationship is populated to the full Form doc.
   const form = formGroup?.form && typeof formGroup.form === 'object' ? (formGroup.form as Form) : null
-  const cta = data?.cta
+  const cta = contactPageData?.cta
 
   return (
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
@@ -106,10 +106,10 @@ export default async function Page(): Promise<JSX.Element> {
         )}
 
         {/* Six routes. One owner each. */}
-        <ContactRoutes data={data?.routes} />
+        <ContactRoutes data={contactPageData?.routes} />
 
         {/* Two studios. One operating rhythm. */}
-        <ContactOffices data={data?.offices} />
+        <ContactOffices data={contactPageData?.offices} />
 
         {/* Send us a message — only shown when a form is selected in the CMS. */}
         {form && (

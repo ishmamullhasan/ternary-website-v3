@@ -6,16 +6,20 @@ import { cn } from '@/lib/utils'
 import type { AboutPage, Media } from '@/payload-types'
 import config from '@/payload.config'
 import { Box, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react'
+import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-export const dynamic = 'force-dynamic'
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Learn more about Ternary Solutions, our mission, and our team.',
+}
 
 export default async function Page(): Promise<JSX.Element> {
-  const getAboutData = unstable_cache(
+  const getAboutPageData = unstable_cache(
     async () => {
       const payload = await getPayload({ config })
       return payload.findGlobal({ slug: 'aboutPage', depth: 2 })
@@ -24,14 +28,9 @@ export default async function Page(): Promise<JSX.Element> {
     { tags: ['aboutPage'] },
   )
 
-  let aboutData: AboutPage | null = null
-  try {
-    aboutData = (await getAboutData()) as AboutPage | null
-  } catch {
-    // Database may be unavailable during build
-  }
+  const aboutPageData: AboutPage | null = await getAboutPageData()
 
-  if (!aboutData) {
+  if (!aboutPageData) {
     return (
       <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
     )
@@ -65,8 +64,10 @@ export default async function Page(): Promise<JSX.Element> {
       <Motion tag="section" className="lg:pb-16 pb-8" {...motionSectionProps}>
         <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
           <Motion className="flex flex-col items-center lg:w-3/5" {...motionBlockProps}>
-            <h1 className="text-center lg:text-3xl text-2xl font-medium mb-3">{aboutData?.heroSection?.heading}</h1>
-            <p className="text-center lg:text-base text-sm text-[#D5D5D5] ">{aboutData?.heroSection?.description}</p>
+            <h1 className="text-center lg:text-3xl text-2xl font-medium mb-3">{aboutPageData?.heroSection?.heading}</h1>
+            <p className="text-center lg:text-base text-sm text-[#D5D5D5] ">
+              {aboutPageData?.heroSection?.description}
+            </p>
           </Motion>
         </div>
       </Motion>
@@ -77,7 +78,7 @@ export default async function Page(): Promise<JSX.Element> {
         className="lg:m-0 m-4 lg:py-16 py-8 bg-cover bg-center flex items-center justify-center rounded-lg overflow-hidden h-[400px]"
         style={{
           backgroundImage: `url(${
-            (aboutData?.fundingStory?.backgroundImage as Media)?.url ||
+            (aboutPageData?.fundingStory?.backgroundImage as Media)?.url ||
             'https://hips.hearstapps.com/hmg-prod/images/summer-flowers-1648478322.jpg'
           })`,
         }}
@@ -85,8 +86,12 @@ export default async function Page(): Promise<JSX.Element> {
       >
         <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
           <Motion className="flex flex-col items-center lg:w-4/5" {...motionBlockProps}>
-            <h1 className="text-center lg:text-3xl text-2xl font-medium mb-3">{aboutData?.fundingStory?.heading}</h1>
-            <p className="text-center lg:text-base text-sm text-[#D5D5D5]">{aboutData?.fundingStory?.description}</p>
+            <h1 className="text-center lg:text-3xl text-2xl font-medium mb-3">
+              {aboutPageData?.fundingStory?.heading}
+            </h1>
+            <p className="text-center lg:text-base text-sm text-[#D5D5D5]">
+              {aboutPageData?.fundingStory?.description}
+            </p>
           </Motion>
         </div>
       </Motion>
@@ -95,22 +100,22 @@ export default async function Page(): Promise<JSX.Element> {
       <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-4 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
         <div className="flex lg:flex-row flex-col  lg:items-start items-center lg:justify-between">
           <Motion className="lg:w-1/5" {...motionBlockProps}>
-            <h3 className="lg:text-2xl text-xl mb-3 font-medium">{aboutData?.about?.heading}</h3>
-            <p className="lg:text-sm text-xs text-[#D5D5D5]">{aboutData?.about?.description}</p>
+            <h3 className="lg:text-2xl text-xl mb-3 font-medium">{aboutPageData?.about?.heading}</h3>
+            <p className="lg:text-sm text-xs text-[#D5D5D5]">{aboutPageData?.about?.description}</p>
           </Motion>
 
           <Motion className="lg:pl-8 pl-0 lg:pt-0 pt-4 lg:w-4/5" {...motionBlockProps}>
-            <RichTextComp content={aboutData?.about?.content as RichText} />
+            <RichTextComp content={aboutPageData?.about?.content as RichText} />
           </Motion>
         </div>
       </Motion>
 
       {/* Our Thesis */}
-      {aboutData?.ourThesis?.heading && (
+      {aboutPageData?.ourThesis?.heading && (
         <div className="lg:p-0 p-4">
-          <Section title={aboutData?.ourThesis?.heading ?? ''} desc={aboutData?.ourThesis?.description ?? ''}>
+          <Section title={aboutPageData?.ourThesis?.heading ?? ''} desc={aboutPageData?.ourThesis?.description ?? ''}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[240px]">
-              {aboutData?.ourThesis?.items?.map((item, index) => {
+              {aboutPageData?.ourThesis?.items?.map((item, index) => {
                 const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
                 const isFirst = index === 0
                 const isSixth = index === 5
@@ -160,11 +165,14 @@ export default async function Page(): Promise<JSX.Element> {
       )}
 
       {/* what we believe Section */}
-      {aboutData?.whatWeBelieve?.heading && (
+      {aboutPageData?.whatWeBelieve?.heading && (
         <div className="lg:p-0 p-4">
-          <Section title={aboutData?.whatWeBelieve?.heading ?? ''} desc={aboutData?.whatWeBelieve?.description ?? ''}>
+          <Section
+            title={aboutPageData?.whatWeBelieve?.heading ?? ''}
+            desc={aboutPageData?.whatWeBelieve?.description ?? ''}
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-[240px]">
-              {aboutData?.whatWeBelieve?.items?.map((item, index) => {
+              {aboutPageData?.whatWeBelieve?.items?.map((item, index) => {
                 const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
                 const isFirst = index === 0
                 const isSixth = index === 5
@@ -199,11 +207,14 @@ export default async function Page(): Promise<JSX.Element> {
       )}
 
       {/* Our Approach Section */}
-      {aboutData?.ourApproach?.heading && (
+      {aboutPageData?.ourApproach?.heading && (
         <div className="lg:p-0 p-4">
-          <Section title={aboutData?.ourApproach?.heading ?? ''} desc={aboutData?.ourApproach?.description ?? ''}>
+          <Section
+            title={aboutPageData?.ourApproach?.heading ?? ''}
+            desc={aboutPageData?.ourApproach?.description ?? ''}
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[240px]">
-              {aboutData?.ourApproach?.items?.map((item, index) => {
+              {aboutPageData?.ourApproach?.items?.map((item, index) => {
                 const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
                 const isFirst = index === 0
                 const isFifth = index === 4
@@ -244,12 +255,12 @@ export default async function Page(): Promise<JSX.Element> {
       <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-4 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
         <div className="mb-16">
           <Motion {...motionBlockProps}>
-            <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{aboutData?.proofOfScale?.heading}</h2>
-            <p className="text-[#D5D5D5] text-base max-w-xl mb-12">{aboutData?.proofOfScale?.description}</p>
+            <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{aboutPageData?.proofOfScale?.heading}</h2>
+            <p className="text-[#D5D5D5] text-base max-w-xl mb-12">{aboutPageData?.proofOfScale?.description}</p>
           </Motion>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {aboutData?.proofOfScale?.items?.map((stat, i) => (
+            {aboutPageData?.proofOfScale?.items?.map((stat, i) => (
               <Motion
                 key={i}
                 className="text-center"
@@ -268,13 +279,13 @@ export default async function Page(): Promise<JSX.Element> {
         </div>
 
         <div className="lg:w-2/5 mb-10">
-          <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{aboutData?.proofOfScale?.company?.heading}</h2>
-          <p className="text-[#D5D5D5] text-base mb-12">{aboutData?.proofOfScale?.company?.description}</p>
+          <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{aboutPageData?.proofOfScale?.company?.heading}</h2>
+          <p className="text-[#D5D5D5] text-base mb-12">{aboutPageData?.proofOfScale?.company?.description}</p>
         </div>
         <div className="flex flex-row">
           <div className="lg:w-1/5"> </div>
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:w-4/5">
-            {aboutData?.proofOfScale?.company?.items?.map((item, index) => (
+            {aboutPageData?.proofOfScale?.company?.items?.map((item, index) => (
               <Motion
                 key={index}
                 className="bg-[#0F0E0E] p-4 flex flex-col justify-between h-full"
@@ -315,11 +326,11 @@ export default async function Page(): Promise<JSX.Element> {
       >
         {/* Header */}
         <div className="mb-4 lg:w-2/5">
-          <h2 className="lg:text-4xl text-2xl font-bold mb-4">{aboutData?.leadership?.heading}</h2>
-          <p className="lg:text-base text-sm text-[#D5D5D5]">{aboutData?.leadership?.description}</p>
+          <h2 className="lg:text-4xl text-2xl font-bold mb-4">{aboutPageData?.leadership?.heading}</h2>
+          <p className="lg:text-base text-sm text-[#D5D5D5]">{aboutPageData?.leadership?.description}</p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:pt-0 pt-4">
-          {aboutData?.leadership?.members?.map((member, index): JSX.Element => {
+          {aboutPageData?.leadership?.members?.map((member, index): JSX.Element => {
             return (
               <Motion
                 key={index}
@@ -412,7 +423,7 @@ export default async function Page(): Promise<JSX.Element> {
         className="lg:p-10 p-4 bg-cover bg-center rounded-lg overflow-hidden lg:m-0 m-4"
         style={{
           backgroundImage: `url(${
-            (aboutData?.cta?.backgroundImage as Media)?.url ||
+            (aboutPageData?.cta?.backgroundImage as Media)?.url ||
             'linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8))'
           })`,
         }}
@@ -420,26 +431,26 @@ export default async function Page(): Promise<JSX.Element> {
       >
         <div className="text-center">
           <Motion {...motionBlockProps}>
-            <p className="text-xs mb-4">{aboutData?.cta?.subheading}</p>
-            <h2 className="lg:text-4xl text-2xl font-semibold mb-6">{aboutData?.cta?.heading}</h2>
-            <p className="text-base md:text-xl max-w-2xl mx-auto mb-10">{aboutData?.cta?.description}</p>
+            <p className="text-xs mb-4">{aboutPageData?.cta?.subheading}</p>
+            <h2 className="lg:text-4xl text-2xl font-semibold mb-6">{aboutPageData?.cta?.heading}</h2>
+            <p className="text-base md:text-xl max-w-2xl mx-auto mb-10">{aboutPageData?.cta?.description}</p>
           </Motion>
 
           <div className="flex lg:flex-row flex-col gap-4 justify-center">
-            {aboutData?.cta?.button_1?.label && (
+            {aboutPageData?.cta?.button_1?.label && (
               <Link
-                href={aboutData?.cta?.button_1?.link as string}
+                href={aboutPageData?.cta?.button_1?.link || ''}
                 className="px-5 py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
               >
-                {aboutData?.cta?.button_1?.label}
+                {aboutPageData?.cta?.button_1?.label}
               </Link>
             )}
-            {aboutData?.cta?.button_2?.label && (
+            {aboutPageData?.cta?.button_2?.label && (
               <Link
-                href={aboutData?.cta?.button_2?.link as string}
+                href={aboutPageData?.cta?.button_2?.link || ''}
                 className="px-5 py-2.5 bg-[#14120B] font-medium rounded-2xl text-base"
               >
-                {aboutData?.cta?.button_2?.label}
+                {aboutPageData?.cta?.button_2?.label}
               </Link>
             )}
           </div>
