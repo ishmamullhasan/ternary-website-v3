@@ -383,19 +383,48 @@ export interface Insight {
  */
 export interface PressRelease {
   id: string
-  title?: string | null
+  title: string
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null
   slug: string
   /**
-   * e.g. CS-014
+   * Pill label shown above the headline (e.g. Product Launch).
+   */
+  badge?: string | null
+  /**
+   * e.g. PR-026
    */
   code?: string | null
   releaseDate?: string | null
+  /**
+   * e.g. Dhaka, Bangladesh
+   */
+  datelineLocation?: string | null
+  /**
+   * Short summary used on listing cards.
+   */
   excerpts?: string | null
+  /**
+   * e.g. "12 min"
+   */
+  readTime?: string | null
+  /**
+   * e.g. "Engineering Studio"
+   */
+  categoryLabel?: string | null
   thumbnail?: (string | null) | Media
+  tags?:
+    | {
+        name?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Opening paragraphs shown in The release section. Separate paragraphs with a blank line.
+   */
+  leadParagraph?: string | null
   content?: {
     root: {
       type: string
@@ -411,6 +440,66 @@ export interface PressRelease {
     }
     [k: string]: unknown
   } | null
+  quotes?:
+    | {
+        quote?: string | null
+        name?: string | null
+        /**
+         * e.g. Chief Revenue Officer · Counterfoil
+         */
+        role?: string | null
+        id?: string | null
+      }[]
+    | null
+  releaseFacts?: {
+    /**
+     * e.g. Yes
+     */
+    forImmediateRelease?: string | null
+    /**
+     * e.g. None
+     */
+    embargo?: string | null
+    /**
+     * e.g. Global
+     */
+    distribution?: string | null
+    mediaKit?: (string | null) | Media
+    /**
+     * e.g. 24 MB
+     */
+    mediaKitSizeLabel?: string | null
+  }
+  pressContact?: {
+    heading?: string | null
+    description?: string | null
+    press?: {
+      name?: string | null
+      title?: string | null
+      email?: string | null
+      phone?: string | null
+    }
+    analyst?: {
+      name?: string | null
+      title?: string | null
+      email?: string | null
+      website?: string | null
+    }
+    /**
+     * e.g. Logos, executive headshots, product screenshots, brand guidelines
+     */
+    mediaKitDescription?: string | null
+    socialLinks?: {
+      twitter?: string | null
+      linkedin?: string | null
+      website?: string | null
+    }
+  }
+  relatedPressReleases?: {
+    heading?: string | null
+    description?: string | null
+    pressReleases?: (string | PressRelease)[] | null
+  }
   updatedAt: string
   createdAt: string
 }
@@ -1139,11 +1228,76 @@ export interface PressReleaseSelect<T extends boolean = true> {
   title?: T
   generateSlug?: T
   slug?: T
+  badge?: T
   code?: T
   releaseDate?: T
+  datelineLocation?: T
   excerpts?: T
+  readTime?: T
+  categoryLabel?: T
   thumbnail?: T
+  tags?:
+    | T
+    | {
+        name?: T
+        id?: T
+      }
+  leadParagraph?: T
   content?: T
+  quotes?:
+    | T
+    | {
+        quote?: T
+        name?: T
+        role?: T
+        id?: T
+      }
+  releaseFacts?:
+    | T
+    | {
+        forImmediateRelease?: T
+        embargo?: T
+        distribution?: T
+        mediaKit?: T
+        mediaKitSizeLabel?: T
+      }
+  pressContact?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        press?:
+          | T
+          | {
+              name?: T
+              title?: T
+              email?: T
+              phone?: T
+            }
+        analyst?:
+          | T
+          | {
+              name?: T
+              title?: T
+              email?: T
+              website?: T
+            }
+        mediaKitDescription?: T
+        socialLinks?:
+          | T
+          | {
+              twitter?: T
+              linkedin?: T
+              website?: T
+            }
+      }
+  relatedPressReleases?:
+    | T
+    | {
+        heading?: T
+        description?: T
+        pressReleases?: T
+      }
   updatedAt?: T
   createdAt?: T
 }
