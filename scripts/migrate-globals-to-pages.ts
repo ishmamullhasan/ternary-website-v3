@@ -282,9 +282,7 @@ function mapStories(d: GlobalData): Block[] {
   return L
 }
 
-// contact stays manual: its content is under the deprecated `contact` global (contactPage is
-// empty), and it needs the form-builder relationship wired — hand-handle separately.
-const notImplemented = (): Block[] => []
+// (contact has no CMS source content; it is scaffolded inline at the end of this script.)
 
 const MAPPERS: { globalSlug: string; pageSlug: string; title: string; map: (d: GlobalData) => Block[] }[] = [
   { globalSlug: 'homePage', pageSlug: 'home', title: 'Home', map: mapHome },
@@ -294,8 +292,7 @@ const MAPPERS: { globalSlug: string; pageSlug: string; title: string; map: (d: G
   { globalSlug: 'scalesPage', pageSlug: 'scales', title: 'Scales', map: mapScales },
   { globalSlug: 'careersPage', pageSlug: 'careers', title: 'Careers', map: mapCareers },
   { globalSlug: 'storiesPage', pageSlug: 'stories', title: 'Stories', map: mapStories },
-  // contact: content is under the deprecated `contact` global + needs form wiring — manual.
-  { globalSlug: 'contactPage', pageSlug: 'contact', title: 'Contact', map: notImplemented },
+  // contact is handled separately below (reads the deprecated `contact` global).
 ]
 
 async function upsertPage(payload: Payload, pageSlug: string, title: string, layout: Block[]) {
@@ -330,6 +327,37 @@ for (const { globalSlug, pageSlug, title, map } of MAPPERS) {
   payload.logger.info(
     `  ${globalSlug} -> /${pageSlug}: ${action} (${layout.length} blocks: ${layout.map((b) => b.blockType).join(', ')})`,
   )
+}
+
+// contact: the legacy `contact`/`contactPage` globals are empty, so there is nothing to
+// migrate. Scaffold a functional page — a hero + the existing Contact Form — with
+// placeholder copy the team can edit in the CMS. Prefer any real values if present.
+try {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const conn = (payload.db as any).connection
+  const legacy = (await conn.collection('globals').findOne({ globalType: 'contact' })) ?? {}
+  const form = await conn.collection('forms').findOne({})
+  const layout: Block[] = [
+    {
+      blockType: 'hero',
+      heading: legacy?.hero?.heading || 'Contact',
+      description: legacy?.hero?.description || 'Get in touch with the Ternary Solutions team.',
+    },
+  ]
+  if (form)
+    layout.push({
+      blockType: 'formBlock',
+      heading: legacy?.form?.heading || 'Send us a message',
+      description: legacy?.form?.description || null,
+      form: String(form._id),
+    })
+  if (truthy(legacy?.cta?.heading)) layout.push(ctaB(legacy.cta))
+  const action = await upsertPage(payload, 'contact', 'Contact', layout)
+  payload.logger.info(
+    `  contact -> /contact: ${action} (${layout.length} blocks; scaffolded — source globals were empty, edit copy in CMS)`,
+  )
+} catch (e) {
+  payload.logger.warn('  contact skipped: ' + (e as Error).message)
 }
 
 payload.logger.info('Migration complete.')
