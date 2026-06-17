@@ -14,7 +14,7 @@
     "ii": "cross-env NODE_OPTIONS=--no-deprecation pnpm --ignore-workspace install",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
-    "format": "prettier --write \"**/*.{cjs,mjs,ts,tsx,md,json,css,scss,less,html}\" --ignore-path \".gitignore\"",
+    "format": "prettier --write \"**/*.{cjs,mjs,ts,tsx,md,json,css,scss,less,html}\" --ignore-path \".gitignore\" --ignore-path \".prettierignore\"",
     "tailwind:upgrade": "upgrade --force",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
