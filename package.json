@@ -1,8 +1,9 @@
 {
-  "name": "",
+  "name": "ternary-website-v3",
   "version": "1.0.0",
-  "description": "Website template for Payload",
-  "license": "MIT",
+  "description": "Ternary Solutions marketing website (Next.js + Payload CMS)",
+  "license": "UNLICENSED",
+  "private": true,
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
