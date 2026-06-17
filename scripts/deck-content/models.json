@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "frame",
+    "title": "Frame™",
+    "excerpts": "Fixed scope, fixed timeline, fixed price. Perfect for discrete projects with well-understood objectives.",
+    "contentBlocks": [
+      {
+        "heading": "Fixed scope, fixed timeline, fixed price",
+        "paras": [
+          "Frame™ is built for discrete projects with well-understood objectives, delivered against a fixed scope, a fixed timeline, and a fixed price.",
+          "When the goal is clear, Frame™ gives you predictable delivery and total control over budget and schedule."
+        ]
+      },
+      {
+        "heading": "Ideal for",
+        "paras": [
+          "Product launches, system migrations, platform implementations, and proof of concepts."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "flow",
+    "title": "Flow™",
+    "excerpts": "Continuous delivery and ongoing partnership. A dedicated team working iteratively to build and evolve your product.",
+    "contentBlocks": [
+      {
+        "heading": "Continuous delivery, ongoing partnership",
+        "paras": [
+          "Flow™ provides a dedicated team working iteratively to build and evolve your product through continuous delivery.",
+          "It is an ongoing partnership designed for sustained development, where the team stays close to your product as it matures and responds to the market."
+        ]
+      },
+      {
+        "heading": "Ideal for",
+        "paras": [
+          "Long-term product development, continuous feature delivery, and market-responsive iteration."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "orchestra",
+    "title": "Orchestra™",
+    "excerpts": "On-demand talent augmentation. Technical talent integrated into your existing workflows.",
+    "contentBlocks": [
+      {
+        "heading": "Scale your team, on demand",
+        "paras": [
+          "Orchestra™ delivers on-demand talent augmentation: technical talent integrated directly into your existing workflows.",
+          "It lets you scale capacity and add specialized expertise exactly when you need it, with flexible resourcing that flexes to your roadmap."
+        ]
+      },
+      {
+        "heading": "Ideal for",
+        "paras": [
+          "Filling skill gaps, scaling capacity, specialized expertise, and flexible resourcing."
+        ]
+      }
+    ]
+  }
+]

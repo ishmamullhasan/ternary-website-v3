@@ -1,0 +1,500 @@
+[
+  {
+    "slug": "data-analytics",
+    "title": "Data & Analytics",
+    "excerpts": "We build the data infrastructure and analytics platforms that turn raw, scattered data into a dependable foundation for decisions. From ingestion to insight, we engineer pipelines and models that organizations can trust in production.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Data & Analytics",
+      "description": "Building data infrastructure and analytics platforms that turn raw data into competitive advantage. We design pipelines, warehouses, and models that are accurate, observable, and ready for the decisions they inform.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "Data is infrastructure, not a report",
+      "description": "Analytics is only as good as the foundation beneath it. We treat data systems with the same production responsibility we apply to any mission-critical service.",
+      "items": [
+        {
+          "title": "Trust before dashboards",
+          "excerpt": "A chart is worthless if the numbers behind it are wrong. We invest first in correctness, lineage, and validation so teams can act on what they see."
+        },
+        {
+          "title": "Owned end to end",
+          "excerpt": "We stay accountable from ingestion through to the model serving the answer, maintaining the pipeline rather than handing over a brittle one-off."
+        },
+        {
+          "title": "Built for the people using it",
+          "excerpt": "By staying close to the workflows our data serves, we model the domain the way the business actually reasons about it."
+        },
+        {
+          "title": "Observable by design",
+          "excerpt": "Freshness, quality, and cost are monitored as first-class signals, so problems surface before a decision is made on stale data."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "From raw events to reliable insight",
+      "description": "We compose data platforms from proven, scalable components, choosing tools for the workload rather than for fashion.",
+      "items": [
+        {
+          "title": "Pipelines and ingestion",
+          "excerpt": "Batch and streaming ingestion with clear contracts, idempotent processing, and recovery built in.",
+          "stack": [{ "name": "Apache Kafka" }, { "name": "Airflow" }, { "name": "dbt" }, { "name": "Python" }]
+        },
+        {
+          "title": "Warehouses and lakes",
+          "excerpt": "Modeled, governed storage that scales with volume while keeping query cost and latency in check.",
+          "stack": [{ "name": "Snowflake" }, { "name": "BigQuery" }, { "name": "Postgres" }, { "name": "Apache Spark" }]
+        },
+        {
+          "title": "Analytics and visualization",
+          "excerpt": "Semantic layers and dashboards that give every team a single, consistent definition of the metrics that matter.",
+          "stack": [{ "name": "Looker" }, { "name": "Metabase" }, { "name": "Power BI" }]
+        },
+        {
+          "title": "Governance and quality",
+          "excerpt": "Lineage, access control, and automated tests that keep data trustworthy as it grows.",
+          "stack": [{ "name": "Great Expectations" }, { "name": "OpenLineage" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "What this looks like in delivery",
+      "description": "Representative examples of how we apply data and analytics engineering in production environments.",
+      "items": [
+        {
+          "meta": "Financial services",
+          "title": "Consolidating siloed operational data",
+          "problem": "Critical metrics lived in disconnected systems, making a single, trustworthy view of operations impossible.",
+          "approach": "We built a governed warehouse with modeled pipelines and a shared semantic layer, replacing manual exports with monitored, automated flows.",
+          "outcome": "Teams worked from one consistent set of definitions, with data quality and freshness tracked as production signals.",
+          "metricValue": "Production",
+          "metricLabel": "Deployed at scale"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Turn your data into a foundation you can build on",
+      "description": "Let's talk about the pipelines, warehouses, and analytics your organization needs to decide with confidence.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  },
+  {
+    "slug": "artificial-intelligence",
+    "title": "Artificial Intelligence",
+    "excerpts": "We integrate ML and AI capabilities into products and operations as practical, production-ready systems. Our focus is on AI that ships, holds up under real use, and stays under operator control.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Artificial Intelligence",
+      "description": "Integrating ML and AI capabilities into products and operations. We build practical, production-ready AI solutions, governed by policy boundaries and designed to deliver value without sacrificing control.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "AI in production, not in a demo",
+      "description": "A working prototype is the easy part. We engineer AI systems that are reliable, observable, and accountable once real users and real data are involved.",
+      "items": [
+        {
+          "title": "Practical over speculative",
+          "excerpt": "We build AI that solves a concrete workflow problem, not technology for its own sake. Value is measured by the decision or task it improves."
+        },
+        {
+          "title": "Operator control by design",
+          "excerpt": "Model-assisted systems stay within policy boundaries with override-capable workflows, so people remain accountable for outcomes."
+        },
+        {
+          "title": "Secure by architecture",
+          "excerpt": "For sensitive environments we deploy air-gapped and self-hosted models that keep proprietary data inside institutional boundaries."
+        },
+        {
+          "title": "Responsible across the lifecycle",
+          "excerpt": "We monitor models in production for drift, cost, and quality, treating an AI feature as a system to maintain rather than a launch to celebrate."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "From model to dependable system",
+      "description": "We wrap models in the engineering they need to behave predictably: orchestration, retrieval, evaluation, and governance.",
+      "items": [
+        {
+          "title": "Applied LLM and orchestration",
+          "excerpt": "Extensible application layers that mediate user interaction with AI, pairing models with retrieval and tool use.",
+          "stack": [{ "name": "Python" }, { "name": "LangChain" }, { "name": "Open-source LLMs" }, { "name": "vLLM" }]
+        },
+        {
+          "title": "Retrieval and grounding",
+          "excerpt": "RAG architectures that ground responses in governed sources, reducing hallucination and keeping answers traceable.",
+          "stack": [{ "name": "pgvector" }, { "name": "Elasticsearch" }, { "name": "Embeddings" }]
+        },
+        {
+          "title": "ML in products",
+          "excerpt": "Classical and deep models trained, served, and monitored as part of the product, not bolted on after the fact.",
+          "stack": [{ "name": "PyTorch" }, { "name": "scikit-learn" }, { "name": "MLflow" }]
+        },
+        {
+          "title": "Governed and secure deployment",
+          "excerpt": "Air-gapped and self-hosted inference for regulated environments, with evaluation and policy guardrails built in.",
+          "stack": [{ "name": "Docker" }, { "name": "Kubernetes" }, { "name": "Ollama" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "What this looks like in delivery",
+      "description": "Representative examples of how we put AI into production under real-world constraints.",
+      "items": [
+        {
+          "meta": "Capital markets",
+          "title": "Air-gapped LLM application layer",
+          "problem": "A securities firm needed faster access to synthesized information without exposing sensitive data to external AI services.",
+          "approach": "We deployed an air-gapped open-source LLM environment and built the extensible application layer that mediates user interaction with it, keeping data inside institutional boundaries.",
+          "outcome": "Practical workflow value with institutional control, delivering AI that is secure by architecture rather than by policy alone.",
+          "metricValue": "Air-gapped",
+          "metricLabel": "Deployed in production"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Bring AI into production responsibly",
+      "description": "Let's talk about AI that solves a real workflow, stays under your control, and holds up once it's live.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  },
+  {
+    "slug": "cloud-transformation",
+    "title": "Cloud Transformation",
+    "excerpts": "We migrate and architect cloud-native systems on AWS, Azure, and GCP, designed for scale and optimization. Our work spans migration, modernization, and the operational discipline that keeps cloud spend and reliability under control.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Cloud Transformation",
+      "description": "Migrating and architecting cloud-native systems on AWS, Azure, and GCP. We design for scale and optimization, then take responsibility for the reliability and cost of what we deploy.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "Cloud as a long-term operating model",
+      "description": "Moving to the cloud is the beginning, not the destination. We treat infrastructure as something we own and operate, with cost and reliability as ongoing responsibilities.",
+      "items": [
+        {
+          "title": "Migration without disruption",
+          "excerpt": "We plan and sequence migrations to protect production continuity, modernizing systems without putting the business at risk."
+        },
+        {
+          "title": "Built for scale and cost",
+          "excerpt": "Architectures are sized for real demand, with optimization treated as a deliberate engineering goal rather than an afterthought."
+        },
+        {
+          "title": "Reproducible infrastructure",
+          "excerpt": "Everything is defined as code, so environments are auditable, repeatable, and recoverable rather than hand-assembled."
+        },
+        {
+          "title": "Reliability we stand behind",
+          "excerpt": "We carry production responsibility for what we deploy, instrumenting systems so issues are caught and resolved, not discovered by users."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "Cloud-native, end to end",
+      "description": "We combine infrastructure-as-code, containerization, and disciplined operations to deliver cloud systems that stay healthy over time.",
+      "items": [
+        {
+          "title": "Architecture and migration",
+          "excerpt": "Cloud-native designs across AWS, Azure, and GCP, with migration paths that protect uptime and data integrity.",
+          "stack": [{ "name": "AWS" }, { "name": "Azure" }, { "name": "GCP" }]
+        },
+        {
+          "title": "Infrastructure as code",
+          "excerpt": "Reproducible, version-controlled environments that can be reviewed, audited, and rebuilt on demand.",
+          "stack": [{ "name": "Terraform" }, { "name": "Pulumi" }, { "name": "CloudFormation" }]
+        },
+        {
+          "title": "Containers and orchestration",
+          "excerpt": "Portable, scalable workloads managed with container platforms tuned for resilience and efficient resource use.",
+          "stack": [{ "name": "Kubernetes" }, { "name": "Docker" }, { "name": "ECS Fargate" }]
+        },
+        {
+          "title": "Observability and FinOps",
+          "excerpt": "Monitoring, alerting, and cost visibility so reliability and spend are managed together, continuously.",
+          "stack": [{ "name": "Prometheus" }, { "name": "Grafana" }, { "name": "CloudWatch" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "What this looks like in delivery",
+      "description": "Representative examples of how we architect and operate cloud systems for clients.",
+      "items": [
+        {
+          "meta": "Software platforms",
+          "title": "Cloud-native foundation on managed infrastructure",
+          "problem": "A growing platform needed infrastructure that could scale predictably without ballooning operational cost or risk.",
+          "approach": "We designed a containerized, infrastructure-as-code deployment with monitoring and cost visibility built in from day one.",
+          "outcome": "A reproducible, observable cloud foundation that the team could scale and operate with confidence.",
+          "metricValue": "Production",
+          "metricLabel": "Deployed at scale"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Modernize on the cloud, with an owner",
+      "description": "Let's talk about migrating, architecting, and operating cloud systems built for scale and cost discipline.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  },
+  {
+    "slug": "digital-experiences",
+    "title": "Digital Experiences",
+    "excerpts": "We create intuitive, engaging digital experiences across web, mobile, and connected platforms. Design and engineering work together so the interface is as dependable as the system beneath it.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Digital Experiences",
+      "description": "Creating intuitive, engaging digital experiences across web, mobile, and connected platforms. We build interfaces that are accessible, performant, and grounded in how people actually work.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "Experience is where the system meets the user",
+      "description": "The interface is where our engineering becomes real to the people using it. We treat experience with the same rigor as the backend that powers it.",
+      "items": [
+        {
+          "title": "Close to the user",
+          "excerpt": "We design around real workflows and the context in which people work, so the product fits the job rather than the other way around."
+        },
+        {
+          "title": "Performance is a feature",
+          "excerpt": "Speed, responsiveness, and reliability shape how an experience feels. We engineer for them deliberately, not as cleanup at the end."
+        },
+        {
+          "title": "Accessible by default",
+          "excerpt": "We build to recognized accessibility standards so products work for everyone, across devices and abilities."
+        },
+        {
+          "title": "Consistent across surfaces",
+          "excerpt": "Web, mobile, and connected screens share a coherent design language, giving users one product rather than several disconnected ones."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "Design and engineering, together",
+      "description": "We pair product design with modern front-end engineering to ship experiences that are both refined and robust.",
+      "items": [
+        {
+          "title": "Product and interaction design",
+          "excerpt": "Research-informed design and prototyping that turns user needs into clear, usable interfaces.",
+          "stack": [{ "name": "Figma" }, { "name": "Design systems" }]
+        },
+        {
+          "title": "Web engineering",
+          "excerpt": "Fast, accessible web applications built on modern frameworks and a maintainable component architecture.",
+          "stack": [{ "name": "React" }, { "name": "Next.js" }, { "name": "TypeScript" }]
+        },
+        {
+          "title": "Mobile engineering",
+          "excerpt": "Mobile-first experiences delivered natively or cross-platform, tuned for performance and adoption.",
+          "stack": [{ "name": "React Native" }, { "name": "Expo" }, { "name": "Swift" }]
+        },
+        {
+          "title": "Design systems and quality",
+          "excerpt": "Reusable component libraries and automated checks that keep experiences consistent and accessible as they scale.",
+          "stack": [{ "name": "Storybook" }, { "name": "Tailwind CSS" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "What this looks like in delivery",
+      "description": "Representative examples of how we design and build digital experiences.",
+      "items": [
+        {
+          "meta": "Hospitality & travel",
+          "title": "Mobile-first experience with rapid adoption",
+          "problem": "Operations relied on slow, manual workflows that frustrated staff and customers alike.",
+          "approach": "We designed and built a mobile-first experience grounded in the real operational workflow, prioritizing speed and clarity.",
+          "outcome": "A streamlined product that staff adopted quickly, replacing manual steps with a coherent, dependable interface.",
+          "metricValue": "85%",
+          "metricLabel": "Mobile adoption in 30 days"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Build an experience people want to use",
+      "description": "Let's talk about the web, mobile, and connected experiences your product needs to win and keep users.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  },
+  {
+    "slug": "platforms",
+    "title": "Platforms",
+    "excerpts": "We engineer robust platform architectures using microservices, APIs, and systems designed for scale. Our platforms turn disconnected capabilities into coherent foundations that products can build on for years.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Platforms",
+      "description": "Engineering robust platform architectures using microservices, APIs, and systems designed for scale. We build foundations that connect capabilities, support evolution, and stay reliable under load.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "A platform is a foundation others depend on",
+      "description": "Platforms carry weight long after launch. We architect them for evolution, resilience, and the teams who will build on top of them.",
+      "items": [
+        {
+          "title": "Built to evolve",
+          "excerpt": "Modular, API-first architectures let new capabilities be added without rewriting what already works."
+        },
+        {
+          "title": "Connecting the disconnected",
+          "excerpt": "We turn siloed systems and revenue levers into a coordinated whole, replacing brittle integrations with governed interfaces."
+        },
+        {
+          "title": "Resilient under load",
+          "excerpt": "We design for failure, scaling, and recovery so the platform stays available as demand and complexity grow."
+        },
+        {
+          "title": "Clear contracts",
+          "excerpt": "Well-defined APIs and boundaries make the platform predictable for the teams and partners who integrate with it."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "Architecture for scale and change",
+      "description": "We compose platforms from services, APIs, and event-driven orchestration, choosing boundaries that match the domain.",
+      "items": [
+        {
+          "title": "Service architecture",
+          "excerpt": "Modular services with clear ownership and boundaries, sized to be independently deployable and maintainable.",
+          "stack": [{ "name": "Go" }, { "name": "Node.js" }, { "name": "Java" }]
+        },
+        {
+          "title": "APIs and integration",
+          "excerpt": "Well-governed API layers that let internal teams and external partners integrate safely and predictably.",
+          "stack": [{ "name": "REST" }, { "name": "GraphQL" }, { "name": "gRPC" }]
+        },
+        {
+          "title": "Event-driven orchestration",
+          "excerpt": "Asynchronous, event-driven flows that decouple services and keep the platform responsive under load.",
+          "stack": [{ "name": "Apache Kafka" }, { "name": "RabbitMQ" }, { "name": "Redis" }]
+        },
+        {
+          "title": "Data and persistence",
+          "excerpt": "Storage chosen for the workload, with consistency and scaling characteristics matched to each service.",
+          "stack": [{ "name": "Postgres" }, { "name": "MongoDB" }, { "name": "Redis" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "What this looks like in delivery",
+      "description": "Representative examples of how we architect platforms that connect and scale.",
+      "items": [
+        {
+          "meta": "Software platforms",
+          "title": "Modular, event-driven revenue platform",
+          "problem": "Previously siloed revenue levers could not be coordinated, limiting both day-to-day execution and longer-term optimization.",
+          "approach": "We implemented a modular, API-first, event-driven platform pairing configurable business rules with model-assisted recommendations, preserving operator control through policy boundaries.",
+          "outcome": "A scalable operating foundation that connected disconnected operations and supported ongoing product evolution.",
+          "metricValue": "Production",
+          "metricLabel": "Deployed at scale"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Build on a platform that lasts",
+      "description": "Let's talk about the microservices, APIs, and architecture your product needs to scale and evolve.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  },
+  {
+    "slug": "internet-of-things",
+    "title": "Internet of Things",
+    "excerpts": "We build connected systems from edge devices to cloud infrastructure, creating intelligent ecosystems. Our work spans firmware, connectivity, and the data platforms that make fleets of devices useful and manageable.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Internet of Things",
+      "description": "Building connected systems from edge devices to cloud infrastructure, creating intelligent ecosystems. We engineer across the full stack, from firmware and connectivity to ingestion, control, and analytics.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "Connected systems are systems, end to end",
+      "description": "IoT spans the physical and the digital. We take responsibility across the whole chain, from the device in the field to the cloud that makes sense of it.",
+      "items": [
+        {
+          "title": "Edge to cloud as one system",
+          "excerpt": "We design devices, connectivity, and cloud together so the whole ecosystem behaves coherently, not as disconnected parts."
+        },
+        {
+          "title": "Reliable in the real world",
+          "excerpt": "Devices live in unpredictable conditions. We engineer for intermittent connectivity, power constraints, and field failures."
+        },
+        {
+          "title": "Secure by architecture",
+          "excerpt": "Device identity, secure provisioning, and encrypted transport are foundational, not features added after deployment."
+        },
+        {
+          "title": "Manageable at scale",
+          "excerpt": "Fleets need over-the-air updates and monitoring. We build the operational tooling that keeps thousands of devices healthy."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "Across the full connected stack",
+      "description": "We engineer firmware, connectivity, ingestion, and analytics as a single pipeline from edge device to actionable insight.",
+      "items": [
+        {
+          "title": "Edge and firmware",
+          "excerpt": "Embedded software and edge logic that runs reliably on constrained hardware in real-world conditions.",
+          "stack": [{ "name": "C/C++" }, { "name": "Rust" }, { "name": "FreeRTOS" }]
+        },
+        {
+          "title": "Connectivity and protocols",
+          "excerpt": "Robust device-to-cloud communication built on standard IoT protocols and resilient transport.",
+          "stack": [{ "name": "MQTT" }, { "name": "BLE" }, { "name": "LoRaWAN" }]
+        },
+        {
+          "title": "Ingestion and platform",
+          "excerpt": "Cloud platforms that ingest, store, and route high-volume device telemetry and support remote control.",
+          "stack": [{ "name": "AWS IoT" }, { "name": "Apache Kafka" }, { "name": "TimescaleDB" }]
+        },
+        {
+          "title": "Fleet operations",
+          "excerpt": "Over-the-air updates, device management, and monitoring that keep large fleets secure and current.",
+          "stack": [{ "name": "Docker" }, { "name": "Grafana" }, { "name": "Prometheus" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "What this looks like in delivery",
+      "description": "Representative examples of how we build connected systems from edge to cloud.",
+      "items": [
+        {
+          "meta": "Sports & entertainment",
+          "title": "Connected sensing from device to dashboard",
+          "problem": "Raw signals from connected hardware needed to become reliable, real-time insight for end users.",
+          "approach": "We engineered the path from edge devices through secure connectivity into a cloud platform that ingests, processes, and presents the data.",
+          "outcome": "An intelligent ecosystem linking field devices to a coherent application layer, maintained as a single connected system.",
+          "metricValue": "Edge-to-cloud",
+          "metricLabel": "Deployed in production"
+        }
+      ]
+    },
+    "cta": {
+      "heading": "Connect your devices to something intelligent",
+      "description": "Let's talk about the firmware, connectivity, and cloud platform your connected product needs.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  }
+]

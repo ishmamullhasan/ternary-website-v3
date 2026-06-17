@@ -1,0 +1,57 @@
+{
+  "heroSection": {
+    "heading": "Engineering that scales with you",
+    "description": "From early-stage startups building MVPs to scale-ups expanding infrastructure, mid-market firms modernizing systems, and enterprises transforming operations, plus government and defense. The standard stays the same at every stage.",
+    "items": [
+      {"title": "Startups"},
+      {"title": "Scale-ups"},
+      {"title": "Mid-market"},
+      {"title": "Enterprise"},
+      {"title": "Government & Defense"}
+    ]
+  },
+  "qualityBar": {
+    "heading": "One quality bar, every scale",
+    "description": "Whether we are shipping a first MVP or sustaining an enterprise platform, the same disciplines hold. Distributed teams, centralized quality standards.",
+    "items": [
+      {
+        "title": "Centralized quality standards",
+        "excerpt": "Our global delivery hub operates as a unified center of excellence, preserving institutional knowledge and consistent engineering standards across every engagement.",
+        "icon": "activity"
+      },
+      {
+        "title": "Certified, compliant delivery",
+        "excerpt": "ISO 9001 and ISO 27001 certified and SOC 2 compliant, with rigorous processes that hold from the smallest build to the most regulated.",
+        "icon": "shield-check"
+      },
+      {
+        "title": "Disciplined execution frameworks",
+        "excerpt": "Structured talent development, experienced technical leadership, and repeatable delivery frameworks let us scale execution without losing consistency.",
+        "icon": "workflow"
+      },
+      {
+        "title": "Long-horizon responsibility",
+        "excerpt": "We carry production responsibility across the lifecycle, accountable for systems that perform reliably and evolve as your organization grows.",
+        "icon": "book-check"
+      }
+    ]
+  },
+  "scale": {
+    "_refs": {
+      "collection": "scale",
+      "slugs": [
+        "startups",
+        "scale-ups",
+        "mid-market",
+        "enterprise",
+        "government-defense"
+      ]
+    }
+  },
+  "cta": {
+    "heading": "Wherever you are, we meet you there",
+    "description": "Tell us your stage and your ambition, and we'll bring engineering ownership that grows with you, from first launch to enterprise scale.",
+    "button_1": {"label": "Start a conversation", "link": "/contact"},
+    "button_2": {"label": "See our work", "link": "/stories"}
+  }
+}

@@ -33,8 +33,8 @@ export default function CapabilitiesComp({
     <section className="bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
       {/* top header */}
       <div className="lg:mb-15 mb-4 lg:w-2/5">
-        <p className="lg:text-base text-sm lg:not-first:max-w-[500px] mb-3 text-[#D5D5D5]">{description}</p>
-        <h2 className="lg:text-3xl text-2xl font-semibold">{heading}</h2>
+        <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{heading}</h2>
+        <p className="lg:text-base text-sm lg:not-first:max-w-[500px] text-[#D5D5D5]">{description}</p>
       </div>
 
       {/* capabilities grid */}
@@ -68,8 +68,8 @@ export default function CapabilitiesComp({
       {/* leadership section */}
       <div className="flex  lg:flex-row flex-col lg:mt-20 mt-8 lg:items-start items-center lg:justify-between">
         <div className="lg:w-1/5">
-          <p className="lg:text-base text-sm mb-3 text-[#D5D5D5]">{description_2}</p>
-          <h3 className="lg:text-2xl text-xl font-semibold">{heading_2}</h3>
+          <h3 className="lg:text-2xl text-xl font-semibold mb-3">{heading_2}</h3>
+          <p className="lg:text-base text-sm text-[#D5D5D5]">{description_2}</p>
         </div>
 
         <div className="lg:not-first:w-4/5 lg:h-[600px] h-[300px] overflow-hidden lg:pl-8 pl-0 lg:pt-0 pt-4">

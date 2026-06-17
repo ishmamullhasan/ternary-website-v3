@@ -22,8 +22,8 @@ export default function OpportunitiesComp({ heading, description, opportunity }:
     <section className="bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
       {/* top header */}
       <div className="lg:mb-15 mb-4 lg:w-2/5">
-        <p className="lg:text-base text-sm lg:not-first:max-w-[500px] mb-3 text-[#D5D5D5]">{description}</p>
-        <h2 className="lg:text-3xl text-2xl font-semibold">{heading}</h2>
+        <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{heading}</h2>
+        <p className="lg:text-base text-sm lg:not-first:max-w-[500px] text-[#D5D5D5]">{description}</p>
       </div>
 
       {/* opportunities grid */}

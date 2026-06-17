@@ -61,8 +61,8 @@ export default function AboutComp({ heading, description, items, organizations, 
       <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
         {/* heading */}
         <div className="flex flex-col items-center lg:w-2/5">
-          <p className="text-center lg:text-base text-sm mb-3 text-[#D5D5D5] ">{description}</p>
-          <h1 className="text-center lg:text-4xl text-2xl font-semibold">{heading}</h1>
+          <h1 className="text-center lg:text-4xl text-2xl font-semibold mb-3">{heading}</h1>
+          <p className="text-center lg:text-base text-sm text-[#D5D5D5] ">{description}</p>
         </div>
         {/* cards grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:mt-10 mt-4">

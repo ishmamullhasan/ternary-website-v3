@@ -1,0 +1,80 @@
+{
+  "heroSection": {
+    "heading": "Proof of work in the real world",
+    "description": "Production systems we designed, shipped, and stand behind, across capital markets, sports, digital health, field service, and franchise operations."
+  },
+  "featureCaseStudy": {
+    "heading": "An AI revenue operating layer for the experience economy",
+    "description": "For Counterfoil, we built Continuum: a foundational RevOps layer that unifies pricing, inventory, and distribution into one coordinated revenue system. A modular, API-first, event-driven platform pairs configurable business rules with model-assisted recommendations, preserving operator control through policy boundaries and override-capable workflows.",
+    "story": { "_ref": { "collection": "story", "slug": "counterfoil-continuum" } },
+    "stats": [
+      { "value": "API-first", "label": "Event-driven architecture" },
+      { "value": "Policy-safe", "label": "Operator overrides preserved" },
+      { "value": "Unified", "label": "Pricing, inventory, distribution" }
+    ],
+    "highlights": [
+      { "text": "Connects previously siloed revenue levers into one control layer" },
+      { "text": "Governed decisioning pairs deterministic rules with AI-assisted recommendations" },
+      { "text": "Built for heterogeneous operators with consistent governance and extensibility" }
+    ],
+    "readTime": "6 min read",
+    "categoryLabel": "Case study",
+    "buttonLabel": "Read the story"
+  },
+  "allStoriesGrid": {
+    "heading": "All case studies",
+    "description": "Eight engagements, each shipped to production. Where public metrics aren't disclosed, we describe the capability we delivered, not invented numbers.",
+    "items": {
+      "_refsPoly": [
+        { "collection": "story", "slug": "counterfoil-continuum" },
+        { "collection": "story", "slug": "turfly" },
+        { "collection": "story", "slug": "alley-analytix" },
+        { "collection": "story", "slug": "flex5" },
+        { "collection": "story", "slug": "farogl-odoo-erp" },
+        { "collection": "story", "slug": "doyouwork" },
+        { "collection": "story", "slug": "hissho-sushiops360" },
+        { "collection": "story", "slug": "lankabangla-securities" }
+      ]
+    }
+  },
+  "categoryLanding": {
+    "heading": "Explore by format",
+    "description": "Dig into the detailed builds, or read shorter pieces on how we think about engineering and delivery.",
+    "categories": [
+      {
+        "title": "Case studies",
+        "description": "Detailed accounts of production systems we designed, delivered, and maintain.",
+        "icon": "file-text",
+        "link": "/stories",
+        "linkLabel": "Browse"
+      },
+      {
+        "title": "Insights",
+        "description": "Shorter pieces on ownership, modernization, and building systems that last.",
+        "icon": "lightbulb",
+        "link": "/insights",
+        "linkLabel": "Read"
+      }
+    ]
+  },
+  "subscribe": {
+    "heading": "Get the next story in your inbox",
+    "description": "Occasional notes on how we build and sustain production systems. No noise, just substance.",
+    "followHint": "Or follow along where we post:",
+    "followOptions": [{ "label": "LinkedIn" }],
+    "emailPlaceholder": "you@company.com",
+    "buttonLabel": "Subscribe",
+    "disclaimer": "We send only when there's something worth reading. Unsubscribe anytime.",
+    "preview": {
+      "issueLabel": "Latest issue",
+      "heading": "How we keep operators in control of AI-assisted decisions",
+      "items": [
+        { "text": "Policy boundaries that make automation safe to trust" },
+        { "text": "Why override-capable workflows beat full autonomy" },
+        { "text": "Turning siloed revenue levers into one coordinated system" }
+      ],
+      "subscribersLabel": "Read by engineering and operations leaders",
+      "readTimeLabel": "5 min read"
+    }
+  }
+}

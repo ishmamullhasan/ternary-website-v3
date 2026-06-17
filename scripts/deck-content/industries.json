@@ -1,0 +1,170 @@
+[
+  {
+    "slug": "banking-capital-markets",
+    "title": "Banking & Capital Markets",
+    "excerpts": "Digital transformation and secure platforms for financial institutions operating in high-tempo, control-sensitive markets.",
+    "contentBlocks": [
+      {
+        "heading": "Engineering for regulated finance",
+        "paras": [
+          "We build digital transformation programs and secure platforms for banks and capital-markets firms, where data governance and execution speed are equally critical.",
+          "Our systems are secure by architecture and directly useful in high-tempo operational decisions, pairing institutional control at the infrastructure boundary with practical workflow value where people actually work."
+        ]
+      },
+      {
+        "heading": "Control at the boundary, usefulness at the workflow",
+        "paras": [
+          "From air-gapped AI environments to governed application layers, we deliver systems that keep sensitive data contained while giving dealer-brokers and operations teams faster access to synthesized information.",
+          "We take long-horizon responsibility for these platforms, maintaining the reliability and auditability that financial institutions depend on as they scale."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "financial-services-insurance",
+    "title": "Financial Services & Insurance",
+    "excerpts": "Resilient, compliant platforms that scale with business growth.",
+    "contentBlocks": [
+      {
+        "heading": "Platforms built to scale without weakening governance",
+        "paras": [
+          "We engineer resilient, compliant platforms for financial services and insurance providers, designed to grow with the business while preserving the controls these sectors require.",
+          "Our approach treats governance as a structural property of the system rather than an afterthought, so scaling capacity never comes at the cost of policy enforcement."
+        ]
+      },
+      {
+        "heading": "Durable systems, sustained accountability",
+        "paras": [
+          "We stay close to the workflows our systems serve, building with the context needed to make reliable decisions across complex, regulated operations.",
+          "As technical partners, we remain accountable for sustained performance across the full lifecycle of the platforms we deliver."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "advanced-manufacturing",
+    "title": "Advanced Manufacturing",
+    "excerpts": "IoT integration and data-driven operational intelligence for modern manufacturing.",
+    "contentBlocks": [
+      {
+        "heading": "Connected operations, end to edge",
+        "paras": [
+          "We integrate IoT systems and build data-driven operational intelligence for advanced manufacturers, connecting edge devices to cloud infrastructure to create intelligent, observable ecosystems.",
+          "Our engineering turns raw signals from the factory floor into actionable operational insight, giving teams real-time visibility into how their systems behave."
+        ]
+      },
+      {
+        "heading": "Production responsibility across the lifecycle",
+        "paras": [
+          "Manufacturing systems must perform reliably over years, not just at launch. We design and maintain platforms that evolve thoughtfully alongside the operations they support.",
+          "We maintain full production responsibility, supporting deployments and remaining accountable for the long-term consequences of technical decisions."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "sports-entertainment",
+    "title": "Sports & Entertainment",
+    "excerpts": "Engaging digital experiences connecting fans, players, and content.",
+    "contentBlocks": [
+      {
+        "heading": "Experiences that connect people to content",
+        "paras": [
+          "We create engaging digital experiences for sports and entertainment, connecting fans and players to the content and moments they care about across web, mobile, and connected platforms.",
+          "From real-time booking and performance feedback to coaching intelligence, our work brings together intuitive interfaces and the systems behind them."
+        ]
+      },
+      {
+        "heading": "Hardware and software, co-designed",
+        "paras": [
+          "We engineer complete products, from sensor telemetry and embedded hardware to the cloud analytics and AI assistants that make data useful for players and coaches.",
+          "Our systems are built to scale to thousands of simultaneous users while preserving the signal fidelity that performance analytics demand."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "hospitality-travel",
+    "title": "Hospitality & Travel",
+    "excerpts": "Digital platforms that coordinate pricing, inventory, and distribution for operators in the experience economy.",
+    "contentBlocks": [
+      {
+        "heading": "Coordinated revenue across fragmented tooling",
+        "paras": [
+          "We build platforms for hospitality and travel operators in the experience economy, where attractions, activities, and tours often run revenue operations across fragmented tools.",
+          "Our systems coordinate pricing, inventory, and distribution in real time, turning disconnected operational tasks into a unified, policy-safe revenue system."
+        ]
+      },
+      {
+        "heading": "Policy control without manual intervention",
+        "paras": [
+          "We preserve operator control through policy boundaries and override-capable workflows, enabling faster and more consistent decisioning across volatile demand.",
+          "The result is an operating foundation that supports both day-to-day execution and long-term optimization at scale."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "consumer-goods",
+    "title": "Consumer Goods & Services",
+    "excerpts": "Data-driven platforms and operational intelligence for consumer-facing businesses.",
+    "contentBlocks": [
+      {
+        "heading": "Intelligence that becomes repeatable field behavior",
+        "paras": [
+          "We engineer platforms for consumer goods and services businesses that operate across large networks of locations and field teams.",
+          "Our application layers convert analytics into governed, mobile-first workflows, so insight reliably becomes consistent action at the point of execution."
+        ]
+      },
+      {
+        "heading": "Usability in active environments, control at the core",
+        "paras": [
+          "These systems must be usable in busy store and field environments while preserving enterprise-grade control and traceability.",
+          "We embed governance patterns such as permissions, auditable actions, and controlled overrides directly into the experiences people use every day."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "software-platforms",
+    "title": "Software Platforms",
+    "excerpts": "Robust platform architectures using microservices, APIs, and systems designed for scale.",
+    "contentBlocks": [
+      {
+        "heading": "Platform architecture engineered for scale",
+        "paras": [
+          "We build robust platform architectures using microservices, APIs, and event-driven systems designed to scale with confidence.",
+          "Our work spans modular service architectures and governed decisioning frameworks that pair deterministic rules with AI-assisted recommendations."
+        ]
+      },
+      {
+        "heading": "Foundations that compound",
+        "paras": [
+          "We deliver platforms engineered for longevity and extensibility, so each capability builds on reusable foundations rather than one-off features.",
+          "This product-first approach gives software businesses a base that supports ongoing evolution and compounding leverage over time."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "healthcare",
+    "title": "Health Care",
+    "excerpts": "Compliant, secure platforms that scale with the business while preserving governance.",
+    "contentBlocks": [
+      {
+        "heading": "Launch speed without compliance debt",
+        "paras": [
+          "We engineer digital health platforms that combine consumer-grade mobile engagement with enterprise-grade compliance and governance.",
+          "Our work delivers immediate, launch-ready functionality while preserving the extensibility needed for future modules, integrations, and distribution partnerships."
+        ]
+      },
+      {
+        "heading": "Trust built into the architecture",
+        "paras": [
+          "We build on HIPAA-aligned secure service architectures, so innovation never comes at the expense of governance or patient trust.",
+          "The result is a platform business with a credible product and architecture base for enterprise conversations and iterative growth, rather than a one-off release."
+        ]
+      }
+    ]
+  }
+]
