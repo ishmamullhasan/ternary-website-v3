@@ -2,6 +2,7 @@ import type { Page } from '@/payload-types'
 
 import type { JSX } from 'react'
 
+import { ContentBlockComponent } from './Content/Component'
 import { CtaBlockComponent } from './Cta/Component'
 import { HeroBlockComponent } from './Hero/Component'
 
@@ -20,6 +21,8 @@ export function RenderBlocks({ blocks }: { blocks?: Page['layout'] }): JSX.Eleme
         switch (block.blockType) {
           case 'hero':
             return <HeroBlockComponent key={key} {...block} />
+          case 'content':
+            return <ContentBlockComponent key={key} {...block} />
           case 'ctaBlock':
             return <CtaBlockComponent key={key} {...block} />
           default:

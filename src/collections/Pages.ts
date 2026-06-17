@@ -2,6 +2,7 @@ import { type CollectionConfig, slugField } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { Content } from '@/blocks/Content/config'
 import { Cta } from '@/blocks/Cta/config'
 import { Hero } from '@/blocks/Hero/config'
 
@@ -33,7 +34,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       label: 'Layout',
       type: 'blocks',
-      blocks: [Hero, Cta],
+      blocks: [Hero, Content, Cta],
     },
   ],
 }

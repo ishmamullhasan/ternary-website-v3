@@ -187,7 +187,7 @@ export interface Page {
    */
   generateSlug?: boolean | null
   slug: string
-  layout?: (HeroBlock | CtaBlock)[] | null
+  layout?: (HeroBlock | ContentBlock | CtaBlock)[] | null
   updatedAt: string
   createdAt: string
   _status?: ('draft' | 'published') | null
@@ -323,6 +323,30 @@ export interface FolderInterface {
   folderType?: 'media'[] | null
   updatedAt: string
   createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentBlock".
+ */
+export interface ContentBlock {
+  content?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  id?: string | null
+  blockName?: string | null
+  blockType: 'content'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1373,6 +1397,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         hero?: T | HeroBlockSelect<T>
+        content?: T | ContentBlockSelect<T>
         ctaBlock?: T | CtaBlockSelect<T>
       }
   updatedAt?: T
@@ -1388,6 +1413,15 @@ export interface HeroBlockSelect<T extends boolean = true> {
   heading?: T
   description?: T
   image?: T
+  id?: T
+  blockName?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentBlock_select".
+ */
+export interface ContentBlockSelect<T extends boolean = true> {
+  content?: T
   id?: T
   blockName?: T
 }
