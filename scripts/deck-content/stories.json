@@ -1,0 +1,449 @@
+[
+  {
+    "slug": "counterfoil-continuum",
+    "title": "Counterfoil Continuum: An AI Revenue Operating Layer for the Experience Economy",
+    "excerpts": "Ternary built Continuum, a foundational RevOps layer that unifies pricing, inventory, and distribution decisions for experience-economy operators—turning fragmented, manual workflows into a coordinated, policy-safe revenue system.",
+    "contentBlocks": [
+      {
+        "heading": "Overview",
+        "paras": [
+          "Continuum is positioned as a foundational revenue-operations layer, not a standalone pricing feature. It unifies the decision-critical workflows that span pricing, inventory, and distribution, giving operators a single control plane over the levers that drive yield.",
+          "The platform is built to support heterogeneous operators while holding consistent governance and extensibility, so it adapts to each business without fragmenting the underlying model."
+        ]
+      },
+      {
+        "heading": "Client & Segment",
+        "paras": [
+          "The client serves operators in the experience economy—attractions, activities, and tours—who routinely run revenue operations across fragmented tooling.",
+          "This segment needs real-time coordination across channels and products without sacrificing policy control."
+        ]
+      },
+      {
+        "heading": "Problem",
+        "paras": [
+          "Operators faced fragmented decision paths, manual interventions, and limited visibility into how pricing and channel actions interacted with inventory constraints.",
+          "The absence of a unified control layer produced yield leakage, slower response times, and inconsistent operational execution."
+        ]
+      },
+      {
+        "heading": "Solution",
+        "paras": [
+          "Ternary implemented a modular, API-first, event-driven platform that pairs configurable business rules with model-assisted recommendations.",
+          "The architecture preserves operator control through explicit policy boundaries and override-capable workflows, enabling faster and more consistent decisioning without removing human judgment."
+        ]
+      },
+      {
+        "heading": "Impact",
+        "paras": [
+          "Continuum established a scalable operating foundation that connects previously siloed revenue levers and supports ongoing product evolution.",
+          "Public quantitative metrics are not disclosed, but the delivered platform materially improves operational coherence and readiness for optimization at scale."
+        ]
+      },
+      {
+        "heading": "Tech Stack",
+        "paras": [
+          "A modular service architecture with API-based integration interfaces and event-driven orchestration.",
+          "Governed decisioning that pairs deterministic rule frameworks with AI-assisted recommendations."
+        ]
+      },
+      {
+        "heading": "Why It Matters",
+        "paras": [
+          "In the experience economy, margin and growth depend on fast, policy-safe decisions across volatile demand.",
+          "Continuum turns disconnected operational tasks into a coordinated revenue system, creating a stronger base for both day-to-day execution and long-term strategic optimization."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "turfly",
+    "title": "Turfly: A Sports-Facility Booking Marketplace",
+    "excerpts": "Ternary built Turfly, a sports-facility booking marketplace that gives players instant confirmation and gives turf operators utilization optimization, dynamic pricing, and real-time demand visibility—cutting booking time by 60% with 85% mobile adoption in 30 days.",
+    "contentBlocks": [
+      {
+        "heading": "Overview",
+        "paras": [
+          "Turfly is a sports-facility booking marketplace that connects players seeking instant, confirmed bookings with turf operators who need to maximize utilization and revenue.",
+          "Ternary's role was to move the initiative from concept to a production marketplace—real-time availability, integrated payments, and dynamic pricing in a single platform built for Bangladesh's market conditions."
+        ]
+      },
+      {
+        "heading": "Client & Segment",
+        "paras": [
+          "A sports-facility marketplace serving two sides: players who need instant booking confirmation, and turf operators who require utilization optimization, dynamic pricing, and demand visibility."
+        ]
+      },
+      {
+        "heading": "Problem",
+        "paras": [
+          "Sports-facility booking in Bangladesh relied on fragmented manual processes, phone-based availability checks, and delayed confirmations.",
+          "Operators faced low utilization, revenue leakage from booking errors, and zero real-time demand visibility. The market needed instant confirmation, integrated payments across a fragmented payment landscape, and dynamic pricing that adjusts to demand patterns."
+        ]
+      },
+      {
+        "heading": "Solution",
+        "paras": [
+          "Ternary built the end-to-end platform: Flutter mobile apps for players, a React web portal for operators, and a FastAPI backend with AI-powered booking recommendations.",
+          "The platform includes smart search with ML-ranked results, real-time availability and one-tap booking, integrated multi-provider payments, dynamic pricing tied to demand, and real-time analytics dashboards for operators."
+        ]
+      },
+      {
+        "heading": "Impact",
+        "paras": [
+          "Turfly reduced booking time by 60% and achieved 95%+ policy compliance.",
+          "Mobile adoption reached 85% within 30 days, giving operators real-time spend and demand visibility, automated booking flows, and unified bookings, payments, and reconciliation."
+        ]
+      },
+      {
+        "heading": "Tech Stack",
+        "paras": [
+          "Flutter mobile apps, a React web portal, FastAPI backend services, PostgreSQL and Redis for data, and an ML recommendation engine for booking optimization.",
+          "AWS infrastructure with S3 storage, multi-provider payment integrations, and real-time analytics with Elasticsearch."
+        ]
+      },
+      {
+        "heading": "Why It Matters",
+        "paras": [
+          "AI and automation can transform operations while keeping operators in control.",
+          "Turfly aligns the player experience with operator economics, unlocking value from booking data, demand intelligence, and dynamic pricing as the marketplace scales."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "alley-analytix",
+    "title": "Alley Analytix: A Portable Coaching-Intelligence Platform for Performance Bowling",
+    "excerpts": "Ternary engineered Alley Analytix end to end—from custom finger-grip sensor hardware to a scalable cloud platform and AI coaching assistant—proving that portable analytics and analytical fidelity can coexist for competitive bowling.",
+    "contentBlocks": [
+      {
+        "heading": "Overview",
+        "paras": [
+          "Alley Analytix is a performance-intelligence platform that combines portable sensor technology with AI-driven coaching analytics for competitive bowling.",
+          "Ternary engineered the complete product—from prototype telemetry hardware to a production-ready system that serves players and coaches with real-time performance insights."
+        ]
+      },
+      {
+        "heading": "Client & Segment",
+        "paras": [
+          "Alley Analytix operates in sports-performance technology for competitive bowling.",
+          "The product serves two stakeholders: players who need real-time feedback on throw mechanics—speed, RPM, phase-state—and coaches who need longitudinal performance tracking and actionable training insights."
+        ]
+      },
+      {
+        "heading": "Problem",
+        "paras": [
+          "Bowling analytics relied on expensive fixed infrastructure, limiting accessibility. Players and coaches needed performance data without prohibitive costs or stationary-system constraints.",
+          "Existing solutions forced a trade-off between affordability and analytical fidelity. The market needed portable technology that preserves signal quality while delivering coaching intelligence—not just raw telemetry."
+        ]
+      },
+      {
+        "heading": "Solution",
+        "paras": [
+          "Ternary built the end-to-end platform: purpose-built finger-grip hardware, real-time sensor processing for motion analytics, cloud infrastructure for high-concurrency ingestion, and coaching dashboards for longitudinal tracking.",
+          "A context-aware AI assistant translates raw data into coaching recommendations. The system includes OTA firmware updates and scalable analytics supporting thousands of simultaneous players."
+        ]
+      },
+      {
+        "heading": "Impact",
+        "paras": [
+          "Alley Analytix shifts bowling analytics from fixed installations to portable coaching intelligence, using miniaturized finger-grip hardware that preserves signal fidelity for longitudinal tracking.",
+          "An AI assistant provides context-aware coaching support, all on a scalable cloud architecture built for growth."
+        ]
+      },
+      {
+        "heading": "Tech Stack",
+        "paras": [
+          "Custom embedded hardware (a finger-grip sensor), real-time motion processing, cloud data ingestion, and coaching dashboards.",
+          "An AI assistant, OTA firmware updates, a scalable analytics platform, and mobile and web interfaces."
+        ]
+      },
+      {
+        "heading": "Why It Matters",
+        "paras": [
+          "Alley Analytix combines co-designed hardware and intelligent software to deliver accessible, precise performance analytics for a niche sport.",
+          "It demonstrates that portability and analytical accuracy are mutually achievable—paving the way for multi-sport expansion and richer coaching data."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "flex5",
+    "title": "Flex5 by Reality Meets Science: A HIPAA-Grade Digital Health Platform Launch",
+    "excerpts": "Ternary moved Reality Meets Science's Flex5 from planning to a launch-ready digital health platform—pairing consumer-grade mobile engagement with HIPAA-aligned governance and an extensible AI orchestration layer.",
+    "contentBlocks": [
+      {
+        "heading": "Overview",
+        "paras": [
+          "Flex5 is a scalable health and lifestyle platform that combines consumer-grade mobile engagement with enterprise-grade compliance and governance.",
+          "Ternary's role was to move the initiative from planning into a built product platform—not just a prototype assistant."
+        ]
+      },
+      {
+        "heading": "Client & Segment",
+        "paras": [
+          "Reality Meets Science operates in digital health and lifestyle technology, with both direct-to-user and enterprise commercialization goals.",
+          "The product had to satisfy two audiences at once: users who expect intuitive daily guidance, and enterprise stakeholders who require HIPAA-aligned operational rigor."
+        ]
+      },
+      {
+        "heading": "Problem",
+        "paras": [
+          "RMS had a strong product vision and clear market intent, but needed a production-capable platform that could launch quickly without accruing compliance or architecture debt.",
+          "The challenge was to deliver immediate functionality while preserving extensibility for future modules, integrations, and distribution partnerships."
+        ]
+      },
+      {
+        "heading": "Solution",
+        "paras": [
+          "Ternary built the application and platform layer end to end: a mobile-first user experience, secure backend services, and an extensible AI orchestration layer.",
+          "The first shipped capabilities included AI-guided coaching workflows and personalized engagement automation informed by behavior and account context, all implemented on reusable platform foundations."
+        ]
+      },
+      {
+        "heading": "Impact",
+        "paras": [
+          "The engagement converted strategy into a launch-ready system with clear expansion paths. Flex5 now has a credible product and architecture base for enterprise conversations, partner development, and iterative feature growth.",
+          "Public quantitative KPIs are not disclosed, so impact is described in terms of delivered capability and market readiness."
+        ]
+      },
+      {
+        "heading": "Tech Stack",
+        "paras": [
+          "A mobile application layer, a HIPAA-aligned secure service architecture, and a modular AI application and orchestration layer.",
+          "The orchestration layer is designed for controlled, scalable rollout of additional coaching and engagement functions."
+        ]
+      },
+      {
+        "heading": "Why It Matters",
+        "paras": [
+          "This case demonstrates disciplined digital health execution: launch speed without sacrificing trust, and innovation without sacrificing governance.",
+          "Flex5 is positioned as a platform business with compounding product leverage rather than a one-off feature release."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "farogl-odoo-erp",
+    "title": "FAROGL: Re-architecting Enterprise Operations With an Odoo-Centered ERP Program",
+    "excerpts": "Ternary delivered a phased, Odoo-centered ERP program for an oil-and-gas operator—treating ERP as an operating-model transformation that codifies process controls, governance, and consistency across critical business functions.",
+    "contentBlocks": [
+      {
+        "heading": "Overview",
+        "paras": [
+          "This engagement positioned ERP as an enterprise operating-model transformation, not a narrow software installation.",
+          "The work focused on codifying process controls and operational consistency across critical business functions."
+        ]
+      },
+      {
+        "heading": "Client & Segment",
+        "paras": [
+          "The client, FAROGL, operates in oil and gas, where financial accuracy, approval rigor, and cross-functional process traceability are core operating requirements.",
+          "The segment demands systems that can scale without weakening governance."
+        ]
+      },
+      {
+        "heading": "Problem",
+        "paras": [
+          "FAROGL faced fragmented workflows and inconsistent process enforcement across key operational areas.",
+          "Manual handoffs and disconnected practices increased reconciliation effort, slowed cycle times, and constrained enterprise-level visibility."
+        ]
+      },
+      {
+        "heading": "Solution",
+        "paras": [
+          "Ternary executed a phased Odoo program beginning with structured requirements discovery, management alignment, and process-baseline definition.",
+          "Module planning and implementation were mapped to validated workflows, with selective configuration and controlled extension to preserve maintainability and adoption quality."
+        ]
+      },
+      {
+        "heading": "Impact",
+        "paras": [
+          "The program established a coherent ERP foundation and a lower-risk path for enterprise-wide standardization.",
+          "Public quantitative KPIs are not disclosed, but the delivered approach materially improves process clarity, governance confidence, and readiness for broader digital scaling."
+        ]
+      },
+      {
+        "heading": "Tech Stack",
+        "paras": [
+          "Centered on Odoo with a phased delivery model.",
+          "The model combines requirements engineering, process mapping, backlog-driven implementation, and readiness validation."
+        ]
+      },
+      {
+        "heading": "Why It Matters",
+        "paras": [
+          "In control-sensitive industries, ERP value comes from reliable process behavior and sustained adoption—not feature volume.",
+          "This implementation created the operational backbone required for disciplined execution and future transformation."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "doyouwork",
+    "title": "DoYouWork: Transforming Field-Service Operations With an Integrated Employee Platform",
+    "excerpts": "Ternary built DoYouWork, a unified mobile and admin platform for Amistee's field-service operations—consolidating scheduling, asset management, and approvals into a single, multi-tenant, real-time system that replaces fragmented tools and paperwork.",
+    "contentBlocks": [
+      {
+        "heading": "Overview",
+        "paras": [
+          "DoYouWork is a unified mobile and admin platform built to replace fragmented tools and manual processes in field-service operations.",
+          "Ternary's role was to consolidate scheduling, asset management, and workflow approvals into a scalable, single-source system."
+        ]
+      },
+      {
+        "heading": "Client & Segment",
+        "paras": [
+          "Amistee Air Duct, Insulation & Cleaning—Novi, Michigan; field service.",
+          "The client needed a solution that serves both field employees requiring self-service tools and managers needing centralized, real-time operational visibility."
+        ]
+      },
+      {
+        "heading": "Problem",
+        "paras": [
+          "Field-service managers lacked a real-time, unified view of daily operations—schedules, vehicle assignments, and approval statuses.",
+          "Employees had no self-service for essential requests such as expenses, spiffs, time-off, and tools or clothing, relying instead on slow paperwork."
+        ]
+      },
+      {
+        "heading": "Solution",
+        "paras": [
+          "Ternary delivered a three-app ecosystem: a native-quality mobile employee app built with Capacitor, a web admin portal for managers, and a scalable FastAPI backend.",
+          "Features include role-based access control, location-based data scoping, multi-tenant architecture, real-time WebSocket notifications, and secure AWS S3 integration for approval workflows."
+        ]
+      },
+      {
+        "heading": "Impact",
+        "paras": [
+          "The platform launched a unified, mobile-first digital system, replacing manual processes with real-time operational visibility and location-based manager approvals.",
+          "With robust RBAC and multi-tenancy, the self-service solution provides a scalable, extensible foundation for future growth—particularly for field technicians."
+        ]
+      },
+      {
+        "heading": "Tech Stack",
+        "paras": [
+          "React 19 for the web portal, Capacitor for the mobile application, and FastAPI for the backend API.",
+          "PostgreSQL as the primary database, Redis for caching and sessions, and AWS for hosting and file storage."
+        ]
+      },
+      {
+        "heading": "Why It Matters",
+        "paras": [
+          "Platform consolidation in field service immediately delivers real-time operational visibility and workflow efficiency.",
+          "It replaces fragmented tools and paper-based processes with a single, accountable source of truth."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "hissho-sushiops360",
+    "title": "Hissho SushiOps360: An Application Layer for AI-Enabled Franchise Operations",
+    "excerpts": "Ternary built the governed, mobile-first application layer between Hissho's franchise users and its AI/data platform—turning intelligence into repeatable, accountable field execution across thousands of locations.",
+    "contentBlocks": [
+      {
+        "heading": "Overview",
+        "paras": [
+          "Ternary built the application layer that sits between end users and Hissho's broader AI and data platform ecosystem.",
+          "The emphasis was on operationalizing intelligence through governed, mobile-first workflows rather than presenting raw analytics."
+        ]
+      },
+      {
+        "heading": "Client & Segment",
+        "paras": [
+          "Hissho supports a large franchise network and regional field teams that require consistent execution across thousands of locations.",
+          "The segment demands systems that combine usability in active store environments with enterprise-grade control and traceability."
+        ]
+      },
+      {
+        "heading": "Problem",
+        "paras": [
+          "The core challenge was the last-mile gap between insight generation and day-to-day action.",
+          "Without a coherent application plane, franchisees and regionals face fragmented tools, inconsistent decision-making, and limited feedback loops for continuous improvement."
+        ]
+      },
+      {
+        "heading": "Solution",
+        "paras": [
+          "Ternary implemented role-aware user experiences for production planning, dashboards, ordering support, information retrieval, regional coaching insights, and communication workflows.",
+          "The application layer integrated with required enterprise systems and embedded governance patterns such as permissions, auditable actions, and controlled overrides."
+        ]
+      },
+      {
+        "heading": "Impact",
+        "paras": [
+          "The delivered layer creates a practical execution surface that helps users act on recommendations faster and more consistently.",
+          "Program-level KPI targets are defined in requirements, but publicly verified realized metrics are not disclosed in the available source material."
+        ]
+      },
+      {
+        "heading": "Tech Stack",
+        "paras": [
+          "Mobile-first app delivery with RBAC-driven workflow orchestration.",
+          "Secure integration touchpoints across core systems, plus app-layer governance controls for auditability and operational reliability."
+        ]
+      },
+      {
+        "heading": "Why It Matters",
+        "paras": [
+          "In franchise operations, value is created when intelligence becomes repeatable field behavior.",
+          "This application layer is the bridge that converts AI potential into accountable, daily execution."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "lankabangla-securities",
+    "title": "LankaBangla Securities: An Air-Gapped LLM Application Layer",
+    "excerpts": "Ternary deployed an air-gapped open-source LLM environment for a capital-markets firm and built the extensible application layer over it—delivering an AI assistant for dealer-brokers and behavior-aware retail marketing with control at the infrastructure boundary.",
+    "contentBlocks": [
+      {
+        "heading": "Overview",
+        "paras": [
+          "Ternary's mandate was to deploy an air-gapped open-source LLM environment and build the extensible application layer that mediates end-user interaction with AI capabilities.",
+          "The engagement was designed to deliver institutional control and practical workflow value at the same time."
+        ]
+      },
+      {
+        "heading": "Client & Segment",
+        "paras": [
+          "The client operates in capital markets, where data governance and execution speed are both critical.",
+          "This segment requires AI systems that are secure by architecture and directly useful in high-tempo operational decisions."
+        ]
+      },
+      {
+        "heading": "Problem",
+        "paras": [
+          "Dealer-brokers needed faster access to synthesized information, while retail outreach required more relevance than generic campaign logic.",
+          "At the same time, AI deployment had to avoid uncontrolled data exposure and remain compatible with enterprise governance expectations."
+        ]
+      },
+      {
+        "heading": "Solution",
+        "paras": [
+          "Ternary implemented a governed application layer over an air-gapped open-source LLM and shipped two initial functions.",
+          "The first is an AI assistant for dealer-brokers to retrieve and synthesize information quickly; the second is automated marketing for retail traders informed by trade behavior and account context."
+        ]
+      },
+      {
+        "heading": "Impact",
+        "paras": [
+          "The result is a secure, extensible AI foundation with immediate business-facing functionality across brokerage productivity and retail engagement workflows.",
+          "Public quantitative impact metrics are not disclosed in the available source material."
+        ]
+      },
+      {
+        "heading": "Tech Stack",
+        "paras": [
+          "An air-gapped open-source LLM runtime.",
+          "A reusable application layer for role-aware AI workflows and module-based functional expansion."
+        ]
+      },
+      {
+        "heading": "Why It Matters",
+        "paras": [
+          "This implementation shows how financial institutions can operationalize AI safely.",
+          "Control sits at the infrastructure boundary, usefulness at the workflow boundary, and extensibility at the platform boundary."
+        ]
+      }
+    ]
+  }
+]

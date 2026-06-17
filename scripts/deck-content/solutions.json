@@ -1,0 +1,65 @@
+[
+  {
+    "slug": "product-development",
+    "title": "Product Development",
+    "excerpts": "End-to-end product engineering from conception to scale. We design, build, and launch digital products that users love and businesses depend on.",
+    "contentBlocks": [
+      {
+        "heading": "From concept to launch",
+        "paras": [
+          "We provide end-to-end product engineering, from conception to scale. We design, build, and launch digital products that users love and businesses depend on.",
+          "Our holistic approach creates robust, market-integrated solutions: indispensable applications, platforms, and services that drive business growth and efficiency."
+        ]
+      },
+      {
+        "heading": "Built for longevity",
+        "paras": [
+          "With a product-first mindset, we deliver solutions engineered for longevity, superior performance, and measurable business impact.",
+          "We cover the full product lifecycle, including strategy (vision, research, roadmaps, and value proposition) and design (intuitive UI/UX and user testing), through to engineering and launch."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "enterprise-modernization",
+    "title": "Enterprise Modernization",
+    "excerpts": "Modernizing legacy systems for the digital age with cloud-native architectures, modern data platforms, and scalable operations.",
+    "contentBlocks": [
+      {
+        "heading": "Legacy to cloud",
+        "paras": [
+          "We modernize legacy systems for the digital age, delivering cloud-native architectures, modern data platforms, and scalable operations.",
+          "We help organizations move from fragmented, legacy, or experimental technology environments to modern, resilient platforms that scale with confidence."
+        ]
+      },
+      {
+        "heading": "Innovation balanced with pragmatism",
+        "paras": [
+          "Our approach balances innovation with pragmatism, guiding the move from monolithic to microservices and from on-premise to cloud.",
+          "We lead organizations through complex technical transitions, ensuring transformations deliver measurable value and long-term success."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "engineering-augmentation",
+    "title": "Engineering Augmentation",
+    "excerpts": "Extending your team with specialized talent. Experienced engineers who integrate seamlessly into your workflows and culture.",
+    "contentBlocks": [
+      {
+        "heading": "Specialized talent, seamlessly integrated",
+        "paras": [
+          "We extend your team with specialized talent: experienced engineers who integrate seamlessly into your existing workflows and culture.",
+          "Whether you need to fill a skill gap or scale capacity, our engineers operate as part of your team rather than an outside vendor."
+        ]
+      },
+      {
+        "heading": "Capability that scales with confidence",
+        "paras": [
+          "We exist to help organizations move from fragmented, legacy, or experimental technology environments to modern, resilient platforms that scale with confidence.",
+          "Our engineers bring institutional engineering standards and disciplined execution to every team they join, so added capacity also raises the quality bar."
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,106 @@
+{
+  "hero": {
+    "heading": "Let's talk about the system you need built",
+    "description": "Whether you're launching a product, modernizing a legacy platform, or extending your engineering team, we respond directly and move with intent. Tell us what you're building and we'll route you to the right people.",
+    "button_1": { "label": "Email us", "link": "mailto:hello@ternary.solutions" },
+    "button_2": { "label": "Book a call", "link": "#" }
+  },
+  "stats": [
+    { "value": "2", "label": "Delivery hubs", "detail": "New York · Dhaka" },
+    { "value": "1 business day", "label": "Typical reply time", "detail": "On new inquiries" },
+    { "value": "8", "label": "Production case studies", "detail": "Across finance, sports, health, field service" },
+    { "value": "3", "label": "Engagement models", "detail": "Frame™ · Flow™ · Orchestra™" }
+  ],
+  "routes": {
+    "heading": "Reach the right team",
+    "description": "Pick the path that fits your need. Every message reaches a person who can act on it, not a queue.",
+    "items": [
+      {
+        "title": "New business",
+        "description": "You have a product to build, a platform to modernize, or a system that needs an accountable engineering partner. Start here and we'll scope the work together.",
+        "email": "hello@ternary.solutions",
+        "replyWindow": "1 business day",
+        "cta": "Start a conversation",
+        "info": false,
+        "bestFor": [
+          { "item": "New product engineering, from MVP to scale" },
+          { "item": "Legacy modernization and cloud transformation" },
+          { "item": "AI and data platform builds" }
+        ]
+      },
+      {
+        "title": "Partnerships",
+        "description": "Agencies, technology vendors, and firms looking to co-deliver or extend their capability with a centralized engineering institution.",
+        "email": "hello@ternary.solutions",
+        "replyWindow": "2 business days",
+        "cta": "Explore a partnership",
+        "info": false,
+        "bestFor": [
+          { "item": "Co-delivery and white-label engineering" },
+          { "item": "Technology and integration partners" },
+          { "item": "Referral and channel relationships" }
+        ]
+      },
+      {
+        "title": "Careers",
+        "description": "Engineers and operators who want production responsibility, real mentorship, and a clear path to grow. See where you fit.",
+        "email": "hello@ternary.solutions",
+        "replyWindow": "1 week",
+        "cta": "View open roles",
+        "info": false,
+        "bestFor": [
+          { "item": "Software engineers at every level" },
+          { "item": "Designers, analysts, and operators" },
+          { "item": "Internship and early-career talent" }
+        ]
+      },
+      {
+        "title": "General inquiries",
+        "description": "Press, vendors, or anything that doesn't fit the paths above. We'll point you in the right direction.",
+        "email": "hello@ternary.solutions",
+        "replyWindow": "2 business days",
+        "cta": "Send a message",
+        "info": true,
+        "bestFor": [
+          { "item": "Press and media" },
+          { "item": "Vendor and supplier inquiries" },
+          { "item": "Everything else" }
+        ]
+      }
+    ]
+  },
+  "offices": {
+    "heading": "Where we work",
+    "description": "A New York headquarters and a Dhaka delivery hub, operating as one engineering institution with shared standards.",
+    "items": [
+      {
+        "city": "New York",
+        "tag": "Headquarters",
+        "timezone": "EST",
+        "hours": "Mon–Fri, 9:00–18:00",
+        "email": "hello@ternary.solutions",
+        "phone": "+1 (800) 123-4567",
+        "address": [{ "line": "New York, NY" }]
+      },
+      {
+        "city": "Dhaka",
+        "tag": "Delivery hub",
+        "timezone": "GMT+6",
+        "hours": "Sun–Thu, 10:00–19:00",
+        "email": "hello@ternary.solutions",
+        "phone": "",
+        "address": [{ "line": "Dhaka, Bangladesh" }]
+      }
+    ]
+  },
+  "form": {
+    "heading": "Tell us what you're building",
+    "description": "Share a few details about your project, timeline, and where you are today. The more context you give us, the faster we can point you to the right team and a useful first conversation."
+  },
+  "cta": {
+    "heading": "Prefer to see the work first?",
+    "description": "Read how we've shipped production systems across finance, sports, digital health, and field service, then come back and tell us about yours.",
+    "button_1": { "label": "Back to home", "link": "/" },
+    "button_2": { "label": "Read the case studies", "link": "/stories" }
+  }
+}

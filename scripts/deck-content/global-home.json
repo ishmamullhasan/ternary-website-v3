@@ -1,0 +1,267 @@
+{
+  "description": {
+    "contentBlocks": [
+      {
+        "paras": [
+          "Ternary is an engineering institution. We build digital systems for organizations scaling operations and transforming infrastructure—from concepts to launch, legacy to cloud.",
+          "Headquartered in New York with a delivery hub in Dhaka, we operate as technical partners responsible for the systems we design, deliver, and maintain over time. This is software development approached as long-term stewardship: built not just to launch, but to perform reliably and evolve thoughtfully."
+        ]
+      }
+    ]
+  },
+  "about": {
+    "heading": "Engineering for enduring impact",
+    "description": "We establish an engineering partnership model rooted in technical excellence and sustained accountability, where success is measured by durability and operational impact over years, not solely by launch velocity.",
+    "items": {
+      "_refsPoly": [
+        {
+          "collection": "capability",
+          "slug": "capability-title-"
+        },
+        {
+          "collection": "solution",
+          "slug": "solution-title"
+        },
+        {
+          "collection": "industry",
+          "slug": "title-1"
+        },
+        {
+          "collection": "model",
+          "slug": "title-1---copy"
+        },
+        {
+          "collection": "model",
+          "slug": "title-1---copy---copy---copy"
+        },
+        {
+          "collection": "capability",
+          "slug": "capability-title----copy---copy---copy"
+        },
+        {
+          "collection": "capability",
+          "slug": "capability-title----copy---copy---copy---copy"
+        },
+        {
+          "collection": "capability",
+          "slug": "amistee"
+        }
+      ]
+    },
+    "organizations": {
+      "heading": "Trusted by operators across the experience, financial, and industrial economies",
+      "organization": [
+        {
+          "name": "Counterfoil",
+          "link": "#"
+        },
+        {
+          "name": "Turfly",
+          "link": "#"
+        },
+        {
+          "name": "Alley Analytix",
+          "link": "#"
+        },
+        {
+          "name": "Amistee",
+          "link": "#"
+        },
+        {
+          "name": "Hissho Sushi",
+          "link": "#"
+        },
+        {
+          "name": "LankaBangla Securities",
+          "link": "#"
+        }
+      ]
+    },
+    "bottomDescription": "Our global delivery hub acts as a unified center of excellence—creating operational continuity, preserving institutional knowledge, and establishing scalable execution capacity across every client engagement."
+  },
+  "solutions": {
+    "heading": "Concepts to launch, legacy to cloud",
+    "description": "Three ways we engage, one standard of ownership. We design and build new products, modernize the systems organizations have outgrown, and extend established teams with senior engineering talent.",
+    "items": {
+      "_refs": {
+        "collection": "solution",
+        "slugs": [
+          "product-development",
+          "enterprise-modernization",
+          "engineering-augmentation"
+        ]
+      }
+    }
+  },
+  "capabilities": {
+    "heading": "Capabilities",
+    "description": "Data and analytics, artificial intelligence, cloud transformation, digital experiences, platforms, and the Internet of Things. We build modern technical solutions that drive measurable business value.",
+    "capability": {
+      "_refs": {
+        "collection": "capability",
+        "slugs": [
+          "data-analytics",
+          "artificial-intelligence",
+          "cloud-transformation",
+          "digital-experiences",
+          "platforms",
+          "internet-of-things"
+        ]
+      }
+    },
+    "heading_2": "Leadership and performance culture",
+    "description_2": "Our teams operate under experienced technical leadership with clearly defined expectations around accountability, code quality, professional growth, and delivery outcomes."
+  },
+  "industries": {
+    "heading": "Domain expertise across every industry",
+    "description": "We serve banking and capital markets, financial services, advanced manufacturing, sports, entertainment, hospitality, travel, consumer goods, and technology platforms worldwide.",
+    "industry": {
+      "_refs": {
+        "collection": "industry",
+        "slugs": [
+          "banking-capital-markets",
+          "financial-services-insurance",
+          "advanced-manufacturing",
+          "sports-entertainment",
+          "hospitality-travel",
+          "consumer-goods",
+          "software-platforms",
+          "healthcare"
+        ]
+      }
+    }
+  },
+  "scales": {
+    "heading": "Scales served",
+    "description": "From early-stage startups building MVPs to scale-ups expanding infrastructure, mid-market firms modernizing systems, and enterprises transforming operations—plus government and defense.",
+    "scale": {
+      "_refs": {
+        "collection": "scale",
+        "slugs": [
+          "startups",
+          "scale-ups",
+          "mid-market",
+          "enterprise",
+          "government-defense"
+        ]
+      }
+    }
+  },
+  "engagement": {
+    "heading": "Predictive delivery, total control",
+    "description": "Frame™ for fixed-scope projects. Flow™ for continuous delivery and ongoing partnerships. Orchestra™ for on-demand talent augmentation. Three engagement models, one commitment to outcomes.",
+    "model": {
+      "_refs": {
+        "collection": "model",
+        "slugs": [
+          "frame",
+          "flow",
+          "orchestra"
+        ]
+      }
+    }
+  },
+  "globalDelivery": {
+    "heading": "Secure global delivery hubs",
+    "description": "New York headquarters and Dhaka delivery hub. Distributed teams with centralized quality standards. ISO 9001 and ISO 27001 certified, SOC 2 compliant, with rigorous processes ensuring excellence.",
+    "title": "Our global delivery hub",
+    "excerpt": "A centralized engineering institution designed to develop talent, scale execution capability, and sustain quality standards over time. We combine structured talent development, experienced technical leadership, disciplined execution frameworks, and long-term operational infrastructure to deliver with consistency at scale."
+  },
+  "processes": {
+    "heading": "How we operate",
+    "description": "A centralized institution built for long-term quality—four foundations that let us deliver complex, mission-critical systems with consistency.",
+    "process": [
+      {
+        "title": "Centralized engineering capability",
+        "description": {
+          "contentBlocks": [
+            {
+              "paras": [
+                "A unified center of engineering excellence that creates operational continuity, preserves institutional knowledge, and establishes scalable execution capacity across teams and client engagements."
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "title": "Talent formation by design",
+        "description": {
+          "contentBlocks": [
+            {
+              "paras": [
+                "We identify high-potential engineering talent early and systematically develop capabilities through rigorous technical training, structured mentorship, and engineering standards aligned to our long-term quality requirements."
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "title": "Leadership and performance culture",
+        "description": {
+          "contentBlocks": [
+            {
+              "paras": [
+                "Our teams operate under experienced technical leadership with clearly defined expectations around accountability, code quality, professional growth, and delivery outcomes."
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "title": "World-class talent infrastructure",
+        "description": {
+          "contentBlocks": [
+            {
+              "paras": [
+                "We invest in the foundational systems of durable engineering excellence: talent acquisition, technical training programs, delivery governance, career progression frameworks, and leadership development."
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "title": "Production responsibility across the lifecycle",
+        "description": {
+          "contentBlocks": [
+            {
+              "paras": [
+                "We maintain full production responsibility across the entire system lifecycle—actively supporting deployments and remaining accountable for sustained performance long after launch."
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "team": {
+    "heading": "Unified collective",
+    "description": "From cloud-native architecture to RevOps optimization, our team operates with total ownership. We ship the technical and commercial infrastructure that powers modern enterprise.",
+    "members": {
+      "_refs": {
+        "collection": "team",
+        "slugs": [
+          "Shadman Shakib",
+          "Sajid Islam",
+          "Shakil Ahmed",
+          "Nahid Reza",
+          "Ashraful Alam Shemul",
+          "Israt Zahin",
+          "Md. Shahriar Hasan",
+          "Farzana Rahman Supti",
+          "Raufur Mukit Aman",
+          "Afra Anan",
+          "Gazee Muzeeru",
+          "Sakib Hossain",
+          "Alimus Shams",
+          "Ariba Chowdhury",
+          "Samin Luban",
+          "Kazi Ishmam Ull Hasan"
+        ]
+      }
+    }
+  },
+  "opportunities": {
+    "heading": "Construct the future",
+    "description": "Technical execution aligned with business objectives—partnerships that extend beyond delivery into sustained development and support. If you are building or modernizing systems that have to last, let's talk."
+  }
+}

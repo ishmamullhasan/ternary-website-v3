@@ -1,0 +1,98 @@
+[
+  {
+    "name": "Shadman Shakib",
+    "position": "Founder",
+    "excerpt": "Sets the direction and standards of the institution.",
+    "description": "As Founder, Shadman sets Ternary's direction, standards, and the way it carries production responsibility from New York through the Dhaka delivery hub. He holds the line on ownership, transparency, and engineering quality across every engagement."
+  },
+  {
+    "name": "Sajid Islam",
+    "position": "Chief Revenue Officer",
+    "excerpt": "Aligns growth with delivery we can stand behind.",
+    "description": "As Chief Revenue Officer, Sajid owns how Ternary grows — shaping engagements, partnerships, and commercial strategy across the New York and Dhaka operations. He keeps revenue tied to work the engineering teams can deliver and stand behind."
+  },
+  {
+    "name": "Shakil Ahmed",
+    "position": "Chief Technology Officer",
+    "excerpt": "Owns the technical bar across every build.",
+    "description": "As Chief Technology Officer, Shakil sets Ternary's technical direction and the engineering standards that hold across the product lifecycle. He guides architecture and platform decisions so teams in New York and Dhaka build systems that last in production."
+  },
+  {
+    "name": "Nahid Reza",
+    "position": "Head of Engineering",
+    "excerpt": "Runs delivery across the engineering teams.",
+    "description": "As Head of Engineering, Nahid leads the delivery teams and the practices that keep work moving with low noise and clear ownership. He makes sure engagements ship on a steady cadence and that responsibility for production is held end to end."
+  },
+  {
+    "name": "Ashraful Alam Shemul",
+    "position": "Software Engineer",
+    "excerpt": "Builds and ships production software.",
+    "description": "As a Software Engineer, Ashraful designs, builds, and ships software across Ternary's client engagements. He carries features from implementation through to production, staying close to the systems he owns."
+  },
+  {
+    "name": "Israt Zahin",
+    "position": "Software Engineer",
+    "excerpt": "Builds and ships production software.",
+    "description": "As a Software Engineer, Israt designs, builds, and ships software across Ternary's client engagements. She takes work from implementation through to production and stays accountable for how it runs."
+  },
+  {
+    "name": "Md. Shahriar Hasan",
+    "position": "Software Engineer",
+    "excerpt": "Builds and ships production software.",
+    "description": "As a Software Engineer, Shahriar designs, builds, and ships software across Ternary's client engagements. He owns features through the full lifecycle, from first commit to running in production."
+  },
+  {
+    "name": "Farzana Rahman Supti",
+    "position": "Software Engineer",
+    "excerpt": "Builds and ships production software.",
+    "description": "As a Software Engineer, Farzana designs, builds, and ships software across Ternary's client engagements. She carries work from implementation into production and stays close to its real-world impact."
+  },
+  {
+    "name": "Raufur Mukit Aman",
+    "position": "Software Engineer",
+    "excerpt": "Builds and ships production software.",
+    "description": "As a Software Engineer, Raufur designs, builds, and ships software across Ternary's client engagements. He owns features end to end, holding responsibility for how they behave in production."
+  },
+  {
+    "name": "Afra Anan",
+    "position": "Software Engineer",
+    "excerpt": "Builds and ships production software.",
+    "description": "As a Software Engineer, Afra designs, builds, and ships software across Ternary's client engagements. She takes features from implementation through to production and stays accountable for their reliability."
+  },
+  {
+    "name": "Gazee Muzeeru",
+    "position": "Associate Legal Counsel",
+    "excerpt": "Keeps engagements clear and well-governed.",
+    "description": "As Associate Legal Counsel, Gazee supports Ternary's contracts, compliance, and the legal footing of its engagements across New York and Dhaka. He keeps agreements clear and the institution on solid ground."
+  },
+  {
+    "name": "Sakib Hossain",
+    "position": "Associate Facilities Manager",
+    "excerpt": "Keeps the Dhaka delivery hub running.",
+    "description": "As Associate Facilities Manager, Sakib keeps Ternary's workspace and delivery hub running smoothly day to day. He looks after the environment that lets the engineering teams stay focused on their work."
+  },
+  {
+    "name": "Alimus Shams",
+    "position": "Partnerships Manager",
+    "excerpt": "Builds and tends Ternary's partnerships.",
+    "description": "As Partnerships Manager, Alimus develops and maintains the relationships that extend Ternary's reach across markets. He keeps partnerships aligned with how the engineering teams actually deliver."
+  },
+  {
+    "name": "Ariba Chowdhury",
+    "position": "Marketing Specialist",
+    "excerpt": "Tells the story of the work plainly.",
+    "description": "As a Marketing Specialist, Ariba shapes how Ternary presents its work and its engineering institution to the world. She keeps the messaging clear, accurate, and grounded in what the teams actually build."
+  },
+  {
+    "name": "Samin Luban",
+    "position": "Business Analyst",
+    "excerpt": "Turns client needs into clear requirements.",
+    "description": "As a Business Analyst, Samin translates client needs into clear requirements the engineering teams can build against. He keeps the work close to the users and the impact it is meant to have."
+  },
+  {
+    "name": "Kazi Ishmam Ull Hasan",
+    "position": "Product Designer",
+    "excerpt": "Designs the experiences users touch.",
+    "description": "As a Product Designer, Ishmam shapes the interfaces and experiences across Ternary's product engagements. He keeps the design close to real users and in step with what the engineering teams ship."
+  }
+]

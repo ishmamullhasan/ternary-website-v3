@@ -1,0 +1,130 @@
+{
+  "heroSection": {
+    "heading": "Domain expertise across every industry",
+    "description": "We serve banking and capital markets, financial services, advanced manufacturing, sports, entertainment, hospitality, travel, consumer goods, and technology platforms worldwide. We build with the context of the operations our systems serve."
+  },
+  "industryList": {
+    "heading": "Applied expertise",
+    "description": "Across regulated finance, industrial operations, consumer experiences, and software platforms, we bring engineering judgment shaped by the realities of each domain.",
+    "industry": {
+      "_refs": {
+        "collection": "industry",
+        "slugs": [
+          "banking-capital-markets",
+          "financial-services-insurance",
+          "advanced-manufacturing",
+          "sports-entertainment",
+          "hospitality-travel",
+          "consumer-goods",
+          "software-platforms",
+          "healthcare"
+        ]
+      }
+    }
+  },
+  "details": {
+    "heading": "Built with proximity to your operations",
+    "description": "Domain expertise is not industry trivia. It is staying close enough to real workflows to make sound engineering decisions.",
+    "content": {
+      "contentBlocks": [
+        {
+          "paras": [
+            "We stay close to the users and real-world workflows our systems serve. By maintaining proximity to your business operations, we build with critical context, make better decisions, and deliver work that has lasting operational impact.",
+            "That proximity is what lets us move from generic software to systems that fit the controls, constraints, and tempo of your industry, whether that means yield decisions in the experience economy, approval rigor in oil and gas, or HIPAA-aligned governance in digital health."
+          ]
+        }
+      ]
+    }
+  },
+  "perIndustryPanels": {
+    "heading": "Representative industries",
+    "description": "A closer look at sectors where we have shipped production systems and carried responsibility for how they perform.",
+    "items": [
+      {
+        "industry": {"_ref": {"collection": "industry", "slug": "banking-capital-markets"}},
+        "title": "Banking & Capital Markets",
+        "description": "Secure, governed platforms for financial institutions where data control and execution speed both matter, including air-gapped AI application layers for high-tempo decisions.",
+        "tags": [
+          {"name": "Data governance"},
+          {"name": "Secure AI"},
+          {"name": "Compliance"}
+        ]
+      },
+      {
+        "industry": {"_ref": {"collection": "industry", "slug": "financial-services-insurance"}},
+        "title": "Financial Services & Insurance",
+        "description": "Resilient, compliant platforms that scale with business growth while preserving the auditability and process rigor regulated operators require.",
+        "tags": [
+          {"name": "Resilience"},
+          {"name": "Scale"},
+          {"name": "Auditability"}
+        ]
+      },
+      {
+        "industry": {"_ref": {"collection": "industry", "slug": "advanced-manufacturing"}},
+        "title": "Advanced Manufacturing",
+        "description": "IoT integration and data-driven operational intelligence that connect edge devices to cloud infrastructure and turn industrial signals into decisions.",
+        "tags": [
+          {"name": "IoT"},
+          {"name": "Operational intelligence"},
+          {"name": "Edge to cloud"}
+        ]
+      },
+      {
+        "industry": {"_ref": {"collection": "industry", "slug": "sports-entertainment"}},
+        "title": "Sports & Entertainment",
+        "description": "Engaging digital experiences and performance platforms, from fan-facing products to portable coaching intelligence that pairs sensor hardware with AI analytics.",
+        "tags": [
+          {"name": "Digital experiences"},
+          {"name": "Performance analytics"},
+          {"name": "Connected hardware"}
+        ]
+      }
+    ]
+  },
+  "crossIndustryPatterns": {
+    "heading": "Patterns that travel across industries",
+    "description": "The same engineering disciplines recur in every sector we serve, which is how domain depth compounds into reliable delivery.",
+    "items": [
+      {
+        "title": "Governed AI application layers",
+        "excerpt": "We put control at the infrastructure boundary, usefulness at the workflow boundary, and extensibility at the platform boundary, so AI becomes accountable daily execution rather than raw output."
+      },
+      {
+        "title": "Consolidation of fragmented operations",
+        "excerpt": "We replace disconnected tools and manual handoffs with unified, single-source platforms that give teams real-time visibility and consistent process enforcement."
+      },
+      {
+        "title": "Modular, event-driven architectures",
+        "excerpt": "API-first services and event-driven orchestration let systems coordinate previously siloed workflows while staying maintainable and ready to extend."
+      }
+    ]
+  },
+  "regulatoryPosture": {
+    "heading": "Engineered for regulated environments",
+    "description": "Where governance is a core operating requirement, we build it in from the start rather than retrofitting it later.",
+    "items": [
+      {
+        "title": "Secure by architecture",
+        "excerpt": "From air-gapped LLM runtimes to policy boundaries and override-capable workflows, we design controls into the system rather than around it.",
+        "icon": "lock"
+      },
+      {
+        "title": "Compliance-aligned delivery",
+        "excerpt": "HIPAA-aligned service architectures, ISO 9001 and ISO 27001 certification, and SOC 2 compliance underpin how we ship and operate.",
+        "icon": "activity"
+      },
+      {
+        "title": "Auditable by design",
+        "excerpt": "Role-based access, auditable actions, and controlled overrides keep execution traceable and consistent across regulated workflows.",
+        "icon": "check"
+      }
+    ]
+  },
+  "cta": {
+    "heading": "Bring us your domain, we'll bring the engineering",
+    "description": "Whatever industry you operate in, we build with the context to make it work in production, and the ownership to keep it working.",
+    "button_1": {"label": "Start a conversation", "link": "/contact"},
+    "button_2": {"label": "See our work", "link": "/stories"}
+  }
+}

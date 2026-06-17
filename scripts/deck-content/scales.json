@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "startups",
+    "title": "Startups",
+    "excerpts": "Early-stage startups building minimum viable products and finding product-market fit.",
+    "subTitle": "From idea to MVP",
+    "description": "We partner with early-stage startups building their first products. We turn vision into a launch-ready system with clear expansion paths, applying institutional engineering discipline without the overhead.",
+    "tags": "MVP, product-market fit, rapid delivery, founding engineering",
+    "podSize": [
+      { "title": "Typical pod", "value": "2-4 engineers plus a product designer" },
+      { "title": "Engagement", "value": "Frame™ fixed-scope build or Flow™ continuous delivery" }
+    ]
+  },
+  {
+    "slug": "scale-ups",
+    "title": "Scale-ups",
+    "excerpts": "Scale-ups expanding their infrastructure to support rapid growth.",
+    "subTitle": "Infrastructure for growth",
+    "description": "We help scale-ups expand the infrastructure behind their growth. As load and complexity rise, we re-architect platforms for scale while keeping the team shipping, so capacity grows without sacrificing reliability.",
+    "tags": "scaling, infrastructure, platform engineering, reliability",
+    "podSize": [
+      { "title": "Typical pod", "value": "3-6 engineers with a tech lead" },
+      { "title": "Engagement", "value": "Flow™ continuous delivery or Orchestra™ augmentation" }
+    ]
+  },
+  {
+    "slug": "mid-market",
+    "title": "Mid-market",
+    "excerpts": "Mid-market firms modernizing their systems for the digital age.",
+    "subTitle": "Modernizing the core",
+    "description": "We guide mid-market firms through the modernization of legacy systems. We balance innovation with pragmatism, moving organizations from monolithic, on-premise estates to cloud-native, maintainable platforms with measurable value.",
+    "tags": "modernization, cloud migration, legacy systems, data platforms",
+    "podSize": [
+      { "title": "Typical pod", "value": "4-8 engineers across backend, frontend, and platform" },
+      { "title": "Engagement", "value": "Frame™ phased program or Flow™ ongoing partnership" }
+    ]
+  },
+  {
+    "slug": "enterprise",
+    "title": "Enterprise",
+    "excerpts": "Enterprises transforming operations across complex, mission-critical systems.",
+    "subTitle": "Operating-model transformation",
+    "description": "We work with enterprises transforming operations across mission-critical systems. We treat large programs as operating-model transformation, not software installation, codifying process controls and governance while sustaining adoption at scale.",
+    "tags": "digital transformation, governance, ERP, mission-critical systems",
+    "podSize": [
+      { "title": "Typical pod", "value": "Multiple coordinated pods of 4-8 engineers" },
+      { "title": "Engagement", "value": "Flow™ long-horizon partnership with delivery governance" }
+    ]
+  },
+  {
+    "slug": "government-defense",
+    "title": "Government & Defense",
+    "excerpts": "Government and defense sectors requiring secure, compliant, accountable delivery.",
+    "subTitle": "Secure and accountable delivery",
+    "description": "We support government and defense organizations that demand security by architecture and verifiable governance. We deliver systems that are controlled at the infrastructure boundary and useful at the workflow boundary, with full production responsibility.",
+    "tags": "security, compliance, governed delivery, air-gapped systems",
+    "podSize": [
+      { "title": "Typical pod", "value": "Dedicated cleared-context pod of 3-6 engineers" },
+      { "title": "Engagement", "value": "Frame™ fixed-scope delivery with governed handover" }
+    ]
+  }
+]

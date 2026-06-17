@@ -1,0 +1,116 @@
+{
+  "hero": {
+    "heading": "Build systems that have to work",
+    "description": "We hire engineers who want production responsibility, not handoffs. At Ternary you stay close to users, own what you ship, and grow inside a centralized engineering institution built to develop talent over the long term.",
+    "button": { "label": "View open roles", "url": "#roles" }
+  },
+  "section_2": {
+    "heading": "How we work",
+    "description": "Our culture is shaped by the realities of building and sustaining sophisticated systems. We work with low noise, close proximity to users, and a clear orientation toward impact.",
+    "item_1": {
+      "heading": "Ownership and stewardship",
+      "description": "We take responsibility for the systems we design, deliver, and operate. Engineering here is long-term stewardship, with care for reliability, maintainability, and the consequences of decisions over time."
+    },
+    "item_2": {
+      "heading": "Transparency and low-noise execution",
+      "description": "We value direct communication, visible progress, and clear escalation when needed. Problems are surfaced early, tradeoffs are made explicit, and execution stays focused on outcomes rather than noise."
+    },
+    "item_3": {
+      "heading": "Proximity to users and impact",
+      "description": "We stay close to the people and operations our systems serve. Maintaining proximity to users and real-world workflows lets us build with context and deliver work that has lasting operational impact."
+    },
+    "item_4": {
+      "heading": "Production responsibility, end to end",
+      "description": "Engineers maintain long-horizon responsibility for the code they write, supporting deployments and remaining accountable for sustained system performance across the lifecycle."
+    },
+    "item_5": {
+      "heading": "Built as stewards, not just builders",
+      "description": "We see ourselves as stewards and enablers, responsible for creating systems that perform reliably, evolve thoughtfully, and serve the organizations that depend on them."
+    },
+    "item_6": {
+      "heading": "One centralized institution",
+      "description": "A unified center of engineering excellence creates operational continuity, preserves institutional knowledge, and gives every engineer shared standards to grow against."
+    }
+  },
+  "section_3": {
+    "heading": "What you can expect",
+    "description": "We invest in the foundational systems of durable engineering excellence so you can do the best work of your career.",
+    "item_1": {
+      "heading": "Real mentorship",
+      "description": "Structured mentorship and experienced technical leadership with clear expectations around accountability, code quality, and professional growth."
+    },
+    "item_2": {
+      "heading": "Rigorous training",
+      "description": "We identify high-potential talent early and develop it systematically through technical training and engineering standards aligned to long-term quality."
+    },
+    "item_3": {
+      "heading": "Work that matters",
+      "description": "You ship production systems for organizations that depend on them, from capital markets to digital health to field service, not throwaway prototypes."
+    },
+    "item_4": {
+      "heading": "A clear path forward",
+      "description": "Career progression frameworks and leadership development give you a defined route from associate engineer to technical lead and beyond."
+    }
+  },
+  "section_4": {
+    "heading": "Engineering growth",
+    "description": "We develop engineers along a clear progression, pairing rising technical depth with expanding ownership and delivery responsibility.",
+    "item_1": {
+      "heading": "A defined career ladder",
+      "description": "Move from associate to lead on the strength of your craft, judgment, and the responsibility you can carry, with expectations made explicit at every step.",
+      "levels": [
+        { "name": "Associate" },
+        { "name": "Engineer" },
+        { "name": "Senior" },
+        { "name": "Lead" }
+      ]
+    },
+    "item_2": {
+      "heading": "Modern stacks",
+      "description": "Build with Python, JavaScript, Java, and Go on the backend; React, Angular, and Vue on the frontend; and Flutter, Swift, and Kotlin on mobile."
+    },
+    "item_3": {
+      "heading": "Full lifecycle exposure",
+      "description": "Work across strategy, design, build, launch, and operation, so you understand systems end to end rather than just one slice."
+    },
+    "item_4": {
+      "heading": "Delivery governance",
+      "description": "Disciplined execution frameworks and delivery governance teach you to ship at scale with consistency and control."
+    },
+    "item_5": {
+      "heading": "Global delivery hub",
+      "description": "Grow inside our Dhaka delivery hub, the core engineering capability for the organizations we support worldwide."
+    }
+  },
+  "team": {
+    "heading": "Team voices. Production stories.",
+    "description": "Meet the engineers and operators who ship the technical and commercial infrastructure behind modern enterprise.",
+    "members": {
+      "_refs": {
+        "collection": "team",
+        "slugs": [
+          "Shadman Shakib",
+          "Sajid Islam",
+          "Shakil Ahmed",
+          "Nahid Reza",
+          "Ashraful Alam Shemul",
+          "Israt Zahin",
+          "Md. Shahriar Hasan",
+          "Farzana Rahman Supti",
+          "Raufur Mukit Aman",
+          "Afra Anan",
+          "Gazee Muzeeru",
+          "Sakib Hossain",
+          "Alimus Shams",
+          "Ariba Chowdhury",
+          "Samin Luban",
+          "Kazi Ishmam Ull Hasan"
+        ]
+      }
+    }
+  },
+  "jobs": {
+    "heading": "Open roles",
+    "description": "We hire across engineering, design, and operations in New York and Dhaka. If you want production responsibility and a real path to grow, we want to hear from you, even when the exact role isn't listed."
+  }
+}
