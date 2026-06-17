@@ -1,6 +1,8 @@
 import { revalidateTag } from 'next/cache'
 import { CollectionConfig, slugField } from 'payload'
 
+import { ctaGroup } from '@/fields/ctaGroup'
+
 const Legal: CollectionConfig = {
   slug: 'legal',
   hooks: {
@@ -78,73 +80,7 @@ const Legal: CollectionConfig = {
       label: 'Page Content',
       type: 'richText',
     },
-    {
-      name: 'cta',
-      label: 'CTA',
-      type: 'group',
-      fields: [
-        {
-          name: 'heading',
-          label: 'Heading',
-          type: 'text',
-          required: false,
-        },
-        {
-          name: 'description',
-          label: 'Description',
-          type: 'textarea',
-          required: false,
-        },
-        {
-          name: 'backgroundImage',
-          label: 'Background Image',
-          type: 'upload',
-          relationTo: 'media',
-          required: false,
-        },
-
-        {
-          name: 'button_1',
-          label: 'Button 1',
-          type: 'group',
-          required: false,
-          fields: [
-            {
-              name: 'label',
-              label: 'Label',
-              type: 'text',
-              required: false,
-            },
-            {
-              name: 'link',
-              label: 'Link',
-              type: 'text',
-              required: false,
-            },
-          ],
-        },
-        {
-          name: 'button_2',
-          label: 'Button 2',
-          type: 'group',
-          required: false,
-          fields: [
-            {
-              name: 'label',
-              label: 'Label',
-              type: 'text',
-              required: false,
-            },
-            {
-              name: 'link',
-              label: 'Link',
-              type: 'text',
-              required: false,
-            },
-          ],
-        },
-      ],
-    },
+    ctaGroup(),
   ],
 }
 
