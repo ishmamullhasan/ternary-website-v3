@@ -49,7 +49,7 @@ export default async function Page(): Promise<JSX.Element> {
   }
 
   return (
-    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
+    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
       <Motion tag="section" className="w-full" {...motionSectionProps}>
         <AboutComp
           heading={homePageData.about?.heading}

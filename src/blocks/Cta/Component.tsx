@@ -16,7 +16,7 @@ export function CtaBlockComponent({
     : undefined
 
   return (
-    <section className="max-w-7xl mx-auto px-4 lg:px-6 py-20">
+    <section className="max-w-7xl mx-auto px-5 py-20">
       <div className="relative rounded-lg overflow-hidden bg-main p-10 text-center" style={bgStyle}>
         {heading && <h2 className="text-cream text-3xl lg:text-4xl font-semibold mb-4">{heading}</h2>}
         {description && <p className="text-body max-w-2xl mx-auto mb-8 leading-relaxed">{description}</p>}

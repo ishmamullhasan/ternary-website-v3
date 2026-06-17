@@ -228,14 +228,14 @@ export default async function Page(): Promise<JSX.Element> {
   const cta = solutionsPageData?.cta
 
   return (
-    <main className="min-h-screen pt-32 pb-24 max-w-7xl mx-auto px-4 lg:px-6 space-y-32">
+    <main className="min-h-screen pt-32 pb-24 max-w-7xl mx-auto px-5 space-y-32">
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-0">
+      <section className="max-w-7xl mx-auto px-5">
         <h1 className="text-[40px] font-bold text-white mb-6 leading-tight text-center">{hero?.heading}</h1>
         <p className="text-neutral-400 mb-10 text-base leading-relaxed text-center">{hero?.description}</p>
       </section>
 
-      <section className="relative z-10 shrink-0 mx-auto w-full max-w-7xl px-6 lg:px-0">
+      <section className="relative z-10 shrink-0 mx-auto w-full max-w-7xl px-5">
         <div className="relative flex min-h-[min(70vh,540px)] w-full flex-col justify-end overflow-hidden rounded-xl sm:h-[70vh] sm:min-h-0">
           <Image
             src={(hero?.backgroundImage as Media)?.url || 'https://dummyimage.com/1920x1080/37624F/ffffff'}

@@ -32,6 +32,11 @@ body {
 }
 
 @theme {
+  /* Page container: widen the desktop cap to 1480px. `max-w-7xl` is the shared page
+     container across the site, so overriding its scale token raises every cap at once
+     (gutters kept at a uniform 20px via px-5 on the container call sites). */
+  --container-7xl: 1480px;
+
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-main: var(--main);

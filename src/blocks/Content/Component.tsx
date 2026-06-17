@@ -6,7 +6,7 @@ import RichTextComp, { type RichText } from '@/components/richtext'
 
 export function ContentBlockComponent({ content }: ContentBlock): JSX.Element {
   return (
-    <section className="max-w-3xl mx-auto px-4 lg:px-6 py-16">
+    <section className="max-w-3xl mx-auto px-5 py-16">
       <RichTextComp content={content as unknown as RichText} />
     </section>
   )

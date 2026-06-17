@@ -197,7 +197,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const showMetaRow = showAuthorMeta || insight.publishedDate || insight.readTime || insight.slug
 
   return (
-    <div className="flex flex-col lg:gap-24 gap-12 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
+    <div className="flex flex-col lg:gap-24 gap-12 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
       {/* Hero */}
       <Motion tag="section" className="w-full lg:pt-16 pt-8 px-4 lg:px-0" {...motionSectionProps}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">

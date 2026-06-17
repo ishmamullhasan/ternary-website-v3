@@ -41,7 +41,7 @@ export default async function Page(): Promise<JSX.Element> {
 
   return (
     <div className="min-h-screen bg-[#050505] font-sans selection:bg-white/20">
-      <main className="pt-10 pb-24 max-w-7xl mx-auto px-4 lg:px-6 space-y-32">
+      <main className="pt-10 pb-24 max-w-7xl mx-auto px-5 space-y-32">
         {/* Hero Section */}
         <Motion
           tag="section"

@@ -7,7 +7,7 @@ export function HeroBlockComponent({ eyebrow, heading, description, image }: Her
   const media = typeof image === 'object' && image !== null ? image : null
 
   return (
-    <section className="max-w-7xl mx-auto px-4 lg:px-6 py-20">
+    <section className="max-w-7xl mx-auto px-5 py-20">
       {eyebrow && <p className="text-subtle text-sm uppercase tracking-wider mb-3">{eyebrow}</p>}
       {heading && <h1 className="text-cream text-4xl lg:text-5xl font-semibold mb-4">{heading}</h1>}
       {description && <p className="text-body text-lg max-w-2xl leading-relaxed">{description}</p>}

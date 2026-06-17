@@ -74,7 +74,7 @@ export default async function Page(): Promise<JSX.Element> {
   const industries = industriesPageData.industryList?.industry as Industry[] | undefined
 
   return (
-    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
+    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
       {/* Hero */}
       <Motion tag="section" className="w-full lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
         <div className="w-full mx-auto flex flex-col px-4 lg:px-0 items-center justify-center">
