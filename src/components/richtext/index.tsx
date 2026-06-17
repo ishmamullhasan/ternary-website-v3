@@ -1,8 +1,19 @@
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
-import { RichText as LexicalRichText } from '@payloadcms/richtext-lexical/react'
+import { type JSXConvertersFunction, RichText as LexicalRichText } from '@payloadcms/richtext-lexical/react'
 import type { JSX } from 'react'
 
+import { getNodeText, slugify } from '@/utilities/headings'
 import { cn } from '@/utilities/ui'
+
+// Add slugified ids to headings so in-page anchors / tables of contents resolve
+// (the default Lexical converter renders headings without an id).
+const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
+  ...defaultConverters,
+  heading: ({ node, nodesToJSX }) => {
+    const Tag = (node.tag || 'h2') as keyof JSX.IntrinsicElements
+    return <Tag id={slugify(getNodeText(node))}>{nodesToJSX({ nodes: node.children })}</Tag>
+  },
+})
 
 /**
  * Shape of a Lexical rich-text field value. Kept as a named export because callers
@@ -39,7 +50,7 @@ export default function RichTextComp({ content, className }: RichTextProps): JSX
 
   return (
     <div className={cn('prose prose-invert max-w-none', className)}>
-      <LexicalRichText data={content as unknown as SerializedEditorState} />
+      <LexicalRichText converters={jsxConverters} data={content as unknown as SerializedEditorState} />
     </div>
   )
 }

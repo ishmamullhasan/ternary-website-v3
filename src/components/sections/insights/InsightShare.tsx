@@ -22,13 +22,13 @@ export default function InsightShare({ url, title }: InsightShareProps) {
   }
 
   return (
-    <div className="bg-[#1B1A17] rounded-lg p-5 flex flex-col gap-3">
-      <p className="text-xs text-[#757571]">Share</p>
+    <div className="bg-main rounded-lg p-5 flex flex-col gap-3">
+      <p className="text-xs text-subtle">Share</p>
       <div className="flex flex-col gap-2">
         <button
           type="button"
           onClick={handleCopyLink}
-          className="text-sm text-[#D5D5D5] hover:text-white transition-colors text-left"
+          className="text-sm text-body hover:text-white transition-colors text-left"
         >
           {copied ? 'Link copied' : 'Copy link'}
         </button>
@@ -36,7 +36,7 @@ export default function InsightShare({ url, title }: InsightShareProps) {
           href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${shareTitle}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-[#D5D5D5] hover:text-white transition-colors"
+          className="text-sm text-body hover:text-white transition-colors"
         >
           Post on X
         </a>
@@ -44,7 +44,7 @@ export default function InsightShare({ url, title }: InsightShareProps) {
           href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-[#D5D5D5] hover:text-white transition-colors"
+          className="text-sm text-body hover:text-white transition-colors"
         >
           Share to LinkedIn
         </a>
