@@ -21,6 +21,11 @@ const fadeUp = {
 }
 
 export default function Jobs({ jobs, heading, description }: JobsProps): JSX.Element {
+  // Hooks must run unconditionally before any early return (react-hooks/rules-of-hooks).
+  const [selectedDepartment, setSelectedDepartment] = useState<string>('All Departments')
+  const [selectedLevel, setSelectedLevel] = useState<string>('All Levels')
+  const [searchTerm, setSearchTerm] = useState<string>('')
+
   if (!jobs) {
     return (
       <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
@@ -41,9 +46,6 @@ export default function Jobs({ jobs, heading, description }: JobsProps): JSX.Ele
         .filter((level): level is string => Boolean(level && level.trim())),
     ),
   ]
-  const [selectedDepartment, setSelectedDepartment] = useState<string>('All Departments')
-  const [selectedLevel, setSelectedLevel] = useState<string>('All Levels')
-  const [searchTerm, setSearchTerm] = useState<string>('')
 
   const filteredJobs = jobs.filter((job: JobListing) => {
     if (selectedDepartment !== 'All Departments' && job.department !== selectedDepartment) {

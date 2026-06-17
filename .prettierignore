@@ -1,0 +1,4 @@
+# Generated files — keep in their generator's native format to avoid churn.
+src/payload-types.ts
+src/app/(payload)/admin/importMap.js
+pnpm-lock.yaml

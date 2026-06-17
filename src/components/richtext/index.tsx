@@ -1,5 +1,24 @@
-import serialize from '@/components/richtext/serialize'
+import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import { type JSXConvertersFunction, RichText as LexicalRichText } from '@payloadcms/richtext-lexical/react'
+import type { JSX } from 'react'
 
+import { getNodeText, slugify } from '@/utilities/headings'
+import { cn } from '@/utilities/ui'
+
+// Add slugified ids to headings so in-page anchors / tables of contents resolve
+// (the default Lexical converter renders headings without an id).
+const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
+  ...defaultConverters,
+  heading: ({ node, nodesToJSX }) => {
+    const Tag = (node.tag || 'h2') as keyof JSX.IntrinsicElements
+    return <Tag id={slugify(getNodeText(node))}>{nodesToJSX({ nodes: node.children })}</Tag>
+  },
+})
+
+/**
+ * Shape of a Lexical rich-text field value. Kept as a named export because callers
+ * annotate/cast their CMS content with it (`content as RichText`).
+ */
 export interface RichText {
   root: {
     type: string
@@ -21,13 +40,17 @@ interface RichTextProps {
   className?: string
 }
 
-export default function RichText({ content, className = '' }: RichTextProps) {
-  if (!content) {
-    return null
-  }
+/**
+ * Renders Lexical rich text using Payload's official converter (handles the format
+ * bitfield, links, uploads, lists, and escaping correctly) — replaces the previous
+ * hand-rolled Slate serializer, which silently dropped inline formatting.
+ */
+export default function RichTextComp({ content, className }: RichTextProps): JSX.Element | null {
+  if (!content) return null
 
-  // Extract the children array from the content.root structure
-  const contentToSerialize = content.root?.children || content
-
-  return <div className={className}>{serialize(contentToSerialize)}</div>
+  return (
+    <div className={cn('prose prose-invert max-w-none', className)}>
+      <LexicalRichText converters={jsxConverters} data={content as unknown as SerializedEditorState} />
+    </div>
+  )
 }

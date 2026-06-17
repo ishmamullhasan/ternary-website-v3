@@ -5,6 +5,7 @@ import Job from '@/collections/job'
 import Legal from '@/collections/legal'
 import Media from '@/collections/media'
 import Model from '@/collections/model'
+import Pages from '@/collections/Pages'
 import PressRelease from '@/collections/pressRelease'
 import Scale from '@/collections/scale'
 import Solution from '@/collections/solution'
@@ -66,9 +67,11 @@ export default buildConfig({
   },
   editor: lexicalEditor(),
   db: mongooseAdapter({
-    url: process.env.DATABASE_URI || '',
+    // Payload Cloud injects DATABASE_URI; local/.env.example use DATABASE_URL — accept both.
+    url: process.env.DATABASE_URI || process.env.DATABASE_URL || '',
   }),
   collections: [
+    Pages,
     Media,
     User,
     Story,
