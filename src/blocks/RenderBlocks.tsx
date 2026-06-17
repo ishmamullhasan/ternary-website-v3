@@ -43,6 +43,21 @@ const motionSectionProps = {
   transition: { duration: 0.4, ease: 'easeOut' as const },
 }
 
+// Full-page composite blocks (one block === an entire ported marketing page). These render
+// their OWN per-section fade-up internally, exactly as the original bespoke pages did. Wrapping
+// such a block in the shared fade-up above gates the whole page on a single `whileInView` that
+// can never reach its 0.2 visibility threshold (the block is far taller than the viewport), so
+// it would stay at opacity:0 and the page renders blank. Render these without the outer fade.
+const FULL_PAGE_BLOCKS = new Set<string>([
+  'aboutPageSection',
+  'solutionsPageSection',
+  'industriesPageSection',
+  'scalesPageSection',
+  'contactPageSection',
+  'careersPageSection',
+  'storiesPageSection',
+])
+
 /**
  * Renders a single block by switching on `blockType`. The switch narrows the discriminated
  * union, so each component gets fully-typed props (no casts). New blocks: register the config
@@ -122,6 +137,16 @@ export function RenderBlocks({ blocks }: { blocks?: Page['layout'] }): JSX.Eleme
       {blocks.map((block, i) => {
         const el = renderBlock(block)
         if (!el) return null
+        // Composite full-page blocks animate internally; wrapping them in the shared fade-up
+        // would gate the whole (viewport-taller-than-screen) page on one whileInView and leave
+        // it stuck at opacity:0. Render them in a plain section instead.
+        if (FULL_PAGE_BLOCKS.has(block.blockType)) {
+          return (
+            <section className="w-full" key={block.id || i}>
+              {el}
+            </section>
+          )
+        }
         return (
           <Motion tag="section" className="w-full" key={block.id || i} {...motionSectionProps}>
             {el}
