@@ -187,7 +187,18 @@ export interface Page {
    */
   generateSlug?: boolean | null;
   slug: string;
-  layout?: (HeroBlock | ContentBlock | RelationGridBlock | CtaBlock)[] | null;
+  layout?:
+    | (
+        | HeroBlock
+        | ContentBlock
+        | RelationGridBlock
+        | FeatureGridBlock
+        | LogosBlock
+        | TeamBlock
+        | StepsBlock
+        | CtaBlock
+      )[]
+    | null;
   parent?: (string | null) | Page;
   breadcrumbs?:
     | {
@@ -668,6 +679,78 @@ export interface Team {
   linkedin?: string | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureGridBlock".
+ */
+export interface FeatureGridBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        image?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  columns?: ('2' | '3' | '4') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogosBlock".
+ */
+export interface LogosBlock {
+  heading?: string | null;
+  logos?:
+    | {
+        icon?: (string | null) | Media;
+        name?: string | null;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'logos';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamBlock".
+ */
+export interface TeamBlock {
+  heading?: string | null;
+  description?: string | null;
+  members?: (string | Team)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'teamBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StepsBlock".
+ */
+export interface StepsBlock {
+  heading?: string | null;
+  description?: string | null;
+  steps?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        /**
+         * Optional, e.g. 30m, 1h
+         */
+        duration?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'steps';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1493,6 +1576,10 @@ export interface PagesSelect<T extends boolean = true> {
         hero?: T | HeroBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         relationGrid?: T | RelationGridBlockSelect<T>;
+        featureGrid?: T | FeatureGridBlockSelect<T>;
+        logos?: T | LogosBlockSelect<T>;
+        teamBlock?: T | TeamBlockSelect<T>;
+        steps?: T | StepsBlockSelect<T>;
         ctaBlock?: T | CtaBlockSelect<T>;
       };
   parent?: T;
@@ -1539,6 +1626,71 @@ export interface RelationGridBlockSelect<T extends boolean = true> {
   items?: T;
   columns?: T;
   hrefBase?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureGridBlock_select".
+ */
+export interface FeatureGridBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
+  columns?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogosBlock_select".
+ */
+export interface LogosBlockSelect<T extends boolean = true> {
+  heading?: T;
+  logos?:
+    | T
+    | {
+        icon?: T;
+        name?: T;
+        link?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamBlock_select".
+ */
+export interface TeamBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  members?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StepsBlock_select".
+ */
+export interface StepsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  steps?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        duration?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

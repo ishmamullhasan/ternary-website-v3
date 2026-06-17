@@ -4,8 +4,12 @@ import type { JSX } from 'react'
 
 import { ContentBlockComponent } from './Content/Component'
 import { CtaBlockComponent } from './Cta/Component'
+import { FeatureGridBlockComponent } from './FeatureGrid/Component'
 import { HeroBlockComponent } from './Hero/Component'
+import { LogosBlockComponent } from './Logos/Component'
 import { RelationGridBlockComponent } from './RelationGrid/Component'
+import { StepsBlockComponent } from './Steps/Component'
+import { TeamBlockComponent } from './Team/Component'
 
 /**
  * Renders a Page's `layout` blocks by switching on `blockType`. New blocks are added by
@@ -26,6 +30,14 @@ export function RenderBlocks({ blocks }: { blocks?: Page['layout'] }): JSX.Eleme
             return <ContentBlockComponent key={key} {...block} />
           case 'relationGrid':
             return <RelationGridBlockComponent key={key} {...block} />
+          case 'featureGrid':
+            return <FeatureGridBlockComponent key={key} {...block} />
+          case 'logos':
+            return <LogosBlockComponent key={key} {...block} />
+          case 'teamBlock':
+            return <TeamBlockComponent key={key} {...block} />
+          case 'steps':
+            return <StepsBlockComponent key={key} {...block} />
           case 'ctaBlock':
             return <CtaBlockComponent key={key} {...block} />
           default:
