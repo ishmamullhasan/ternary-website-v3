@@ -64,72 +64,114 @@ const richToText = (v: unknown): string => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GlobalData = any
 
+// Map the home global onto the DESIGN-FAITHFUL section blocks (each renders the real
+// hand-built component), preserving the exact homepage design.
+const ids = (arr: unknown): (number | string)[] =>
+  Array.isArray(arr) ? arr.map((v) => relId(v as RelInput)).filter((x): x is number | string => x != null) : []
+
 function mapHome(d: GlobalData): Block[] {
-  const layout: Block[] = []
-  const about = d?.about
-  if (truthy(about?.heading, about?.description))
-    layout.push({ blockType: 'hero', heading: about.heading ?? null, description: about.description ?? null })
-  if (about?.items?.length)
-    layout.push({
-      blockType: 'relationGrid',
-      heading: null,
-      description: null,
-      columns: '4',
-      items: passPolyItems(about.items),
+  const L: Block[] = []
+  const a = d?.about
+  if (a)
+    L.push({
+      blockType: 'aboutSection',
+      heading: a.heading ?? null,
+      description: a.description ?? null,
+      items: passPolyItems(a.items),
+      organizations: a.organizations
+        ? {
+            heading: a.organizations.heading ?? null,
+            organization: (a.organizations.organization ?? []).map((o: GlobalData) => ({
+              icon: relId(o.icon),
+              name: o.name ?? null,
+              link: o.link ?? null,
+            })),
+          }
+        : null,
+      bottomDescription: a.bottomDescription ?? null,
     })
-  if (about?.organizations?.organization?.length)
-    layout.push({
-      blockType: 'logos',
-      heading: about.organizations.heading ?? null,
-      logos: about.organizations.organization.map((o: GlobalData) => ({
-        icon: relId(o.icon),
-        name: o.name ?? null,
-        link: o.link ?? null,
-      })),
+  const s = d?.solutions
+  if (s)
+    L.push({
+      blockType: 'solutionsSection',
+      heading: s.heading ?? null,
+      description: s.description ?? null,
+      image: relId(s.image),
+      items: ids(s.items),
     })
-  const grid = (sec: GlobalData, field: string, rel: string, columns = '3') =>
-    sec &&
-    layout.push({
-      blockType: 'relationGrid',
-      heading: sec.heading ?? null,
-      description: sec.description ?? null,
-      columns,
-      items: polyItems(sec[field], rel),
+  const cap = d?.capabilities
+  if (cap)
+    L.push({
+      blockType: 'capabilitiesSection',
+      heading: cap.heading ?? null,
+      description: cap.description ?? null,
+      capability: ids(cap.capability),
+      heading_2: cap.heading_2 ?? null,
+      description_2: cap.description_2 ?? null,
+      image: relId(cap.image),
     })
-  grid(d?.solutions, 'items', 'solution')
-  grid(d?.capabilities, 'capability', 'capability')
-  grid(d?.industries, 'industry', 'industry', '4')
-  grid(d?.scales, 'scale', 'scale')
-  grid(d?.engagement, 'model', 'model')
+  const ind = d?.industries
+  if (ind)
+    L.push({
+      blockType: 'industriesSection',
+      heading: ind.heading ?? null,
+      description: ind.description ?? null,
+      industries: ids(ind.industry),
+    })
+  const sc = d?.scales
+  if (sc)
+    L.push({
+      blockType: 'scalesSection',
+      heading: sc.heading ?? null,
+      description: sc.description ?? null,
+      scales: ids(sc.scale),
+    })
+  const en = d?.engagement
+  if (en)
+    L.push({
+      blockType: 'engagementSection',
+      heading: en.heading ?? null,
+      description: en.description ?? null,
+      model: ids(en.model),
+    })
   const gd = d?.globalDelivery
-  if (truthy(gd?.heading, gd?.title))
-    layout.push({
-      blockType: 'featureGrid',
+  if (gd)
+    L.push({
+      blockType: 'globalDeliverySection',
       heading: gd.heading ?? null,
       description: gd.description ?? null,
-      columns: '2',
-      items: [{ title: gd.title ?? null, description: gd.excerpt ?? null, image: relId(gd.image) }],
+      image: relId(gd.image),
+      title: gd.title ?? null,
+      excerpt: gd.excerpt ?? null,
     })
-  const proc = d?.processes
-  if (proc?.process?.length)
-    layout.push({
-      blockType: 'steps',
-      heading: proc.heading ?? null,
-      description: proc.description ?? null,
-      steps: proc.process.map((p: GlobalData) => ({ title: p.title ?? null, description: richToText(p.description) })),
+  const pr = d?.processes
+  if (pr)
+    L.push({
+      blockType: 'processSection',
+      heading: pr.heading ?? null,
+      description: pr.description ?? null,
+      process: (pr.process ?? []).map((p: GlobalData) => ({
+        title: p.title ?? null,
+        description: p.description ?? null,
+      })),
     })
-  const team = d?.team
-  if (team?.members?.length)
-    layout.push({
-      blockType: 'teamBlock',
-      heading: team.heading ?? null,
-      description: team.description ?? null,
-      members: (team.members as unknown[]).map((m) => relId(m as RelInput)).filter(Boolean),
+  const tm = d?.team
+  if (tm)
+    L.push({
+      blockType: 'teamSection',
+      heading: tm.heading ?? null,
+      description: tm.description ?? null,
+      members: ids(tm.members),
     })
-  const opp = d?.opportunities
-  if (truthy(opp?.heading))
-    layout.push({ blockType: 'jobsBlock', heading: opp.heading ?? null, description: opp.description ?? null })
-  return layout
+  const op = d?.opportunities
+  if (op)
+    L.push({
+      blockType: 'opportunitiesSection',
+      heading: op.heading ?? null,
+      description: op.description ?? null,
+      opportunity: ids(op.opportunity),
+    })
+  return L
 }
 
 // ---- block builders (keep the hand-crafted mappers concise) ----------------

@@ -198,6 +198,16 @@ export interface Page {
         | StepsBlock
         | JobsBlockType
         | FormBlockType
+        | IndustriesSectionBlock
+        | AboutSectionBlock
+        | SolutionsSectionBlock
+        | CapabilitiesSectionBlock
+        | ScalesSectionBlock
+        | EngagementSectionBlock
+        | GlobalDeliverySectionBlock
+        | ProcessSectionBlock
+        | TeamSectionBlock
+        | OpportunitiesSectionBlock
         | CtaBlock
       )[]
     | null;
@@ -980,6 +990,306 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesSectionBlock".
+ */
+export interface IndustriesSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  industries?: (string | Industry)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industriesSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutSectionBlock".
+ */
+export interface AboutSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | (
+        | {
+            relationTo: 'capability';
+            value: string | Capability;
+          }
+        | {
+            relationTo: 'solution';
+            value: string | Solution;
+          }
+        | {
+            relationTo: 'industry';
+            value: string | Industry;
+          }
+        | {
+            relationTo: 'scale';
+            value: string | Scale;
+          }
+        | {
+            relationTo: 'model';
+            value: string | Model;
+          }
+      )[]
+    | null;
+  organizations?: {
+    heading?: string | null;
+    organization?:
+      | {
+          icon?: (string | null) | Media;
+          name?: string | null;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  bottomDescription?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionsSectionBlock".
+ */
+export interface SolutionsSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  image?: (string | null) | Media;
+  items?: (string | Solution)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'solutionsSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CapabilitiesSectionBlock".
+ */
+export interface CapabilitiesSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  capability?: (string | Capability)[] | null;
+  heading_2?: string | null;
+  description_2?: string | null;
+  image?: (string | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'capabilitiesSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScalesSectionBlock".
+ */
+export interface ScalesSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  scales?: (string | Scale)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'scalesSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EngagementSectionBlock".
+ */
+export interface EngagementSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  model?: (string | Model)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'engagementSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GlobalDeliverySectionBlock".
+ */
+export interface GlobalDeliverySectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  image?: (string | null) | Media;
+  title?: string | null;
+  excerpt?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'globalDeliverySection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProcessSectionBlock".
+ */
+export interface ProcessSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  process?:
+    | {
+        title?: string | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'processSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamSectionBlock".
+ */
+export interface TeamSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  members?: (string | Team)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'teamSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OpportunitiesSectionBlock".
+ */
+export interface OpportunitiesSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  opportunity?: (string | Job)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'opportunitiesSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job".
+ */
+export interface Job {
+  id: string;
+  code: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  title?: string | null;
+  button?: {
+    label?: string | null;
+    link?: string | null;
+  };
+  team?: string | null;
+  department?: string | null;
+  type?: string | null;
+  location?: string | null;
+  salary?: string | null;
+  excerpts?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  level?: ('Junior' | 'Mid' | 'Senior' | 'Lead' | 'C-Suite') | null;
+  opened: string;
+  closed?: string | null;
+  image?: (string | null) | Media;
+  active?: boolean | null;
+  details?: {
+    item1?: {
+      title?: string | null;
+      description?: string | null;
+    };
+    item2?: {
+      title?: string | null;
+      points?:
+        | {
+            point?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    item3?: {
+      title?: string | null;
+      points?:
+        | {
+            point?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    item4?: {
+      title?: string | null;
+      points?:
+        | {
+            point?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+  };
+  teamBox?: {
+    reportingToName?: string | null;
+    reportingToRole?: string | null;
+    podSize?: string | null;
+    crossFunctional?: string | null;
+  };
+  compensationBox?: {
+    base?: string | null;
+    equity?: string | null;
+    note?: string | null;
+  };
+  interviewProcess?: {
+    heading?: string | null;
+    steps?:
+      | {
+          title?: string | null;
+          excerpt?: string | null;
+          /**
+           * e.g. 30m, 1h
+           */
+          duration?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  openRoles?: {
+    heading?: string | null;
+    description?: string | null;
+    jobs?: (string | Job)[] | null;
+  };
+  cta?: {
+    subheading?: string | null;
+    heading?: string | null;
+    description?: string | null;
+    backgroundImage?: (string | null) | Media;
+    button?: {
+      label?: string | null;
+      link?: string | null;
+    };
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CtaBlock".
  */
 export interface CtaBlock {
@@ -1261,125 +1571,6 @@ export interface PressRelease {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "job".
- */
-export interface Job {
-  id: string;
-  code: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  title?: string | null;
-  button?: {
-    label?: string | null;
-    link?: string | null;
-  };
-  team?: string | null;
-  department?: string | null;
-  type?: string | null;
-  location?: string | null;
-  salary?: string | null;
-  excerpts?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  level?: ('Junior' | 'Mid' | 'Senior' | 'Lead' | 'C-Suite') | null;
-  opened: string;
-  closed?: string | null;
-  image?: (string | null) | Media;
-  active?: boolean | null;
-  details?: {
-    item1?: {
-      title?: string | null;
-      description?: string | null;
-    };
-    item2?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    item3?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    item4?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-  };
-  teamBox?: {
-    reportingToName?: string | null;
-    reportingToRole?: string | null;
-    podSize?: string | null;
-    crossFunctional?: string | null;
-  };
-  compensationBox?: {
-    base?: string | null;
-    equity?: string | null;
-    note?: string | null;
-  };
-  interviewProcess?: {
-    heading?: string | null;
-    steps?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          /**
-           * e.g. 30m, 1h
-           */
-          duration?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  openRoles?: {
-    heading?: string | null;
-    description?: string | null;
-    jobs?: (string | Job)[] | null;
-  };
-  cta?: {
-    subheading?: string | null;
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    button?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "legal".
  */
 export interface Legal {
@@ -1607,6 +1798,16 @@ export interface PagesSelect<T extends boolean = true> {
         steps?: T | StepsBlockSelect<T>;
         jobsBlock?: T | JobsBlockTypeSelect<T>;
         formBlock?: T | FormBlockTypeSelect<T>;
+        industriesSection?: T | IndustriesSectionBlockSelect<T>;
+        aboutSection?: T | AboutSectionBlockSelect<T>;
+        solutionsSection?: T | SolutionsSectionBlockSelect<T>;
+        capabilitiesSection?: T | CapabilitiesSectionBlockSelect<T>;
+        scalesSection?: T | ScalesSectionBlockSelect<T>;
+        engagementSection?: T | EngagementSectionBlockSelect<T>;
+        globalDeliverySection?: T | GlobalDeliverySectionBlockSelect<T>;
+        processSection?: T | ProcessSectionBlockSelect<T>;
+        teamSection?: T | TeamSectionBlockSelect<T>;
+        opportunitiesSection?: T | OpportunitiesSectionBlockSelect<T>;
         ctaBlock?: T | CtaBlockSelect<T>;
       };
   parent?: T;
@@ -1739,6 +1940,142 @@ export interface FormBlockTypeSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
   form?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesSectionBlock_select".
+ */
+export interface IndustriesSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  industries?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutSectionBlock_select".
+ */
+export interface AboutSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?: T;
+  organizations?:
+    | T
+    | {
+        heading?: T;
+        organization?:
+          | T
+          | {
+              icon?: T;
+              name?: T;
+              link?: T;
+              id?: T;
+            };
+      };
+  bottomDescription?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionsSectionBlock_select".
+ */
+export interface SolutionsSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  image?: T;
+  items?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CapabilitiesSectionBlock_select".
+ */
+export interface CapabilitiesSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  capability?: T;
+  heading_2?: T;
+  description_2?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScalesSectionBlock_select".
+ */
+export interface ScalesSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  scales?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EngagementSectionBlock_select".
+ */
+export interface EngagementSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  model?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GlobalDeliverySectionBlock_select".
+ */
+export interface GlobalDeliverySectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  image?: T;
+  title?: T;
+  excerpt?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProcessSectionBlock_select".
+ */
+export interface ProcessSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  process?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamSectionBlock_select".
+ */
+export interface TeamSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  members?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "OpportunitiesSectionBlock_select".
+ */
+export interface OpportunitiesSectionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  opportunity?: T;
   id?: T;
   blockName?: T;
 }

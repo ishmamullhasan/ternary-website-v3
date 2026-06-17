@@ -21,7 +21,11 @@ const queryPageByPath = async (segments: string[], draft: boolean): Promise<Page
     collection: 'pages',
     where: { slug: { equals: segments[segments.length - 1] } },
     draft,
-    overrideAccess: draft,
+    // Pages are public, but the content collections they reference (capability, solution,
+    // team, …) are not publicly readable — so with overrideAccess:false Payload returns
+    // bare relationship ids instead of populating them, and block sections render empty.
+    // Published pages are public content, so override access to populate relationships.
+    overrideAccess: true,
     depth: 2,
     limit: 10,
   })

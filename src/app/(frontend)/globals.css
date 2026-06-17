@@ -6,6 +6,18 @@ body {
   font-family: var(--font-poppins), sans-serif;
 }
 
+/* Tailwind v4's Preflight no longer sets cursor:pointer on buttons (it inherits the
+   browser default of `default`). Restore the pointer on interactive controls so buttons
+   and clickable roles feel clickable on hover. */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+}
+
 :root {
   --background: 0 0% 0%;
   --foreground: 0 0% 22.2%;
