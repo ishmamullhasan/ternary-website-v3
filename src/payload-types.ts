@@ -67,6 +67,7 @@ export interface Config {
   }
   blocks: {}
   collections: {
+    pages: Page
     media: Media
     users: User
     story: Story
@@ -94,6 +95,7 @@ export interface Config {
     }
   }
   collectionsSelect: {
+    pages: PagesSelect<false> | PagesSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
     users: UsersSelect<false> | UsersSelect<true>
     story: StorySelect<false> | StorySelect<true>
@@ -175,6 +177,36 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string
+  title: string
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null
+  slug: string
+  layout?: (HeroBlock | CtaBlock)[] | null
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock".
+ */
+export interface HeroBlock {
+  eyebrow?: string | null
+  heading?: string | null
+  description?: string | null
+  image?: (string | null) | Media
+  id?: string | null
+  blockName?: string | null
+  blockType: 'hero'
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -195,7 +227,6 @@ export interface Media {
     }
     [k: string]: unknown
   } | null
-  prefix?: string | null
   folder?: (string | null) | FolderInterface
   updatedAt: string
   createdAt: string
@@ -292,6 +323,26 @@ export interface FolderInterface {
   folderType?: 'media'[] | null
   updatedAt: string
   createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaBlock".
+ */
+export interface CtaBlock {
+  heading?: string | null
+  description?: string | null
+  backgroundImage?: (string | null) | Media
+  button_1?: {
+    label?: string | null
+    link?: string | null
+  }
+  button_2?: {
+    label?: string | null
+    link?: string | null
+  }
+  id?: string | null
+  blockName?: string | null
+  blockType: 'ctaBlock'
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1201,6 +1252,10 @@ export interface PayloadLockedDocument {
   id: string
   document?:
     | ({
+        relationTo: 'pages'
+        value: string | Page
+      } | null)
+    | ({
         relationTo: 'media'
         value: string | Media
       } | null)
@@ -1308,12 +1363,64 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T
+  generateSlug?: T
+  slug?: T
+  layout?:
+    | T
+    | {
+        hero?: T | HeroBlockSelect<T>
+        ctaBlock?: T | CtaBlockSelect<T>
+      }
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock_select".
+ */
+export interface HeroBlockSelect<T extends boolean = true> {
+  eyebrow?: T
+  heading?: T
+  description?: T
+  image?: T
+  id?: T
+  blockName?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaBlock_select".
+ */
+export interface CtaBlockSelect<T extends boolean = true> {
+  heading?: T
+  description?: T
+  backgroundImage?: T
+  button_1?:
+    | T
+    | {
+        label?: T
+        link?: T
+      }
+  button_2?:
+    | T
+    | {
+        label?: T
+        link?: T
+      }
+  id?: T
+  blockName?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T
   caption?: T
-  prefix?: T
   folder?: T
   updatedAt?: T
   createdAt?: T

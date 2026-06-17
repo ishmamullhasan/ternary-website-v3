@@ -5,6 +5,7 @@ import Job from '@/collections/job'
 import Legal from '@/collections/legal'
 import Media from '@/collections/media'
 import Model from '@/collections/model'
+import Pages from '@/collections/Pages'
 import PressRelease from '@/collections/pressRelease'
 import Scale from '@/collections/scale'
 import Solution from '@/collections/solution'
@@ -69,6 +70,7 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   collections: [
+    Pages,
     Media,
     User,
     Story,
