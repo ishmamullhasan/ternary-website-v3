@@ -6,42 +6,16 @@ import GridTwo from '@/components/grids/two'
 import Section from '@/components/layout/section'
 import Jobs from '@/components/sections/job'
 import { getJobs } from '@/lib/jobs-data'
-import type { Media, Team } from '@/payload-types'
-import { CareersPage } from '@/payload-types'
-import config from '@/payload.config'
-import type { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
-import { getPayload } from 'payload'
+import type { CareersPage, CareersPageBlock, Media, Team } from '@/payload-types'
 import type { JSX } from 'react'
 
-export const metadata: Metadata = {
-  title: 'Careers',
-  description: 'Join Ternary. Explore open roles and help build the next generation of agentic systems.',
-}
-
-export default async function Page(): Promise<JSX.Element> {
-  const getCareersPageData = unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.findGlobal({ slug: 'careersPage' })
-    },
-    ['careersPage'],
-    { tags: ['careersPage'] },
-  )
-  const careersPageData: CareersPage | null = await getCareersPageData()
-
-  if (!careersPageData) {
-    return (
-      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
-    )
-  }
-
+export const CareersPageComponent = async (data: CareersPageBlock): Promise<JSX.Element> => {
   // Open roles list from the recruiting API (✅ GET /jobs).
   const openRoles = await getJobs()
 
   return (
-    <div className="min-h-screen bg-[#050505] font-sans selection:bg-white/20">
-      <main className="pt-10 pb-24 max-w-7xl mx-auto px-5 space-y-32">
+    <div className="flex flex-col lg:gap-32 gap-10">
+      <main className="pt-10 pb-24 space-y-32">
         {/* Hero Section */}
         <Motion
           tag="section"
@@ -59,10 +33,10 @@ export default async function Page(): Promise<JSX.Element> {
             transition={{ duration: 0.35, ease: 'easeOut' }}
           >
             <h1 className="text-3xl lg:text-[40px] font-medium text-white tracking-tighter leading-[1.1]">
-              {careersPageData.hero?.heading || 'Agentic Engineering. Human Orchestration.'}
+              {data.hero?.heading || 'Agentic Engineering. Human Orchestration.'}
             </h1>
             <p className="text-[#D5D5D5] text-base">
-              {careersPageData.hero?.description ||
+              {data.hero?.description ||
                 'Welcome to our company. We build tools that help you work better. Join our team to make an impact.'}
             </p>
             <button className="bg-[#F4F3EC] text-[#0F0E0E] px-6 py-3 rounded-lg font-medium hover:bg-[#E8E7DF] transition-colors">
@@ -79,36 +53,36 @@ export default async function Page(): Promise<JSX.Element> {
             {/* Synthetic noisy gradient background to match original image */}
             <div className="absolute inset-0 bg-linear-to-br from-[#1b4332] via-[#2d6a4f] to-[#40916c] opacity-80 mix-blend-screen"></div>
             <div
-              className={`absolute inset-0 bg-[url('${(careersPageData.hero?.image as Media)?.url || 'https://grainy-gradients.vercel.app/noise.svg'}')] opacity-50 contrast-150 mix-blend-overlay`}
+              className={`absolute inset-0 bg-[url('${(data.hero?.image as Media)?.url || 'https://grainy-gradients.vercel.app/noise.svg'}')] opacity-50 contrast-150 mix-blend-overlay`}
             ></div>
           </Motion>
         </Motion>
 
         {/* Section 1: More than just a workplace */}
-        <GridOne careersPageData={careersPageData} />
+        <GridOne careersPageData={data as unknown as CareersPage} />
 
         {/* Section 2: Work hard. Live fully. */}
-        <GridTwo careersPageData={careersPageData} />
+        <GridTwo careersPageData={data as unknown as CareersPage} />
 
         {/* Section 3: Engineering growth */}
-        <GridThree careersPageData={careersPageData} />
+        <GridThree careersPageData={data as unknown as CareersPage} />
 
         {/* Section 4: Team Voices */}
         <Section
-          title={careersPageData.team?.heading || 'Team voices. Production stories.'}
+          title={data.team?.heading || 'Team voices. Production stories.'}
           desc={
-            careersPageData.team?.description ||
+            data.team?.description ||
             "Our engineers share what it's like to maintain production systems, grow through operational accountability, and build careers around technical depth rather than corporate advancement."
           }
         >
-          <Corousel items={(careersPageData.team?.members as Team[]) || []} />
+          <Corousel items={(data.team?.members as Team[]) || []} />
         </Section>
 
         {/* Section 5: Open Roles — list from API (✅ GET /jobs); heading/description from CMS */}
         <Jobs
           jobs={openRoles}
-          heading={careersPageData.jobs?.heading || undefined}
-          description={careersPageData.jobs?.description || undefined}
+          heading={data.jobs?.heading || undefined}
+          description={data.jobs?.description || undefined}
         />
       </main>
     </div>

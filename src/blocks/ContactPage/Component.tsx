@@ -3,19 +3,9 @@ import ContactForm from '@/components/sections/contactForm'
 import ContactOffices from '@/components/sections/contactOffices'
 import ContactRoutes from '@/components/sections/contactRoutes'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
-import type { ContactPage, Form } from '@/payload-types'
-import config from '@/payload.config'
-import type { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
+import type { ContactPageBlock, Form } from '@/payload-types'
 import Link from 'next/link'
-import { getPayload } from 'payload'
 import type { JSX } from 'react'
-
-export const metadata: Metadata = {
-  title: 'Contact Us',
-  description:
-    'Pick the route that fits. Each one goes to a named owner with a posted response window — no shared mailbox, no triage queue.',
-}
 
 const motionSectionProps = {
   initial: { opacity: 0, y: 12 },
@@ -31,33 +21,16 @@ const motionBlockProps = {
   transition: { duration: 0.35, ease: 'easeOut' as const },
 }
 
-export default async function Page(): Promise<JSX.Element> {
-  const getContactPageData = unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.findGlobal({ slug: 'contactPage', depth: 2 })
-    },
-    ['contactPage'],
-    { tags: ['contactPage'] },
-  )
-
-  const contactPageData: ContactPage | null = await getContactPageData()
-
-  if (!contactPageData) {
-    return (
-      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
-    )
-  }
-
-  const hero = contactPageData?.hero
-  const stats = contactPageData?.stats ?? []
-  const formGroup = contactPageData?.form
+export const ContactPageComponent = (data: ContactPageBlock): JSX.Element => {
+  const hero = data?.hero
+  const stats = data?.stats ?? []
+  const formGroup = data?.form
   // With depth>=1 the relationship is populated to the full Form doc.
   const form = formGroup?.form && typeof formGroup.form === 'object' ? (formGroup.form as Form) : null
-  const cta = contactPageData?.cta
+  const cta = data?.cta
 
   return (
-    <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
+    <div className="flex flex-col lg:gap-32 gap-10">
       <main className="pt-10 pb-24 max-w-7xl mx-auto px-5 space-y-24">
         {/* Hero */}
         <Motion tag="section" className="space-y-6" {...motionSectionProps}>
@@ -106,10 +79,10 @@ export default async function Page(): Promise<JSX.Element> {
         )}
 
         {/* Six routes. One owner each. */}
-        <ContactRoutes data={contactPageData?.routes} />
+        <ContactRoutes data={data?.routes} />
 
         {/* Two studios. One operating rhythm. */}
-        <ContactOffices data={contactPageData?.offices} />
+        <ContactOffices data={data?.offices} />
 
         {/* Send us a message — only shown when a form is selected in the CMS. */}
         {form && (

@@ -3,6 +3,9 @@ import type { Page } from '@/payload-types'
 import type { JSX } from 'react'
 
 import Motion from '@/components/animation/motion'
+import { AboutPageComponent } from './AboutPage/Component'
+import { CareersPageComponent } from './CareersPage/Component'
+import { ContactPageComponent } from './ContactPage/Component'
 import { ContentBlockComponent } from './Content/Component'
 import { CtaBlockComponent } from './Cta/Component'
 import { FeatureGridBlockComponent } from './FeatureGrid/Component'
@@ -19,11 +22,15 @@ import {
   SolutionsSectionComponent,
   TeamSectionComponent,
 } from './homeSections/Component'
+import { IndustriesPageComponent } from './IndustriesPage/Component'
 import { IndustriesSectionComponent } from './IndustriesSection/Component'
 import { JobsBlockComponent } from './Jobs/Component'
 import { LogosBlockComponent } from './Logos/Component'
 import { RelationGridBlockComponent } from './RelationGrid/Component'
+import { ScalesPageComponent } from './ScalesPage/Component'
+import { SolutionsPageComponent } from './SolutionsPage/Component'
 import { StepsBlockComponent } from './Steps/Component'
+import { StoriesPageComponent } from './StoriesPage/Component'
 import { TeamBlockComponent } from './Team/Component'
 
 type BlockType = NonNullable<Page['layout']>[number]
@@ -77,6 +84,20 @@ function renderBlock(block: BlockType): JSX.Element | null {
       return <TeamSectionComponent {...block} />
     case 'opportunitiesSection':
       return <OpportunitiesSectionComponent {...block} />
+    case 'aboutPageSection':
+      return <AboutPageComponent {...block} />
+    case 'solutionsPageSection':
+      return <SolutionsPageComponent {...block} />
+    case 'industriesPageSection':
+      return <IndustriesPageComponent {...block} />
+    case 'scalesPageSection':
+      return <ScalesPageComponent {...block} />
+    case 'contactPageSection':
+      return <ContactPageComponent {...block} />
+    case 'careersPageSection':
+      return <CareersPageComponent {...block} />
+    case 'storiesPageSection':
+      return <StoriesPageComponent {...block} />
     case 'jobsBlock':
       return <JobsBlockComponent {...block} />
     case 'formBlock':
