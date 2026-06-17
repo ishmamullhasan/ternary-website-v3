@@ -6,6 +6,9 @@ import { Content } from '@/blocks/Content/config'
 import { Cta } from '@/blocks/Cta/config'
 import { Hero } from '@/blocks/Hero/config'
 import { RelationGrid } from '@/blocks/RelationGrid/config'
+import { getServerSideURL } from '@/utilities/getURL'
+
+const pageUrl = (slug: unknown): string => `${getServerSideURL()}/${typeof slug === 'string' ? slug : ''}`
 
 /**
  * Blocks-based page model (Epic A). Editors compose a page from the reusable block
@@ -23,6 +26,10 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
+    livePreview: {
+      url: ({ data }) => pageUrl(data?.slug),
+    },
+    preview: (data) => pageUrl(data?.slug),
   },
   versions: {
     drafts: { autosave: { interval: 100 } },
