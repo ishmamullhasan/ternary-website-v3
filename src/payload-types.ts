@@ -227,6 +227,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  prefix?: string | null;
   folder?: (string | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -432,14 +433,41 @@ export interface Story {
  */
 export interface Insight {
   id: string;
-  title?: string | null;
+  title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * e.g. CS-014
+   */
+  code?: string | null;
+  author?: (string | null) | Team;
+  publishedDate?: string | null;
+  /**
+   * e.g. "8 min"
+   */
+  readTime?: string | null;
+  /**
+   * e.g. "Engineering Studio"
+   */
+  categoryLabel?: string | null;
+  /**
+   * Short summary used on listing cards.
+   */
   excerpts?: string | null;
   thumbnail?: (string | null) | Media;
+  tags?:
+    | {
+        name?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Opening paragraph shown beside the article body.
+   */
+  leadParagraph?: string | null;
   content?: {
     root: {
       type: string;
@@ -455,6 +483,44 @@ export interface Insight {
     };
     [k: string]: unknown;
   } | null;
+  relatedInsights?: {
+    heading?: string | null;
+    description?: string | null;
+    insights?: (string | Insight)[] | null;
+  };
+  cta?: {
+    heading?: string | null;
+    description?: string | null;
+    backgroundImage?: (string | null) | Media;
+    button_1?: {
+      label?: string | null;
+      link?: string | null;
+    };
+    button_2?: {
+      label?: string | null;
+      link?: string | null;
+    };
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: string;
+  name?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  position?: string | null;
+  excerpt?: string | null;
+  description?: string | null;
+  image?: (string | null) | Media;
+  linkedin?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -709,26 +775,6 @@ export interface Capability {
       link?: string | null;
     };
   };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team".
- */
-export interface Team {
-  id: string;
-  name?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  position?: string | null;
-  excerpt?: string | null;
-  description?: string | null;
-  image?: (string | null) | Media;
-  linkedin?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1455,6 +1501,7 @@ export interface CtaBlockSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  prefix?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1587,9 +1634,47 @@ export interface InsightSelect<T extends boolean = true> {
   title?: T;
   generateSlug?: T;
   slug?: T;
+  code?: T;
+  author?: T;
+  publishedDate?: T;
+  readTime?: T;
+  categoryLabel?: T;
   excerpts?: T;
   thumbnail?: T;
+  tags?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  leadParagraph?: T;
   content?: T;
+  relatedInsights?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        insights?: T;
+      };
+  cta?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        backgroundImage?: T;
+        button_1?:
+          | T
+          | {
+              label?: T;
+              link?: T;
+            };
+        button_2?:
+          | T
+          | {
+              label?: T;
+              link?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }

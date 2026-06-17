@@ -231,7 +231,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             </div>
           </Motion>
 
-          <Motion className="bg-[#1B1A17] rounded-lg p-6 h-fit" {...motionGridItemProps}>
+          {/* <Motion className="bg-[#1B1A17] rounded-lg p-6 h-fit" {...motionGridItemProps}>
             <h2 className="text-sm font-medium mb-4">Release facts</h2>
             <div className="flex flex-col">
               <FactRow label="Release ID" value={pressRelease.code} />
@@ -254,7 +254,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 )}
               </a>
             )}
-          </Motion>
+          </Motion> */}
         </div>
       </Motion>
 
