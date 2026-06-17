@@ -8,7 +8,15 @@ import { Hero } from '@/blocks/Hero/config'
 import { RelationGrid } from '@/blocks/RelationGrid/config'
 import { getServerSideURL } from '@/utilities/getURL'
 
-const pageUrl = (slug: unknown): string => `${getServerSideURL()}/${typeof slug === 'string' ? slug : ''}`
+type Breadcrumb = { url?: string | null }
+
+/** Build the preview URL from the page's nested-docs breadcrumb path (falls back to slug). */
+const pageUrl = (data?: { slug?: unknown; breadcrumbs?: unknown }): string => {
+  const crumbs = Array.isArray(data?.breadcrumbs) ? (data.breadcrumbs as Breadcrumb[]) : []
+  const fromCrumbs = crumbs.length ? crumbs[crumbs.length - 1]?.url : null
+  const path = fromCrumbs || (typeof data?.slug === 'string' ? `/${data.slug}` : '')
+  return `${getServerSideURL()}${path}`
+}
 
 /**
  * Blocks-based page model (Epic A). Editors compose a page from the reusable block
@@ -27,9 +35,9 @@ export const Pages: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
-      url: ({ data }) => pageUrl(data?.slug),
+      url: ({ data }) => pageUrl(data),
     },
-    preview: (data) => pageUrl(data?.slug),
+    preview: (data) => pageUrl(data),
   },
   versions: {
     drafts: { autosave: { interval: 100 } },

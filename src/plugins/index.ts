@@ -1,6 +1,7 @@
 import { getServerSideURL } from '@/utilities/getURL'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { Plugin } from 'payload'
@@ -16,6 +17,13 @@ const generateURL = ({ doc }: { doc?: { slug?: string | null } }) => {
 
 const plugins: Plugin[] = [
   payloadCloudPlugin(),
+  // Adds `parent` + computed `breadcrumbs` to Pages, so editors can build page trees
+  // and the URL derives from the hierarchy (e.g. /solutions/enterprise).
+  nestedDocsPlugin({
+    collections: ['pages'],
+    generateURL: (docs) => docs.reduce((url, doc) => `${url}/${typeof doc.slug === 'string' ? doc.slug : ''}`, ''),
+    generateLabel: (_, doc) => (typeof doc.title === 'string' ? doc.title : ''),
+  }),
   formBuilderPlugin({
     fields: {
       text: true,
