@@ -5,7 +5,9 @@ import { authenticated } from '@/access/authenticated'
 import { Content } from '@/blocks/Content/config'
 import { Cta } from '@/blocks/Cta/config'
 import { FeatureGrid } from '@/blocks/FeatureGrid/config'
+import { FormBlock } from '@/blocks/Form/config'
 import { Hero } from '@/blocks/Hero/config'
+import { Jobs } from '@/blocks/Jobs/config'
 import { Logos } from '@/blocks/Logos/config'
 import { RelationGrid } from '@/blocks/RelationGrid/config'
 import { Steps } from '@/blocks/Steps/config'
@@ -54,7 +56,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       label: 'Layout',
       type: 'blocks',
-      blocks: [Hero, Content, RelationGrid, FeatureGrid, Logos, Team, Steps, Cta],
+      blocks: [Hero, Content, RelationGrid, FeatureGrid, Logos, Team, Steps, Jobs, FormBlock, Cta],
     },
   ],
 }

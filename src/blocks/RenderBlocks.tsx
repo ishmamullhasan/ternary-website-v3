@@ -5,7 +5,9 @@ import type { JSX } from 'react'
 import { ContentBlockComponent } from './Content/Component'
 import { CtaBlockComponent } from './Cta/Component'
 import { FeatureGridBlockComponent } from './FeatureGrid/Component'
+import { FormBlockComponent } from './Form/Component'
 import { HeroBlockComponent } from './Hero/Component'
+import { JobsBlockComponent } from './Jobs/Component'
 import { LogosBlockComponent } from './Logos/Component'
 import { RelationGridBlockComponent } from './RelationGrid/Component'
 import { StepsBlockComponent } from './Steps/Component'
@@ -38,6 +40,10 @@ export function RenderBlocks({ blocks }: { blocks?: Page['layout'] }): JSX.Eleme
             return <TeamBlockComponent key={key} {...block} />
           case 'steps':
             return <StepsBlockComponent key={key} {...block} />
+          case 'jobsBlock':
+            return <JobsBlockComponent key={key} {...block} />
+          case 'formBlock':
+            return <FormBlockComponent key={key} {...block} />
           case 'ctaBlock':
             return <CtaBlockComponent key={key} {...block} />
           default:
