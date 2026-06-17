@@ -5,6 +5,7 @@ import { authenticated } from '@/access/authenticated'
 import { Content } from '@/blocks/Content/config'
 import { Cta } from '@/blocks/Cta/config'
 import { Hero } from '@/blocks/Hero/config'
+import { RelationGrid } from '@/blocks/RelationGrid/config'
 
 /**
  * Blocks-based page model (Epic A). Editors compose a page from the reusable block
@@ -34,7 +35,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       label: 'Layout',
       type: 'blocks',
-      blocks: [Hero, Content, Cta],
+      blocks: [Hero, Content, RelationGrid, Cta],
     },
   ],
 }

@@ -187,7 +187,7 @@ export interface Page {
    */
   generateSlug?: boolean | null;
   slug: string;
-  layout?: (HeroBlock | ContentBlock | CtaBlock)[] | null;
+  layout?: (HeroBlock | ContentBlock | RelationGridBlock | CtaBlock)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -227,7 +227,6 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  prefix?: string | null;
   folder?: (string | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -348,6 +347,318 @@ export interface ContentBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'content';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RelationGridBlock".
+ */
+export interface RelationGridBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | (
+        | {
+            relationTo: 'solution';
+            value: string | Solution;
+          }
+        | {
+            relationTo: 'industry';
+            value: string | Industry;
+          }
+        | {
+            relationTo: 'scale';
+            value: string | Scale;
+          }
+        | {
+            relationTo: 'model';
+            value: string | Model;
+          }
+        | {
+            relationTo: 'capability';
+            value: string | Capability;
+          }
+      )[]
+    | null;
+  columns?: ('2' | '3' | '4') | null;
+  /**
+   * Optional. Cards link to {hrefBase}/{slug} — e.g. /industries.
+   */
+  hrefBase?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'relationGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution".
+ */
+export interface Solution {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "industry".
+ */
+export interface Industry {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scale".
+ */
+export interface Scale {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  subTitle?: string | null;
+  description?: string | null;
+  tags?: string | null;
+  image?: (string | null) | Media;
+  podSize?:
+    | {
+        title?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "model".
+ */
+export interface Model {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "capability".
+ */
+export interface Capability {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  heroSection?: {
+    /**
+     * Pill label shown above the heading (e.g. Digital Experiences).
+     */
+    badge?: string | null;
+    heading?: string | null;
+    description?: string | null;
+    heroImage?: (string | null) | Media;
+    button?: {
+      label?: string | null;
+      link?: string | null;
+    };
+  };
+  whatThisMeansToUs?: {
+    /**
+     * e.g. Section 01
+     */
+    sectionLabel?: string | null;
+    heading?: string | null;
+    description?: string | null;
+    items?:
+      | {
+          title?: string | null;
+          excerpt?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  howWeDoIt?: {
+    sectionLabel?: string | null;
+    heading?: string | null;
+    description?: string | null;
+    items?:
+      | {
+          title?: string | null;
+          excerpt?: string | null;
+          stack?:
+            | {
+                name?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  caseStudies?: {
+    sectionLabel?: string | null;
+    heading?: string | null;
+    description?: string | null;
+    items?:
+      | {
+          /**
+           * e.g. 2025 · Insurance
+           */
+          meta?: string | null;
+          title?: string | null;
+          problem?: string | null;
+          approach?: string | null;
+          outcome?: string | null;
+          /**
+           * e.g. 4h
+           */
+          metricValue?: string | null;
+          /**
+           * e.g. from 6 days
+           */
+          metricLabel?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  practiceLead?: {
+    sectionLabel?: string | null;
+    member?: (string | null) | Team;
+    bio?: string | null;
+    credentials?:
+      | {
+          text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    writings?:
+      | {
+          title?: string | null;
+          category?: string | null;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    email?: string | null;
+    github?: string | null;
+  };
+  relatedCapabilities?: {
+    sectionLabel?: string | null;
+    heading?: string | null;
+    capabilities?: (string | Capability)[] | null;
+  };
+  cta?: {
+    heading?: string | null;
+    description?: string | null;
+    backgroundImage?: (string | null) | Media;
+    button_1?: {
+      label?: string | null;
+      link?: string | null;
+    };
+    button_2?: {
+      label?: string | null;
+      link?: string | null;
+    };
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: string;
+  name?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  position?: string | null;
+  excerpt?: string | null;
+  description?: string | null;
+  image?: (string | null) | Media;
+  linkedin?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -506,26 +817,6 @@ export interface Insight {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team".
- */
-export interface Team {
-  id: string;
-  name?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  position?: string | null;
-  excerpt?: string | null;
-  description?: string | null;
-  image?: (string | null) | Media;
-  linkedin?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pressRelease".
  */
 export interface PressRelease {
@@ -647,258 +938,6 @@ export interface PressRelease {
     description?: string | null;
     pressReleases?: (string | PressRelease)[] | null;
   };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "capability".
- */
-export interface Capability {
-  id: string;
-  title?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  excerpts?: string | null;
-  thumbnail?: (string | null) | Media;
-  heroSection?: {
-    /**
-     * Pill label shown above the heading (e.g. Digital Experiences).
-     */
-    badge?: string | null;
-    heading?: string | null;
-    description?: string | null;
-    heroImage?: (string | null) | Media;
-    button?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  whatThisMeansToUs?: {
-    /**
-     * e.g. Section 01
-     */
-    sectionLabel?: string | null;
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  howWeDoIt?: {
-    sectionLabel?: string | null;
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          stack?:
-            | {
-                name?: string | null;
-                id?: string | null;
-              }[]
-            | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  caseStudies?: {
-    sectionLabel?: string | null;
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          /**
-           * e.g. 2025 · Insurance
-           */
-          meta?: string | null;
-          title?: string | null;
-          problem?: string | null;
-          approach?: string | null;
-          outcome?: string | null;
-          /**
-           * e.g. 4h
-           */
-          metricValue?: string | null;
-          /**
-           * e.g. from 6 days
-           */
-          metricLabel?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  practiceLead?: {
-    sectionLabel?: string | null;
-    member?: (string | null) | Team;
-    bio?: string | null;
-    credentials?:
-      | {
-          text?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    writings?:
-      | {
-          title?: string | null;
-          category?: string | null;
-          link?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    email?: string | null;
-    github?: string | null;
-  };
-  relatedCapabilities?: {
-    sectionLabel?: string | null;
-    heading?: string | null;
-    capabilities?: (string | Capability)[] | null;
-  };
-  cta?: {
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    button_1?: {
-      label?: string | null;
-      link?: string | null;
-    };
-    button_2?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "solution".
- */
-export interface Solution {
-  id: string;
-  title?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  excerpts?: string | null;
-  thumbnail?: (string | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "industry".
- */
-export interface Industry {
-  id: string;
-  title?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  excerpts?: string | null;
-  thumbnail?: (string | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "scale".
- */
-export interface Scale {
-  id: string;
-  title?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  excerpts?: string | null;
-  thumbnail?: (string | null) | Media;
-  subTitle?: string | null;
-  description?: string | null;
-  tags?: string | null;
-  image?: (string | null) | Media;
-  podSize?:
-    | {
-        title?: string | null;
-        value?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "model".
- */
-export interface Model {
-  id: string;
-  title?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  excerpts?: string | null;
-  thumbnail?: (string | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1444,6 +1483,7 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         hero?: T | HeroBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
+        relationGrid?: T | RelationGridBlockSelect<T>;
         ctaBlock?: T | CtaBlockSelect<T>;
       };
   updatedAt?: T;
@@ -1468,6 +1508,19 @@ export interface HeroBlockSelect<T extends boolean = true> {
  */
 export interface ContentBlockSelect<T extends boolean = true> {
   content?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RelationGridBlock_select".
+ */
+export interface RelationGridBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?: T;
+  columns?: T;
+  hrefBase?: T;
   id?: T;
   blockName?: T;
 }
@@ -1501,7 +1554,6 @@ export interface CtaBlockSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
-  prefix?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
