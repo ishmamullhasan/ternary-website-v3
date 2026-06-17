@@ -1,0 +1,45 @@
+name: Lighthouse
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_OPTIONS: --no-deprecation
+  DATABASE_URI: mongodb://localhost:27017/ci
+  DATABASE_URL: mongodb://localhost:27017/ci
+  PAYLOAD_SECRET: ci-not-a-secret
+  NEXT_PUBLIC_SERVER_URL: http://localhost:3000
+  PREVIEW_SECRET: ci-not-a-secret
+  CRON_SECRET: ci-not-a-secret
+
+jobs:
+  lighthouse:
+    name: Lighthouse audit
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm --ignore-workspace install --frozen-lockfile
+      # Seed header/footer/homepage globals so the homepage renders for the audit.
+      - run: pnpm payload run ./scripts/ci-seed.ts
+      - run: pnpm build
+      # autorun reads lighthouserc.json: starts `pnpm start`, audits /, asserts budgets.
+      # Budgets are 'warn' for now (see lighthouserc.json) so this reports a baseline
+      # without blocking; WEB-424 promotes them to blocking once the rebuild meets them.
+      - run: pnpm dlx @lhci/cli@0.14.x autorun
