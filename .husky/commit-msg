@@ -1,1 +1,18 @@
-exit 0
+#!/usr/bin/env sh
+
+# Enforce the team convention: every commit subject references a Jira issue key
+# (e.g. "WEB-123: ..."), supporting the Jira-first workflow. Merge/revert/fixup
+# commits are exempt.
+subject=$(head -n1 "$1")
+
+case "$subject" in
+  Merge*|Revert*|fixup!*|squash!*) exit 0 ;;
+esac
+
+if printf '%s' "$subject" | grep -Eq '[A-Z]{2,6}-[0-9]+'; then
+  exit 0
+fi
+
+echo "✗ commit-msg: subject must reference a Jira issue key, e.g. 'WEB-123: <summary>'." >&2
+echo "  got: $subject" >&2
+exit 1
