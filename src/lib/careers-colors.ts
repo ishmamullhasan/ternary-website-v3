@@ -1,24 +1,28 @@
-/** Shared hex text/background tokens for careers & job pages */
+/**
+ * Shared semantic colour classes for the careers & job pages. These now reference the
+ * brand tokens defined in globals.css `@theme` (WEB-410) instead of raw hex literals, so
+ * the palette has a single source of truth.
+ */
 export const careersText = {
-  cream: 'text-[#F4F3EC]',
-  body: 'text-[#D5D5D5]',
-  muted: 'text-[#757571]',
+  cream: 'text-cream',
+  body: 'text-body',
+  muted: 'text-subtle',
   white: 'text-white',
-  onLight: 'text-[#0F0E0E]',
+  onLight: 'text-ink',
 } as const
 
 export const careersBg = {
-  page: 'bg-[#050505]',
-  card: 'bg-[#1B1A17]',
-  cardInner: 'bg-[#0F0E0E]',
-  badge: 'bg-[#202020]',
-  button: 'bg-[#F4F3EC]',
-  buttonHover: 'hover:bg-[#E8E7DF]',
-  buttonDark: 'bg-[#14120B]',
+  page: 'bg-page',
+  card: 'bg-main',
+  cardInner: 'bg-ink',
+  badge: 'bg-badge',
+  button: 'bg-cream',
+  buttonHover: 'hover:bg-cream-hover',
+  buttonDark: 'bg-button-dark',
 } as const
 
 export const careersBorder = {
-  muted: 'border-[#757571]',
-  subtle: 'border-[#27272a]',
-  input: 'border-[#3f3f46]',
+  muted: 'border-subtle',
+  subtle: 'border-line',
+  input: 'border-line-strong',
 } as const
