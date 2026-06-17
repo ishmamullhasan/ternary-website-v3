@@ -57,7 +57,7 @@ export default function ColumnSection({
     return (
       <Motion
         tag="section"
-        className={cn('max-w-7xl mx-auto px-6 lg:px-0', className)}
+        className={cn('max-w-7xl mx-auto px-5', className)}
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false, amount: 0.2 }}

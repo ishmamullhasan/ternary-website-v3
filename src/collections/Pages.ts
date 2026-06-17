@@ -2,15 +2,24 @@ import { type CollectionConfig, slugField } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { AboutPageSection } from '@/blocks/AboutPage/config'
+import { CareersPageSection } from '@/blocks/CareersPage/config'
+import { ContactPageSection } from '@/blocks/ContactPage/config'
 import { Content } from '@/blocks/Content/config'
 import { Cta } from '@/blocks/Cta/config'
 import { FeatureGrid } from '@/blocks/FeatureGrid/config'
 import { FormBlock } from '@/blocks/Form/config'
 import { Hero } from '@/blocks/Hero/config'
+import { homeSectionBlocks } from '@/blocks/homeSections/config'
+import { IndustriesPageSection } from '@/blocks/IndustriesPage/config'
+import { IndustriesSection } from '@/blocks/IndustriesSection/config'
 import { Jobs } from '@/blocks/Jobs/config'
 import { Logos } from '@/blocks/Logos/config'
 import { RelationGrid } from '@/blocks/RelationGrid/config'
+import { ScalesPageSection } from '@/blocks/ScalesPage/config'
+import { SolutionsPageSection } from '@/blocks/SolutionsPage/config'
 import { Steps } from '@/blocks/Steps/config'
+import { StoriesPageSection } from '@/blocks/StoriesPage/config'
 import { Team } from '@/blocks/Team/config'
 import { getServerSideURL } from '@/utilities/getURL'
 
@@ -56,7 +65,28 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       label: 'Layout',
       type: 'blocks',
-      blocks: [Hero, Content, RelationGrid, FeatureGrid, Logos, Team, Steps, Jobs, FormBlock, Cta],
+      blocks: [
+        Hero,
+        Content,
+        RelationGrid,
+        FeatureGrid,
+        Logos,
+        Team,
+        Steps,
+        Jobs,
+        FormBlock,
+        IndustriesSection,
+        ...homeSectionBlocks,
+        // Composite design-faithful page blocks (one per ported marketing page).
+        AboutPageSection,
+        SolutionsPageSection,
+        IndustriesPageSection,
+        ScalesPageSection,
+        ContactPageSection,
+        CareersPageSection,
+        StoriesPageSection,
+        Cta,
+      ],
     },
   ],
 }

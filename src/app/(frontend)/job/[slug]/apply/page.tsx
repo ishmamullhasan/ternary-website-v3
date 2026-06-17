@@ -73,7 +73,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
-      <main className="pb-24 max-w-7xl mx-auto px-4 lg:px-6 space-y-24">
+      <main className="pb-24 max-w-7xl mx-auto px-5 space-y-24">
         {/* Hero */}
         <Motion tag="section" className="space-y-6" {...motionSectionProps}>
           <Link

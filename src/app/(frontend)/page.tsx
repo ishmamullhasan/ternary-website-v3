@@ -1,147 +1,41 @@
-import Motion from '@/components/animation/motion'
-import { RichText } from '@/components/richtext'
-import AboutComp from '@/components/sections/aboutComp'
-import CapabilitiesComp from '@/components/sections/capabilitiesComp'
-import EngagementComp from '@/components/sections/engagementComp'
-import GlobalDeliveryComp from '@/components/sections/globalDeliveryComp'
-import IndustriesComp from '@/components/sections/industriesComp'
-import OpportunitiesComp from '@/components/sections/opportunitiesComp'
-import ProcessComp from '@/components/sections/processComp'
-import ScalesComp from '@/components/sections/scalesComp'
-import SolutionsComp from '@/components/sections/solutionsComp'
-import TeamComp from '@/components/sections/teamComp'
-import type { Capability, HomePage, Industry, Job, Media, Model, Scale, Solution, Team } from '@/payload-types'
-import config from '@/payload.config'
-import { unstable_cache } from 'next/cache'
+import { RenderBlocks } from '@/blocks/RenderBlocks'
+import config from '@payload-config'
+import type { Metadata } from 'next'
+import { draftMode } from 'next/headers'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-type MultiRelation =
-  | { relationTo: 'capability'; value: Capability }
-  | { relationTo: 'solution'; value: Solution }
-  | { relationTo: 'industry'; value: Industry }
-  | { relationTo: 'scale'; value: Scale }
-  | { relationTo: 'model'; value: Model }
+// The home page is now a blocks-driven Page (slug `home`) rendered by <RenderBlocks>, the
+// same path as every other [...slug] page. The index route ("/") can't be matched by the
+// catch-all (it requires ≥1 segment), so it fetches the `home` Page directly here.
+const getHomePage = async (draft: boolean) => {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'pages',
+    where: { slug: { equals: 'home' } },
+    draft,
+    // Pages are public, but the content collections they reference are not publicly
+    // readable — override access so block relationships populate (else sections render empty).
+    overrideAccess: true,
+    depth: 2,
+    limit: 1,
+  })
+  return result.docs[0] ?? null
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { isEnabled: draft } = await draftMode()
+  const page = await getHomePage(draft)
+  return { title: page?.title ? `${page.title} | Ternary Solutions` : 'Ternary Solutions' }
+}
 
 export default async function Page(): Promise<JSX.Element> {
-  const getHomePageData = unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.findGlobal({ slug: 'homePage', depth: 2 })
-    },
-    ['homePage'],
-    { tags: ['homePage'] },
-  )
-
-  const homePageData: HomePage | null = await getHomePageData()
-
-  if (!homePageData) {
-    return (
-      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
-    )
-  }
-
-  const motionSectionProps = {
-    initial: { opacity: 0, y: 12 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.2 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
+  const { isEnabled: draft } = await draftMode()
+  const page = await getHomePage(draft)
 
   return (
-    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <AboutComp
-          heading={homePageData.about?.heading}
-          description={homePageData.about?.description}
-          items={homePageData.about?.items as MultiRelation[] | null}
-          organizations={
-            homePageData.about?.organizations as {
-              heading?: string | null
-              organization?: { icon?: Media | null; name?: string | null; link?: string | null }[] | null
-            } | null
-          }
-          bottomDescription={homePageData.about?.bottomDescription}
-        />
-      </Motion>
-
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <div id="solutions">
-          <SolutionsComp
-            heading={homePageData.solutions?.heading}
-            description={homePageData.solutions?.description}
-            image={homePageData.solutions?.image as Media}
-            items={homePageData.solutions?.items as Solution[]}
-          />
-        </div>
-      </Motion>
-
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <CapabilitiesComp
-          heading={homePageData.capabilities?.heading}
-          description={homePageData.capabilities?.description}
-          capability={homePageData.capabilities?.capability as Capability[]}
-          heading_2={homePageData.capabilities?.heading_2}
-          description_2={homePageData.capabilities?.description_2}
-          image={homePageData.capabilities?.image as Media}
-        />
-      </Motion>
-
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <IndustriesComp
-          heading={homePageData.industries?.heading}
-          description={homePageData.industries?.description}
-          industry={homePageData.industries?.industry as Industry[]}
-        />
-      </Motion>
-
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <ScalesComp
-          heading={homePageData.scales?.heading}
-          description={homePageData.scales?.description}
-          scales={homePageData.scales?.scale as Scale[]}
-        />
-      </Motion>
-
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <EngagementComp
-          heading={homePageData.engagement?.heading}
-          description={homePageData.engagement?.description}
-          model={homePageData.engagement?.model as Model[]}
-        />
-      </Motion>
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <GlobalDeliveryComp
-          heading={homePageData.globalDelivery?.heading}
-          description={homePageData.globalDelivery?.description}
-          title={homePageData.globalDelivery?.title}
-          excerpt={homePageData.globalDelivery?.excerpt}
-          image={homePageData.globalDelivery?.image as Media}
-        />
-      </Motion>
-
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <ProcessComp
-          heading={homePageData.processes?.heading}
-          description={homePageData.processes?.description}
-          process={homePageData.processes?.process as { title?: string | null; description?: RichText | null }[] | null}
-        />
-      </Motion>
-
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <TeamComp
-          heading={homePageData.team?.heading}
-          description={homePageData.team?.description}
-          members={(homePageData.team?.members as Team[]) || null}
-        />
-      </Motion>
-      <Motion tag="section" className="w-full" {...motionSectionProps}>
-        <OpportunitiesComp
-          heading={homePageData.opportunities?.heading}
-          description={homePageData.opportunities?.description}
-          opportunity={homePageData.opportunities?.opportunity as Job[] | null}
-        />
-      </Motion>
-    </div>
+    <main>
+      <RenderBlocks blocks={page?.layout} />
+    </main>
   )
 }

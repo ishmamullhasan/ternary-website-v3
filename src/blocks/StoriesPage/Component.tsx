@@ -1,8 +1,7 @@
 import Motion from '@/components/animation/motion'
 import AllStoriesGrid, { type StoryGridItem } from '@/components/sections/stories/AllStoriesGrid'
 import SubscribeForm from '@/components/sections/stories/SubscribeForm'
-import type { Media, PressRelease, StoriesPage, Story } from '@/payload-types'
-import config from '@/payload.config'
+import type { Media, PressRelease, StoriesPageBlock, Story } from '@/payload-types'
 import {
   ArrowRight,
   ArrowUpRight,
@@ -13,17 +12,9 @@ import {
   Newspaper,
   type LucideIcon,
 } from 'lucide-react'
-import type { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getPayload } from 'payload'
 import type { JSX } from 'react'
-
-export const metadata: Metadata = {
-  title: 'Stories',
-  description: 'Insights, press releases, and stories from the team at Ternary Solutions.',
-}
 
 const CATEGORY_LANDING_ICONS = {
   newspaper: Newspaper,
@@ -47,24 +38,7 @@ function CategoryLandingIcon({ icon }: { icon: string | null | undefined }) {
   return <Icon size={18} strokeWidth={1.75} aria-hidden className="shrink-0 text-white" />
 }
 
-export default async function Page(): Promise<JSX.Element> {
-  const getStoriesPageData = unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.findGlobal({ slug: 'storiesPage', depth: 2 })
-    },
-    ['storiesPage'],
-    { tags: ['storiesPage'] },
-  )
-
-  const storiesPageData: StoriesPage | null = await getStoriesPageData()
-
-  if (!storiesPageData) {
-    return (
-      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
-    )
-  }
-
+export const StoriesPageComponent = (data: StoriesPageBlock): JSX.Element => {
   const motionSectionProps = {
     initial: { opacity: 0, y: 12 },
     whileInView: { opacity: 1, y: 0 },
@@ -79,21 +53,21 @@ export default async function Page(): Promise<JSX.Element> {
     transition: { duration: 0.35, ease: 'easeOut' as const },
   }
 
-  const featuredStory = storiesPageData.featureCaseStudy?.story as Story | undefined
+  const featuredStory = data.featureCaseStudy?.story as Story | undefined
   const featuredImage = featuredStory?.thumbnail as Media | undefined
-  const gridItems = storiesPageData.allStoriesGrid?.items as StoryGridItem[] | undefined
-  const pressReleases = storiesPageData.allStoriesGrid?.pressRelease as PressRelease[] | undefined
+  const gridItems = data.allStoriesGrid?.items as StoryGridItem[] | undefined
+  const pressReleases = data.allStoriesGrid?.pressRelease as PressRelease[] | undefined
 
   return (
-    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
+    <div className="flex flex-col lg:gap-32 gap-10">
       {/* Hero */}
       <Motion tag="section" className="w-full lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
         <div className="w-full mx-auto flex flex-col px-4 lg:px-0 items-center justify-center">
           <Motion className="flex flex-col text-center max-w-4xl" {...motionBlockProps}>
             <h1 className="lg:text-4xl text-3xl font-medium tracking-tight mb-6 max-w-3xl leading-[1.15]">
-              {storiesPageData.heroSection?.heading}
+              {data.heroSection?.heading}
             </h1>
-            <p className="lg:text-base text-sm text-[#D5D5D5] max-w-2xl">{storiesPageData.heroSection?.description}</p>
+            <p className="lg:text-base text-sm text-[#D5D5D5] max-w-2xl">{data.heroSection?.description}</p>
           </Motion>
         </div>
       </Motion>
@@ -101,17 +75,15 @@ export default async function Page(): Promise<JSX.Element> {
       {/* Feature Case Study */}
       {featuredStory && (
         <Motion tag="section" className="w-full lg:m-0 m-4 space-y-8" {...motionSectionProps}>
-          {(storiesPageData.featureCaseStudy?.heading || storiesPageData.featureCaseStudy?.description) && (
+          {(data.featureCaseStudy?.heading || data.featureCaseStudy?.description) && (
             <div className="space-y-3 max-w-3xl">
-              {storiesPageData.featureCaseStudy?.heading && (
+              {data.featureCaseStudy?.heading && (
                 <h2 className="lg:text-3xl text-2xl font-medium tracking-tight text-white">
-                  {storiesPageData.featureCaseStudy.heading}
+                  {data.featureCaseStudy.heading}
                 </h2>
               )}
-              {storiesPageData.featureCaseStudy?.description && (
-                <p className="lg:text-sm text-xs text-[#D5D5D5] leading-relaxed">
-                  {storiesPageData.featureCaseStudy.description}
-                </p>
+              {data.featureCaseStudy?.description && (
+                <p className="lg:text-sm text-xs text-[#D5D5D5] leading-relaxed">{data.featureCaseStudy.description}</p>
               )}
             </div>
           )}
@@ -131,9 +103,9 @@ export default async function Page(): Promise<JSX.Element> {
                 <div className="absolute inset-0 bg-linear-to-tr from-[#f3535b] via-[#5c1c49] to-[#f9a655] opacity-90" />
               )}
 
-              {storiesPageData.featureCaseStudy?.stats && storiesPageData.featureCaseStudy.stats.length > 0 && (
+              {data.featureCaseStudy?.stats && data.featureCaseStudy.stats.length > 0 && (
                 <div className="absolute bottom-6 right-6 flex gap-3">
-                  {storiesPageData.featureCaseStudy.stats.map((stat, index) => (
+                  {data.featureCaseStudy.stats.map((stat, index) => (
                     <div
                       key={stat.id ?? `stat-${index}`}
                       className="rounded-lg bg-black/50 backdrop-blur-sm border border-white/10 px-4 py-3 text-center min-w-[120px]"
@@ -158,39 +130,36 @@ export default async function Page(): Promise<JSX.Element> {
                 )}
               </div>
 
-              {storiesPageData.featureCaseStudy?.highlights &&
-                storiesPageData.featureCaseStudy.highlights.length > 0 && (
-                  <ul className="space-y-3">
-                    {storiesPageData.featureCaseStudy.highlights.map((highlight, index) => (
-                      <li
-                        key={highlight.id ?? `highlight-${index}`}
-                        className="flex items-start gap-3 text-sm text-[#D5D5D5]"
-                      >
-                        <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#757571] shrink-0" />
-                        <span>{highlight.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+              {data.featureCaseStudy?.highlights && data.featureCaseStudy.highlights.length > 0 && (
+                <ul className="space-y-3">
+                  {data.featureCaseStudy.highlights.map((highlight, index) => (
+                    <li
+                      key={highlight.id ?? `highlight-${index}`}
+                      className="flex items-start gap-3 text-sm text-[#D5D5D5]"
+                    >
+                      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#757571] shrink-0" />
+                      <span>{highlight.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-zinc-800/60">
                 <div className="flex items-center gap-2 text-xs text-[#757571]">
-                  {storiesPageData.featureCaseStudy?.readTime && (
+                  {data.featureCaseStudy?.readTime && (
                     <>
                       <Clock size={12} />
-                      <span>{storiesPageData.featureCaseStudy.readTime}</span>
+                      <span>{data.featureCaseStudy.readTime}</span>
                     </>
                   )}
-                  {storiesPageData.featureCaseStudy?.categoryLabel && (
-                    <span>· {storiesPageData.featureCaseStudy.categoryLabel}</span>
-                  )}
+                  {data.featureCaseStudy?.categoryLabel && <span>· {data.featureCaseStudy.categoryLabel}</span>}
                 </div>
 
                 <Link
                   href={featuredStory.slug ? `/stories/${featuredStory.slug}` : '#'}
                   className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-[#F4F3EC] text-[#0F0E0E] font-medium text-sm hover:bg-[#E8E7DF] transition-colors"
                 >
-                  {storiesPageData.featureCaseStudy?.buttonLabel || 'Read case study'}
+                  {data.featureCaseStudy?.buttonLabel || 'Read case study'}
                   <ArrowRight size={16} />
                 </Link>
               </div>
@@ -202,31 +171,29 @@ export default async function Page(): Promise<JSX.Element> {
       {/* All Stories Grid */}
       <Motion tag="section" {...motionSectionProps}>
         <AllStoriesGrid
-          heading={storiesPageData.allStoriesGrid?.heading}
-          description={storiesPageData.allStoriesGrid?.description}
+          heading={data.allStoriesGrid?.heading}
+          description={data.allStoriesGrid?.description}
           items={gridItems}
           pressReleases={pressReleases}
         />
       </Motion>
 
       {/* Category Landing */}
-      {storiesPageData.categoryLanding?.categories && storiesPageData.categoryLanding.categories.length > 0 && (
+      {data.categoryLanding?.categories && data.categoryLanding.categories.length > 0 && (
         <Motion tag="section" className="w-full lg:m-0 m-4 space-y-8" {...motionSectionProps}>
           <div className="space-y-3 max-w-3xl">
-            {storiesPageData.categoryLanding.heading && (
+            {data.categoryLanding.heading && (
               <h2 className="lg:text-3xl text-2xl font-medium tracking-tight text-white">
-                {storiesPageData.categoryLanding.heading}
+                {data.categoryLanding.heading}
               </h2>
             )}
-            {storiesPageData.categoryLanding.description && (
-              <p className="lg:text-sm text-xs text-[#D5D5D5] leading-relaxed">
-                {storiesPageData.categoryLanding.description}
-              </p>
+            {data.categoryLanding.description && (
+              <p className="lg:text-sm text-xs text-[#D5D5D5] leading-relaxed">{data.categoryLanding.description}</p>
             )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {storiesPageData.categoryLanding.categories.map((category, index) => {
+            {data.categoryLanding.categories.map((category, index) => {
               const image = category.image as Media | undefined
               const gradient = CATEGORY_GRADIENTS[index % CATEGORY_GRADIENTS.length]
 
@@ -293,7 +260,7 @@ export default async function Page(): Promise<JSX.Element> {
       )}
 
       {/* Subscribe */}
-      {storiesPageData.subscribe?.heading && (
+      {data.subscribe?.heading && (
         <Motion
           tag="section"
           className="lg:m-0 m-4 rounded-lg overflow-hidden border border-zinc-800/40 bg-main"
@@ -303,22 +270,18 @@ export default async function Page(): Promise<JSX.Element> {
             <div className="p-8 lg:p-10 space-y-8">
               <div className="space-y-4">
                 <h2 className="text-2xl lg:text-4xl font-medium tracking-tight text-white leading-tight max-w-lg">
-                  {storiesPageData.subscribe.heading}
+                  {data.subscribe.heading}
                 </h2>
-                {storiesPageData.subscribe.description && (
-                  <p className="text-sm text-[#D5D5D5] leading-relaxed max-w-xl">
-                    {storiesPageData.subscribe.description}
-                  </p>
+                {data.subscribe.description && (
+                  <p className="text-sm text-[#D5D5D5] leading-relaxed max-w-xl">{data.subscribe.description}</p>
                 )}
               </div>
 
-              {storiesPageData.subscribe.followOptions && storiesPageData.subscribe.followOptions.length > 0 && (
+              {data.subscribe.followOptions && data.subscribe.followOptions.length > 0 && (
                 <div className="space-y-3">
-                  {storiesPageData.subscribe.followHint && (
-                    <p className="text-xs text-[#757571]">{storiesPageData.subscribe.followHint}</p>
-                  )}
+                  {data.subscribe.followHint && <p className="text-xs text-[#757571]">{data.subscribe.followHint}</p>}
                   <div className="flex flex-wrap gap-2">
-                    {storiesPageData.subscribe.followOptions.map((option, index) => (
+                    {data.subscribe.followOptions.map((option, index) => (
                       <button
                         key={option.id ?? `follow-${index}`}
                         type="button"
@@ -332,36 +295,34 @@ export default async function Page(): Promise<JSX.Element> {
               )}
 
               <SubscribeForm
-                emailPlaceholder={storiesPageData.subscribe.emailPlaceholder}
-                buttonLabel={storiesPageData.subscribe.buttonLabel}
+                emailPlaceholder={data.subscribe.emailPlaceholder}
+                buttonLabel={data.subscribe.buttonLabel}
               />
 
-              {storiesPageData.subscribe.disclaimer && (
-                <p className="text-xs text-[#757571]">{storiesPageData.subscribe.disclaimer}</p>
-              )}
+              {data.subscribe.disclaimer && <p className="text-xs text-[#757571]">{data.subscribe.disclaimer}</p>}
             </div>
 
             <div
               className="relative min-h-[280px] lg:min-h-full p-8 flex flex-col justify-between"
               style={{
-                background: (storiesPageData.subscribe.preview?.backgroundImage as Media)?.url
-                  ? `url(${(storiesPageData.subscribe.preview?.backgroundImage as Media)?.url}) center/cover no-repeat`
+                background: (data.subscribe.preview?.backgroundImage as Media)?.url
+                  ? `url(${(data.subscribe.preview?.backgroundImage as Media)?.url}) center/cover no-repeat`
                   : 'linear-gradient(135deg, #1e3a5f 0%, #4c1d95 60%, #2e1065 100%)',
               }}
             >
               <div className="absolute inset-0 bg-black/40" />
               <div className="relative z-10 space-y-8 text-white">
-                {storiesPageData.subscribe.preview?.issueLabel && (
-                  <p className="text-xs text-white/70">{storiesPageData.subscribe.preview.issueLabel}</p>
+                {data.subscribe.preview?.issueLabel && (
+                  <p className="text-xs text-white/70">{data.subscribe.preview.issueLabel}</p>
                 )}
 
                 <div className="space-y-4">
-                  {storiesPageData.subscribe.preview?.heading && (
-                    <p className="text-sm font-medium">{storiesPageData.subscribe.preview.heading}</p>
+                  {data.subscribe.preview?.heading && (
+                    <p className="text-sm font-medium">{data.subscribe.preview.heading}</p>
                   )}
-                  {storiesPageData.subscribe.preview?.items && storiesPageData.subscribe.preview.items.length > 0 && (
+                  {data.subscribe.preview?.items && data.subscribe.preview.items.length > 0 && (
                     <ul className="space-y-2">
-                      {storiesPageData.subscribe.preview.items.map((item, index) => (
+                      {data.subscribe.preview.items.map((item, index) => (
                         <li
                           key={item.id ?? `preview-${index}`}
                           className="flex items-start gap-2 text-sm text-white/90"
@@ -375,8 +336,8 @@ export default async function Page(): Promise<JSX.Element> {
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-white/70 pt-4">
-                  <span>{storiesPageData.subscribe.preview?.subscribersLabel}</span>
-                  <span>{storiesPageData.subscribe.preview?.readTimeLabel}</span>
+                  <span>{data.subscribe.preview?.subscribersLabel}</span>
+                  <span>{data.subscribe.preview?.readTimeLabel}</span>
                 </div>
               </div>
             </div>
@@ -386,3 +347,5 @@ export default async function Page(): Promise<JSX.Element> {
     </div>
   )
 }
+
+export default StoriesPageComponent

@@ -7,7 +7,7 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 export function TeamBlockComponent({ heading, description, members }: TeamBlock): JSX.Element {
   return (
-    <section className="max-w-7xl mx-auto px-4 lg:px-6 py-16">
+    <section className="max-w-7xl mx-auto px-5 py-16">
       {(description || heading) && (
         <div className="mb-8 lg:w-2/5">
           {description && <p className="lg:text-base text-sm mb-3 text-body">{description}</p>}

@@ -8,7 +8,7 @@ export function FormBlockComponent({ heading, description, form }: FormBlockType
   if (typeof form !== 'object' || form === null) return null
 
   return (
-    <section className="max-w-3xl mx-auto px-4 lg:px-6 py-16">
+    <section className="max-w-3xl mx-auto px-5 py-16">
       {(description || heading) && (
         <div className="mb-8">
           {description && <p className="text-body mb-3">{description}</p>}

@@ -1,33 +1,11 @@
 import Section from '@/components/layout/section'
 import ColumnSection from '@/components/layout/sectionColumn'
-import type { Media, SolutionsPage } from '@/payload-types'
-import config from '@/payload.config'
+import type { Media, SolutionsPageBlock } from '@/payload-types'
 import { ArrowRight } from 'lucide-react'
-import type { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
-import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-export const dynamic = 'force-dynamic'
-
-export const metadata: Metadata = {
-  title: 'Solutions',
-  description: 'Discover what Ternary builds — the types of products and projects we take on.',
-}
-
-export default async function Page(): Promise<JSX.Element> {
-  const getSolutionsPageData = unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.findGlobal({ slug: 'solutionsPage', depth: 2 })
-    },
-    ['solutionsPage'],
-    { tags: ['solutionsPage'] },
-  )
-
-  const solutionsPageData: SolutionsPage | null = await getSolutionsPageData()
-
+export const SolutionsPageComponent = (data: SolutionsPageBlock): JSX.Element => {
   const InfoCard = ({
     title,
     description,
@@ -217,25 +195,25 @@ export default async function Page(): Promise<JSX.Element> {
   ]
 
   // --- CMS data ---
-  const hero = solutionsPageData?.hero
+  const hero = data?.hero
   const heroCards = hero?.cards ?? []
-  const s0 = solutionsPageData?.section_2
-  const s1 = solutionsPageData?.section_3
-  const s2 = solutionsPageData?.section_4
-  const s3 = solutionsPageData?.section_5
-  const engage = solutionsPageData?.engage
+  const s0 = data?.section_2
+  const s1 = data?.section_3
+  const s2 = data?.section_4
+  const s3 = data?.section_5
+  const engage = data?.engage
   const engageCards = engage?.cards ?? []
-  const cta = solutionsPageData?.cta
+  const cta = data?.cta
 
   return (
-    <main className="min-h-screen pt-32 pb-24 max-w-7xl mx-auto px-4 lg:px-6 space-y-32">
+    <main className="min-h-screen space-y-32">
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-0">
+      <section className="max-w-7xl mx-auto px-5">
         <h1 className="text-[40px] font-bold text-white mb-6 leading-tight text-center">{hero?.heading}</h1>
         <p className="text-neutral-400 mb-10 text-base leading-relaxed text-center">{hero?.description}</p>
       </section>
 
-      <section className="relative z-10 shrink-0 mx-auto w-full max-w-7xl px-6 lg:px-0">
+      <section className="relative z-10 shrink-0 mx-auto w-full max-w-7xl px-5">
         <div className="relative flex min-h-[min(70vh,540px)] w-full flex-col justify-end overflow-hidden rounded-xl sm:h-[70vh] sm:min-h-0">
           <Image
             src={(hero?.backgroundImage as Media)?.url || 'https://dummyimage.com/1920x1080/37624F/ffffff'}
@@ -495,3 +473,5 @@ export default async function Page(): Promise<JSX.Element> {
     </main>
   )
 }
+
+export default SolutionsPageComponent

@@ -1,22 +1,11 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { cn } from '@/lib/utils'
-import type { IndustriesPage, Industry, Media } from '@/payload-types'
-import config from '@/payload.config'
+import type { IndustriesPageBlock, Industry, Media } from '@/payload-types'
 import { Activity, Building2, Check, CheckCircle2, Lock, Smile, Zap, type LucideIcon } from 'lucide-react'
-import type { Metadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getPayload } from 'payload'
 import type { JSX } from 'react'
-
-export const dynamic = 'force-dynamic'
-
-export const metadata: Metadata = {
-  title: 'Industries',
-  description: 'Explore the industries Ternary serves, with deep engineering experience across sectors.',
-}
 
 const REGULATORY_POSTURE_ICONS = {
   lock: Lock,
@@ -32,24 +21,7 @@ function RegulatoryPostureIcon({ icon }: { icon: string | null | undefined }) {
   return <Icon size={18} strokeWidth={1.75} aria-hidden className="shrink-0 text-white/80" />
 }
 
-export default async function Page(): Promise<JSX.Element> {
-  const getIndustriesPageData = unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.findGlobal({ slug: 'industriesPage', depth: 2 })
-    },
-    ['industriesPage'],
-    { tags: ['industriesPage'] },
-  )
-
-  const industriesPageData: IndustriesPage | null = await getIndustriesPageData()
-
-  if (!industriesPageData) {
-    return (
-      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
-    )
-  }
-
+export const IndustriesPageComponent = (data: IndustriesPageBlock): JSX.Element => {
   const motionSectionProps = {
     initial: { opacity: 0, y: 12 },
     whileInView: { opacity: 1, y: 0 },
@@ -71,20 +43,18 @@ export default async function Page(): Promise<JSX.Element> {
     transition: { duration: 0.4, ease: 'easeOut' as const },
   }
 
-  const industries = industriesPageData.industryList?.industry as Industry[] | undefined
+  const industries = data?.industryList?.industry as Industry[] | undefined
 
   return (
-    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full lg:pb-24 pb-10">
+    <div className="flex flex-col lg:gap-32 gap-10">
       {/* Hero */}
       <Motion tag="section" className="w-full lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
         <div className="w-full mx-auto flex flex-col px-4 lg:px-0 items-center justify-center">
           <Motion className="flex flex-col text-center max-w-4xl" {...motionBlockProps}>
             <h1 className="lg:text-4xl text-3xl font-medium tracking-tight mb-6 max-w-2xl leading-[1.15]">
-              {industriesPageData.heroSection?.heading}
+              {data?.heroSection?.heading}
             </h1>
-            <p className="lg:text-base text-sm text-[#D5D5D5] max-w-xl">
-              {industriesPageData.heroSection?.description}
-            </p>
+            <p className="lg:text-base text-sm text-[#D5D5D5] max-w-xl">{data?.heroSection?.description}</p>
           </Motion>
         </div>
       </Motion>
@@ -125,23 +95,23 @@ export default async function Page(): Promise<JSX.Element> {
       </Motion>
 
       {/* Details */}
-      {industriesPageData.details?.heading && (
+      {data?.details?.heading && (
         <Motion tag="section" className="bg-main lg:p-10 p-4 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
           <div className="flex lg:flex-row flex-col lg:items-start items-center lg:justify-between">
             <Motion className="lg:w-1/5" {...motionBlockProps}>
-              <h3 className="lg:text-2xl text-xl mb-3 font-medium text-white">{industriesPageData.details.heading}</h3>
-              <p className="lg:text-sm text-xs text-[#D5D5D5]">{industriesPageData.details.description}</p>
+              <h3 className="lg:text-2xl text-xl mb-3 font-medium text-white">{data.details.heading}</h3>
+              <p className="lg:text-sm text-xs text-[#D5D5D5]">{data.details.description}</p>
             </Motion>
 
             <Motion className="lg:pl-8 pl-0 lg:pt-0 pt-4 lg:w-4/5" {...motionBlockProps}>
-              <RichTextComp content={industriesPageData.details.content as RichText} />
+              <RichTextComp content={data.details.content as RichText} />
             </Motion>
           </div>
         </Motion>
       )}
 
       {/* Per-industry Panels */}
-      {industriesPageData.perIndustryPanels?.items?.map((panel, panelIndex) => {
+      {data?.perIndustryPanels?.items?.map((panel, panelIndex) => {
         const linkedIndustry = panel.industry as Industry | undefined
         const panelTitle = panel.title || linkedIndustry?.title
         const panelDescription = panel.description || linkedIndustry?.excerpts
@@ -220,25 +190,25 @@ export default async function Page(): Promise<JSX.Element> {
       })}
 
       {/* Cross-industry Patterns */}
-      {industriesPageData.crossIndustryPatterns?.heading && (
+      {data?.crossIndustryPatterns?.heading && (
         <Motion tag="section" className="bg-main p-10 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
           <div className="space-y-8 lg:space-y-10">
             <Motion className="space-y-3" {...motionBlockProps}>
               <h2 className="lg:text-3xl text-2xl font-semibold tracking-tight text-white">
-                {industriesPageData.crossIndustryPatterns.heading}
+                {data.crossIndustryPatterns.heading}
               </h2>
-              {industriesPageData.crossIndustryPatterns.description && (
+              {data.crossIndustryPatterns.description && (
                 <p className="lg:text-sm text-xs text-[#D5D5D5] max-w-3xl leading-relaxed">
-                  {industriesPageData.crossIndustryPatterns.description}
+                  {data.crossIndustryPatterns.description}
                 </p>
               )}
             </Motion>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {industriesPageData.crossIndustryPatterns.items?.map((item, index) => {
+              {data.crossIndustryPatterns.items?.map((item, index) => {
                 const imageUrl = item.image ? ((item.image as Media)?.url ?? undefined) : undefined
                 const isFirst = index === 0
-                const isLast = index === (industriesPageData.crossIndustryPatterns?.items?.length ?? 0) - 1 && index > 0
+                const isLast = index === (data.crossIndustryPatterns?.items?.length ?? 0) - 1 && index > 0
 
                 return (
                   <Motion
@@ -306,22 +276,22 @@ export default async function Page(): Promise<JSX.Element> {
       )}
 
       {/* Regulatory Posture */}
-      {industriesPageData.regulatoryPosture?.heading && (
+      {data?.regulatoryPosture?.heading && (
         <Motion tag="section" className="w-full py-16 lg:m-0 m-4" {...motionSectionProps}>
           <div className="flex flex-col space-y-10 w-full">
             <div className="space-y-3">
               <h2 className="text-3xl lg:text-4xl font-normal tracking-tight text-white max-w-2xl leading-tight">
-                {industriesPageData.regulatoryPosture.heading}
+                {data.regulatoryPosture.heading}
               </h2>
-              {industriesPageData.regulatoryPosture.description && (
+              {data.regulatoryPosture.description && (
                 <p className="lg:text-sm text-xs text-[#D5D5D5] max-w-4xl leading-relaxed">
-                  {industriesPageData.regulatoryPosture.description}
+                  {data.regulatoryPosture.description}
                 </p>
               )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-              {industriesPageData.regulatoryPosture.items?.map((item, index) => (
+              {data.regulatoryPosture.items?.map((item, index) => (
                 <Motion
                   key={item.id ?? `regulatory-${index}`}
                   className="bg-main p-8 lg:p-10 rounded-lg flex flex-col justify-start min-h-[220px]"
@@ -352,8 +322,8 @@ export default async function Page(): Promise<JSX.Element> {
         tag="section"
         className="lg:p-10 p-6 rounded-lg overflow-hidden lg:m-0 m-4 relative border border-white/[0.04]"
         style={{
-          background: (industriesPageData.cta?.backgroundImage as Media)?.url
-            ? `url(${(industriesPageData.cta?.backgroundImage as Media)?.url}) center/cover no-repeat`
+          background: (data?.cta?.backgroundImage as Media)?.url
+            ? `url(${(data?.cta?.backgroundImage as Media)?.url}) center/cover no-repeat`
             : 'linear-gradient(135deg, #1e3a5f 0%, #4c1d95 60%, #2e1065 100%)',
         }}
         {...motionSectionProps}
@@ -363,28 +333,26 @@ export default async function Page(): Promise<JSX.Element> {
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 max-w-6xl mx-auto">
           <Motion className="flex flex-col items-start text-left lg:max-w-xl" {...motionBlockProps}>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-white leading-[1.2]">
-              {industriesPageData.cta?.heading}
+              {data?.cta?.heading}
             </h2>
-            <p className="text-xs md:text-sm text-[#D5D5D5]/80 max-w-lg leading-relaxed">
-              {industriesPageData.cta?.description}
-            </p>
+            <p className="text-xs md:text-sm text-[#D5D5D5]/80 max-w-lg leading-relaxed">{data?.cta?.description}</p>
           </Motion>
 
           <div className="flex sm:flex-row flex-col gap-3 items-center shrink-0 lg:ml-auto">
-            {industriesPageData.cta?.button_1?.label && (
+            {data?.cta?.button_1?.label && (
               <Link
-                href={industriesPageData.cta.button_1.link as string}
+                href={data.cta.button_1.link as string}
                 className="w-full sm:w-auto px-5 py-2.5 bg-[#14120B] font-medium rounded-2xl text-base"
               >
-                {industriesPageData.cta.button_1.label}
+                {data.cta.button_1.label}
               </Link>
             )}
-            {industriesPageData.cta?.button_2?.label && (
+            {data?.cta?.button_2?.label && (
               <Link
-                href={industriesPageData.cta.button_2.link as string}
+                href={data.cta.button_2.link as string}
                 className="px-5 sm:w-auto w-full py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
               >
-                {industriesPageData.cta.button_2.label}
+                {data.cta.button_2.label}
               </Link>
             )}
           </div>
