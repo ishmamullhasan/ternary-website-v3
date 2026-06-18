@@ -120,7 +120,7 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'bn') | ('en' | 'bn')[];
   globals: {
     header: Header;
     footer: Footer;
@@ -131,7 +131,7 @@ export interface Config {
     footer: FooterSelect<false> | FooterSelect<true>;
     legalCenter: LegalCenterSelect<false> | LegalCenterSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'bn';
   widgets: {
     collections: CollectionsWidget;
   };

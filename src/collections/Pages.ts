@@ -1,5 +1,5 @@
 import { revalidateTag } from 'next/cache'
-import { type CollectionConfig, slugField } from 'payload'
+import { APIError, type CollectionConfig, slugField } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
@@ -46,6 +46,13 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 type Breadcrumb = { url?: string | null }
 
+/**
+ * Locale codes are reserved as the first URL segment for the upcoming [locale] routing (WEB-445),
+ * so a page slug must never shadow one. Keep this list in sync with the `localization.locales`
+ * codes in src/payload.config.ts.
+ */
+const RESERVED_LOCALE_SLUGS = new Set(['en', 'bn'])
+
 /** Build the preview URL from the page's nested-docs breadcrumb path (falls back to slug). */
 const pageUrl = (data?: { slug?: unknown; breadcrumbs?: unknown }): string => {
   const crumbs = Array.isArray(data?.breadcrumbs) ? (data.breadcrumbs as Breadcrumb[]) : []
@@ -80,6 +87,21 @@ export const Pages: CollectionConfig = {
     maxPerDoc: 20,
   },
   hooks: {
+    // Reject slugs that collide with a locale code so a page can never shadow the [locale] URL
+    // segment introduced in WEB-445. Uses a collection beforeValidate hook (rather than a
+    // field-level validate) because the slug field comes from slugField() above.
+    beforeValidate: [
+      ({ data }) => {
+        // Normalize the way slugField()'s slugify() will (trim + lowercase) so that "En",
+        // " en ", or "EN" can't slip past and then persist as the reserved slug "en".
+        const raw = data?.slug
+        const slug = typeof raw === 'string' ? raw.trim().toLowerCase() : raw
+        if (typeof slug === 'string' && RESERVED_LOCALE_SLUGS.has(slug)) {
+          throw new APIError(`"${raw}" is a reserved locale code and cannot be used as a page slug.`, 400)
+        }
+        return data
+      },
+    ],
     // Future-proofing (mirrors makeContentCollection): emit this page's own slug tag plus the
     // collection-wide tag so editor saves bust the corresponding cache entries. The frontend is
     // revalidate=0 today (src/app/(frontend)/layout.tsx), so these tags are not yet consumed —

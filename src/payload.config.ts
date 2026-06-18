@@ -58,6 +58,14 @@ export default buildConfig({
     },
   },
   editor: lexicalEditor(),
+  localization: {
+    locales: [
+      { label: 'English', code: 'en' },
+      { label: 'Bengali', code: 'bn' },
+    ],
+    defaultLocale: 'en',
+    fallback: true, // missing bn content falls back to en
+  },
   db: mongooseAdapter({
     // Payload Cloud injects DATABASE_URI; local/.env.example use DATABASE_URL — accept both.
     url: process.env.DATABASE_URI || process.env.DATABASE_URL || '',
