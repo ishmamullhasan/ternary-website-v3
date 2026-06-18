@@ -195,13 +195,6 @@ export interface Page {
         | ScalesHeroBlock
         | QualityBarBlock
         | ScaleShowcaseBlock
-        | AboutPageBlock
-        | SolutionsPageBlock
-        | IndustriesPageBlock
-        | ScalesPageBlock
-        | ContactPageBlock
-        | CareersPageBlock
-        | StoriesPageBlock
         | ContactHeroBlock
         | ContactStatsBlock
         | ContactRoutesBlock
@@ -1033,6 +1026,9 @@ export interface IndustriesSectionBlock {
 export interface AboutSectionBlock {
   heading?: string | null;
   description?: string | null;
+  /**
+   * Mixed list of records (capabilities, solutions, industries, scales or models) featured in the About section. Order here is the display order.
+   */
   items?:
     | (
         | {
@@ -1057,17 +1053,29 @@ export interface AboutSectionBlock {
           }
       )[]
     | null;
+  /**
+   * Logo wall of partner / member organizations shown within the About section.
+   */
   organizations?: {
     heading?: string | null;
+    /**
+     * Each entry is one organization logo with its name and an optional outbound link.
+     */
     organization?:
       | {
           icon?: (string | null) | Media;
           name?: string | null;
+          /**
+           * Optional URL the logo links to.
+           */
           link?: string | null;
           id?: string | null;
         }[]
       | null;
   };
+  /**
+   * Closing copy rendered below the organizations logo wall.
+   */
   bottomDescription?: string | null;
   id?: string | null;
   blockName?: string | null;
@@ -1081,6 +1089,9 @@ export interface SolutionsSectionBlock {
   heading?: string | null;
   description?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Solutions to feature in this section, in display order.
+   */
   items?: (string | Solution)[] | null;
   id?: string | null;
   blockName?: string | null;
@@ -1093,8 +1104,17 @@ export interface SolutionsSectionBlock {
 export interface CapabilitiesSectionBlock {
   heading?: string | null;
   description?: string | null;
+  /**
+   * Capabilities to feature in this section, in display order.
+   */
   capability?: (string | Capability)[] | null;
+  /**
+   * Heading for the secondary content block beside the capabilities list.
+   */
   heading_2?: string | null;
+  /**
+   * Body copy for the secondary content block.
+   */
   description_2?: string | null;
   image?: (string | null) | Media;
   id?: string | null;
@@ -1108,6 +1128,9 @@ export interface CapabilitiesSectionBlock {
 export interface ScalesSectionBlock {
   heading?: string | null;
   description?: string | null;
+  /**
+   * Scale records to feature in this section, in display order.
+   */
   scales?: (string | Scale)[] | null;
   id?: string | null;
   blockName?: string | null;
@@ -1120,6 +1143,9 @@ export interface ScalesSectionBlock {
 export interface EngagementSectionBlock {
   heading?: string | null;
   description?: string | null;
+  /**
+   * Engagement model records to feature in this section, in display order.
+   */
   model?: (string | Model)[] | null;
   id?: string | null;
   blockName?: string | null;
@@ -1133,7 +1159,13 @@ export interface GlobalDeliverySectionBlock {
   heading?: string | null;
   description?: string | null;
   image?: (string | null) | Media;
+  /**
+   * Title rendered alongside the image in the global delivery callout.
+   */
   title?: string | null;
+  /**
+   * Short supporting copy shown under the title.
+   */
   excerpt?: string | null;
   id?: string | null;
   blockName?: string | null;
@@ -1146,6 +1178,9 @@ export interface GlobalDeliverySectionBlock {
 export interface ProcessSectionBlock {
   heading?: string | null;
   description?: string | null;
+  /**
+   * Ordered list of process steps. Each row is one step with a title and rich-text description.
+   */
   process?:
     | {
         title?: string | null;
@@ -1178,6 +1213,9 @@ export interface ProcessSectionBlock {
 export interface TeamSectionBlock {
   heading?: string | null;
   description?: string | null;
+  /**
+   * Team member records to feature in this section, in display order.
+   */
   members?: (string | Team)[] | null;
   id?: string | null;
   blockName?: string | null;
@@ -1190,6 +1228,9 @@ export interface TeamSectionBlock {
 export interface OpportunitiesSectionBlock {
   heading?: string | null;
   description?: string | null;
+  /**
+   * Job openings to feature in this section, in display order.
+   */
   opportunity?: (string | Job)[] | null;
   id?: string | null;
   blockName?: string | null;
@@ -1380,744 +1421,180 @@ export interface ScaleShowcaseBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "AboutPageBlock".
+ * via the `definition` "ContactHeroBlock".
  */
-export interface AboutPageBlock {
-  heroSection?: {
-    heading?: string | null;
-    description?: string | null;
-  };
-  fundingStory?: {
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-  };
-  about?: {
-    heading?: string | null;
-    description?: string | null;
-    content?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  ourThesis?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          image?: (string | null) | Media;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  whatWeBelieve?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          image?: (string | null) | Media;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  ourApproach?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          image?: (string | null) | Media;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  proofOfScale?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          value?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    company?: {
-      heading?: string | null;
-      description?: string | null;
-      items?:
-        | {
-            name?: string | null;
-            excerpt?: string | null;
-            stack?:
-              | {
-                  name?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-  };
-  leadership?: {
-    heading?: string | null;
-    description?: string | null;
-    members?:
-      | {
-          name?: string | null;
-          position?: string | null;
-          story?: string | null;
-          specialization?: string | null;
-          image?: (string | null) | Media;
-          socials?:
-            | {
-                linkedin?: string | null;
-                facebook?: string | null;
-                instagram?: string | null;
-                twitter?: string | null;
-                id?: string | null;
-              }[]
-            | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  cta?: {
-    subheading?: string | null;
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    button_1?: {
-      label?: string | null;
-      link?: string | null;
-    };
-    button_2?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
+export interface ContactHeroBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Up to 2 call-to-action buttons.
+   */
+  buttons?:
+    | {
+        label: string;
+        /**
+         * Internal path (e.g. /contact) or a full URL.
+         */
+        url: string;
+        variant?: ('primary' | 'secondary' | 'ghost') | null;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'aboutPageSection';
+  blockType: 'contactHero';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "SolutionsPageBlock".
+ * via the `definition` "ContactStatsBlock".
  */
-export interface SolutionsPageBlock {
-  hero?: {
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    /**
-     * Four cards shown over the hero image. The isometric icon for each card is fixed in code by position.
-     */
-    cards?:
-      | {
-          title?: string | null;
-          description?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  /**
-   * Layout: main on left. Decorative isometric graphic is fixed in code.
-   */
-  section_2?: {
-    badge?: string | null;
-    title?: string | null;
-    description?: string | null;
-    image?: (string | null) | Media;
-    trajectory?: {
-      label?: string | null;
-      steps?:
-        | {
-            label?: string | null;
-            active?: boolean | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    whoTitle?: string | null;
-    whoDescription?: string | null;
-    shapeTitle?: string | null;
-    shapeDescription?: string | null;
-  };
-  /**
-   * Layout: main on right. Decorative isometric graphic is fixed in code.
-   */
-  section_3?: {
-    badge?: string | null;
-    title?: string | null;
-    description?: string | null;
-    image?: (string | null) | Media;
-    whoTitle?: string | null;
-    whoDescription?: string | null;
-    shapeTitle?: string | null;
-    shapeDescription?: string | null;
-  };
-  /**
-   * Layout: main on left. Decorative isometric graphic is fixed in code.
-   */
-  section_4?: {
-    badge?: string | null;
-    title?: string | null;
-    description?: string | null;
-    image?: (string | null) | Media;
-    techStack?: {
-      label?: string | null;
-      items?:
-        | {
-            label?: string | null;
-            highlight?: boolean | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    whoTitle?: string | null;
-    whoDescription?: string | null;
-    shapeTitle?: string | null;
-    shapeDescription?: string | null;
-  };
-  /**
-   * Layout: main on right. Decorative isometric graphic is fixed in code.
-   */
-  section_5?: {
-    badge?: string | null;
-    title?: string | null;
-    description?: string | null;
-    image?: (string | null) | Media;
-    incident?: {
-      label?: string | null;
-      historyLabel?: string | null;
-      /**
-       * Number of cells in the history grid.
-       */
-      totalCells?: number | null;
-      /**
-       * Cell positions (1-based) to highlight as incidents.
-       */
-      activeCells?:
-        | {
-            position?: number | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    whoTitle?: string | null;
-    whoDescription?: string | null;
-    shapeTitle?: string | null;
-    shapeDescription?: string | null;
-  };
-  engage?: {
-    heading?: string | null;
-    description?: string | null;
-    /**
-     * Three engagement models. Card colors are fixed in code by position.
-     */
-    cards?:
-      | {
-          title?: string | null;
-          subtitle?: string | null;
-          description?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  cta?: {
-    heading?: string | null;
-    description?: string | null;
-    button_1?: {
-      label?: string | null;
-      link?: string | null;
-    };
-    button_2?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'solutionsPageSection';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IndustriesPageBlock".
- */
-export interface IndustriesPageBlock {
-  heroSection?: {
-    heading?: string | null;
-    description?: string | null;
-  };
-  industryList?: {
-    heading?: string | null;
-    description?: string | null;
-    industry?: (string | Industry)[] | null;
-  };
-  details?: {
-    heading?: string | null;
-    description?: string | null;
-    content?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  perIndustryPanels?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          industry?: (string | null) | Industry;
-          title?: string | null;
-          description?: string | null;
-          image?: (string | null) | Media;
-          tags?:
-            | {
-                name?: string | null;
-                id?: string | null;
-              }[]
-            | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  crossIndustryPatterns?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          image?: (string | null) | Media;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  regulatoryPosture?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          /**
-           * Lucide icon shown at the top of the regulatory posture card.
-           */
-          icon?: ('lock' | 'activity' | 'check') | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  cta?: {
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    button_1?: {
-      label?: string | null;
-      link?: string | null;
-    };
-    button_2?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'industriesPageSection';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ScalesPageBlock".
- */
-export interface ScalesPageBlock {
-  heroSection?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          image?: (string | null) | Media;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  qualityBar?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          /**
-           * Lucide icon shown at the top of the quality bar card.
-           */
-          icon?: ('activity' | 'shield-check' | 'workflow' | 'book-check') | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  scale?: (string | Scale)[] | null;
-  cta?: {
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    button_1?: {
-      label?: string | null;
-      link?: string | null;
-    };
-    button_2?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'scalesPageSection';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ContactPageBlock".
- */
-export interface ContactPageBlock {
-  hero?: {
-    heading?: string | null;
-    description?: string | null;
-    button_1?: {
-      label?: string | null;
-      link?: string | null;
-    };
-    button_2?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
+export interface ContactStatsBlock {
   /**
    * Response-time cards shown below the hero.
    */
   stats?:
     | {
-        value?: string | null;
-        label?: string | null;
+        value: string;
+        label: string;
         detail?: string | null;
         id?: string | null;
       }[]
     | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactStats';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactRoutesBlock".
+ */
+export interface ContactRoutesBlock {
+  heading?: string | null;
+  description?: string | null;
   /**
    * The icon and gradient for each route is fixed in code by position.
    */
-  routes?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          title?: string | null;
-          description?: string | null;
-          email?: string | null;
-          replyWindow?: string | null;
-          cta?: string | null;
-          info?: boolean | null;
-          bestFor?:
-            | {
-                item?: string | null;
-                id?: string | null;
-              }[]
-            | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  offices?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | {
-          city?: string | null;
-          tag?: string | null;
-          timezone?: string | null;
-          hours?: string | null;
-          email?: string | null;
-          phone?: string | null;
-          address?:
-            | {
-                line?: string | null;
-                id?: string | null;
-              }[]
-            | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
+  items?:
+    | {
+        title?: string | null;
+        email?: string | null;
+        description?: string | null;
+        replyWindow?: string | null;
+        cta?: string | null;
+        info?: boolean | null;
+        /**
+         * Bullet points shown in the selected-route summary.
+         */
+        bestFor?:
+          | {
+              item?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactRoutes';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactOfficesBlock".
+ */
+export interface ContactOfficesBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Office cards shown in the map carousel. Use the arrows to switch between them.
+   */
+  items?:
+    | {
+        city?: string | null;
+        tag?: string | null;
+        timezone?: string | null;
+        hours?: string | null;
+        email?: string | null;
+        phone?: string | null;
+        /**
+         * One line per row (street, suite, city/zip, …).
+         */
+        address?:
+          | {
+              line?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactOffices';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactFormBlock".
+ */
+export interface ContactFormBlock {
+  heading?: string | null;
+  description?: string | null;
   /**
    * Pick a form to show a "Send us a message" section. Leave empty to hide the section.
    */
-  form?: {
-    heading?: string | null;
-    description?: string | null;
-    form?: (string | null) | Form;
-  };
-  cta?: {
-    heading?: string | null;
-    description?: string | null;
-    button_1?: {
-      label?: string | null;
-      link?: string | null;
-    };
-    button_2?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
+  form?: (string | null) | Form;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'contactPageSection';
+  blockType: 'contactForm';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CareersPageBlock".
+ * via the `definition` "StoriesHeroBlock".
  */
-export interface CareersPageBlock {
-  hero?: {
-    heading?: string | null;
-    description?: string | null;
-    image?: (string | null) | Media;
-    button?: {
-      label?: string | null;
-      url?: string | null;
-    };
-  };
-  section_2?: {
-    heading?: string | null;
-    description?: string | null;
-    item_1?: {
-      heading?: string | null;
-      description?: string | null;
-      image?: (string | null) | Media;
-    };
-    item_2?: {
-      heading?: string | null;
-      description?: string | null;
-    };
-    item_3?: {
-      heading?: string | null;
-      description?: string | null;
-    };
-    item_4?: {
-      heading?: string | null;
-      description?: string | null;
-    };
-    item_5?: {
-      heading?: string | null;
-      description?: string | null;
-    };
-    item_6?: {
-      heading?: string | null;
-      description?: string | null;
-    };
-  };
-  section_3?: {
-    heading?: string | null;
-    description?: string | null;
-    item_1?: {
-      heading?: string | null;
-      description?: string | null;
-      image?: (string | null) | Media;
-    };
-    item_2?: {
-      heading?: string | null;
-      description?: string | null;
-      image?: (string | null) | Media;
-    };
-    item_3?: {
-      heading?: string | null;
-      description?: string | null;
-    };
-    item_4?: {
-      heading?: string | null;
-      description?: string | null;
-    };
-  };
-  section_4?: {
-    heading?: string | null;
-    description?: string | null;
-    item_1?: {
-      heading?: string | null;
-      description?: string | null;
-      levels?:
-        | {
-            name?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    item_2?: {
-      heading?: string | null;
-      description?: string | null;
-      image?: (string | null) | Media;
-    };
-    item_3?: {
-      heading?: string | null;
-      description?: string | null;
-      image?: (string | null) | Media;
-    };
-    item_4?: {
-      heading?: string | null;
-      description?: string | null;
-      image?: (string | null) | Media;
-    };
-    item_5?: {
-      heading?: string | null;
-      description?: string | null;
-      image?: (string | null) | Media;
-    };
-  };
-  team?: {
-    heading?: string | null;
-    description?: string | null;
-    members?: (string | Team)[] | null;
-  };
-  jobs?: {
-    heading?: string | null;
-    description?: string | null;
-    list?: (string | Job)[] | null;
-  };
+export interface StoriesHeroBlock {
+  heading?: string | null;
+  description?: string | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'careersPageSection';
+  blockType: 'storiesHero';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "StoriesPageBlock".
+ * via the `definition` "FeatureCaseStudyBlock".
  */
-export interface StoriesPageBlock {
-  heroSection?: {
-    heading?: string | null;
-    description?: string | null;
-  };
-  featureCaseStudy?: {
-    heading?: string | null;
-    description?: string | null;
-    story?: (string | null) | Story;
-    stats?:
-      | {
-          value?: string | null;
-          label?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    highlights?:
-      | {
-          text?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    /**
-     * e.g. "12 min"
-     */
-    readTime?: string | null;
-    /**
-     * e.g. "Engineering Studio"
-     */
-    categoryLabel?: string | null;
-    buttonLabel?: string | null;
-  };
-  allStoriesGrid?: {
-    heading?: string | null;
-    description?: string | null;
-    items?:
-      | (
-          | {
-              relationTo: 'story';
-              value: string | Story;
-            }
-          | {
-              relationTo: 'insight';
-              value: string | Insight;
-            }
-        )[]
-      | null;
-    /**
-     * Press releases shown at the bottom of the stories grid.
-     */
-    pressRelease?: (string | PressRelease)[] | null;
-  };
-  categoryLanding?: {
-    heading?: string | null;
-    description?: string | null;
-    categories?:
-      | {
-          title?: string | null;
-          description?: string | null;
-          /**
-           * Lucide icon shown at the top of the category card.
-           */
-          icon?: ('newspaper' | 'flask-conical' | 'lightbulb' | 'file-text') | null;
-          image?: (string | null) | Media;
-          link?: string | null;
-          /**
-           * e.g. "Open section"
-           */
-          linkLabel?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  subscribe?: {
-    heading?: string | null;
-    description?: string | null;
-    followHint?: string | null;
-    followOptions?:
-      | {
-          label?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    emailPlaceholder?: string | null;
-    buttonLabel?: string | null;
-    disclaimer?: string | null;
-    preview?: {
-      issueLabel?: string | null;
-      heading?: string | null;
-      items?:
-        | {
-            text?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-      subscribersLabel?: string | null;
-      readTimeLabel?: string | null;
-      backgroundImage?: (string | null) | Media;
-    };
-  };
+export interface FeatureCaseStudyBlock {
+  heading?: string | null;
+  description?: string | null;
+  story?: (string | null) | Story;
+  /**
+   * Headline metrics. Use real figures only.
+   */
+  stats?:
+    | {
+        value: string;
+        label: string;
+        detail?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  highlights?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * e.g. "12 min"
+   */
+  readTime?: string | null;
+  /**
+   * e.g. "Engineering Studio"
+   */
+  categoryLabel?: string | null;
+  buttonLabel?: string | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'storiesPageSection';
+  blockType: 'featureCaseStudy';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2150,6 +1627,36 @@ export interface Story {
   } | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoriesArchiveBlock".
+ */
+export interface StoriesArchiveBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Stories and insights shown in the filterable grid.
+   */
+  items?:
+    | (
+        | {
+            relationTo: 'story';
+            value: string | Story;
+          }
+        | {
+            relationTo: 'insight';
+            value: string | Insight;
+          }
+      )[]
+    | null;
+  /**
+   * Press releases shown at the bottom of the stories grid.
+   */
+  pressRelease?: (string | PressRelease)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'storiesArchive';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2353,213 +1860,6 @@ export interface PressRelease {
   };
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ContactHeroBlock".
- */
-export interface ContactHeroBlock {
-  heading?: string | null;
-  description?: string | null;
-  /**
-   * Up to 2 call-to-action buttons.
-   */
-  buttons?:
-    | {
-        label: string;
-        /**
-         * Internal path (e.g. /contact) or a full URL.
-         */
-        url: string;
-        variant?: ('primary' | 'secondary' | 'ghost') | null;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'contactHero';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ContactStatsBlock".
- */
-export interface ContactStatsBlock {
-  /**
-   * Response-time cards shown below the hero.
-   */
-  stats?:
-    | {
-        value: string;
-        label: string;
-        detail?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'contactStats';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ContactRoutesBlock".
- */
-export interface ContactRoutesBlock {
-  heading?: string | null;
-  description?: string | null;
-  /**
-   * The icon and gradient for each route is fixed in code by position.
-   */
-  items?:
-    | {
-        title?: string | null;
-        email?: string | null;
-        description?: string | null;
-        replyWindow?: string | null;
-        cta?: string | null;
-        info?: boolean | null;
-        /**
-         * Bullet points shown in the selected-route summary.
-         */
-        bestFor?:
-          | {
-              item?: string | null;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'contactRoutes';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ContactOfficesBlock".
- */
-export interface ContactOfficesBlock {
-  heading?: string | null;
-  description?: string | null;
-  /**
-   * Office cards shown in the map carousel. Use the arrows to switch between them.
-   */
-  items?:
-    | {
-        city?: string | null;
-        tag?: string | null;
-        timezone?: string | null;
-        hours?: string | null;
-        email?: string | null;
-        phone?: string | null;
-        /**
-         * One line per row (street, suite, city/zip, …).
-         */
-        address?:
-          | {
-              line?: string | null;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'contactOffices';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ContactFormBlock".
- */
-export interface ContactFormBlock {
-  heading?: string | null;
-  description?: string | null;
-  /**
-   * Pick a form to show a "Send us a message" section. Leave empty to hide the section.
-   */
-  form?: (string | null) | Form;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'contactForm';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "StoriesHeroBlock".
- */
-export interface StoriesHeroBlock {
-  heading?: string | null;
-  description?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'storiesHero';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "FeatureCaseStudyBlock".
- */
-export interface FeatureCaseStudyBlock {
-  heading?: string | null;
-  description?: string | null;
-  story?: (string | null) | Story;
-  /**
-   * Headline metrics. Use real figures only.
-   */
-  stats?:
-    | {
-        value: string;
-        label: string;
-        detail?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  highlights?:
-    | {
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * e.g. "12 min"
-   */
-  readTime?: string | null;
-  /**
-   * e.g. "Engineering Studio"
-   */
-  categoryLabel?: string | null;
-  buttonLabel?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'featureCaseStudy';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "StoriesArchiveBlock".
- */
-export interface StoriesArchiveBlock {
-  heading?: string | null;
-  description?: string | null;
-  /**
-   * Stories and insights shown in the filterable grid.
-   */
-  items?:
-    | (
-        | {
-            relationTo: 'story';
-            value: string | Story;
-          }
-        | {
-            relationTo: 'insight';
-            value: string | Insight;
-          }
-      )[]
-    | null;
-  /**
-   * Press releases shown at the bottom of the stories grid.
-   */
-  pressRelease?: (string | PressRelease)[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'storiesArchive';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3465,13 +2765,6 @@ export interface PagesSelect<T extends boolean = true> {
         scalesHero?: T | ScalesHeroBlockSelect<T>;
         qualityBar?: T | QualityBarBlockSelect<T>;
         scaleShowcase?: T | ScaleShowcaseBlockSelect<T>;
-        aboutPageSection?: T | AboutPageBlockSelect<T>;
-        solutionsPageSection?: T | SolutionsPageBlockSelect<T>;
-        industriesPageSection?: T | IndustriesPageBlockSelect<T>;
-        scalesPageSection?: T | ScalesPageBlockSelect<T>;
-        contactPageSection?: T | ContactPageBlockSelect<T>;
-        careersPageSection?: T | CareersPageBlockSelect<T>;
-        storiesPageSection?: T | StoriesPageBlockSelect<T>;
         contactHero?: T | ContactHeroBlockSelect<T>;
         contactStats?: T | ContactStatsBlockSelect<T>;
         contactRoutes?: T | ContactRoutesBlockSelect<T>;
@@ -3818,797 +3111,6 @@ export interface QualityBarBlockSelect<T extends boolean = true> {
  */
 export interface ScaleShowcaseBlockSelect<T extends boolean = true> {
   scales?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "AboutPageBlock_select".
- */
-export interface AboutPageBlockSelect<T extends boolean = true> {
-  heroSection?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-      };
-  fundingStory?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        backgroundImage?: T;
-      };
-  about?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        content?: T;
-      };
-  ourThesis?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              excerpt?: T;
-              image?: T;
-              id?: T;
-            };
-      };
-  whatWeBelieve?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              excerpt?: T;
-              image?: T;
-              id?: T;
-            };
-      };
-  ourApproach?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              excerpt?: T;
-              image?: T;
-              id?: T;
-            };
-      };
-  proofOfScale?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              value?: T;
-              id?: T;
-            };
-        company?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              items?:
-                | T
-                | {
-                    name?: T;
-                    excerpt?: T;
-                    stack?:
-                      | T
-                      | {
-                          name?: T;
-                          id?: T;
-                        };
-                    id?: T;
-                  };
-            };
-      };
-  leadership?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        members?:
-          | T
-          | {
-              name?: T;
-              position?: T;
-              story?: T;
-              specialization?: T;
-              image?: T;
-              socials?:
-                | T
-                | {
-                    linkedin?: T;
-                    facebook?: T;
-                    instagram?: T;
-                    twitter?: T;
-                    id?: T;
-                  };
-              id?: T;
-            };
-      };
-  cta?:
-    | T
-    | {
-        subheading?: T;
-        heading?: T;
-        description?: T;
-        backgroundImage?: T;
-        button_1?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-        button_2?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "SolutionsPageBlock_select".
- */
-export interface SolutionsPageBlockSelect<T extends boolean = true> {
-  hero?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        backgroundImage?: T;
-        cards?:
-          | T
-          | {
-              title?: T;
-              description?: T;
-              id?: T;
-            };
-      };
-  section_2?:
-    | T
-    | {
-        badge?: T;
-        title?: T;
-        description?: T;
-        image?: T;
-        trajectory?:
-          | T
-          | {
-              label?: T;
-              steps?:
-                | T
-                | {
-                    label?: T;
-                    active?: T;
-                    id?: T;
-                  };
-            };
-        whoTitle?: T;
-        whoDescription?: T;
-        shapeTitle?: T;
-        shapeDescription?: T;
-      };
-  section_3?:
-    | T
-    | {
-        badge?: T;
-        title?: T;
-        description?: T;
-        image?: T;
-        whoTitle?: T;
-        whoDescription?: T;
-        shapeTitle?: T;
-        shapeDescription?: T;
-      };
-  section_4?:
-    | T
-    | {
-        badge?: T;
-        title?: T;
-        description?: T;
-        image?: T;
-        techStack?:
-          | T
-          | {
-              label?: T;
-              items?:
-                | T
-                | {
-                    label?: T;
-                    highlight?: T;
-                    id?: T;
-                  };
-            };
-        whoTitle?: T;
-        whoDescription?: T;
-        shapeTitle?: T;
-        shapeDescription?: T;
-      };
-  section_5?:
-    | T
-    | {
-        badge?: T;
-        title?: T;
-        description?: T;
-        image?: T;
-        incident?:
-          | T
-          | {
-              label?: T;
-              historyLabel?: T;
-              totalCells?: T;
-              activeCells?:
-                | T
-                | {
-                    position?: T;
-                    id?: T;
-                  };
-            };
-        whoTitle?: T;
-        whoDescription?: T;
-        shapeTitle?: T;
-        shapeDescription?: T;
-      };
-  engage?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        cards?:
-          | T
-          | {
-              title?: T;
-              subtitle?: T;
-              description?: T;
-              id?: T;
-            };
-      };
-  cta?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        button_1?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-        button_2?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IndustriesPageBlock_select".
- */
-export interface IndustriesPageBlockSelect<T extends boolean = true> {
-  heroSection?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-      };
-  industryList?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        industry?: T;
-      };
-  details?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        content?: T;
-      };
-  perIndustryPanels?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              industry?: T;
-              title?: T;
-              description?: T;
-              image?: T;
-              tags?:
-                | T
-                | {
-                    name?: T;
-                    id?: T;
-                  };
-              id?: T;
-            };
-      };
-  crossIndustryPatterns?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              excerpt?: T;
-              image?: T;
-              id?: T;
-            };
-      };
-  regulatoryPosture?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              excerpt?: T;
-              icon?: T;
-              id?: T;
-            };
-      };
-  cta?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        backgroundImage?: T;
-        button_1?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-        button_2?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ScalesPageBlock_select".
- */
-export interface ScalesPageBlockSelect<T extends boolean = true> {
-  heroSection?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              image?: T;
-              id?: T;
-            };
-      };
-  qualityBar?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              excerpt?: T;
-              icon?: T;
-              id?: T;
-            };
-      };
-  scale?: T;
-  cta?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        backgroundImage?: T;
-        button_1?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-        button_2?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ContactPageBlock_select".
- */
-export interface ContactPageBlockSelect<T extends boolean = true> {
-  hero?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        button_1?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-        button_2?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-      };
-  stats?:
-    | T
-    | {
-        value?: T;
-        label?: T;
-        detail?: T;
-        id?: T;
-      };
-  routes?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              title?: T;
-              description?: T;
-              email?: T;
-              replyWindow?: T;
-              cta?: T;
-              info?: T;
-              bestFor?:
-                | T
-                | {
-                    item?: T;
-                    id?: T;
-                  };
-              id?: T;
-            };
-      };
-  offices?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?:
-          | T
-          | {
-              city?: T;
-              tag?: T;
-              timezone?: T;
-              hours?: T;
-              email?: T;
-              phone?: T;
-              address?:
-                | T
-                | {
-                    line?: T;
-                    id?: T;
-                  };
-              id?: T;
-            };
-      };
-  form?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        form?: T;
-      };
-  cta?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        button_1?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-        button_2?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CareersPageBlock_select".
- */
-export interface CareersPageBlockSelect<T extends boolean = true> {
-  hero?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        image?: T;
-        button?:
-          | T
-          | {
-              label?: T;
-              url?: T;
-            };
-      };
-  section_2?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        item_1?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              image?: T;
-            };
-        item_2?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-            };
-        item_3?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-            };
-        item_4?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-            };
-        item_5?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-            };
-        item_6?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-            };
-      };
-  section_3?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        item_1?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              image?: T;
-            };
-        item_2?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              image?: T;
-            };
-        item_3?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-            };
-        item_4?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-            };
-      };
-  section_4?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        item_1?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              levels?:
-                | T
-                | {
-                    name?: T;
-                    id?: T;
-                  };
-            };
-        item_2?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              image?: T;
-            };
-        item_3?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              image?: T;
-            };
-        item_4?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              image?: T;
-            };
-        item_5?:
-          | T
-          | {
-              heading?: T;
-              description?: T;
-              image?: T;
-            };
-      };
-  team?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        members?: T;
-      };
-  jobs?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        list?: T;
-      };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "StoriesPageBlock_select".
- */
-export interface StoriesPageBlockSelect<T extends boolean = true> {
-  heroSection?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-      };
-  featureCaseStudy?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        story?: T;
-        stats?:
-          | T
-          | {
-              value?: T;
-              label?: T;
-              id?: T;
-            };
-        highlights?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-        readTime?: T;
-        categoryLabel?: T;
-        buttonLabel?: T;
-      };
-  allStoriesGrid?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        items?: T;
-        pressRelease?: T;
-      };
-  categoryLanding?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        categories?:
-          | T
-          | {
-              title?: T;
-              description?: T;
-              icon?: T;
-              image?: T;
-              link?: T;
-              linkLabel?: T;
-              id?: T;
-            };
-      };
-  subscribe?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        followHint?: T;
-        followOptions?:
-          | T
-          | {
-              label?: T;
-              id?: T;
-            };
-        emailPlaceholder?: T;
-        buttonLabel?: T;
-        disclaimer?: T;
-        preview?:
-          | T
-          | {
-              issueLabel?: T;
-              heading?: T;
-              items?:
-                | T
-                | {
-                    text?: T;
-                    id?: T;
-                  };
-              subscribersLabel?: T;
-              readTimeLabel?: T;
-              backgroundImage?: T;
-            };
-      };
   id?: T;
   blockName?: T;
 }

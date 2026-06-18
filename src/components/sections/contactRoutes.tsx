@@ -2,7 +2,7 @@
 
 import Motion from '@/components/animation/motion'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
-import type { ContactPageBlock } from '@/payload-types'
+import type { ContactRoutesBlock } from '@/payload-types'
 import {
   ArrowRight,
   ArrowUpRight,
@@ -17,7 +17,7 @@ import {
 import type { JSX } from 'react'
 import { useState } from 'react'
 
-type RoutesData = NonNullable<ContactPageBlock['routes']>
+type RoutesData = ContactRoutesBlock
 type RouteItem = NonNullable<RoutesData['items']>[number]
 
 // Icon + gradient are fixed in code and matched to CMS routes by position.

@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { imageField } from '@/fields/image'
+import { rowLabelAdmin } from '@/fields/rowLabel'
 import { sectionHeader } from '@/fields/sectionHeader'
 
 // Design-faithful blocks: each renders an existing hand-built homepage section component.
@@ -14,30 +15,56 @@ export const AboutSection: Block = {
     ...sectionHeader(),
     {
       name: 'items',
-      label: 'Items',
+      label: 'Highlighted Items',
       type: 'relationship',
       relationTo: ['capability', 'solution', 'industry', 'scale', 'model'],
       hasMany: true,
+      admin: {
+        description:
+          'Mixed list of records (capabilities, solutions, industries, scales or models) featured in the About section. Order here is the display order.',
+      },
     },
     {
       name: 'organizations',
       label: 'Organizations',
       type: 'group',
+      admin: {
+        description: 'Logo wall of partner / member organizations shown within the About section.',
+      },
       fields: [
         { name: 'heading', label: 'Heading', type: 'text' },
         {
           name: 'organization',
-          label: 'Organization',
+          label: 'Organizations',
           type: 'array',
+          admin: {
+            ...rowLabelAdmin,
+            description: 'Each entry is one organization logo with its name and an optional outbound link.',
+          },
           fields: [
             imageField({ name: 'icon', label: 'Icon' }),
-            { name: 'name', label: 'Name', type: 'text' },
-            { name: 'link', label: 'Link', type: 'text' },
+            { name: 'name', label: 'Name', type: 'text', admin: { width: '50%' } },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+              admin: {
+                width: '50%',
+                description: 'Optional URL the logo links to.',
+              },
+            },
           ],
         },
       ],
     },
-    { name: 'bottomDescription', label: 'Bottom Description', type: 'textarea' },
+    {
+      name: 'bottomDescription',
+      label: 'Bottom Description',
+      type: 'textarea',
+      admin: {
+        description: 'Closing copy rendered below the organizations logo wall.',
+      },
+    },
   ],
 }
 
@@ -48,7 +75,16 @@ export const SolutionsSection: Block = {
   fields: [
     ...sectionHeader(),
     imageField({ name: 'image' }),
-    { name: 'items', label: 'Solutions', type: 'relationship', relationTo: 'solution', hasMany: true },
+    {
+      name: 'items',
+      label: 'Solutions',
+      type: 'relationship',
+      relationTo: 'solution',
+      hasMany: true,
+      admin: {
+        description: 'Solutions to feature in this section, in display order.',
+      },
+    },
   ],
 }
 
@@ -58,9 +94,32 @@ export const CapabilitiesSection: Block = {
   labels: { singular: 'Capabilities Section', plural: 'Capabilities Sections' },
   fields: [
     ...sectionHeader(),
-    { name: 'capability', label: 'Capabilities', type: 'relationship', relationTo: 'capability', hasMany: true },
-    { name: 'heading_2', label: 'Heading 2', type: 'text' },
-    { name: 'description_2', label: 'Description 2', type: 'textarea' },
+    {
+      name: 'capability',
+      label: 'Capabilities',
+      type: 'relationship',
+      relationTo: 'capability',
+      hasMany: true,
+      admin: {
+        description: 'Capabilities to feature in this section, in display order.',
+      },
+    },
+    {
+      name: 'heading_2',
+      label: 'Secondary Heading',
+      type: 'text',
+      admin: {
+        description: 'Heading for the secondary content block beside the capabilities list.',
+      },
+    },
+    {
+      name: 'description_2',
+      label: 'Secondary Description',
+      type: 'textarea',
+      admin: {
+        description: 'Body copy for the secondary content block.',
+      },
+    },
     imageField({ name: 'image' }),
   ],
 }
@@ -71,7 +130,16 @@ export const ScalesSection: Block = {
   labels: { singular: 'Scales Section', plural: 'Scales Sections' },
   fields: [
     ...sectionHeader(),
-    { name: 'scales', label: 'Scales', type: 'relationship', relationTo: 'scale', hasMany: true },
+    {
+      name: 'scales',
+      label: 'Scales',
+      type: 'relationship',
+      relationTo: 'scale',
+      hasMany: true,
+      admin: {
+        description: 'Scale records to feature in this section, in display order.',
+      },
+    },
   ],
 }
 
@@ -81,7 +149,16 @@ export const EngagementSection: Block = {
   labels: { singular: 'Engagement Section', plural: 'Engagement Sections' },
   fields: [
     ...sectionHeader(),
-    { name: 'model', label: 'Models', type: 'relationship', relationTo: 'model', hasMany: true },
+    {
+      name: 'model',
+      label: 'Engagement Models',
+      type: 'relationship',
+      relationTo: 'model',
+      hasMany: true,
+      admin: {
+        description: 'Engagement model records to feature in this section, in display order.',
+      },
+    },
   ],
 }
 
@@ -92,8 +169,22 @@ export const GlobalDeliverySection: Block = {
   fields: [
     ...sectionHeader(),
     imageField({ name: 'image' }),
-    { name: 'title', label: 'Title', type: 'text' },
-    { name: 'excerpt', label: 'Excerpt', type: 'textarea' },
+    {
+      name: 'title',
+      label: 'Title',
+      type: 'text',
+      admin: {
+        description: 'Title rendered alongside the image in the global delivery callout.',
+      },
+    },
+    {
+      name: 'excerpt',
+      label: 'Excerpt',
+      type: 'textarea',
+      admin: {
+        description: 'Short supporting copy shown under the title.',
+      },
+    },
   ],
 }
 
@@ -105,8 +196,12 @@ export const ProcessSection: Block = {
     ...sectionHeader(),
     {
       name: 'process',
-      label: 'Process',
+      label: 'Process Steps',
       type: 'array',
+      admin: {
+        ...rowLabelAdmin,
+        description: 'Ordered list of process steps. Each row is one step with a title and rich-text description.',
+      },
       fields: [
         { name: 'title', label: 'Title', type: 'text' },
         { name: 'description', label: 'Description', type: 'richText' },
@@ -121,7 +216,16 @@ export const TeamSection: Block = {
   labels: { singular: 'Team Section', plural: 'Team Sections' },
   fields: [
     ...sectionHeader(),
-    { name: 'members', label: 'Members', type: 'relationship', relationTo: 'team', hasMany: true },
+    {
+      name: 'members',
+      label: 'Team Members',
+      type: 'relationship',
+      relationTo: 'team',
+      hasMany: true,
+      admin: {
+        description: 'Team member records to feature in this section, in display order.',
+      },
+    },
   ],
 }
 
@@ -131,7 +235,16 @@ export const OpportunitiesSection: Block = {
   labels: { singular: 'Opportunities Section', plural: 'Opportunities Sections' },
   fields: [
     ...sectionHeader(),
-    { name: 'opportunity', label: 'Opportunities', type: 'relationship', relationTo: 'job', hasMany: true },
+    {
+      name: 'opportunity',
+      label: 'Opportunities',
+      type: 'relationship',
+      relationTo: 'job',
+      hasMany: true,
+      admin: {
+        description: 'Job openings to feature in this section, in display order.',
+      },
+    },
   ],
 }
 
