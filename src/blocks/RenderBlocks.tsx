@@ -1,13 +1,35 @@
 import type { Page } from '@/payload-types'
 
 import type { JSX } from 'react'
+import { Fragment } from 'react'
 
 import Motion from '@/components/animation/motion'
+import { AboutApproachComponent } from './AboutApproach/Component'
+import { AboutBeliefsComponent } from './AboutBeliefs/Component'
+import { AboutFundingStoryComponent } from './AboutFundingStory/Component'
+import { AboutHeroComponent } from './AboutHero/Component'
+import { AboutIntroComponent } from './AboutIntro/Component'
+import { AboutLeadershipComponent } from './AboutLeadership/Component'
 import { AboutPageComponent } from './AboutPage/Component'
+import { AboutProofOfScaleComponent } from './AboutProofOfScale/Component'
+import { AboutThesisComponent } from './AboutThesis/Component'
+import { CareersGridOneComponent } from './CareersGridOne/Component'
+import { CareersGridTwoComponent } from './CareersGridTwo/Component'
+import { CareersGrowthComponent } from './CareersGrowth/Component'
+import { CareersHeroComponent } from './CareersHero/Component'
 import { CareersPageComponent } from './CareersPage/Component'
+import { CareersTeamComponent } from './CareersTeam/Component'
+import { CategoryLandingComponent } from './CategoryLanding/Component'
+import { ContactFormComponent } from './ContactForm/Component'
+import { ContactHeroComponent } from './ContactHero/Component'
+import { ContactOfficesComponent } from './ContactOffices/Component'
 import { ContactPageComponent } from './ContactPage/Component'
+import { ContactRoutesComponent } from './ContactRoutes/Component'
+import { ContactStatsComponent } from './ContactStats/Component'
+import { CrossIndustryPatternsComponent } from './CrossIndustryPatterns/Component'
 import { ContentBlockComponent } from './Content/Component'
 import { CtaBlockComponent } from './Cta/Component'
+import { FeatureCaseStudyComponent } from './FeatureCaseStudy/Component'
 import { FeatureGridBlockComponent } from './FeatureGrid/Component'
 import { FormBlockComponent } from './Form/Component'
 import { HeroBlockComponent } from './Hero/Component'
@@ -22,15 +44,29 @@ import {
   SolutionsSectionComponent,
   TeamSectionComponent,
 } from './homeSections/Component'
+import { IndustriesDetailsComponent } from './IndustriesDetails/Component'
+import { IndustriesHeroComponent } from './IndustriesHero/Component'
 import { IndustriesPageComponent } from './IndustriesPage/Component'
 import { IndustriesSectionComponent } from './IndustriesSection/Component'
+import { IndustryListComponent } from './IndustryList/Component'
+import { IndustryPanelsComponent } from './IndustryPanels/Component'
 import { JobsBlockComponent } from './Jobs/Component'
 import { LogosBlockComponent } from './Logos/Component'
+import { QualityBarComponent } from './QualityBar/Component'
+import { RegulatoryPostureComponent } from './RegulatoryPosture/Component'
 import { RelationGridBlockComponent } from './RelationGrid/Component'
+import { ScaleShowcaseComponent } from './ScaleShowcase/Component'
+import { ScalesHeroComponent } from './ScalesHero/Component'
 import { ScalesPageComponent } from './ScalesPage/Component'
+import { SolutionFeatureComponent } from './SolutionFeature/Component'
+import { SolutionsEngageComponent } from './SolutionsEngage/Component'
+import { SolutionsHeroComponent } from './SolutionsHero/Component'
 import { SolutionsPageComponent } from './SolutionsPage/Component'
 import { StepsBlockComponent } from './Steps/Component'
+import { StoriesArchiveComponent } from './StoriesArchive/Component'
+import { StoriesHeroComponent } from './StoriesHero/Component'
 import { StoriesPageComponent } from './StoriesPage/Component'
+import { SubscribeComponent } from './Subscribe/Component'
 import { TeamBlockComponent } from './Team/Component'
 
 type BlockType = NonNullable<Page['layout']>[number]
@@ -56,6 +92,49 @@ const FULL_PAGE_BLOCKS = new Set<string>([
   'contactPageSection',
   'careersPageSection',
   'storiesPageSection',
+])
+
+// Granular redesign blocks (Phase 2) self-wrap in their own `<Motion tag="section">` (extracted
+// verbatim from the monolith Components). Render them directly so RenderBlocks does not add a
+// second section/fade wrapper around them — keeping the rendered structure identical.
+const SELF_WRAPPED_BLOCKS = new Set<string>([
+  'scalesHero',
+  'qualityBar',
+  'scaleShowcase',
+  'ctaBlock',
+  // Granular redesign blocks (Phase 2) — each self-wraps in its own Motion section.
+  'contactHero',
+  'contactStats',
+  'contactRoutes',
+  'contactOffices',
+  'contactForm',
+  'storiesHero',
+  'featureCaseStudy',
+  'storiesArchive',
+  'categoryLanding',
+  'subscribe',
+  'industriesHero',
+  'industryList',
+  'industriesDetails',
+  'industryPanels',
+  'crossIndustryPatterns',
+  'regulatoryPosture',
+  'solutionsHero',
+  'solutionFeature',
+  'solutionsEngage',
+  'aboutHero',
+  'aboutFundingStory',
+  'aboutIntro',
+  'aboutThesis',
+  'aboutBeliefs',
+  'aboutApproach',
+  'aboutProofOfScale',
+  'aboutLeadership',
+  'careersHero',
+  'careersGridOne',
+  'careersGridTwo',
+  'careersGrowth',
+  'careersTeam',
 ])
 
 /**
@@ -113,12 +192,83 @@ function renderBlock(block: BlockType): JSX.Element | null {
       return <CareersPageComponent {...block} />
     case 'storiesPageSection':
       return <StoriesPageComponent {...block} />
+    case 'scalesHero':
+      return <ScalesHeroComponent {...block} />
+    case 'qualityBar':
+      return <QualityBarComponent {...block} />
+    case 'scaleShowcase':
+      return <ScaleShowcaseComponent {...block} />
     case 'jobsBlock':
       return <JobsBlockComponent {...block} />
     case 'formBlock':
       return <FormBlockComponent {...block} />
     case 'ctaBlock':
       return <CtaBlockComponent {...block} />
+    // Granular redesign blocks (Phase 2).
+    case 'contactHero':
+      return <ContactHeroComponent {...block} />
+    case 'contactStats':
+      return <ContactStatsComponent {...block} />
+    case 'contactRoutes':
+      return <ContactRoutesComponent {...block} />
+    case 'contactOffices':
+      return <ContactOfficesComponent {...block} />
+    case 'contactForm':
+      return <ContactFormComponent {...block} />
+    case 'storiesHero':
+      return <StoriesHeroComponent {...block} />
+    case 'featureCaseStudy':
+      return <FeatureCaseStudyComponent {...block} />
+    case 'storiesArchive':
+      return <StoriesArchiveComponent {...block} />
+    case 'categoryLanding':
+      return <CategoryLandingComponent {...block} />
+    case 'subscribe':
+      return <SubscribeComponent {...block} />
+    case 'industriesHero':
+      return <IndustriesHeroComponent {...block} />
+    case 'industryList':
+      return <IndustryListComponent {...block} />
+    case 'industriesDetails':
+      return <IndustriesDetailsComponent {...block} />
+    case 'industryPanels':
+      return <IndustryPanelsComponent {...block} />
+    case 'crossIndustryPatterns':
+      return <CrossIndustryPatternsComponent {...block} />
+    case 'regulatoryPosture':
+      return <RegulatoryPostureComponent {...block} />
+    case 'solutionsHero':
+      return <SolutionsHeroComponent {...block} />
+    case 'solutionFeature':
+      return <SolutionFeatureComponent {...block} />
+    case 'solutionsEngage':
+      return <SolutionsEngageComponent {...block} />
+    case 'aboutHero':
+      return <AboutHeroComponent {...block} />
+    case 'aboutFundingStory':
+      return <AboutFundingStoryComponent {...block} />
+    case 'aboutIntro':
+      return <AboutIntroComponent {...block} />
+    case 'aboutThesis':
+      return <AboutThesisComponent {...block} />
+    case 'aboutBeliefs':
+      return <AboutBeliefsComponent {...block} />
+    case 'aboutApproach':
+      return <AboutApproachComponent {...block} />
+    case 'aboutProofOfScale':
+      return <AboutProofOfScaleComponent {...block} />
+    case 'aboutLeadership':
+      return <AboutLeadershipComponent {...block} />
+    case 'careersHero':
+      return <CareersHeroComponent {...block} />
+    case 'careersGridOne':
+      return <CareersGridOneComponent {...block} />
+    case 'careersGridTwo':
+      return <CareersGridTwoComponent {...block} />
+    case 'careersGrowth':
+      return <CareersGrowthComponent {...block} />
+    case 'careersTeam':
+      return <CareersTeamComponent {...block} />
     default:
       return null
   }
@@ -146,6 +296,10 @@ export function RenderBlocks({ blocks }: { blocks?: Page['layout'] }): JSX.Eleme
               {el}
             </section>
           )
+        }
+        // Self-wrapping granular blocks already render their own Motion section — render directly.
+        if (SELF_WRAPPED_BLOCKS.has(block.blockType)) {
+          return <Fragment key={block.id || i}>{el}</Fragment>
         }
         return (
           <Motion tag="section" className="w-full" key={block.id || i} {...motionSectionProps}>
