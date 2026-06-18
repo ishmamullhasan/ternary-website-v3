@@ -15,14 +15,6 @@ import User from '@/collections/user'
 import Footer from '@/globals/footer'
 import Header from '@/globals/header'
 import LegalCenter from '@/globals/legalCenter'
-import About from '@/globals/pages/about'
-import CareersPage from '@/globals/pages/careers'
-import ContactPage from '@/globals/pages/contact'
-import Homepage from '@/globals/pages/home'
-import IndustriesPage from '@/globals/pages/industries'
-import ScalesPage from '@/globals/pages/scales'
-import SolutionsPage from '@/globals/pages/solutions'
-import StoriesPage from '@/globals/pages/stories'
 import plugins from '@/plugins'
 import { getServerSideURL } from '@/utilities/getURL'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
@@ -87,19 +79,7 @@ export default buildConfig({
     Legal,
   ],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [
-    Header,
-    Footer,
-    Homepage,
-    CareersPage,
-    About,
-    LegalCenter,
-    ScalesPage,
-    IndustriesPage,
-    SolutionsPage,
-    ContactPage,
-    StoriesPage,
-  ],
+  globals: [Header, Footer, LegalCenter],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

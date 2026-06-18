@@ -22,7 +22,7 @@ export const seed = async ({ payload, req: _req }: { payload: Payload; req: Payl
     },
   })
 
-  payload.logger.info('— Seeding globals (header, footer, homepage)...')
+  payload.logger.info('— Seeding globals (header, footer)...')
   await Promise.all([
     payload.updateGlobal({
       slug: 'header',
@@ -41,11 +41,6 @@ export const seed = async ({ payload, req: _req }: { payload: Payload; req: Payl
           copyright: `© ${new Date().getFullYear()} Ternary Solutions`,
         },
       },
-      context: { disableRevalidate: true },
-    }),
-    payload.updateGlobal({
-      slug: 'homePage',
-      data: {},
       context: { disableRevalidate: true },
     }),
   ])

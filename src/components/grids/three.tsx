@@ -1,9 +1,9 @@
 import { BentoCard } from '@/components/layout/bentoCard'
 import Section from '@/components/layout/section'
-import type { CareersPage, Media } from '@/payload-types'
+import type { CareersPageBlock, Media } from '@/payload-types'
 import type { JSX } from 'react'
 
-export default function GridThree({ careersPageData }: { careersPageData: CareersPage }): JSX.Element {
+export default function GridThree({ careersPageData }: { careersPageData: CareersPageBlock }): JSX.Element {
   const item1 = careersPageData.section_4?.item_1
   const item2 = careersPageData.section_4?.item_2
   const item3 = careersPageData.section_4?.item_3

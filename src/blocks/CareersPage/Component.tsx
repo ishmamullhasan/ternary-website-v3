@@ -6,7 +6,7 @@ import GridTwo from '@/components/grids/two'
 import Section from '@/components/layout/section'
 import Jobs from '@/components/sections/job'
 import { getJobs } from '@/lib/jobs-data'
-import type { CareersPage, CareersPageBlock, Media, Team } from '@/payload-types'
+import type { CareersPageBlock, Media, Team } from '@/payload-types'
 import type { JSX } from 'react'
 
 export const CareersPageComponent = async (data: CareersPageBlock): Promise<JSX.Element> => {
@@ -59,13 +59,13 @@ export const CareersPageComponent = async (data: CareersPageBlock): Promise<JSX.
         </Motion>
 
         {/* Section 1: More than just a workplace */}
-        <GridOne careersPageData={data as unknown as CareersPage} />
+        <GridOne careersPageData={data} />
 
         {/* Section 2: Work hard. Live fully. */}
-        <GridTwo careersPageData={data as unknown as CareersPage} />
+        <GridTwo careersPageData={data} />
 
         {/* Section 3: Engineering growth */}
-        <GridThree careersPageData={data as unknown as CareersPage} />
+        <GridThree careersPageData={data} />
 
         {/* Section 4: Team Voices */}
         <Section
