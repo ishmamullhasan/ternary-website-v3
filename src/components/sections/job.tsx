@@ -13,6 +13,8 @@ interface JobsProps {
   jobs: JobListing[]
   heading?: string
   description?: string
+  /** Locale segment to prefix job detail links with (WEB-445), e.g. "en". "" keeps legacy links. */
+  localePrefix?: string
 }
 
 const fadeUp = {
@@ -20,7 +22,7 @@ const fadeUp = {
   animate: { opacity: 1, y: 0 },
 }
 
-export default function Jobs({ jobs, heading, description }: JobsProps): JSX.Element {
+export default function Jobs({ jobs, heading, description, localePrefix = '' }: JobsProps): JSX.Element {
   // Hooks must run unconditionally before any early return (react-hooks/rules-of-hooks).
   const [selectedDepartment, setSelectedDepartment] = useState<string>('All Departments')
   const [selectedLevel, setSelectedLevel] = useState<string>('All Levels')
@@ -175,7 +177,7 @@ export default function Jobs({ jobs, heading, description }: JobsProps): JSX.Ele
                 </div>
 
                 <div className="mt-auto flex justify-end">
-                  <Link href={`/job/${job.slug}`} key={job.id}>
+                  <Link href={`${localePrefix}/job/${job.slug}`} key={job.id}>
                     <button
                       type="button"
                       className={`flex items-center gap-2 border ${careersBorder.muted} ${careersText.body} px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#0F0E0E] hover:text-white transition-all group`}

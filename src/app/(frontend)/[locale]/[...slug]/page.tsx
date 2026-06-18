@@ -1,5 +1,6 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import JsonLd from '@/components/seo/JsonLd'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
 import { pagePath } from '@/lib/seo/pagePath'
 import { breadcrumbList } from '@/lib/seo/structuredData'
@@ -9,16 +10,18 @@ import config from '@payload-config'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
+import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-const queryPageByPath = async (segments: string[], draft: boolean): Promise<PageDoc | null> => {
+const queryPageByPath = async (segments: string[], draft: boolean, locale: TypedLocale): Promise<PageDoc | null> => {
   const payload = await getPayload({ config })
   const path = `/${segments.join('/')}`
   const result = await payload.find({
     collection: 'pages',
     where: { slug: { equals: segments[segments.length - 1] } },
     draft,
+    locale,
     // Pages are public, but the content collections they reference (capability, solution,
     // team, …) are not publicly readable — so with overrideAccess:false Payload returns
     // bare relationship ids instead of populating them, and block sections render empty.
@@ -31,26 +34,38 @@ const queryPageByPath = async (segments: string[], draft: boolean): Promise<Page
   return result.docs.find((page) => pagePath(page) === path) ?? null
 }
 
-export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
+export async function generateStaticParams(): Promise<{ locale: string; slug: string[] }[]> {
   const payload = await getPayload({ config })
   const pages = await payload.find({ collection: 'pages', limit: 1000, depth: 1 })
-  return pages.docs
-    .map((page) => ({ slug: pagePath(page).split('/').filter(Boolean) }))
-    .filter((p) => p.slug.length > 0)
+  const slugs = pages.docs.map((page) => pagePath(page).split('/').filter(Boolean)).filter((slug) => slug.length > 0)
+  // Cross-product: one entry per {locale, slug} combination.
+  return LOCALES.flatMap((locale) => slugs.map((slug) => ({ locale, slug })))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
-  const { slug } = await params
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string[] }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) return {}
   const { isEnabled: draft } = await draftMode()
-  const page = await queryPageByPath(slug, draft)
+  const page = await queryPageByPath(slug, draft, typedLocale)
   if (!page) return {}
-  return generateMeta({ doc: page, pathname: pagePath(page) })
+  return generateMeta({ doc: page, pathname: pagePath(page), locale: typedLocale })
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string[] }> }): Promise<JSX.Element> {
-  const { slug } = await params
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string[] }>
+}): Promise<JSX.Element> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
   const { isEnabled: draft } = await draftMode()
-  const page = await queryPageByPath(slug, draft)
+  const page = await queryPageByPath(slug, draft, typedLocale)
 
   if (!page) notFound()
 
@@ -58,7 +73,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
   const base = getServerSideURL()
   const crumbs = (page.breadcrumbs ?? [])
     .filter((c) => c.label && c.url)
-    .map((c) => ({ name: c.label as string, url: `${base}${c.url}` }))
+    .map((c) => ({ name: c.label as string, url: `${base}/${typedLocale}${c.url}` }))
 
   return (
     <main>

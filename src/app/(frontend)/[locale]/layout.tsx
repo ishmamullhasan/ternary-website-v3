@@ -1,6 +1,8 @@
+import LocaleSwitcher from '@/components/LocaleSwitcher'
 import Footer from '@/components/sections/footer'
 import Header from '@/components/sections/header'
 import JsonLd from '@/components/seo/JsonLd'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME } from '@/lib/seo/config'
 import { organization, website } from '@/lib/seo/structuredData'
 import { getFooter, getHeader } from '@/utilities/getGlobals'
@@ -8,9 +10,15 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getServerSideURL } from '@/utilities/getURL'
 import type { Metadata } from 'next'
 import { Poppins } from 'next/font/google'
-import './globals.css'
+import { notFound } from 'next/navigation'
+import '../globals.css'
 
 export const revalidate = 0
+
+// Always-prefixed routing: pre-render the html shell for every locale (/en, /bn).
+export function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }))
+}
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -45,18 +53,28 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode
+  params: Promise<{ locale: string }>
 }>) {
-  const [headerData, footerData] = await Promise.all([getHeader(), getFooter()])
+  const { locale } = await params
+  const typedLocale = asTypedLocale(locale)
+  // Unknown locale segment → 404 (only /en and /bn are valid).
+  if (!typedLocale) notFound()
+
+  const [headerData, footerData] = await Promise.all([getHeader(typedLocale), getFooter(typedLocale)])
 
   return (
-    <html lang="en">
+    <html lang={typedLocale}>
       <body className={`${poppins.variable} antialiased py-0 bg-black w-full overflow-x-hidden text-[#F4F3EC]`}>
         {/* Sitewide structured data: who publishes this site + the site itself. */}
         <JsonLd data={organization()} />
         <JsonLd data={website()} />
         <Header headerData={headerData as React.ComponentProps<typeof Header>['headerData']} />
+        {/* Per-locale URL switcher rendered next to the CMS-driven header global (kept light, no
+            rewrite of the header global itself). */}
+        <LocaleSwitcher currentLocale={typedLocale} />
         <main className="flex flex-col lg:pt-10 pt-4">{children}</main>
         <Footer footerData={footerData as React.ComponentProps<typeof Footer>['footerData']} />
       </body>

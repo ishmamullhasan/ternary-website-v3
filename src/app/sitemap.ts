@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE, LOCALES, localizedPath } from '@/lib/i18n/locales'
 import { getJobs } from '@/lib/jobs-data'
 import { pagePath } from '@/lib/seo/pagePath'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -15,7 +16,7 @@ type WithMeta = { meta?: { hideFromSitemap?: boolean | null } | null }
 const isHidden = (doc: WithMeta): boolean => doc.meta?.hideFromSitemap === true
 
 // Per-document detail routes: Payload collection slug -> URL prefix.
-// IMPORTANT: each prefix is verified against an actual folder under src/app/(frontend). The
+// IMPORTANT: each prefix is verified against an actual folder under src/app/(frontend)/[locale]. The
 // solution / industry / model / scale collections are surfaced only as blocks inside Pages (they
 // have NO standalone detail route), so they are intentionally NOT listed here — adding them would
 // emit 404 URLs. Priority is a relative hint for crawlers.
@@ -27,10 +28,33 @@ const DETAIL_ROUTES: { collection: string; prefix: string; priority: number }[] 
   { collection: 'legal', prefix: 'legals', priority: 0.3 },
 ]
 
+// A page exists in every locale (fallback fills missing bn content). For one locale-LESS path we
+// emit one sitemap entry per locale, each carrying the full hreflang alternates map (en + bn +
+// x-default). Path building reuses `localizedPath` so it matches the route + canonical logic.
+function buildLanguages(base: string, path: string): Record<string, string> {
+  const languages: Record<string, string> = {}
+  for (const l of LOCALES) languages[l] = `${base}${localizedPath(l, path)}`
+  languages['x-default'] = `${base}${localizedPath(DEFAULT_LOCALE, path)}`
+  return languages
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getServerSideURL()
   const payload = await getPayload({ config })
   const entries: MetadataRoute.Sitemap = []
+
+  // Emit one entry per locale for a single locale-LESS path, with shared hreflang alternates.
+  const pushLocalized = (path: string, opts: { lastModified?: Date; priority?: number }) => {
+    const languages = buildLanguages(base, path)
+    for (const l of LOCALES) {
+      entries.push({
+        url: `${base}${localizedPath(l, path)}`,
+        lastModified: opts.lastModified,
+        priority: opts.priority,
+        alternates: { languages },
+      })
+    }
+  }
 
   // Blocks-driven pages (home + the marketing pages served via the [...slug] catch-all).
   const pages = await payload.find({
@@ -43,8 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const p of pages.docs) {
     if (isHidden(p as WithMeta)) continue
     const path = pagePath(p)
-    entries.push({
-      url: `${base}${path}`,
+    pushLocalized(path, {
       lastModified: p.updatedAt ? new Date(p.updatedAt) : undefined,
       priority: path === '/' ? 1 : 0.9,
     })
@@ -61,8 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
       for (const d of docs.docs as (WithMeta & { slug?: string | null; updatedAt?: string })[]) {
         if (!d.slug || isHidden(d)) continue
-        entries.push({
-          url: `${base}/${prefix}/${d.slug}`,
+        pushLocalized(`/${prefix}/${d.slug}`, {
           lastModified: d.updatedAt ? new Date(d.updatedAt) : undefined,
           priority,
         })
@@ -78,8 +100,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const jobs = await getJobs()
     for (const j of jobs) {
       if (!j.slug) continue
-      entries.push({
-        url: `${base}/job/${j.slug}`,
+      pushLocalized(`/job/${j.slug}`, {
         lastModified: j.published_at ? new Date(j.published_at) : undefined,
         priority: 0.5,
       })
