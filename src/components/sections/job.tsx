@@ -10,7 +10,8 @@ import type { JSX } from 'react'
 import { useState } from 'react'
 
 interface JobsProps {
-  jobs: JobListing[]
+  /** Server-fetched roles. `null` = upstream fetch failed → error state; `[]` = no open roles. */
+  jobs: JobListing[] | null
   heading?: string
   description?: string
   /** Locale segment to prefix job detail links with (WEB-445), e.g. "en". "" keeps legacy links. */
@@ -28,9 +29,33 @@ export default function Jobs({ jobs, heading, description, localePrefix = '' }: 
   const [selectedLevel, setSelectedLevel] = useState<string>('All Levels')
   const [searchTerm, setSearchTerm] = useState<string>('')
 
+  // `jobs` is fetched server-side; a null/undefined prop means the fetch failed upstream.
   if (!jobs) {
     return (
-      <div className="max-w-6xl text-red-700 font-bold flex justify-center items-center p-12">Error loading data.</div>
+      <Section title={heading || 'Open Roles'} desc={description}>
+        <div className={`col-span-full text-center ${careersText.muted} py-12`}>
+          <p className={`text-lg font-medium ${careersText.white}`}>We couldn&rsquo;t load open roles.</p>
+          <p className="text-sm">Please refresh the page or check back shortly.</p>
+        </div>
+      </Section>
+    )
+  }
+
+  // No roles at all on the live API (the expected state when nothing is open).
+  if (jobs.length === 0) {
+    return (
+      <Section
+        title={heading || 'Open Roles'}
+        desc={
+          description ||
+          'Openings for engineers wanting production ownership, technical growth, and operational impact.'
+        }
+      >
+        <div className={`col-span-full text-center ${careersText.muted} py-12`}>
+          <p className={`text-lg font-medium ${careersText.white}`}>No open roles right now — check back soon.</p>
+          <p className="text-sm">We&rsquo;re always growing; new positions are posted here as they open.</p>
+        </div>
+      </Section>
     )
   }
 
@@ -197,8 +222,8 @@ export default function Jobs({ jobs, heading, description, localePrefix = '' }: 
             animate={fadeUp.animate}
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
-            <p className={`text-lg font-medium ${careersText.muted}`}>No jobs found.</p>
-            <p className={`text-sm ${careersText.muted}`}>Please try again later.</p>
+            <p className={`text-lg font-medium ${careersText.muted}`}>No roles match your filters.</p>
+            <p className={`text-sm ${careersText.muted}`}>Try clearing the search or filters above.</p>
           </motion.div>
         )}
       </div>

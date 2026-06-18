@@ -11,9 +11,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { JSX } from 'react'
 
-// Data comes from `@/lib/jobs-data` (mock mirror of the public recruiting API). Not a Payload
-// collection → no Payload `locale` arg; locale only drives the URL prefix on links.
-// ✅ = live on the API · 🟡 = Payload CMS copy · 🔒 = internal-only (see jobs-data.ts).
+// Data comes from `@/lib/jobs-data`: the live public recruiting API + merged Payload CMS copy
+// (getJob, keyed by role `code`). Locale drives the URL prefix on links and is threaded to getJob
+// for forward-compat with CMS localization. ✅ = API · 🟡 = CMS · 🔒 = internal-only.
 
 export async function generateStaticParams() {
   const jobs = await getJobs()
@@ -29,7 +29,7 @@ export async function generateMetadata({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) return {}
-  const jobData = await getJob(slug)
+  const jobData = await getJob(slug, typedLocale)
 
   if (!jobData) return {}
 
@@ -61,11 +61,17 @@ export default async function Page({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) notFound()
-  const jobData = await getJob(slug)
+  const jobData = await getJob(slug, typedLocale)
 
   if (!jobData) notFound() // maps to API 404 {"detail": "role not open or no active JD"}
 
-  const relatedJobs = await getRelatedJobs(slug)
+  // Related roles are non-essential: a transient list-fetch failure should not break the apply page.
+  let relatedJobs: Awaited<ReturnType<typeof getRelatedJobs>> = []
+  try {
+    relatedJobs = await getRelatedJobs(slug)
+  } catch {
+    relatedJobs = []
+  }
   const payRange = formatComp(jobData.comp_band_min, jobData.comp_band_max, jobData.comp_currency)
 
   // Hero pills: location & team are ✅ API; band is 🔒 internal (CMS).
