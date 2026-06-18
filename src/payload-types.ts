@@ -192,6 +192,9 @@ export interface Page {
         | ProcessSectionBlock
         | TeamSectionBlock
         | OpportunitiesSectionBlock
+        | ScalesHeroBlock
+        | QualityBarBlock
+        | ScaleShowcaseBlock
         | AboutPageBlock
         | SolutionsPageBlock
         | IndustriesPageBlock
@@ -199,6 +202,38 @@ export interface Page {
         | ContactPageBlock
         | CareersPageBlock
         | StoriesPageBlock
+        | ContactHeroBlock
+        | ContactStatsBlock
+        | ContactRoutesBlock
+        | ContactOfficesBlock
+        | ContactFormBlock
+        | StoriesHeroBlock
+        | FeatureCaseStudyBlock
+        | StoriesArchiveBlock
+        | CategoryLandingBlock
+        | SubscribeBlock
+        | IndustriesHeroBlock
+        | IndustryListBlock
+        | IndustriesDetailsBlock
+        | IndustryPanelsBlock
+        | CrossIndustryPatternsBlock
+        | RegulatoryPostureBlock
+        | SolutionsHeroBlock
+        | SolutionFeatureBlock
+        | SolutionsEngageBlock
+        | AboutHeroBlock
+        | AboutFundingStoryBlock
+        | AboutIntroBlock
+        | AboutThesisBlock
+        | AboutBeliefsBlock
+        | AboutApproachBlock
+        | AboutProofOfScaleBlock
+        | AboutLeadershipBlock
+        | CareersHeroBlock
+        | CareersGridOneBlock
+        | CareersGridTwoBlock
+        | CareersGrowthBlock
+        | CareersTeamBlock
         | CtaBlock
       )[]
     | null;
@@ -1281,6 +1316,70 @@ export interface Job {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScalesHeroBlock".
+ */
+export interface ScalesHeroBlock {
+  /**
+   * Optional small label rendered above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'scalesHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "QualityBarBlock".
+ */
+export interface QualityBarBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Icon shown on this item.
+         */
+        icon?: ('activity' | 'shield-check' | 'workflow' | 'book-check') | null;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'qualityBar';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScaleShowcaseBlock".
+ */
+export interface ScaleShowcaseBlock {
+  /**
+   * The scale tiers to showcase, in order.
+   */
+  scales?: (string | Scale)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'scaleShowcase';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "AboutPageBlock".
  */
 export interface AboutPageBlock {
@@ -2257,6 +2356,829 @@ export interface PressRelease {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactHeroBlock".
+ */
+export interface ContactHeroBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Up to 2 call-to-action buttons.
+   */
+  buttons?:
+    | {
+        label: string;
+        /**
+         * Internal path (e.g. /contact) or a full URL.
+         */
+        url: string;
+        variant?: ('primary' | 'secondary' | 'ghost') | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactStatsBlock".
+ */
+export interface ContactStatsBlock {
+  /**
+   * Response-time cards shown below the hero.
+   */
+  stats?:
+    | {
+        value: string;
+        label: string;
+        detail?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactStats';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactRoutesBlock".
+ */
+export interface ContactRoutesBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * The icon and gradient for each route is fixed in code by position.
+   */
+  items?:
+    | {
+        title?: string | null;
+        email?: string | null;
+        description?: string | null;
+        replyWindow?: string | null;
+        cta?: string | null;
+        info?: boolean | null;
+        /**
+         * Bullet points shown in the selected-route summary.
+         */
+        bestFor?:
+          | {
+              item?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactRoutes';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactOfficesBlock".
+ */
+export interface ContactOfficesBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Office cards shown in the map carousel. Use the arrows to switch between them.
+   */
+  items?:
+    | {
+        city?: string | null;
+        tag?: string | null;
+        timezone?: string | null;
+        hours?: string | null;
+        email?: string | null;
+        phone?: string | null;
+        /**
+         * One line per row (street, suite, city/zip, …).
+         */
+        address?:
+          | {
+              line?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactOffices';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactFormBlock".
+ */
+export interface ContactFormBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Pick a form to show a "Send us a message" section. Leave empty to hide the section.
+   */
+  form?: (string | null) | Form;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactForm';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoriesHeroBlock".
+ */
+export interface StoriesHeroBlock {
+  heading?: string | null;
+  description?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'storiesHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureCaseStudyBlock".
+ */
+export interface FeatureCaseStudyBlock {
+  heading?: string | null;
+  description?: string | null;
+  story?: (string | null) | Story;
+  /**
+   * Headline metrics. Use real figures only.
+   */
+  stats?:
+    | {
+        value: string;
+        label: string;
+        detail?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  highlights?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * e.g. "12 min"
+   */
+  readTime?: string | null;
+  /**
+   * e.g. "Engineering Studio"
+   */
+  categoryLabel?: string | null;
+  buttonLabel?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureCaseStudy';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoriesArchiveBlock".
+ */
+export interface StoriesArchiveBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Stories and insights shown in the filterable grid.
+   */
+  items?:
+    | (
+        | {
+            relationTo: 'story';
+            value: string | Story;
+          }
+        | {
+            relationTo: 'insight';
+            value: string | Insight;
+          }
+      )[]
+    | null;
+  /**
+   * Press releases shown at the bottom of the stories grid.
+   */
+  pressRelease?: (string | PressRelease)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'storiesArchive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CategoryLandingBlock".
+ */
+export interface CategoryLandingBlock {
+  heading?: string | null;
+  description?: string | null;
+  categories?:
+    | {
+        title?: string | null;
+        /**
+         * Lucide icon shown at the top of the category card.
+         */
+        icon?: ('newspaper' | 'flask-conical' | 'lightbulb' | 'file-text') | null;
+        description?: string | null;
+        image?: (string | null) | Media;
+        /**
+         * URL the category card links to.
+         */
+        link?: string | null;
+        /**
+         * e.g. "Open section"
+         */
+        linkLabel?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'categoryLanding';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SubscribeBlock".
+ */
+export interface SubscribeBlock {
+  heading?: string | null;
+  description?: string | null;
+  followHint?: string | null;
+  followOptions?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  emailPlaceholder?: string | null;
+  buttonLabel?: string | null;
+  disclaimer?: string | null;
+  preview?: {
+    issueLabel?: string | null;
+    heading?: string | null;
+    items?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    subscribersLabel?: string | null;
+    readTimeLabel?: string | null;
+    backgroundImage?: (string | null) | Media;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'subscribe';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesHeroBlock".
+ */
+export interface IndustriesHeroBlock {
+  heading?: string | null;
+  description?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industriesHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustryListBlock".
+ */
+export interface IndustryListBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Industries rendered as the grid of cards.
+   */
+  industry?: (string | Industry)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industryList';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesDetailsBlock".
+ */
+export interface IndustriesDetailsBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Rich text body rendered beside the heading/description.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industriesDetails';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustryPanelsBlock".
+ */
+export interface IndustryPanelsBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        /**
+         * Linked industry; its title/excerpt/thumbnail fill any fields left blank below.
+         */
+        industry?: (string | null) | Industry;
+        title?: string | null;
+        description?: string | null;
+        image?: (string | null) | Media;
+        tags?:
+          | {
+              name: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industryPanels';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CrossIndustryPatternsBlock".
+ */
+export interface CrossIndustryPatternsBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'crossIndustryPatterns';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RegulatoryPostureBlock".
+ */
+export interface RegulatoryPostureBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Icon shown on this item.
+         */
+        icon?: ('lock' | 'activity' | 'check') | null;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'regulatoryPosture';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionsHeroBlock".
+ */
+export interface SolutionsHeroBlock {
+  heading?: string | null;
+  description?: string | null;
+  backgroundImage?: (string | null) | Media;
+  cards?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'solutionsHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionFeatureBlock".
+ */
+export interface SolutionFeatureBlock {
+  /**
+   * Small pill/badge rendered above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  description?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Which side the text column sits on at large breakpoints (image takes the other).
+   */
+  mainSide?: ('left' | 'right') | null;
+  /**
+   * Optional widget rendered between the header and the who/shape cards.
+   */
+  widget?: ('none' | 'trajectory' | 'techStack' | 'incident') | null;
+  trajectory?: {
+    label?: string | null;
+    steps?:
+      | {
+          label?: string | null;
+          active?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  techStack?: {
+    label?: string | null;
+    items?:
+      | {
+          label?: string | null;
+          highlight?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  incident?: {
+    label?: string | null;
+    historyLabel?: string | null;
+    /**
+     * Number of cells in the history grid.
+     */
+    totalCells?: number | null;
+    /**
+     * Cell positions (1-based) to highlight as incidents.
+     */
+    activeCells?:
+      | {
+          position?: number | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Layout used for the two detail cards below the widget.
+   */
+  detailStyle?: ('bigPanel' | 'largeStacked' | 'compactGrid') | null;
+  /**
+   * Two cards: row 1 = "Who it's for", row 2 = "Shape / Engagement shape".
+   */
+  detail?:
+    | {
+        label?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'solutionFeature';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionsEngageBlock".
+ */
+export interface SolutionsEngageBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Three engagement models. Card gradient/bar colors are fixed in code by position.
+   */
+  cards?:
+    | {
+        title: string;
+        /**
+         * Rendered word-per-line in a mono font.
+         */
+        subtitle?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'solutionsEngage';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutHeroBlock".
+ */
+export interface AboutHeroBlock {
+  heading?: string | null;
+  description?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutFundingStoryBlock".
+ */
+export interface AboutFundingStoryBlock {
+  heading?: string | null;
+  description?: string | null;
+  backgroundImage?: (string | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutFundingStory';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutIntroBlock".
+ */
+export interface AboutIntroBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Long-form body copy shown beside the heading.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutIntro';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutThesisBlock".
+ */
+export interface AboutThesisBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutThesis';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutBeliefsBlock".
+ */
+export interface AboutBeliefsBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutBeliefs';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutApproachBlock".
+ */
+export interface AboutApproachBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutApproach';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutProofOfScaleBlock".
+ */
+export interface AboutProofOfScaleBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Headline metrics. Use real figures only.
+   */
+  stats?:
+    | {
+        value: string;
+        label: string;
+        detail?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  company?: {
+    heading?: string | null;
+    description?: string | null;
+    items?:
+      | {
+          name?: string | null;
+          /**
+           * Short supporting copy.
+           */
+          excerpt?: string | null;
+          stack?:
+            | {
+                name: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutProofOfScale';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutLeadershipBlock".
+ */
+export interface AboutLeadershipBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * The leadership team members to feature, in order. Managed in the Team collection.
+   */
+  members?: (string | Team)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutLeadership';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersHeroBlock".
+ */
+export interface CareersHeroBlock {
+  heading?: string | null;
+  description?: string | null;
+  image?: (string | null) | Media;
+  /**
+   * Up to 1 call-to-action button.
+   */
+  buttons?:
+    | {
+        label: string;
+        /**
+         * Internal path (e.g. /contact) or a full URL.
+         */
+        url: string;
+        variant?: ('primary' | 'secondary' | 'ghost') | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'careersHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersGridOneBlock".
+ */
+export interface CareersGridOneBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'careersGridOne';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersGridTwoBlock".
+ */
+export interface CareersGridTwoBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'careersGridTwo';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersGrowthBlock".
+ */
+export interface CareersGrowthBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * The large leveling card with the progression graphic.
+   */
+  featured?: {
+    title?: string | null;
+    /**
+     * Short supporting copy.
+     */
+    excerpt?: string | null;
+    levels?:
+      | {
+          name: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'careersGrowth';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersTeamBlock".
+ */
+export interface CareersTeamBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Team members shown in the carousel, in order.
+   */
+  members?: (string | Team)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'careersTeam';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CtaBlock".
  */
 export interface CtaBlock {
@@ -2540,6 +3462,9 @@ export interface PagesSelect<T extends boolean = true> {
         processSection?: T | ProcessSectionBlockSelect<T>;
         teamSection?: T | TeamSectionBlockSelect<T>;
         opportunitiesSection?: T | OpportunitiesSectionBlockSelect<T>;
+        scalesHero?: T | ScalesHeroBlockSelect<T>;
+        qualityBar?: T | QualityBarBlockSelect<T>;
+        scaleShowcase?: T | ScaleShowcaseBlockSelect<T>;
         aboutPageSection?: T | AboutPageBlockSelect<T>;
         solutionsPageSection?: T | SolutionsPageBlockSelect<T>;
         industriesPageSection?: T | IndustriesPageBlockSelect<T>;
@@ -2547,6 +3472,38 @@ export interface PagesSelect<T extends boolean = true> {
         contactPageSection?: T | ContactPageBlockSelect<T>;
         careersPageSection?: T | CareersPageBlockSelect<T>;
         storiesPageSection?: T | StoriesPageBlockSelect<T>;
+        contactHero?: T | ContactHeroBlockSelect<T>;
+        contactStats?: T | ContactStatsBlockSelect<T>;
+        contactRoutes?: T | ContactRoutesBlockSelect<T>;
+        contactOffices?: T | ContactOfficesBlockSelect<T>;
+        contactForm?: T | ContactFormBlockSelect<T>;
+        storiesHero?: T | StoriesHeroBlockSelect<T>;
+        featureCaseStudy?: T | FeatureCaseStudyBlockSelect<T>;
+        storiesArchive?: T | StoriesArchiveBlockSelect<T>;
+        categoryLanding?: T | CategoryLandingBlockSelect<T>;
+        subscribe?: T | SubscribeBlockSelect<T>;
+        industriesHero?: T | IndustriesHeroBlockSelect<T>;
+        industryList?: T | IndustryListBlockSelect<T>;
+        industriesDetails?: T | IndustriesDetailsBlockSelect<T>;
+        industryPanels?: T | IndustryPanelsBlockSelect<T>;
+        crossIndustryPatterns?: T | CrossIndustryPatternsBlockSelect<T>;
+        regulatoryPosture?: T | RegulatoryPostureBlockSelect<T>;
+        solutionsHero?: T | SolutionsHeroBlockSelect<T>;
+        solutionFeature?: T | SolutionFeatureBlockSelect<T>;
+        solutionsEngage?: T | SolutionsEngageBlockSelect<T>;
+        aboutHero?: T | AboutHeroBlockSelect<T>;
+        aboutFundingStory?: T | AboutFundingStoryBlockSelect<T>;
+        aboutIntro?: T | AboutIntroBlockSelect<T>;
+        aboutThesis?: T | AboutThesisBlockSelect<T>;
+        aboutBeliefs?: T | AboutBeliefsBlockSelect<T>;
+        aboutApproach?: T | AboutApproachBlockSelect<T>;
+        aboutProofOfScale?: T | AboutProofOfScaleBlockSelect<T>;
+        aboutLeadership?: T | AboutLeadershipBlockSelect<T>;
+        careersHero?: T | CareersHeroBlockSelect<T>;
+        careersGridOne?: T | CareersGridOneBlockSelect<T>;
+        careersGridTwo?: T | CareersGridTwoBlockSelect<T>;
+        careersGrowth?: T | CareersGrowthBlockSelect<T>;
+        careersTeam?: T | CareersTeamBlockSelect<T>;
         ctaBlock?: T | CtaBlockSelect<T>;
       };
   parent?: T;
@@ -2815,6 +3772,52 @@ export interface OpportunitiesSectionBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
   opportunity?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScalesHeroBlock_select".
+ */
+export interface ScalesHeroBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        media?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "QualityBarBlock_select".
+ */
+export interface QualityBarBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        icon?: T;
+        excerpt?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScaleShowcaseBlock_select".
+ */
+export interface ScaleShowcaseBlockSelect<T extends boolean = true> {
+  scales?: T;
   id?: T;
   blockName?: T;
 }
@@ -3606,6 +4609,629 @@ export interface StoriesPageBlockSelect<T extends boolean = true> {
               backgroundImage?: T;
             };
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactHeroBlock_select".
+ */
+export interface ContactHeroBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  buttons?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        variant?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactStatsBlock_select".
+ */
+export interface ContactStatsBlockSelect<T extends boolean = true> {
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        detail?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactRoutesBlock_select".
+ */
+export interface ContactRoutesBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        email?: T;
+        description?: T;
+        replyWindow?: T;
+        cta?: T;
+        info?: T;
+        bestFor?:
+          | T
+          | {
+              item?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactOfficesBlock_select".
+ */
+export interface ContactOfficesBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        city?: T;
+        tag?: T;
+        timezone?: T;
+        hours?: T;
+        email?: T;
+        phone?: T;
+        address?:
+          | T
+          | {
+              line?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactFormBlock_select".
+ */
+export interface ContactFormBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  form?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoriesHeroBlock_select".
+ */
+export interface StoriesHeroBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureCaseStudyBlock_select".
+ */
+export interface FeatureCaseStudyBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  story?: T;
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        detail?: T;
+        id?: T;
+      };
+  highlights?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  readTime?: T;
+  categoryLabel?: T;
+  buttonLabel?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StoriesArchiveBlock_select".
+ */
+export interface StoriesArchiveBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?: T;
+  pressRelease?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CategoryLandingBlock_select".
+ */
+export interface CategoryLandingBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  categories?:
+    | T
+    | {
+        title?: T;
+        icon?: T;
+        description?: T;
+        image?: T;
+        link?: T;
+        linkLabel?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SubscribeBlock_select".
+ */
+export interface SubscribeBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  followHint?: T;
+  followOptions?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  emailPlaceholder?: T;
+  buttonLabel?: T;
+  disclaimer?: T;
+  preview?:
+    | T
+    | {
+        issueLabel?: T;
+        heading?: T;
+        items?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        subscribersLabel?: T;
+        readTimeLabel?: T;
+        backgroundImage?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesHeroBlock_select".
+ */
+export interface IndustriesHeroBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustryListBlock_select".
+ */
+export interface IndustryListBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  industry?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesDetailsBlock_select".
+ */
+export interface IndustriesDetailsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  content?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustryPanelsBlock_select".
+ */
+export interface IndustryPanelsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        industry?: T;
+        title?: T;
+        description?: T;
+        image?: T;
+        tags?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CrossIndustryPatternsBlock_select".
+ */
+export interface CrossIndustryPatternsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        media?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RegulatoryPostureBlock_select".
+ */
+export interface RegulatoryPostureBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        icon?: T;
+        excerpt?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionsHeroBlock_select".
+ */
+export interface SolutionsHeroBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  backgroundImage?: T;
+  cards?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionFeatureBlock_select".
+ */
+export interface SolutionFeatureBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  description?: T;
+  image?: T;
+  mainSide?: T;
+  widget?: T;
+  trajectory?:
+    | T
+    | {
+        label?: T;
+        steps?:
+          | T
+          | {
+              label?: T;
+              active?: T;
+              id?: T;
+            };
+      };
+  techStack?:
+    | T
+    | {
+        label?: T;
+        items?:
+          | T
+          | {
+              label?: T;
+              highlight?: T;
+              id?: T;
+            };
+      };
+  incident?:
+    | T
+    | {
+        label?: T;
+        historyLabel?: T;
+        totalCells?: T;
+        activeCells?:
+          | T
+          | {
+              position?: T;
+              id?: T;
+            };
+      };
+  detailStyle?: T;
+  detail?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionsEngageBlock_select".
+ */
+export interface SolutionsEngageBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  cards?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutHeroBlock_select".
+ */
+export interface AboutHeroBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutFundingStoryBlock_select".
+ */
+export interface AboutFundingStoryBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  backgroundImage?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutIntroBlock_select".
+ */
+export interface AboutIntroBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  content?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutThesisBlock_select".
+ */
+export interface AboutThesisBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        media?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutBeliefsBlock_select".
+ */
+export interface AboutBeliefsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        media?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutApproachBlock_select".
+ */
+export interface AboutApproachBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        media?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutProofOfScaleBlock_select".
+ */
+export interface AboutProofOfScaleBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        detail?: T;
+        id?: T;
+      };
+  company?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        items?:
+          | T
+          | {
+              name?: T;
+              excerpt?: T;
+              stack?:
+                | T
+                | {
+                    name?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutLeadershipBlock_select".
+ */
+export interface AboutLeadershipBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  members?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersHeroBlock_select".
+ */
+export interface CareersHeroBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  image?: T;
+  buttons?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        variant?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersGridOneBlock_select".
+ */
+export interface CareersGridOneBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        media?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersGridTwoBlock_select".
+ */
+export interface CareersGridTwoBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        media?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersGrowthBlock_select".
+ */
+export interface CareersGrowthBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  featured?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        levels?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+      };
+  items?:
+    | T
+    | {
+        title?: T;
+        excerpt?: T;
+        media?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersTeamBlock_select".
+ */
+export interface CareersTeamBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  members?: T;
   id?: T;
   blockName?: T;
 }
