@@ -1,4 +1,6 @@
 import RichTextComp, { type RichText } from '@/components/richtext'
+import { asTypedLocale, LOCALES, localizedPath } from '@/lib/i18n/locales'
+import { generateMeta } from '@/lib/seo/generateMeta'
 import type { Insight, Media, PressRelease, Story } from '@/payload-types'
 import config from '@/payload.config'
 import type { Metadata } from 'next'
@@ -6,6 +8,7 @@ import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
@@ -19,19 +22,20 @@ const COLLECTION_CONFIG: Record<ContentCollection, { label: string; listPath: st
   pressRelease: { label: 'Press Release', listPath: '/stories', tag: 'pressRelease' },
 }
 
-function getDocBySlug(collection: ContentCollection, slug: string) {
+function getDocBySlug(collection: ContentCollection, slug: string, locale: TypedLocale) {
   return unstable_cache(
     async () => {
       const payload = await getPayload({ config })
       const result = await payload.find({
         collection,
         where: { slug: { equals: slug } },
+        locale,
         limit: 1,
         depth: 2,
       })
       return (result.docs[0] as ContentDoc | undefined) ?? null
     },
-    [`${collection}_${slug}`],
+    [`${collection}_${slug}_${locale}`],
     { tags: [`${collection}_${slug}`, COLLECTION_CONFIG[collection].tag] },
   )
 }
@@ -60,26 +64,37 @@ export function createContentDetailPage(collection: ContentCollection) {
       depth: 0,
     })
 
-    return result.docs.map((doc) => ({
-      slug: doc.slug,
-    }))
+    // Cross-product: one entry per {locale, slug}.
+    return LOCALES.flatMap((locale) => result.docs.map((doc) => ({ locale, slug: doc.slug })))
   }
 
-  async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-    const { slug } = await params
-    const doc = await getDocBySlug(collection, slug)()
+  async function generateMetadata({
+    params,
+  }: {
+    params: Promise<{ locale: string; slug: string }>
+  }): Promise<Metadata> {
+    const { locale, slug } = await params
+    const typedLocale = asTypedLocale(locale)
+    if (!typedLocale) return {}
+    const doc = await getDocBySlug(collection, slug, typedLocale)()
 
-    if (!doc?.title) return {}
+    if (!doc) return {}
 
-    return {
-      title: `${doc.title} | Ternary Solutions`,
-      description: doc.excerpts ?? undefined,
-    }
+    return generateMeta({
+      doc,
+      fallbackTitle: COLLECTION_CONFIG[collection].label,
+      fallbackDescription: doc.excerpts,
+      pathname: getDetailPath(collection, slug),
+      locale: typedLocale,
+      ogType: 'article',
+    })
   }
 
-  async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
-    const { slug } = await params
-    const doc = await getDocBySlug(collection, slug)()
+  async function Page({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<JSX.Element> {
+    const { locale, slug } = await params
+    const typedLocale = asTypedLocale(locale)
+    if (!typedLocale) notFound()
+    const doc = await getDocBySlug(collection, slug, typedLocale)()
 
     if (!doc) notFound()
 
@@ -88,7 +103,10 @@ export function createContentDetailPage(collection: ContentCollection) {
 
     return (
       <div className="max-w-4xl mx-auto w-full px-4 lg:px-0 py-12 lg:py-20 text-primary">
-        <Link href={listPath} className="text-sm text-[#757571] hover:text-white transition-colors mb-8 inline-block">
+        <Link
+          href={localizedPath(typedLocale, listPath)}
+          className="text-sm text-[#757571] hover:text-white transition-colors mb-8 inline-block"
+        >
           ← Back to stories
         </Link>
 
@@ -125,4 +143,4 @@ export function createContentDetailPage(collection: ContentCollection) {
   return { Page, generateMetadata, generateStaticParams, getDetailPath }
 }
 
-export { getDetailPath }
+export { getDetailPath, getListPath }

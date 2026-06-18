@@ -10,7 +10,7 @@ export const buttonGroup = (name: string, label: string): GroupField => ({
   label,
   type: 'group',
   fields: [
-    { name: 'label', label: 'Label', type: 'text' },
+    { name: 'label', label: 'Label', type: 'text', localized: true },
     { name: 'link', label: 'Link', type: 'text' },
   ],
 })

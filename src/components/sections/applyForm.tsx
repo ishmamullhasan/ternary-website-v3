@@ -1,7 +1,7 @@
 'use client'
 
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
-import { ChevronDown, Upload } from 'lucide-react'
+import { ChevronDown, Loader2, Upload } from 'lucide-react'
 import type { ChangeEvent, FormEvent, JSX, ReactNode } from 'react'
 import { useRef, useState } from 'react'
 
@@ -113,30 +113,34 @@ function Select({
 function FileUpload({
   id,
   label,
-  fileName,
+  file,
   onChange,
+  accept,
 }: {
   id: string
   label: string
-  fileName: string
-  onChange: (name: string) => void
+  file: File | null
+  onChange: (file: File | null) => void
+  accept?: string
 }): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)
+  // Capture the actual File object (needed for multipart upload), not just its name.
   return (
     <>
       <input
         ref={inputRef}
         id={id}
         type="file"
+        accept={accept}
         className="hidden"
-        onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files?.[0]?.name ?? '')}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files?.[0] ?? null)}
       />
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className={`${fieldBase} flex items-center justify-between text-left ${fileName ? 'text-white' : 'text-[#5a5a56]'}`}
+        className={`${fieldBase} flex items-center justify-between text-left ${file ? 'text-white' : 'text-[#5a5a56]'}`}
       >
-        <span className="truncate">{fileName || label}</span>
+        <span className="truncate">{file?.name || label}</span>
         <Upload size={16} className={`${careersText.body} shrink-0 ml-3`} aria-hidden />
       </button>
     </>
@@ -199,8 +203,6 @@ const initialState = {
   majorAreaOfStudy: '',
   degree: '',
   additionalDetails: '',
-  resume: '',
-  coverLetter: '',
   genderIdentity: '',
   sexualOrientation: '',
   racialBackground: '',
@@ -215,10 +217,13 @@ interface ApplyFormProps {
   slug?: string
 }
 
-const API_BASE = 'https://api.ternary.solutions/recruit/v1/public'
+const API_BASE = process.env.RECRUIT_API_BASE ?? 'https://api.ternary.solutions/recruit/v1/public'
 
 export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
   const [form, setForm] = useState<FormState>(initialState)
+  // Files live outside `form` (text) state so we can POST the real File objects, not their names.
+  const [resume, setResume] = useState<File | null>(null)
+  const [coverLetter, setCoverLetter] = useState<File | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -228,27 +233,43 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
+
+    // Client-side required validation. Resume is mandatory; the rest is enforced by the API.
+    if (!resume) {
+      setError('Please attach your resume before submitting.')
+      return
+    }
+
     setSubmitting(true)
 
-    // FRONTEND IS THE SOURCE OF TRUTH: this is the intended application payload.
-    // NOTE: `resume`/`coverLetter` currently hold filenames only — real uploads
-    // (multipart / pre-signed URL) still need to be wired per the canonical doc.
-    const applicationPayload = { slug, ...form }
+    // Multipart POST to the recruit public-apply endpoint (the "brains"): it stores the
+    // resume in S3 and writes the application to its DB. We map our fields onto its
+    // snake_case contract, send the resume file, and bundle the FULL form as `extra_fields`
+    // JSON so nothing the candidate entered is lost. No Content-Type header — the browser
+    // sets the multipart boundary itself.
+    const body = new FormData()
+    const core: Record<string, string> = {
+      first_name: form.firstName,
+      last_name: form.lastName,
+      email: form.email,
+      phone: [form.countryCode, form.phone].filter(Boolean).join(' ').trim(),
+      current_employer: form.employerName,
+      summary: form.additionalDetails,
+    }
+    for (const [key, value] of Object.entries(core)) {
+      if (value) body.append(key, value)
+    }
+    body.append('extra_fields', JSON.stringify({ ...form, coverLetterFilename: coverLetter?.name ?? null }))
+    body.append('resume', resume, resume.name)
+    // The recruit service models a single resume today, so the cover-letter file isn't
+    // uploaded — its filename rides along in extra_fields until a cover-letter slot exists.
 
     try {
-      // --- Mock ↔ real API toggle ---
-      // Default (mock): just log the payload so you can see the shape.
-      console.warn('[apply] would POST to', `${API_BASE}/applications/${slug}`, applicationPayload)
-      // Real API: uncomment to submit against POST /applications/{slug}.
-      // const res = await fetch(`${API_BASE}/applications/${slug}`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(applicationPayload),
-      // })
-      // if (!res.ok) {
-      //   const detail = await res.json().catch(() => null)
-      //   throw new Error(detail?.detail || `Submission failed (${res.status})`)
-      // }
+      const res = await fetch(`${API_BASE}/applications/${slug}`, { method: 'POST', body })
+      if (!res.ok) {
+        const detail = (await res.json().catch(() => null)) as { detail?: string } | null
+        throw new Error(detail?.detail || `Submission failed (${res.status})`)
+      }
       setSubmitted(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
@@ -438,14 +459,15 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
         <SectionHeading>Upload Documents</SectionHeading>
         <div className="space-y-4">
           <Field label="Resume" required htmlFor="resume">
-            <FileUpload id="resume" label="Upload Resume" fileName={form.resume} onChange={set('resume')} />
+            <FileUpload id="resume" label="Upload Resume" file={resume} onChange={setResume} accept=".pdf,.doc,.docx" />
           </Field>
           <Field label="Cover Letter" htmlFor="coverLetter">
             <FileUpload
               id="coverLetter"
               label="Upload Cover Letter"
-              fileName={form.coverLetter}
-              onChange={set('coverLetter')}
+              file={coverLetter}
+              onChange={setCoverLetter}
+              accept=".pdf,.doc,.docx"
             />
           </Field>
         </div>
@@ -531,14 +553,25 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
           <button
             type="submit"
             disabled={submitting || submitted}
-            className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium px-8 py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed`}
+            className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} inline-flex items-center gap-2 font-medium px-8 py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed`}
           >
+            {submitting && <Loader2 size={16} className="animate-spin" aria-hidden />}
             {submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}
           </button>
         </div>
-        {error && <p className="text-right text-sm text-red-400">{error}</p>}
+        {error && (
+          <p role="alert" className="text-right text-sm text-red-400">
+            {error}
+          </p>
+        )}
         {submitted && (
-          <p className={`text-right text-sm ${careersText.body}`}>Thanks for applying. We&rsquo;ll be in touch soon.</p>
+          <div
+            className={`${careersBg.card} border ${careersBorder.input} rounded-lg p-5 text-sm ${careersText.body}`}
+            role="status"
+          >
+            <p className={`font-medium ${careersText.white} mb-1`}>Application received</p>
+            <p>Thanks for applying. We&rsquo;ll review your application and be in touch soon.</p>
+          </div>
         )}
       </section>
     </form>

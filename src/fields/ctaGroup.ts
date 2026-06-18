@@ -18,9 +18,9 @@ type CtaOptions = {
 export const ctaGroup = ({ subheading = false, singleButton = false }: CtaOptions = {}): GroupField => {
   const fields: GroupField['fields'] = []
 
-  if (subheading) fields.push({ name: 'subheading', label: 'Subheading', type: 'text' })
-  fields.push({ name: 'heading', label: 'Heading', type: 'text' })
-  fields.push({ name: 'description', label: 'Description', type: 'textarea' })
+  if (subheading) fields.push({ name: 'subheading', label: 'Subheading', type: 'text', localized: true })
+  fields.push({ name: 'heading', label: 'Heading', type: 'text', localized: true })
+  fields.push({ name: 'description', label: 'Description', type: 'textarea', localized: true })
   fields.push({ name: 'backgroundImage', label: 'Background Image', type: 'upload', relationTo: 'media' })
 
   if (singleButton) {

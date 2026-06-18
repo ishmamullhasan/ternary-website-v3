@@ -19,11 +19,17 @@ const Media: CollectionConfig = {
     read: anyone,
     update: authenticated,
   },
+  admin: {
+    group: 'System',
+    description: 'Uploaded images and files used across the site.',
+    defaultColumns: ['filename', 'alt', 'updatedAt'],
+  },
   fields: [
     {
       name: 'alt',
       type: 'text',
       //required: true,
+      localized: true,
     },
     {
       name: 'caption',

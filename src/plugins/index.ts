@@ -57,9 +57,53 @@ const plugins: Plugin[] = [
     },
     // clientUploads: true,
   }),
+  // SEO meta attach point. The plugin injects a `meta` group (meta.title / meta.description /
+  // meta.image). The `fields` callback receives that group's default inner fields and returns
+  // the group's final field list, so spreading `defaultFields` and appending below adds our
+  // three custom fields INTO the meta group. WEB-443 reads meta.* for generateMetadata /
+  // sitemap / JSON-LD — this is purely the schema attach point; nothing reads it yet.
+  // tabbedUI is intentionally left off so the existing admin field layout is not restructured.
   seoPlugin({
+    collections: [
+      'pages',
+      'story',
+      'insight',
+      'solution',
+      'capability',
+      'industry',
+      'scale',
+      'model',
+      'pressRelease',
+      'legal',
+      'job',
+    ],
+    uploadsCollection: 'media',
     generateTitle,
     generateURL,
+    fields: ({ defaultFields }) => [
+      ...defaultFields,
+      {
+        name: 'canonical',
+        type: 'text',
+        admin: {
+          description: "Override canonical URL. Leave blank to use the page's own URL.",
+        },
+      },
+      {
+        name: 'hideFromSitemap',
+        type: 'checkbox',
+        defaultValue: false,
+        admin: {
+          description: 'Exclude this entry from the XML sitemap.',
+        },
+      },
+      {
+        name: 'twitterCard',
+        type: 'select',
+        options: ['summary', 'summary_large_image'],
+        defaultValue: 'summary_large_image',
+      },
+    ],
   }),
 ]
 

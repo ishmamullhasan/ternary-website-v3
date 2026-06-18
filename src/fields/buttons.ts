@@ -18,7 +18,7 @@ export const buttonsField = ({ name = 'buttons', label = 'Buttons', max = 2 }: B
     ...rowLabelAdmin,
   },
   fields: [
-    { name: 'label', label: 'Label', type: 'text', required: true, admin: { width: '50%' } },
+    { name: 'label', label: 'Label', type: 'text', required: true, localized: true, admin: { width: '50%' } },
     {
       name: 'url',
       label: 'URL',

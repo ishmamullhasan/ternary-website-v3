@@ -81,9 +81,11 @@ export interface Config {
     job: Job;
     team: Team;
     legal: Legal;
+    analytics: Analytics;
     forms: Form;
     'form-submissions': FormSubmission;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -109,9 +111,11 @@ export interface Config {
     job: JobSelect<false> | JobSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     legal: LegalSelect<false> | LegalSelect<true>;
+    analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -120,7 +124,7 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'bn') | ('en' | 'bn')[];
   globals: {
     header: Header;
     footer: Footer;
@@ -131,13 +135,19 @@ export interface Config {
     footer: FooterSelect<false> | FooterSelect<true>;
     legalCenter: LegalCenterSelect<false> | LegalCenterSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'bn';
   widgets: {
     collections: CollectionsWidget;
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      pruneAnalytics: TaskPruneAnalytics;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -160,6 +170,8 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Composable, blocks-based pages with drafts and live preview.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -231,6 +243,23 @@ export interface Page {
         id?: string | null;
       }[]
     | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -259,6 +288,8 @@ export interface IndustriesSectionBlock {
   blockType: 'industriesSection';
 }
 /**
+ * Industry verticals and their landing content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "industry".
  */
@@ -287,10 +318,29 @@ export interface Industry {
     };
     [k: string]: unknown;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Uploaded images and files used across the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -472,6 +522,8 @@ export interface AboutSectionBlock {
   blockType: 'aboutSection';
 }
 /**
+ * Engineering capabilities and their detail pages.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "capability".
  */
@@ -596,10 +648,29 @@ export interface Capability {
       link?: string | null;
     };
   };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Team member profiles shown across the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team".
  */
@@ -620,6 +691,8 @@ export interface Team {
   createdAt: string;
 }
 /**
+ * Solution offerings and their landing content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "solution".
  */
@@ -648,10 +721,29 @@ export interface Solution {
     };
     [k: string]: unknown;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Engagement scale tiers and their showcase content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "scale".
  */
@@ -676,10 +768,29 @@ export interface Scale {
         id?: string | null;
       }[]
     | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Engagement and delivery models.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "model".
  */
@@ -708,6 +819,23 @@ export interface Model {
     };
     [k: string]: unknown;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -867,6 +995,8 @@ export interface OpportunitiesSectionBlock {
   blockType: 'opportunitiesSection';
 }
 /**
+ * Open job postings and their detail content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "job".
  */
@@ -981,6 +1111,23 @@ export interface Job {
       label?: string | null;
       link?: string | null;
     };
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1428,6 +1575,8 @@ export interface FeatureCaseStudyBlock {
   blockType: 'featureCaseStudy';
 }
 /**
+ * Customer success stories and case studies.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "story".
  */
@@ -1456,6 +1605,23 @@ export interface Story {
     };
     [k: string]: unknown;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1490,6 +1656,8 @@ export interface StoriesArchiveBlock {
   blockType: 'storiesArchive';
 }
 /**
+ * Thought-leadership articles and insights.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "insight".
  */
@@ -1563,10 +1731,29 @@ export interface Insight {
       link?: string | null;
     };
   };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Official press releases and announcements.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pressRelease".
  */
@@ -1688,6 +1875,23 @@ export interface PressRelease {
     heading?: string | null;
     description?: string | null;
     pressReleases?: (string | PressRelease)[] | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -2329,6 +2533,8 @@ export interface CtaBlock {
   blockType: 'ctaBlock';
 }
 /**
+ * Admin accounts that can sign in and manage content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -2355,6 +2561,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Legal documents shown in the Legal Center.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "legal".
  */
@@ -2409,6 +2617,39 @@ export interface Legal {
       link?: string | null;
     };
   };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * First-party pageview log. Rows are written automatically by the site beacon — do not edit by hand. See the dashboard on the admin home for aggregates.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics".
+ */
+export interface Analytics {
+  id: string;
+  path: string;
+  locale?: string | null;
+  referrer?: string | null;
+  userAgent?: string | null;
+  timestamp?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2445,6 +2686,98 @@ export interface PayloadKv {
     | number
     | boolean
     | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: string;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'pruneAnalytics';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'pruneAnalytics') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2508,6 +2841,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'legal';
         value: string | Legal;
+      } | null)
+    | ({
+        relationTo: 'analytics';
+        value: string | Analytics;
       } | null)
     | ({
         relationTo: 'forms';
@@ -2630,6 +2967,16 @@ export interface PagesSelect<T extends boolean = true> {
         url?: T;
         label?: T;
         id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -3601,6 +3948,16 @@ export interface StorySelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3652,6 +4009,16 @@ export interface InsightSelect<T extends boolean = true> {
               label?: T;
               link?: T;
             };
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -3733,6 +4100,16 @@ export interface PressReleaseSelect<T extends boolean = true> {
         heading?: T;
         description?: T;
         pressReleases?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -3863,6 +4240,16 @@ export interface CapabilitySelect<T extends boolean = true> {
               link?: T;
             };
       };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3877,6 +4264,16 @@ export interface SolutionSelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3891,6 +4288,16 @@ export interface IndustrySelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3915,6 +4322,16 @@ export interface ScaleSelect<T extends boolean = true> {
         value?: T;
         id?: T;
       };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3929,6 +4346,16 @@ export interface ModelSelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -4051,6 +4478,16 @@ export interface JobSelect<T extends boolean = true> {
               link?: T;
             };
       };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -4104,6 +4541,29 @@ export interface LegalSelect<T extends boolean = true> {
               link?: T;
             };
       };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics_select".
+ */
+export interface AnalyticsSelect<T extends boolean = true> {
+  path?: T;
+  locale?: T;
+  referrer?: T;
+  userAgent?: T;
+  timestamp?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -4295,6 +4755,37 @@ export interface PayloadKvSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-folders_select".
  */
 export interface PayloadFoldersSelect<T extends boolean = true> {
@@ -4338,6 +4829,8 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Site header: logo, primary navigation, and CTA button.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
@@ -4373,6 +4866,8 @@ export interface Header {
   createdAt?: string | null;
 }
 /**
+ * Site footer: menus, link columns, and copyright.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer".
  */
@@ -4400,6 +4895,8 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
+ * Legal Center sidebar heading, menu, and compliance notice.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "legalCenter".
  */
@@ -4498,6 +4995,21 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPruneAnalytics".
+ */
+export interface TaskPruneAnalytics {
+  input: {
+    /**
+     * Delete analytics pageviews older than this many days.
+     */
+    days?: number | null;
+  };
+  output: {
+    deleted?: number | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

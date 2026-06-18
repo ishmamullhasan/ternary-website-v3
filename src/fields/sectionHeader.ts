@@ -10,6 +10,6 @@ type SectionHeaderOptions = {
  * Returns an array of fields to spread into a `fields: [...]` list.
  */
 export const sectionHeader = ({ richDescription = false }: SectionHeaderOptions = {}): Field[] => [
-  { name: 'heading', label: 'Heading', type: 'text' },
-  { name: 'description', label: 'Description', type: richDescription ? 'richText' : 'textarea' },
+  { name: 'heading', label: 'Heading', type: 'text', localized: true },
+  { name: 'description', label: 'Description', type: richDescription ? 'richText' : 'textarea', localized: true },
 ]

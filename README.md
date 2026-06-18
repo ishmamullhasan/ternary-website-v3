@@ -30,8 +30,15 @@ re-order a page.
 
 Public pages are served through the catch-all route
 `src/app/(frontend)/[...slug]/page.tsx`, which looks up the matching `pages` document
-by slug and feeds its `layout` to `RenderBlocks`. The older per-section page-global
-routes are being **retired in favour of these blocks-driven `[...slug]` pages**.
+by slug and feeds its `layout` to `RenderBlocks` (the home page is the `home` Pages doc,
+fetched directly by `src/app/(frontend)/page.tsx`). The older per-section **page globals
+were retired (WEB-404)** — `src/globals/pages/` no longer exists, and the only remaining
+globals are the site chrome (`header`, `footer`, `legalCenter`).
+
+Per-page SEO is handled by `@payloadcms/plugin-seo` (see `src/plugins/index.ts`), which
+adds a `meta` group (`meta.title` / `meta.description` / `meta.image`) to the `pages` and
+content collections, extended with `meta.canonical`, `meta.hideFromSitemap`, and
+`meta.twitterCard`.
 
 ## Local development
 

@@ -19,14 +19,15 @@ export const SolutionsEngage: Block = {
         description: 'Three engagement models. Card gradient/bar colors are fixed in code by position.',
       },
       fields: [
-        { name: 'title', label: 'Title', type: 'text', required: true, admin: { width: '50%' } },
+        { name: 'title', label: 'Title', type: 'text', required: true, localized: true, admin: { width: '50%' } },
         {
           name: 'subtitle',
           label: 'Subtitle',
           type: 'text',
+          localized: true,
           admin: { width: '50%', description: 'Rendered word-per-line in a mono font.' },
         },
-        { name: 'description', label: 'Description', type: 'textarea' },
+        { name: 'description', label: 'Description', type: 'textarea', localized: true },
       ],
     },
   ],

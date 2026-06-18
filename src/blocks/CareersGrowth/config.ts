@@ -20,8 +20,14 @@ export const CareersGrowth: Block = {
       type: 'group',
       admin: { description: 'The large leveling card with the progression graphic.' },
       fields: [
-        { name: 'title', label: 'Title', type: 'text' },
-        { name: 'excerpt', label: 'Excerpt', type: 'textarea', admin: { description: 'Short supporting copy.' } },
+        { name: 'title', label: 'Title', type: 'text', localized: true },
+        {
+          name: 'excerpt',
+          label: 'Excerpt',
+          type: 'textarea',
+          localized: true,
+          admin: { description: 'Short supporting copy.' },
+        },
         { ...tagsArray({ name: 'levels', label: 'Levels' }), maxRows: 4 },
       ],
     },

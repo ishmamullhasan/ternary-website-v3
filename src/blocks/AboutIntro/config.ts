@@ -12,6 +12,7 @@ export const AboutIntro: Block = {
       name: 'content',
       label: 'Content',
       type: 'richText',
+      localized: true,
       admin: { description: 'Long-form body copy shown beside the heading.' },
     },
   ],
