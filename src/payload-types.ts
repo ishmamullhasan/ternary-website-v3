@@ -170,6 +170,8 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Composable, blocks-based pages with drafts and live preview.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -286,6 +288,8 @@ export interface IndustriesSectionBlock {
   blockType: 'industriesSection';
 }
 /**
+ * Industry verticals and their landing content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "industry".
  */
@@ -335,6 +339,8 @@ export interface Industry {
   createdAt: string;
 }
 /**
+ * Uploaded images and files used across the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -516,6 +522,8 @@ export interface AboutSectionBlock {
   blockType: 'aboutSection';
 }
 /**
+ * Engineering capabilities and their detail pages.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "capability".
  */
@@ -661,6 +669,8 @@ export interface Capability {
   createdAt: string;
 }
 /**
+ * Team member profiles shown across the site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "team".
  */
@@ -681,6 +691,8 @@ export interface Team {
   createdAt: string;
 }
 /**
+ * Solution offerings and their landing content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "solution".
  */
@@ -730,6 +742,8 @@ export interface Solution {
   createdAt: string;
 }
 /**
+ * Engagement scale tiers and their showcase content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "scale".
  */
@@ -775,6 +789,8 @@ export interface Scale {
   createdAt: string;
 }
 /**
+ * Engagement and delivery models.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "model".
  */
@@ -979,6 +995,8 @@ export interface OpportunitiesSectionBlock {
   blockType: 'opportunitiesSection';
 }
 /**
+ * Open job postings and their detail content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "job".
  */
@@ -1557,6 +1575,8 @@ export interface FeatureCaseStudyBlock {
   blockType: 'featureCaseStudy';
 }
 /**
+ * Customer success stories and case studies.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "story".
  */
@@ -1636,6 +1656,8 @@ export interface StoriesArchiveBlock {
   blockType: 'storiesArchive';
 }
 /**
+ * Thought-leadership articles and insights.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "insight".
  */
@@ -1730,6 +1752,8 @@ export interface Insight {
   createdAt: string;
 }
 /**
+ * Official press releases and announcements.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pressRelease".
  */
@@ -2509,6 +2533,8 @@ export interface CtaBlock {
   blockType: 'ctaBlock';
 }
 /**
+ * Admin accounts that can sign in and manage content.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -2535,6 +2561,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Legal documents shown in the Legal Center.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "legal".
  */
@@ -4801,6 +4829,8 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Site header: logo, primary navigation, and CTA button.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
@@ -4836,6 +4866,8 @@ export interface Header {
   createdAt?: string | null;
 }
 /**
+ * Site footer: menus, link columns, and copyright.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer".
  */
@@ -4863,6 +4895,8 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
+ * Legal Center sidebar heading, menu, and compliance notice.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "legalCenter".
  */
