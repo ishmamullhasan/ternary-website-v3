@@ -12,6 +12,7 @@ export const IndustriesDetails: Block = {
       name: 'content',
       label: 'Content',
       type: 'richText',
+      localized: true,
       admin: {
         description: 'Rich text body rendered beside the heading/description.',
       },

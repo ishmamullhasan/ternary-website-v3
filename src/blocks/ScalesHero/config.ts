@@ -12,6 +12,7 @@ export const ScalesHero: Block = {
       name: 'eyebrow',
       label: 'Eyebrow',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Optional small label rendered above the heading.',
       },

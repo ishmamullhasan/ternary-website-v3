@@ -21,22 +21,26 @@ const Team: CollectionConfig = {
       name: 'name',
       label: 'Name',
       type: 'text',
+      localized: true,
     },
     slugField({ fieldToUse: 'name' }),
     {
       name: 'position',
       label: 'Position',
       type: 'text',
+      localized: true,
     },
     {
       name: 'excerpt',
       label: 'Excerpt',
       type: 'textarea',
+      localized: true,
     },
     {
       name: 'description',
       label: 'Description',
       type: 'textarea',
+      localized: true,
     },
     {
       name: 'image',

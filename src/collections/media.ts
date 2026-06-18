@@ -24,6 +24,7 @@ const Media: CollectionConfig = {
       name: 'alt',
       type: 'text',
       //required: true,
+      localized: true,
     },
     {
       name: 'caption',

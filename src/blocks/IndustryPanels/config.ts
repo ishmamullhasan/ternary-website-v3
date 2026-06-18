@@ -1,9 +1,9 @@
 import type { Block } from 'payload'
 
+import { tagsArray } from '@/fields/arrays'
 import { imageField } from '@/fields/image'
 import { rowLabelAdmin } from '@/fields/rowLabel'
 import { sectionHeader } from '@/fields/sectionHeader'
-import { tagsArray } from '@/fields/arrays'
 
 export const IndustryPanels: Block = {
   slug: 'industryPanels',
@@ -26,8 +26,8 @@ export const IndustryPanels: Block = {
             description: 'Linked industry; its title/excerpt/thumbnail fill any fields left blank below.',
           },
         },
-        { name: 'title', label: 'Title', type: 'text', admin: { width: '50%' } },
-        { name: 'description', label: 'Description', type: 'textarea' },
+        { name: 'title', label: 'Title', type: 'text', localized: true, admin: { width: '50%' } },
+        { name: 'description', label: 'Description', type: 'textarea', localized: true },
         imageField({ name: 'image', label: 'Image' }),
         tagsArray(),
       ],

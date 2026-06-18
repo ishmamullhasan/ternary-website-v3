@@ -27,12 +27,14 @@ const PressRelease: CollectionConfig = {
       label: 'Headline',
       type: 'text',
       required: true,
+      localized: true,
     },
     slugField(),
     {
       name: 'badge',
       label: 'Badge',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Pill label shown above the headline (e.g. Product Launch).',
       },
@@ -61,6 +63,7 @@ const PressRelease: CollectionConfig = {
       name: 'datelineLocation',
       label: 'Dateline Location',
       type: 'text',
+      localized: true,
       admin: {
         description: 'e.g. Dhaka, Bangladesh',
       },
@@ -69,6 +72,7 @@ const PressRelease: CollectionConfig = {
       name: 'excerpts',
       label: 'Excerpt',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'Short summary used on listing cards.',
       },
@@ -77,6 +81,7 @@ const PressRelease: CollectionConfig = {
       name: 'readTime',
       label: 'Read Time',
       type: 'text',
+      localized: true,
       admin: {
         description: 'e.g. "12 min"',
         position: 'sidebar',
@@ -86,6 +91,7 @@ const PressRelease: CollectionConfig = {
       name: 'categoryLabel',
       label: 'Category Label',
       type: 'text',
+      localized: true,
       admin: {
         description: 'e.g. "Engineering Studio"',
         position: 'sidebar',
@@ -106,6 +112,7 @@ const PressRelease: CollectionConfig = {
           name: 'name',
           label: 'Name',
           type: 'text',
+          localized: true,
         },
       ],
     },
@@ -119,6 +126,7 @@ const PressRelease: CollectionConfig = {
               name: 'leadParagraph',
               label: 'Lead Paragraph',
               type: 'textarea',
+              localized: true,
               admin: {
                 description: 'Opening paragraphs shown in The release section. Separate paragraphs with a blank line.',
               },
@@ -127,6 +135,7 @@ const PressRelease: CollectionConfig = {
               name: 'content',
               label: 'Content',
               type: 'richText',
+              localized: true,
             },
             {
               name: 'quotes',
@@ -137,16 +146,19 @@ const PressRelease: CollectionConfig = {
                   name: 'quote',
                   label: 'Quote',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'name',
                   label: 'Name',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'role',
                   label: 'Role',
                   type: 'text',
+                  localized: true,
                   admin: {
                     description: 'e.g. Chief Revenue Officer · Counterfoil',
                   },
@@ -167,6 +179,7 @@ const PressRelease: CollectionConfig = {
                   name: 'forImmediateRelease',
                   label: 'For Immediate Release',
                   type: 'text',
+                  localized: true,
                   admin: {
                     description: 'e.g. Yes',
                   },
@@ -175,6 +188,7 @@ const PressRelease: CollectionConfig = {
                   name: 'embargo',
                   label: 'Embargo',
                   type: 'text',
+                  localized: true,
                   admin: {
                     description: 'e.g. None',
                   },
@@ -183,6 +197,7 @@ const PressRelease: CollectionConfig = {
                   name: 'distribution',
                   label: 'Distribution',
                   type: 'text',
+                  localized: true,
                   admin: {
                     description: 'e.g. Global',
                   },
@@ -197,6 +212,7 @@ const PressRelease: CollectionConfig = {
                   name: 'mediaKitSizeLabel',
                   label: 'Media Kit Size Label',
                   type: 'text',
+                  localized: true,
                   admin: {
                     description: 'e.g. 24 MB',
                   },
@@ -217,11 +233,13 @@ const PressRelease: CollectionConfig = {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'press',
@@ -232,11 +250,13 @@ const PressRelease: CollectionConfig = {
                       name: 'name',
                       label: 'Name',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'title',
                       label: 'Title',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'email',
@@ -259,11 +279,13 @@ const PressRelease: CollectionConfig = {
                       name: 'name',
                       label: 'Name',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'title',
                       label: 'Title',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'email',
@@ -281,6 +303,7 @@ const PressRelease: CollectionConfig = {
                   name: 'mediaKitDescription',
                   label: 'Media Kit Description',
                   type: 'text',
+                  localized: true,
                   admin: {
                     description: 'e.g. Logos, executive headshots, product screenshots, brand guidelines',
                   },
@@ -323,11 +346,13 @@ const PressRelease: CollectionConfig = {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'pressReleases',

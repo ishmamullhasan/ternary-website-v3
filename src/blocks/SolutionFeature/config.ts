@@ -19,6 +19,7 @@ export const SolutionFeature: Block = {
       name: 'eyebrow',
       label: 'Eyebrow',
       type: 'text',
+      localized: true,
       admin: { description: 'Small pill/badge rendered above the heading.' },
     },
     ...sectionHeader(),
@@ -53,7 +54,7 @@ export const SolutionFeature: Block = {
       type: 'group',
       admin: { condition: (_, sibling) => sibling?.widget === 'trajectory' },
       fields: [
-        { name: 'label', label: 'Label', type: 'text' },
+        { name: 'label', label: 'Label', type: 'text', localized: true },
         {
           name: 'steps',
           label: 'Steps',
@@ -61,7 +62,7 @@ export const SolutionFeature: Block = {
           maxRows: 4,
           admin: { ...rowLabelAdmin },
           fields: [
-            { name: 'label', label: 'Label', type: 'text', admin: { width: '50%' } },
+            { name: 'label', label: 'Label', type: 'text', localized: true, admin: { width: '50%' } },
             { name: 'active', label: 'Highlighted', type: 'checkbox', defaultValue: false, admin: { width: '50%' } },
           ],
         },
@@ -73,14 +74,14 @@ export const SolutionFeature: Block = {
       type: 'group',
       admin: { condition: (_, sibling) => sibling?.widget === 'techStack' },
       fields: [
-        { name: 'label', label: 'Label', type: 'text' },
+        { name: 'label', label: 'Label', type: 'text', localized: true },
         {
           name: 'items',
           label: 'Items',
           type: 'array',
           admin: { ...rowLabelAdmin },
           fields: [
-            { name: 'label', label: 'Label', type: 'text', admin: { width: '50%' } },
+            { name: 'label', label: 'Label', type: 'text', localized: true, admin: { width: '50%' } },
             { name: 'highlight', label: 'Highlighted', type: 'checkbox', defaultValue: false, admin: { width: '50%' } },
           ],
         },
@@ -92,8 +93,8 @@ export const SolutionFeature: Block = {
       type: 'group',
       admin: { condition: (_, sibling) => sibling?.widget === 'incident' },
       fields: [
-        { name: 'label', label: 'Label', type: 'text' },
-        { name: 'historyLabel', label: 'History Label', type: 'text' },
+        { name: 'label', label: 'Label', type: 'text', localized: true },
+        { name: 'historyLabel', label: 'History Label', type: 'text', localized: true },
         {
           name: 'totalCells',
           label: 'Total Cells',
@@ -131,8 +132,8 @@ export const SolutionFeature: Block = {
         description: 'Two cards: row 1 = "Who it\'s for", row 2 = "Shape / Engagement shape".',
       },
       fields: [
-        { name: 'label', label: 'Title', type: 'text', admin: { width: '50%' } },
-        { name: 'value', label: 'Description', type: 'textarea', admin: { width: '50%' } },
+        { name: 'label', label: 'Title', type: 'text', localized: true, admin: { width: '50%' } },
+        { name: 'value', label: 'Description', type: 'textarea', localized: true, admin: { width: '50%' } },
       ],
     },
   ],

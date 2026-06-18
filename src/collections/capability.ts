@@ -22,12 +22,14 @@ const Capability: CollectionConfig = {
       name: 'title',
       label: 'Title',
       type: 'text',
+      localized: true,
     },
     slugField(),
     {
       name: 'excerpts',
       label: 'Excerpts',
       type: 'textarea',
+      localized: true,
     },
     {
       name: 'thumbnail',
@@ -50,6 +52,7 @@ const Capability: CollectionConfig = {
                   name: 'badge',
                   label: 'Badge',
                   type: 'text',
+                  localized: true,
                   admin: {
                     description: 'Pill label shown above the heading (e.g. Digital Experiences).',
                   },
@@ -58,11 +61,13 @@ const Capability: CollectionConfig = {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'heroImage',
@@ -79,6 +84,7 @@ const Capability: CollectionConfig = {
                       name: 'label',
                       label: 'Label',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'link',
@@ -103,6 +109,7 @@ const Capability: CollectionConfig = {
                   name: 'sectionLabel',
                   label: 'Section Label',
                   type: 'text',
+                  localized: true,
                   admin: {
                     description: 'e.g. Section 01',
                   },
@@ -111,11 +118,13 @@ const Capability: CollectionConfig = {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'items',
@@ -126,11 +135,13 @@ const Capability: CollectionConfig = {
                       name: 'title',
                       label: 'Title',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'excerpt',
                       label: 'Excerpt',
                       type: 'textarea',
+                      localized: true,
                     },
                   ],
                 },
@@ -150,16 +161,19 @@ const Capability: CollectionConfig = {
                   name: 'sectionLabel',
                   label: 'Section Label',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'items',
@@ -170,11 +184,13 @@ const Capability: CollectionConfig = {
                       name: 'title',
                       label: 'Title',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'excerpt',
                       label: 'Excerpt',
                       type: 'textarea',
+                      localized: true,
                     },
                     {
                       name: 'stack',
@@ -185,6 +201,7 @@ const Capability: CollectionConfig = {
                           name: 'name',
                           label: 'Name',
                           type: 'text',
+                          localized: true,
                         },
                       ],
                     },
@@ -206,16 +223,19 @@ const Capability: CollectionConfig = {
                   name: 'sectionLabel',
                   label: 'Section Label',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'items',
@@ -226,6 +246,7 @@ const Capability: CollectionConfig = {
                       name: 'meta',
                       label: 'Meta',
                       type: 'text',
+                      localized: true,
                       admin: {
                         description: 'e.g. 2025 · Insurance',
                       },
@@ -234,26 +255,31 @@ const Capability: CollectionConfig = {
                       name: 'title',
                       label: 'Title',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'problem',
                       label: 'Problem',
                       type: 'textarea',
+                      localized: true,
                     },
                     {
                       name: 'approach',
                       label: 'Approach',
                       type: 'textarea',
+                      localized: true,
                     },
                     {
                       name: 'outcome',
                       label: 'Outcome',
                       type: 'textarea',
+                      localized: true,
                     },
                     {
                       name: 'metricValue',
                       label: 'Metric Value',
                       type: 'text',
+                      localized: true,
                       admin: {
                         description: 'e.g. 4h',
                       },
@@ -262,6 +288,7 @@ const Capability: CollectionConfig = {
                       name: 'metricLabel',
                       label: 'Metric Label',
                       type: 'text',
+                      localized: true,
                       admin: {
                         description: 'e.g. from 6 days',
                       },
@@ -284,6 +311,7 @@ const Capability: CollectionConfig = {
                   name: 'sectionLabel',
                   label: 'Section Label',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'member',
@@ -295,6 +323,7 @@ const Capability: CollectionConfig = {
                   name: 'bio',
                   label: 'Bio',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'credentials',
@@ -305,6 +334,7 @@ const Capability: CollectionConfig = {
                       name: 'text',
                       label: 'Text',
                       type: 'text',
+                      localized: true,
                     },
                   ],
                 },
@@ -317,11 +347,13 @@ const Capability: CollectionConfig = {
                       name: 'title',
                       label: 'Title',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'category',
                       label: 'Category',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'link',
@@ -356,11 +388,13 @@ const Capability: CollectionConfig = {
                   name: 'sectionLabel',
                   label: 'Section Label',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'capabilities',
@@ -381,12 +415,14 @@ const Capability: CollectionConfig = {
                   label: 'Heading',
                   type: 'text' as const,
                   required: false,
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea' as const,
                   required: false,
+                  localized: true,
                 },
                 {
                   name: 'backgroundImage',
@@ -406,6 +442,7 @@ const Capability: CollectionConfig = {
                       label: 'Label',
                       type: 'text' as const,
                       required: false,
+                      localized: true,
                     },
                     {
                       name: 'link',
@@ -426,6 +463,7 @@ const Capability: CollectionConfig = {
                       label: 'Label',
                       type: 'text' as const,
                       required: false,
+                      localized: true,
                     },
                     {
                       name: 'link',

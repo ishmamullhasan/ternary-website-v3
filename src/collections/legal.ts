@@ -23,6 +23,7 @@ const Legal: CollectionConfig = {
       name: 'title',
       label: 'Title',
       type: 'text',
+      localized: true,
     },
     slugField(),
 
@@ -36,6 +37,7 @@ const Legal: CollectionConfig = {
       label: 'Last Updated',
       type: 'text',
       required: false,
+      localized: true,
     },
     {
       name: 'downloadLink',
@@ -48,6 +50,7 @@ const Legal: CollectionConfig = {
       label: 'Menu label',
       type: 'text',
       required: false,
+      localized: true,
       admin: {
         description: 'Optional. Falls back to the page title in the Legal Center sidebar.',
       },
@@ -79,6 +82,7 @@ const Legal: CollectionConfig = {
       name: 'content',
       label: 'Page Content',
       type: 'richText',
+      localized: true,
     },
     ctaGroup(),
   ],
