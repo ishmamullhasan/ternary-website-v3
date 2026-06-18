@@ -22,12 +22,8 @@ import { ContactOffices } from '@/blocks/ContactOffices/config'
 import { ContactRoutes } from '@/blocks/ContactRoutes/config'
 import { ContactStats } from '@/blocks/ContactStats/config'
 import { CrossIndustryPatterns } from '@/blocks/CrossIndustryPatterns/config'
-import { FeatureCaseStudy } from '@/blocks/FeatureCaseStudy/config'
-import { Content } from '@/blocks/Content/config'
 import { Cta } from '@/blocks/Cta/config'
-import { FeatureGrid } from '@/blocks/FeatureGrid/config'
-import { FormBlock } from '@/blocks/Form/config'
-import { Hero } from '@/blocks/Hero/config'
+import { FeatureCaseStudy } from '@/blocks/FeatureCaseStudy/config'
 import { homeSectionBlocks } from '@/blocks/homeSections/config'
 import { IndustriesDetails } from '@/blocks/IndustriesDetails/config'
 import { IndustriesHero } from '@/blocks/IndustriesHero/config'
@@ -35,20 +31,16 @@ import { IndustriesSection } from '@/blocks/IndustriesSection/config'
 import { IndustryList } from '@/blocks/IndustryList/config'
 import { IndustryPanels } from '@/blocks/IndustryPanels/config'
 import { Jobs } from '@/blocks/Jobs/config'
-import { Logos } from '@/blocks/Logos/config'
 import { QualityBar } from '@/blocks/QualityBar/config'
 import { RegulatoryPosture } from '@/blocks/RegulatoryPosture/config'
-import { RelationGrid } from '@/blocks/RelationGrid/config'
-import { ScaleShowcase } from '@/blocks/ScaleShowcase/config'
 import { ScalesHero } from '@/blocks/ScalesHero/config'
+import { ScaleShowcase } from '@/blocks/ScaleShowcase/config'
 import { SolutionFeature } from '@/blocks/SolutionFeature/config'
 import { SolutionsEngage } from '@/blocks/SolutionsEngage/config'
 import { SolutionsHero } from '@/blocks/SolutionsHero/config'
-import { Steps } from '@/blocks/Steps/config'
 import { StoriesArchive } from '@/blocks/StoriesArchive/config'
 import { StoriesHero } from '@/blocks/StoriesHero/config'
 import { Subscribe } from '@/blocks/Subscribe/config'
-import { Team } from '@/blocks/Team/config'
 import { getServerSideURL } from '@/utilities/getURL'
 
 type Breadcrumb = { url?: string | null }
@@ -94,15 +86,7 @@ export const Pages: CollectionConfig = {
       label: 'Layout',
       type: 'blocks',
       blocks: [
-        Hero,
-        Content,
-        RelationGrid,
-        FeatureGrid,
-        Logos,
-        Team,
-        Steps,
         Jobs,
-        FormBlock,
         IndustriesSection,
         ...homeSectionBlocks,
         // Granular redesign blocks (Phase 2 — decomposed from the monolith page blocks).
