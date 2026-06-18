@@ -1,9 +1,10 @@
 /* ---------------------------------------------------------------------------
- * Recruiting jobs — single source of truth (mock for now)
+ * Recruiting jobs — single source of truth (live recruiting API)
  * ---------------------------------------------------------------------------
  * Owns its OWN types — intentionally NOT coupled to Payload. The job list,
- * detail, apply form, and careers board all read from here. Swap the getters
- * for real `fetch` to https://api.ternary.solutions/recruit/v1/public when ready.
+ * detail, apply form, and careers board all read from here. The getters fetch
+ * the public recruiting API (RECRUIT_API_BASE) and merge Payload CMS copy on
+ * top for the detail view.
  *
  *  ✅ API (PublicJobSummary on /jobs, + the rest on /jobs/{slug}):
  *     slug, title, location, excerpt, employment_type, department, team,
@@ -11,12 +12,17 @@
  *     published_at, body_markdown, responsibilities[], requirements[], nice_to_haves[]
  *     (all facets NULLABLE → optional in the UI).
  *
- *  🟡 CMS (Payload, keyed by slug) — marketing / structure copy, NOT on the API:
+ *  🟡 CMS (Payload `job` collection) — marketing / structure copy, NOT on the API:
  *     applyButton, details (section titles), teamBox, interviewProcess, openRoles, cta.
+ *     Merged in by getJob() via mergeJobCms() — see the keying note on that helper.
  *
  *  🔒 internal-only (never on an unauthenticated endpoint), shown only because the
  *     design renders them: code, band, internalLevel, roleType.
  * ------------------------------------------------------------------------- */
+
+import type { Job, Media } from '@/payload-types'
+import config from '@payload-config'
+import { getPayload, type TypedLocale, type Where } from 'payload'
 
 export interface JobInterviewStep {
   id?: string
@@ -89,142 +95,7 @@ export function formatComp(min?: number | null, max?: number | null, currency?: 
   return money((min ?? max) as number)
 }
 
-export const mockJobs: JobListing[] = [
-  {
-    // ----- ✅ API -----
-    slug: '0f8c2a6e-1d34-4b9a-8e21-5c7f9a0b1d22',
-    title: 'Senior Systems Architect',
-    location: 'New York, NY / Remote (US)',
-    excerpt: 'Own the design of our agentic infrastructure — orchestration, observability, and reliability at scale.',
-    employment_type: 'Full Time',
-    department: 'Engineering',
-    team: 'Agentic Infrastructure',
-    seniority_level: 'Senior (8+ years)',
-    comp_band_min: 240000,
-    comp_band_max: 960000,
-    comp_currency: 'BDT',
-    comp_equity: '0.05% – 0.15%',
-    comp_note: 'Final offer depends on experience and location.',
-    published_at: '2026-06-01T09:00:00Z',
-    body_markdown:
-      'We are looking for a Senior Systems Architect to own the design of our agentic infrastructure — the systems that let autonomous engineering agents run safely in production. You will set the technical direction for orchestration, observability, and reliability across the platform.',
-    responsibilities: [
-      'Own the architecture of the agentic orchestration platform end-to-end',
-      'Define reliability, observability, and rollback strategies for autonomous workloads',
-      'Mentor senior engineers and set technical standards across pods',
-      'Partner with Product and Research to turn ambiguous goals into shipped systems',
-    ],
-    requirements: [
-      '8+ years building and operating distributed systems at scale',
-      'Deep experience with orchestration, queues, and event-driven architectures',
-      'Strong track record owning production reliability (SLOs, on-call, incident response)',
-      'Fluency designing for failure in multi-tenant environments',
-    ],
-    nice_to_haves: [
-      'Experience with LLM/agent runtimes in production',
-      'Postgres internals and query optimization',
-      'Prior staff/principal-level scope at a high-growth startup',
-    ],
-    // ----- 🔒 internal-only / display -----
-    id: '0f8c2a6e-1d34-4b9a-8e21-5c7f9a0b1d22',
-    code: 'SSA-L6',
-    band: 'L6 (Staff/Principal equivalent)',
-    internalLevel: 'TC21',
-    roleType: 'Individual Contributor',
-    // ----- 🟡 CMS marketing / structure -----
-    applyButton: { label: 'Apply Now', link: '/job/0f8c2a6e-1d34-4b9a-8e21-5c7f9a0b1d22/apply' },
-    details: {
-      item1: { title: 'The Mission' },
-      item2: { title: "What you'll do" },
-      item3: { title: 'Who you are (Must-Haves)' },
-      item4: { title: 'Nice-to-Haves' },
-    },
-    teamBox: {
-      reportingToName: 'Jane Doe',
-      reportingToRole: 'VP of Engineering',
-      podSize: '6–8 engineers',
-      crossFunctional: 'Product, Design, Data',
-    },
-    interviewProcess: {
-      heading: 'Interview Process',
-      steps: [
-        { id: 'ip1', title: 'Initial Screen', excerpt: 'Culture & compensation alignment.', duration: '30m' },
-        { id: 'ip2', title: 'Technical Deep Dive', excerpt: 'Systems design discussion.', duration: '60m' },
-        { id: 'ip3', title: 'Architecture Review', excerpt: 'Real-world problem walkthrough.', duration: '60m' },
-        { id: 'ip4', title: 'Final / Values', excerpt: 'Meet the leadership team.', duration: '45m' },
-      ],
-    },
-    openRoles: {
-      heading: 'Other Open Roles',
-      description:
-        'Openings for engineers wanting production ownership, technical growth, and operational impact. Roles include client collaboration, architecture, and system responsibility.',
-    },
-    cta: {
-      subheading: 'Not the right fit?',
-      heading: 'See all open roles',
-      description: 'We are always looking for engineers who care about production ownership and technical depth.',
-      backgroundImage: null,
-      button: { label: 'Browse Careers', link: '/careers' },
-    },
-  },
-  {
-    slug: '3a1b5c7d-2e46-4f8a-9b01-6d2e8f0a3c14',
-    title: 'Software Engineer',
-    location: 'Dhaka, Bangladesh',
-    excerpt: 'Format: Hybrid · Location: Dhaka, Bangladesh · 1 to 3 Years · Individual Contributor · Full Time.',
-    employment_type: 'Full Time',
-    department: 'Engineering',
-    team: 'Platform',
-    seniority_level: '1 to 3 Years',
-    comp_band_min: 360000,
-    comp_band_max: 1080000,
-    comp_currency: 'BDT',
-    comp_equity: null,
-    comp_note: null,
-    published_at: '2026-05-20T09:00:00Z',
-    body_markdown: 'Build and ship production services on our backend platform alongside a small, senior pod.',
-    responsibilities: ['Ship backend features end-to-end', 'Own services in production'],
-    requirements: ['1–3 years backend experience', 'Strong SQL'],
-    nice_to_haves: ['FastAPI', 'Postgres'],
-    id: '3a1b5c7d-2e46-4f8a-9b01-6d2e8f0a3c14',
-    code: 'ENCS3X',
-    internalLevel: 'TC18',
-    roleType: 'Individual Contributor',
-  },
-  {
-    slug: '6b2d4e8f-3a57-41c9-8d12-7e3f0a1b4c25',
-    title: 'Software Engineer',
-    location: 'Dhaka, Bangladesh',
-    excerpt: 'Format: Hybrid · Location: Dhaka, Bangladesh · 1 to 3 Years · Individual Contributor · Full Time.',
-    employment_type: 'Full Time',
-    department: 'Engineering',
-    team: 'Product',
-    seniority_level: '1 to 3 Years',
-    comp_band_min: 360000,
-    comp_band_max: 1080000,
-    comp_currency: 'BDT',
-    comp_equity: null,
-    comp_note: null,
-    published_at: '2026-05-18T09:00:00Z',
-    body_markdown: 'Craft polished, accessible product UI in Next.js with a design-minded engineering team.',
-    responsibilities: ['Build product UI in Next.js', 'Collaborate closely with design'],
-    requirements: ['1–3 years frontend experience', 'Strong TypeScript + React'],
-    nice_to_haves: ['Tailwind', 'Motion / animation'],
-    id: '6b2d4e8f-3a57-41c9-8d12-7e3f0a1b4c25',
-    code: 'ENCS3X',
-    internalLevel: 'TC18',
-    roleType: 'Individual Contributor',
-  },
-]
-
-/* ---------------------------------------------------------------------------
- * Live API ↔ mock toggle
- * ---------------------------------------------------------------------------
- * Default = mock (so the UI renders without a backend). To use the real API,
- * in each getter below: comment the `data = mock…` line and uncomment the
- * `data = await fetch…` line. Nothing else changes — same shapes, same callers.
- * ------------------------------------------------------------------------- */
-const API_BASE = 'https://api.ternary.solutions/recruit/v1/public'
+const API_BASE = process.env.RECRUIT_API_BASE ?? 'https://api.ternary.solutions/recruit/v1/public'
 const REVALIDATE_SECONDS = 300
 
 /** Real `GET /jobs` (ordered published_at desc, then slug). */
@@ -241,18 +112,93 @@ export async function fetchJob(slug: string): Promise<JobListing | null> {
   return (await res.json()) as JobListing
 }
 
+/* ---------------------------------------------------------------------------
+ * 🟡 CMS marketing merge
+ * ---------------------------------------------------------------------------
+ * KEYING ASSUMPTION: the recruiting API's `code` (an opaque role code, e.g.
+ * "SSA-L6") is the join key to the Payload `job` collection. The Payload slug is
+ * derived FROM `code` (`slugField({ fieldToUse: 'code' })`), whereas the API's
+ * `slug` is an opaque UUID — so the two `slug` fields do NOT line up and must not
+ * be matched on. We therefore match on `code` (and fall back to `slug` only if an
+ * API role ever ships without a code). If a CMS doc is found, its marketing-only
+ * fields (applyButton/details/teamBox/interviewProcess/openRoles/cta) are layered
+ * onto the API result; the API stays authoritative for every API-backed key, so a
+ * stale/duplicate CMS title or location can never override live data.
+ * ------------------------------------------------------------------------- */
+
+/** Resolve a Payload media `url` whether the relationship is populated (depth>0) or an id string. */
+function mediaUrl(value: (string | null) | Media | undefined): string | null {
+  if (value && typeof value === 'object') return value.url ?? null
+  return null
+}
+
+/** Map Payload interview steps (id is nullable) onto JobListing's step shape. */
+function mapSteps(steps: NonNullable<Job['interviewProcess']>['steps']): JobInterviewStep[] | null {
+  if (!steps) return null
+  return steps.map((step) => ({
+    id: step.id ?? undefined,
+    title: step.title,
+    excerpt: step.excerpt,
+    duration: step.duration,
+  }))
+}
+
+/**
+ * Layer the Payload `job` doc's marketing fields onto an API-backed JobListing.
+ * API fields win for every API-backed key; the CMS only supplies the marketing
+ * keys the API does not expose. Optional `locale` is threaded to payload.find for
+ * forward-compat with localization (job copy is identical across locales today).
+ */
+export async function mergeJobCms(api: JobListing, locale?: TypedLocale): Promise<JobListing> {
+  const payload = await getPayload({ config })
+  const where: Where = api.code
+    ? { code: { equals: api.code } } // primary join key (see KEYING ASSUMPTION above)
+    : { slug: { equals: api.slug } } // fallback only when the API role has no code
+  const result = await payload.find({
+    collection: 'job',
+    where,
+    limit: 1,
+    depth: 1, // populate cta.backgroundImage so we can read its url
+    ...(locale ? { locale } : {}),
+  })
+  const cms = result.docs[0]
+  if (!cms) return api
+
+  // CMS provides only the marketing keys; API stays authoritative for its own fields.
+  return {
+    ...api,
+    applyButton: cms.button ?? api.applyButton,
+    details: cms.details ?? api.details,
+    teamBox: cms.teamBox ?? api.teamBox,
+    interviewProcess: cms.interviewProcess
+      ? { heading: cms.interviewProcess.heading, steps: mapSteps(cms.interviewProcess.steps) }
+      : api.interviewProcess,
+    openRoles: cms.openRoles
+      ? { heading: cms.openRoles.heading, description: cms.openRoles.description }
+      : api.openRoles,
+    cta: cms.cta
+      ? {
+          subheading: cms.cta.subheading,
+          heading: cms.cta.heading,
+          description: cms.cta.description,
+          backgroundImage: mediaUrl(cms.cta.backgroundImage),
+          button: cms.cta.button,
+        }
+      : api.cta,
+  }
+}
+
 /** ✅ `GET /jobs` — list of open roles, newest first. */
 export async function getJobs(): Promise<JobListing[]> {
-  const data = mockJobs
-  // const data = await fetchJobs()
+  const data = await fetchJobs()
   return [...data].sort((a, b) => (b.published_at ?? '').localeCompare(a.published_at ?? ''))
 }
 
-/** ✅ `GET /jobs/{slug}` — single role (null when not found / not open). */
-export async function getJob(slug: string): Promise<JobListing | null> {
-  const data = mockJobs.find((job) => job.slug === slug) ?? null
-  // const data = await fetchJob(slug)
-  return data
+/** ✅ `GET /jobs/{slug}` — single role (null when not found / not open), with CMS copy merged in. */
+export async function getJob(slug: string, locale?: TypedLocale): Promise<JobListing | null> {
+  const api = await fetchJob(slug)
+  if (!api) return null
+  return mergeJobCms(api, locale)
 }
 
 /** Other open roles — API has no curated relationship, so derive from the list. */

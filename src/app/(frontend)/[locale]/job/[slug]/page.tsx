@@ -14,10 +14,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { JSX } from 'react'
 
-// Data comes from `@/lib/jobs-data` (mock mirror of the public recruiting API). Jobs are NOT a
-// Payload collection, so there is no Payload `locale` arg to thread here — the locale only drives
-// the URL prefix (links, canonical, hreflang). Job copy is identical across locales for now.
-// ✅ = live on the API · 🟡 = Payload CMS copy · 🔒 = internal-only (see jobs-data.ts).
+// Data comes from `@/lib/jobs-data`: the live public recruiting API, with Payload CMS marketing
+// copy merged in by getJob() (keyed by role `code` — see mergeJobCms). The locale drives the URL
+// prefix (links, canonical, hreflang) and is threaded to getJob for forward-compat with CMS
+// localization (job copy is identical across locales today). ✅ = API · 🟡 = CMS · 🔒 = internal.
 
 export async function generateStaticParams() {
   const jobs = await getJobs()
@@ -33,7 +33,7 @@ export async function generateMetadata({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) return {}
-  const jobData = await getJob(slug)
+  const jobData = await getJob(slug, typedLocale)
 
   if (!jobData) return {}
 
@@ -71,11 +71,17 @@ export default async function Page({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) notFound()
-  const jobData = await getJob(slug)
+  const jobData = await getJob(slug, typedLocale)
 
   if (!jobData) notFound() // maps to API 404 {"detail": "role not open or no active JD"}
 
-  const relatedJobs = await getRelatedJobs(slug)
+  // Related roles are non-essential: a transient list-fetch failure should not break the JD page.
+  let relatedJobs: Awaited<ReturnType<typeof getRelatedJobs>> = []
+  try {
+    relatedJobs = await getRelatedJobs(slug)
+  } catch {
+    relatedJobs = []
+  }
 
   const jobLd = jobPosting({
     title: jobData.title ?? 'Job',
