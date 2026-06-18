@@ -24,12 +24,8 @@ import { ContactOfficesComponent } from './ContactOffices/Component'
 import { ContactRoutesComponent } from './ContactRoutes/Component'
 import { ContactStatsComponent } from './ContactStats/Component'
 import { CrossIndustryPatternsComponent } from './CrossIndustryPatterns/Component'
-import { ContentBlockComponent } from './Content/Component'
 import { CtaBlockComponent } from './Cta/Component'
 import { FeatureCaseStudyComponent } from './FeatureCaseStudy/Component'
-import { FeatureGridBlockComponent } from './FeatureGrid/Component'
-import { FormBlockComponent } from './Form/Component'
-import { HeroBlockComponent } from './Hero/Component'
 import {
   AboutSectionComponent,
   CapabilitiesSectionComponent,
@@ -47,20 +43,16 @@ import { IndustriesSectionComponent } from './IndustriesSection/Component'
 import { IndustryListComponent } from './IndustryList/Component'
 import { IndustryPanelsComponent } from './IndustryPanels/Component'
 import { JobsBlockComponent } from './Jobs/Component'
-import { LogosBlockComponent } from './Logos/Component'
 import { QualityBarComponent } from './QualityBar/Component'
 import { RegulatoryPostureComponent } from './RegulatoryPosture/Component'
-import { RelationGridBlockComponent } from './RelationGrid/Component'
-import { ScaleShowcaseComponent } from './ScaleShowcase/Component'
 import { ScalesHeroComponent } from './ScalesHero/Component'
+import { ScaleShowcaseComponent } from './ScaleShowcase/Component'
 import { SolutionFeatureComponent } from './SolutionFeature/Component'
 import { SolutionsEngageComponent } from './SolutionsEngage/Component'
 import { SolutionsHeroComponent } from './SolutionsHero/Component'
-import { StepsBlockComponent } from './Steps/Component'
 import { StoriesArchiveComponent } from './StoriesArchive/Component'
 import { StoriesHeroComponent } from './StoriesHero/Component'
 import { SubscribeComponent } from './Subscribe/Component'
-import { TeamBlockComponent } from './Team/Component'
 
 type BlockType = NonNullable<Page['layout']>[number]
 
@@ -71,13 +63,6 @@ const motionSectionProps = {
   viewport: { once: false, amount: 0.2 as const },
   transition: { duration: 0.4, ease: 'easeOut' as const },
 }
-
-// Full-page composite blocks (one block === an entire ported marketing page). These render
-// their OWN per-section fade-up internally, exactly as the original bespoke pages did. Wrapping
-// such a block in the shared fade-up above gates the whole page on a single `whileInView` that
-// can never reach its 0.2 visibility threshold (the block is far taller than the viewport), so
-// it would stay at opacity:0 and the page renders blank. Render these without the outer fade.
-const FULL_PAGE_BLOCKS = new Set<string>([])
 
 // Granular redesign blocks (Phase 2) self-wrap in their own `<Motion tag="section">` (extracted
 // verbatim from the monolith Components). Render them directly so RenderBlocks does not add a
@@ -129,20 +114,6 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
  */
 function renderBlock(block: BlockType): JSX.Element | null {
   switch (block.blockType) {
-    case 'hero':
-      return <HeroBlockComponent {...block} />
-    case 'content':
-      return <ContentBlockComponent {...block} />
-    case 'relationGrid':
-      return <RelationGridBlockComponent {...block} />
-    case 'featureGrid':
-      return <FeatureGridBlockComponent {...block} />
-    case 'logos':
-      return <LogosBlockComponent {...block} />
-    case 'teamBlock':
-      return <TeamBlockComponent {...block} />
-    case 'steps':
-      return <StepsBlockComponent {...block} />
     case 'industriesSection':
       return <IndustriesSectionComponent {...block} />
     case 'aboutSection':
@@ -171,8 +142,6 @@ function renderBlock(block: BlockType): JSX.Element | null {
       return <ScaleShowcaseComponent {...block} />
     case 'jobsBlock':
       return <JobsBlockComponent {...block} />
-    case 'formBlock':
-      return <FormBlockComponent {...block} />
     case 'ctaBlock':
       return <CtaBlockComponent {...block} />
     // Granular redesign blocks (Phase 2).
@@ -258,16 +227,6 @@ export function RenderBlocks({ blocks }: { blocks?: Page['layout'] }): JSX.Eleme
       {blocks.map((block, i) => {
         const el = renderBlock(block)
         if (!el) return null
-        // Composite full-page blocks animate internally; wrapping them in the shared fade-up
-        // would gate the whole (viewport-taller-than-screen) page on one whileInView and leave
-        // it stuck at opacity:0. Render them in a plain section instead.
-        if (FULL_PAGE_BLOCKS.has(block.blockType)) {
-          return (
-            <section className="w-full" key={block.id || i}>
-              {el}
-            </section>
-          )
-        }
         // Self-wrapping granular blocks already render their own Motion section — render directly.
         if (SELF_WRAPPED_BLOCKS.has(block.blockType)) {
           return <Fragment key={block.id || i}>{el}</Fragment>
