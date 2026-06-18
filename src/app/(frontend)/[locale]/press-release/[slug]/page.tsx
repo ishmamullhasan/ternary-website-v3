@@ -1,7 +1,12 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import JsonLd from '@/components/seo/JsonLd'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
+import { generateMeta } from '@/lib/seo/generateMeta'
+import { article } from '@/lib/seo/structuredData'
 import type { Media, PressRelease } from '@/payload-types'
 import config from '@/payload.config'
+import { getServerSideURL } from '@/utilities/getURL'
 import {
   ArrowUpRight,
   Calendar,
@@ -19,6 +24,7 @@ import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
@@ -36,40 +42,50 @@ const getPressReleaseList = unstable_cache(
   { tags: ['pressRelease'] },
 )
 
-function getPressReleaseBySlug(slug: string) {
+function getPressReleaseBySlug(slug: string, locale: TypedLocale) {
   return unstable_cache(
     async (): Promise<PressRelease | null> => {
       const payload = await getPayload({ config })
       const result = await payload.find({
         collection: 'pressRelease',
         where: { slug: { equals: slug } },
+        locale,
         limit: 1,
         depth: 2,
       })
       return (result.docs[0] as PressRelease | undefined) ?? null
     },
-    [`pressRelease_${slug}`],
+    [`pressRelease_${slug}_${locale}`],
     { tags: [`pressRelease_${slug}`, 'pressRelease'] },
   )
 }
 
 export async function generateStaticParams() {
   const pressReleases = await getPressReleaseList()
-  return pressReleases.map((item) => ({
-    slug: item.slug,
-  }))
+  // Cross-product: one entry per {locale, slug}.
+  return LOCALES.flatMap((locale) => pressReleases.map((item) => ({ locale, slug: item.slug })))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const pressRelease = await getPressReleaseBySlug(slug)()
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) return {}
+  const pressRelease = await getPressReleaseBySlug(slug, typedLocale)()
 
   if (!pressRelease) return {}
 
-  return {
-    title: pressRelease.title ? `${pressRelease.title} | Ternary Solutions` : 'Press Release | Ternary Solutions',
-    description: pressRelease.leadParagraph || pressRelease.excerpts || undefined,
-  }
+  return generateMeta({
+    doc: pressRelease,
+    fallbackTitle: 'Press Release',
+    fallbackDescription: pressRelease.leadParagraph || pressRelease.excerpts,
+    pathname: `/press-release/${slug}`,
+    locale: typedLocale,
+    ogType: 'article',
+  })
 }
 
 const motionSectionProps = {
@@ -130,11 +146,11 @@ function FactRow({ label, value }: { label: string; value?: string | null }) {
   )
 }
 
-function RelatedPressReleaseCard({ item, index }: { item: PressRelease; index: number }) {
+function RelatedPressReleaseCard({ item, index, locale }: { item: PressRelease; index: number; locale: TypedLocale }) {
   return (
     <Motion key={item.id} {...motionGridItemProps} transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}>
       <Link
-        href={`/press-release/${item.slug}`}
+        href={`/${locale}/press-release/${item.slug}`}
         className="bg-[#0F0E0E] border border-zinc-800/40 rounded-lg p-6 h-full min-h-[280px] flex flex-col group hover:border-zinc-700/60 transition-colors"
       >
         <span className="inline-flex self-start items-center gap-2 rounded-full border border-zinc-700/60 bg-[#14120B] px-4 py-2 text-xs text-[#D5D5D5] mb-4">
@@ -175,9 +191,15 @@ function RelatedPressReleaseCard({ item, index }: { item: PressRelease; index: n
   )
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
-  const { slug } = await params
-  const pressRelease = await getPressReleaseBySlug(slug)()
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<JSX.Element> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
+  const pressRelease = await getPressReleaseBySlug(slug, typedLocale)()
 
   if (!pressRelease) {
     notFound()
@@ -189,11 +211,22 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     (item) => item.id !== pressRelease.id,
   )
 
-  const shareUrl = `https://ternary.studio/press-release/${slug}`
+  const shareUrl = `${getServerSideURL()}/${typedLocale}/press-release/${slug}`
   const shareTitle = encodeURIComponent(pressRelease.title ?? '')
+
+  const thumbnail = pressRelease.thumbnail as Media | undefined
+  const articleLd = article({
+    title: pressRelease.title ?? 'Press Release',
+    description: pressRelease.leadParagraph || pressRelease.excerpts,
+    image: thumbnail?.url ?? null,
+    datePublished: pressRelease.releaseDate,
+    dateModified: pressRelease.updatedAt,
+    url: shareUrl,
+  })
 
   return (
     <div className="flex flex-col lg:gap-24 gap-10 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
+      <JsonLd data={articleLd} />
       {/* Headline + dateline */}
       <Motion tag="section" className="w-full lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
         <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 lg:px-0">
@@ -518,7 +551,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {relatedItems.map((item, index) => (
-              <RelatedPressReleaseCard key={item.id} item={item} index={index} />
+              <RelatedPressReleaseCard key={item.id} item={item} index={index} locale={typedLocale} />
             ))}
           </div>
         </Motion>

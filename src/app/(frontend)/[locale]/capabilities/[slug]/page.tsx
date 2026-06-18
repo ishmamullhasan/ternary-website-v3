@@ -1,4 +1,6 @@
 import Motion from '@/components/animation/motion'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
+import { generateMeta } from '@/lib/seo/generateMeta'
 import { cn } from '@/lib/utils'
 import type { Capability, Media, Team } from '@/payload-types'
 import config from '@/payload.config'
@@ -8,6 +10,7 @@ import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
@@ -25,40 +28,49 @@ const getCapabilityList = unstable_cache(
   { tags: ['capability'] },
 )
 
-function getCapabilityBySlug(slug: string) {
+function getCapabilityBySlug(slug: string, locale: TypedLocale) {
   return unstable_cache(
     async (): Promise<Capability | null> => {
       const payload = await getPayload({ config })
       const result = await payload.find({
         collection: 'capability',
         where: { slug: { equals: slug } },
+        locale,
         limit: 1,
         depth: 2,
       })
       return (result.docs[0] as Capability | undefined) ?? null
     },
-    [`capability_${slug}`],
+    [`capability_${slug}_${locale}`],
     { tags: [`capability_${slug}`, 'capability'] },
   )
 }
 
 export async function generateStaticParams() {
   const capabilities = await getCapabilityList()
-  return capabilities.map((capability) => ({
-    slug: capability.slug,
-  }))
+  // Cross-product: one entry per {locale, slug}.
+  return LOCALES.flatMap((locale) => capabilities.map((capability) => ({ locale, slug: capability.slug })))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const capability = await getCapabilityBySlug(slug)()
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) return {}
+  const capability = await getCapabilityBySlug(slug, typedLocale)()
 
   if (!capability) return {}
 
-  return {
-    title: capability.title ? `${capability.title} | Ternary Solutions` : 'Capability | Ternary Solutions',
-    description: capability.excerpts || capability.heroSection?.description || undefined,
-  }
+  return generateMeta({
+    doc: capability,
+    fallbackTitle: 'Capability',
+    fallbackDescription: capability.excerpts || capability.heroSection?.description,
+    pathname: `/capabilities/${slug}`,
+    locale: typedLocale,
+  })
 }
 
 const motionSectionProps = {
@@ -121,9 +133,15 @@ function StackTags({ tags }: { tags?: { name?: string | null; id?: string | null
   )
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
-  const { slug } = await params
-  const capability = await getCapabilityBySlug(slug)()
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<JSX.Element> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
+  const capability = await getCapabilityBySlug(slug, typedLocale)()
 
   if (!capability) {
     notFound()
@@ -454,7 +472,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}
               >
                 <Link
-                  href={`/capabilities/${item.slug}`}
+                  href={`/${typedLocale}/capabilities/${item.slug}`}
                   className="bg-[#0F0E0E] p-6 rounded flex flex-col gap-2 group hover:bg-[#14120B] transition-colors h-full"
                 >
                   <div className="flex items-start justify-between gap-4">

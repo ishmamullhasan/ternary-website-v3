@@ -1,6 +1,10 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import InsightShare from '@/components/sections/insights/InsightShare'
+import JsonLd from '@/components/seo/JsonLd'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
+import { generateMeta } from '@/lib/seo/generateMeta'
+import { article } from '@/lib/seo/structuredData'
 import type { Insight, Media, Team } from '@/payload-types'
 import config from '@/payload.config'
 import { extractHeadings } from '@/utilities/extractHeadings'
@@ -11,6 +15,7 @@ import { unstable_cache } from 'next/cache'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
@@ -28,40 +33,50 @@ const getInsightList = unstable_cache(
   { tags: ['insight'] },
 )
 
-function getInsightBySlug(slug: string) {
+function getInsightBySlug(slug: string, locale: TypedLocale) {
   return unstable_cache(
     async (): Promise<Insight | null> => {
       const payload = await getPayload({ config })
       const result = await payload.find({
         collection: 'insight',
         where: { slug: { equals: slug } },
+        locale,
         limit: 1,
         depth: 2,
       })
       return (result.docs[0] as Insight | undefined) ?? null
     },
-    [`insight_${slug}`],
+    [`insight_${slug}_${locale}`],
     { tags: [`insight_${slug}`, 'insight'] },
   )
 }
 
 export async function generateStaticParams() {
   const insights = await getInsightList()
-  return insights.map((item) => ({
-    slug: item.slug,
-  }))
+  // Cross-product: one entry per {locale, slug}.
+  return LOCALES.flatMap((locale) => insights.map((item) => ({ locale, slug: item.slug })))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const insight = await getInsightBySlug(slug)()
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) return {}
+  const insight = await getInsightBySlug(slug, typedLocale)()
 
   if (!insight) return {}
 
-  return {
-    title: insight.title ? `${insight.title} | Ternary Solutions` : 'Insight | Ternary Solutions',
-    description: insight.leadParagraph || insight.excerpts || undefined,
-  }
+  return generateMeta({
+    doc: insight,
+    fallbackTitle: 'Insight',
+    fallbackDescription: insight.leadParagraph || insight.excerpts,
+    pathname: `/insights/${slug}`,
+    locale: typedLocale,
+    ogType: 'article',
+  })
 }
 
 const motionSectionProps = {
@@ -126,13 +141,13 @@ function AuthorAvatar({ image, name }: { image?: Media; name?: string | null }) 
   return <div className="h-10 w-10 shrink-0 rounded-full bg-linear-to-br from-violet-500 to-fuchsia-500" />
 }
 
-function RelatedInsightCard({ item, index }: { item: Insight; index: number }) {
+function RelatedInsightCard({ item, index, locale }: { item: Insight; index: number; locale: TypedLocale }) {
   const thumbnail = item.thumbnail as Media | undefined
 
   return (
     <Motion {...motionGridItemProps} transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}>
       <Link
-        href={`/insights/${item.slug}`}
+        href={`/${locale}/insights/${item.slug}`}
         className="group flex flex-col rounded-lg overflow-hidden border border-zinc-800/40 h-full"
       >
         <div className="relative h-[220px] overflow-hidden">
@@ -175,9 +190,15 @@ function RelatedInsightCard({ item, index }: { item: Insight; index: number }) {
   )
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
-  const { slug } = await params
-  const insight = await getInsightBySlug(slug)()
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<JSX.Element> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
+  const insight = await getInsightBySlug(slug, typedLocale)()
 
   if (!insight) {
     notFound()
@@ -191,13 +212,23 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     (item) => item.id !== insight.id,
   )
   const headings = extractHeadings(insight.content as RichText)
-  const shareUrl = `${getServerSideURL()}/insights/${slug}`
+  const shareUrl = `${getServerSideURL()}/${typedLocale}/insights/${slug}`
+
+  const articleLd = article({
+    title: insight.title ?? 'Insight',
+    description: insight.leadParagraph || insight.excerpts,
+    image: thumbnail?.url ?? null,
+    datePublished: insight.publishedDate,
+    dateModified: insight.updatedAt,
+    url: shareUrl,
+  })
 
   const showAuthorMeta = Boolean(author?.name || author?.position)
   const showMetaRow = showAuthorMeta || insight.publishedDate || insight.readTime || insight.slug
 
   return (
     <div className="flex flex-col lg:gap-24 gap-12 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
+      <JsonLd data={articleLd} />
       {/* Hero */}
       <Motion tag="section" className="w-full lg:pt-16 pt-8 px-4 lg:px-0" {...motionSectionProps}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
@@ -350,7 +381,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               {insight.relatedInsights?.heading || 'Related insights'}
             </h2>
             <Link
-              href="/stories"
+              href={`/${typedLocale}/stories`}
               className="inline-flex items-center gap-1.5 text-sm text-[#D5D5D5] hover:text-white transition-colors shrink-0"
             >
               All Insights
@@ -366,7 +397,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {relatedItems.map((item, index) => (
-              <RelatedInsightCard key={item.id} item={item} index={index} />
+              <RelatedInsightCard key={item.id} item={item} index={index} locale={typedLocale} />
             ))}
           </div>
         </Motion>

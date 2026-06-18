@@ -1,33 +1,52 @@
 import Motion from '@/components/animation/motion'
 import InterviewProcess from '@/components/sections/interviewProcess'
 import Jobs from '@/components/sections/job'
+import JsonLd from '@/components/seo/JsonLd'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { formatComp, getJob, getJobs, getRelatedJobs } from '@/lib/jobs-data'
+import { generateMeta } from '@/lib/seo/generateMeta'
+import { jobPosting } from '@/lib/seo/structuredData'
+import { getServerSideURL } from '@/utilities/getURL'
 import { ArrowLeft, ArrowRight, DollarSign, GitCommitHorizontal, Minus, ShieldAlert, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { JSX } from 'react'
 
-// Data comes from `@/lib/jobs-data` (mock mirror of the public recruiting API).
+// Data comes from `@/lib/jobs-data` (mock mirror of the public recruiting API). Jobs are NOT a
+// Payload collection, so there is no Payload `locale` arg to thread here — the locale only drives
+// the URL prefix (links, canonical, hreflang). Job copy is identical across locales for now.
 // ✅ = live on the API · 🟡 = Payload CMS copy · 🔒 = internal-only (see jobs-data.ts).
 
 export async function generateStaticParams() {
   const jobs = await getJobs()
-  return jobs.map((job) => ({ slug: job.slug }))
+  // Cross-product: one entry per {locale, slug}.
+  return LOCALES.flatMap((locale) => jobs.map((job) => ({ locale, slug: job.slug })))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) return {}
   const jobData = await getJob(slug)
 
   if (!jobData) return {}
 
-  return {
-    title: jobData.title ? `${jobData.title} | Ternary Solutions` : 'Job | Ternary Solutions',
+  // Jobs come from the recruiting API (not a Payload collection), so there's no `meta` group —
+  // pass a title-only synthetic doc; generateMeta applies site defaults for everything else.
+  return generateMeta({
+    doc: { title: jobData.title },
+    fallbackTitle: 'Job',
     // ✅ excerpt (API) → fall back to body_markdown
-    description: jobData.excerpt || jobData.body_markdown || undefined,
-  }
+    fallbackDescription: jobData.excerpt || jobData.body_markdown,
+    pathname: `/job/${slug}`,
+    locale: typedLocale,
+  })
 }
 
 const motionSectionProps = {
@@ -44,13 +63,27 @@ const motionBlockProps = {
   transition: { duration: 0.35, ease: 'easeOut' as const },
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
-  const { slug } = await params
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<JSX.Element> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
   const jobData = await getJob(slug)
 
   if (!jobData) notFound() // maps to API 404 {"detail": "role not open or no active JD"}
 
   const relatedJobs = await getRelatedJobs(slug)
+
+  const jobLd = jobPosting({
+    title: jobData.title ?? 'Job',
+    description: jobData.excerpt || jobData.body_markdown,
+    datePosted: jobData.published_at,
+    location: jobData.location,
+    url: `${getServerSideURL()}/${typedLocale}/job/${slug}`,
+  })
 
   // ✅ Compensation from the API band; facets are nullable (render only when present).
   const compDisplay = formatComp(jobData.comp_band_min, jobData.comp_band_max, jobData.comp_currency)
@@ -78,13 +111,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
+      <JsonLd data={jobLd} />
       <main className=" pb-24 max-w-7xl mx-auto px-5 space-y-32">
         {/* Hero */}
         <Motion tag="section" {...motionSectionProps}>
           <div className={`w-full ${careersText.body}`}>
             <Motion className="flex items-center justify-between mb-10" {...motionBlockProps}>
               <Link
-                href="/careers"
+                href={`/${typedLocale}/careers`}
                 className={`flex items-center gap-2 text-base ${careersText.muted} hover:text-[#D5D5D5] transition-colors group`}
               >
                 <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform " />
@@ -100,7 +134,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                 )}
                 {/* Apply button → in-app form (POST /applications/{slug}). applyButton.* is 🟡 CMS override. */}
                 <Link
-                  href={jobData.applyButton?.link || `/job/${jobData.slug}/apply`}
+                  href={jobData.applyButton?.link || `/${typedLocale}/job/${jobData.slug}/apply`}
                   className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-base px-5 py-2.5 rounded-lg transition-colors duration-200`}
                 >
                   {jobData.applyButton?.label || 'Apply Now'}
@@ -362,6 +396,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             jobs={relatedJobs}
             heading={jobData.openRoles?.heading || undefined}
             description={jobData.openRoles?.description || undefined}
+            localePrefix={`/${typedLocale}`}
           />
         )}
 

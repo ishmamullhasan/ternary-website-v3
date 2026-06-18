@@ -3,6 +3,7 @@ import ApplyForm from '@/components/sections/applyForm'
 import InterviewProcess from '@/components/sections/interviewProcess'
 import Jobs from '@/components/sections/job'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { formatComp, getJob, getJobs, getRelatedJobs } from '@/lib/jobs-data'
 import { ArrowLeft, Banknote, Briefcase, Layers, MapPin, TrendingUp, User, Users } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -10,16 +11,24 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { JSX } from 'react'
 
-// Data comes from `@/lib/jobs-data` (mock mirror of the public recruiting API).
+// Data comes from `@/lib/jobs-data` (mock mirror of the public recruiting API). Not a Payload
+// collection → no Payload `locale` arg; locale only drives the URL prefix on links.
 // ✅ = live on the API · 🟡 = Payload CMS copy · 🔒 = internal-only (see jobs-data.ts).
 
 export async function generateStaticParams() {
   const jobs = await getJobs()
-  return jobs.map((job) => ({ slug: job.slug }))
+  // Cross-product: one entry per {locale, slug}.
+  return LOCALES.flatMap((locale) => jobs.map((job) => ({ locale, slug: job.slug })))
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) return {}
   const jobData = await getJob(slug)
 
   if (!jobData) return {}
@@ -44,8 +53,14 @@ const motionBlockProps = {
   transition: { duration: 0.35, ease: 'easeOut' as const },
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
-  const { slug } = await params
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<JSX.Element> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
   const jobData = await getJob(slug)
 
   if (!jobData) notFound() // maps to API 404 {"detail": "role not open or no active JD"}
@@ -77,7 +92,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         {/* Hero */}
         <Motion tag="section" className="space-y-6" {...motionSectionProps}>
           <Link
-            href={`/job/${jobData.slug}`}
+            href={`/${typedLocale}/job/${jobData.slug}`}
             className={`inline-flex items-center gap-2 text-base ${careersText.muted} hover:text-[#D5D5D5] transition-colors group`}
           >
             <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
@@ -141,6 +156,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             jobs={relatedJobs}
             heading={jobData.openRoles?.heading || undefined}
             description={jobData.openRoles?.description || undefined}
+            localePrefix={`/${typedLocale}`}
           />
         )}
       </main>

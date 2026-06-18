@@ -1,5 +1,7 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import { asTypedLocale } from '@/lib/i18n/locales'
+import { generateMeta } from '@/lib/seo/generateMeta'
 import type { Legal, Media } from '@/payload-types'
 import config from '@/payload.config'
 import { Download, FileText, Scale, Shield, type LucideIcon } from 'lucide-react'
@@ -7,6 +9,7 @@ import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
@@ -24,23 +27,27 @@ const motionBlockProps = {
   transition: { duration: 0.35, ease: 'easeOut' as const },
 }
 
-const getLegalList = unstable_cache(
-  async () => {
-    const payload = await getPayload({ config })
-    return payload.find({ collection: 'legal', sort: 'menuOrder', limit: 100 })
-  },
-  ['legal'],
-  { tags: ['legal'] },
-)
+function getLegalList(locale: TypedLocale) {
+  return unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.find({ collection: 'legal', sort: 'menuOrder', locale, limit: 100 })
+    },
+    [`legal_list_${locale}`],
+    { tags: ['legal'] },
+  )
+}
 
-const getLegalCenter = unstable_cache(
-  async () => {
-    const payload = await getPayload({ config })
-    return payload.findGlobal({ slug: 'legalCenter' })
-  },
-  ['legalCenter'],
-  { tags: ['legalCenter', 'legal'] },
-)
+function getLegalCenter(locale: TypedLocale) {
+  return unstable_cache(
+    async () => {
+      const payload = await getPayload({ config })
+      return payload.findGlobal({ slug: 'legalCenter', locale })
+    },
+    [`legalCenter_${locale}`],
+    { tags: ['legalCenter', 'legal'] },
+  )
+}
 
 function sortLegalMenuItems(docs: Legal[]): Legal[] {
   return [...docs].sort((a, b) => {
@@ -73,7 +80,7 @@ function LegalMenuIcon({ icon }: { icon: string | null | undefined }) {
   return <Icon size={18} strokeWidth={1.75} aria-hidden className="shrink-0" />
 }
 
-function getLegalBySlug(slug: string) {
+function getLegalBySlug(slug: string, locale: TypedLocale) {
   return unstable_cache(
     async () => {
       const payload = await getPayload({ config })
@@ -84,35 +91,49 @@ function getLegalBySlug(slug: string) {
             equals: slug,
           },
         },
+        locale,
         depth: 2,
         limit: 1,
       })
     },
-    [`legal_${slug}`],
+    [`legal_${slug}_${locale}`],
     { tags: [`legal_${slug}`, 'legal'] },
   )
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-  const { docs } = await getLegalBySlug(slug)()
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
+  const { docs } = await getLegalBySlug(slug, typedLocale)()
   const legal = docs[0]
 
   if (!legal) notFound()
 
-  return {
-    title: legal.title ? `${legal.title} | Ternary Solutions` : 'Ternary Solutions',
-  }
+  return generateMeta({ doc: legal, fallbackTitle: 'Legal', pathname: `/legals/${slug}`, locale: typedLocale })
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
-  const { slug } = await params
-  const { docs } = await getLegalBySlug(slug)()
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<JSX.Element> {
+  const { locale, slug } = await params
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
+  const { docs } = await getLegalBySlug(slug, typedLocale)()
   const legal: Legal | undefined = docs[0]
 
   if (!legal) notFound()
 
-  const [legalCenter, { docs: legalDocs }] = await Promise.all([getLegalCenter(), getLegalList()])
+  const [legalCenter, { docs: legalDocs }] = await Promise.all([
+    getLegalCenter(typedLocale)(),
+    getLegalList(typedLocale)(),
+  ])
   const menuItems = sortLegalMenuItems(legalDocs)
 
   return (
@@ -154,7 +175,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
                             }}
                           >
                             <Link
-                              href={`/legals/${item.slug}`}
+                              href={`/${typedLocale}/legals/${item.slug}`}
                               aria-current={isActive ? 'page' : undefined}
                               className={`group flex items-center gap-1 px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                                 isActive
