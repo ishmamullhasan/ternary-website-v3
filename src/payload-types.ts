@@ -81,9 +81,11 @@ export interface Config {
     job: Job;
     team: Team;
     legal: Legal;
+    analytics: Analytics;
     forms: Form;
     'form-submissions': FormSubmission;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -109,9 +111,11 @@ export interface Config {
     job: JobSelect<false> | JobSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     legal: LegalSelect<false> | LegalSelect<true>;
+    analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -137,7 +141,13 @@ export interface Config {
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      pruneAnalytics: TaskPruneAnalytics;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -2600,6 +2610,22 @@ export interface Legal {
   createdAt: string;
 }
 /**
+ * First-party pageview log. Rows are written automatically by the site beacon — do not edit by hand. See the dashboard on the admin home for aggregates.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics".
+ */
+export interface Analytics {
+  id: string;
+  path: string;
+  locale?: string | null;
+  referrer?: string | null;
+  userAgent?: string | null;
+  timestamp?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
@@ -2632,6 +2658,98 @@ export interface PayloadKv {
     | number
     | boolean
     | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: string;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'pruneAnalytics';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'pruneAnalytics') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2695,6 +2813,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'legal';
         value: string | Legal;
+      } | null)
+    | ({
+        relationTo: 'analytics';
+        value: string | Analytics;
       } | null)
     | ({
         relationTo: 'forms';
@@ -4406,6 +4528,19 @@ export interface LegalSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics_select".
+ */
+export interface AnalyticsSelect<T extends boolean = true> {
+  path?: T;
+  locale?: T;
+  referrer?: T;
+  userAgent?: T;
+  timestamp?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "forms_select".
  */
 export interface FormsSelect<T extends boolean = true> {
@@ -4589,6 +4724,37 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4795,6 +4961,21 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPruneAnalytics".
+ */
+export interface TaskPruneAnalytics {
+  input: {
+    /**
+     * Delete analytics pageviews older than this many days.
+     */
+    days?: number | null;
+  };
+  output: {
+    deleted?: number | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
