@@ -1,7 +1,7 @@
 import type { Block } from 'payload'
 
-import { imageField } from '@/fields/image'
 import { iconSelect } from '@/fields/iconSelect'
+import { imageField } from '@/fields/image'
 import { rowLabelAdmin } from '@/fields/rowLabel'
 import { sectionHeader } from '@/fields/sectionHeader'
 
@@ -17,7 +17,7 @@ export const CategoryLanding: Block = {
       type: 'array',
       admin: { ...rowLabelAdmin },
       fields: [
-        { name: 'title', label: 'Title', type: 'text', admin: { width: '50%' } },
+        { name: 'title', label: 'Title', type: 'text', localized: true, admin: { width: '50%' } },
         {
           ...iconSelect(['newspaper', 'flask-conical', 'lightbulb', 'file-text'], {
             description: 'Lucide icon shown at the top of the category card.',
@@ -27,7 +27,7 @@ export const CategoryLanding: Block = {
             width: '50%',
           },
         },
-        { name: 'description', label: 'Description', type: 'textarea' },
+        { name: 'description', label: 'Description', type: 'textarea', localized: true },
         imageField({ name: 'image', label: 'Image' }),
         {
           name: 'link',
@@ -39,6 +39,7 @@ export const CategoryLanding: Block = {
           name: 'linkLabel',
           label: 'Link Label',
           type: 'text',
+          localized: true,
           admin: { width: '50%', description: 'e.g. "Open section"' },
         },
       ],

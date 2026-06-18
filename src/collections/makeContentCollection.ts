@@ -29,10 +29,10 @@ export const makeContentCollection = (
     ...(adminOpts?.defaultColumns ? { defaultColumns: adminOpts.defaultColumns } : {}),
   },
   fields: [
-    { name: 'title', label: 'Title', type: 'text' },
+    { name: 'title', label: 'Title', type: 'text', localized: true },
     slugField(),
-    { name: 'excerpts', label: 'Excerpts', type: 'textarea' },
+    { name: 'excerpts', label: 'Excerpts', type: 'textarea', localized: true },
     { name: 'thumbnail', label: 'Thumbnail', type: 'upload', relationTo: 'media' },
-    { name: 'content', label: 'Content', type: 'richText' },
+    { name: 'content', label: 'Content', type: 'richText', localized: true },
   ],
 })

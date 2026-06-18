@@ -24,12 +24,14 @@ const Scale: CollectionConfig = {
       name: 'title',
       label: 'Title',
       type: 'text',
+      localized: true,
     },
     slugField(),
     {
       name: 'excerpts',
       label: 'Excerpts',
       type: 'textarea',
+      localized: true,
     },
 
     {
@@ -42,16 +44,19 @@ const Scale: CollectionConfig = {
       name: 'subTitle',
       label: 'Sub Title',
       type: 'text',
+      localized: true,
     },
     {
       name: 'description',
       label: 'Description',
       type: 'textarea',
       required: false,
+      localized: true,
     },
     {
       name: 'tags',
       type: 'text',
+      localized: true,
     },
 
     {
@@ -69,11 +74,13 @@ const Scale: CollectionConfig = {
           name: 'title',
           label: 'Title',
           type: 'text',
+          localized: true,
         },
         {
           name: 'value',
           label: 'Value',
           type: 'text',
+          localized: true,
         },
       ],
     },

@@ -32,7 +32,7 @@ export const AboutSection: Block = {
         description: 'Logo wall of partner / member organizations shown within the About section.',
       },
       fields: [
-        { name: 'heading', label: 'Heading', type: 'text' },
+        { name: 'heading', label: 'Heading', type: 'text', localized: true },
         {
           name: 'organization',
           label: 'Organizations',
@@ -43,7 +43,7 @@ export const AboutSection: Block = {
           },
           fields: [
             imageField({ name: 'icon', label: 'Icon' }),
-            { name: 'name', label: 'Name', type: 'text', admin: { width: '50%' } },
+            { name: 'name', label: 'Name', type: 'text', localized: true, admin: { width: '50%' } },
             {
               name: 'link',
               label: 'Link',
@@ -61,6 +61,7 @@ export const AboutSection: Block = {
       name: 'bottomDescription',
       label: 'Bottom Description',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'Closing copy rendered below the organizations logo wall.',
       },
@@ -108,6 +109,7 @@ export const CapabilitiesSection: Block = {
       name: 'heading_2',
       label: 'Secondary Heading',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Heading for the secondary content block beside the capabilities list.',
       },
@@ -116,6 +118,7 @@ export const CapabilitiesSection: Block = {
       name: 'description_2',
       label: 'Secondary Description',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'Body copy for the secondary content block.',
       },
@@ -173,6 +176,7 @@ export const GlobalDeliverySection: Block = {
       name: 'title',
       label: 'Title',
       type: 'text',
+      localized: true,
       admin: {
         description: 'Title rendered alongside the image in the global delivery callout.',
       },
@@ -181,6 +185,7 @@ export const GlobalDeliverySection: Block = {
       name: 'excerpt',
       label: 'Excerpt',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'Short supporting copy shown under the title.',
       },
@@ -203,8 +208,8 @@ export const ProcessSection: Block = {
         description: 'Ordered list of process steps. Each row is one step with a title and rich-text description.',
       },
       fields: [
-        { name: 'title', label: 'Title', type: 'text' },
-        { name: 'description', label: 'Description', type: 'richText' },
+        { name: 'title', label: 'Title', type: 'text', localized: true },
+        { name: 'description', label: 'Description', type: 'richText', localized: true },
       ],
     },
   ],

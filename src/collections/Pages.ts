@@ -118,7 +118,7 @@ export const Pages: CollectionConfig = {
     ],
   },
   fields: [
-    { name: 'title', label: 'Title', type: 'text', required: true },
+    { name: 'title', label: 'Title', type: 'text', required: true, localized: true },
     slugField(),
     {
       name: 'layout',

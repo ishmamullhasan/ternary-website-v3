@@ -64,18 +64,21 @@ const Footer: GlobalConfig = {
         {
           name: 'siteName',
           type: 'text',
+          localized: true,
         },
         {
           name: 'description',
           label: 'Description',
           type: 'textarea',
           required: false,
+          localized: true,
         },
         {
           name: 'copyright',
           label: 'Copyright',
           type: 'text',
           required: false,
+          localized: true,
         },
       ],
     },
@@ -121,6 +124,7 @@ const Footer: GlobalConfig = {
               label: 'Label',
               type: 'text',
               required: false,
+              localized: true,
             },
             {
               name: 'link',

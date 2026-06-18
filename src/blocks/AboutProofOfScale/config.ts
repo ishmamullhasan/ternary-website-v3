@@ -23,8 +23,14 @@ export const AboutProofOfScale: Block = {
           type: 'array',
           admin: { ...rowLabelAdmin },
           fields: [
-            { name: 'name', label: 'Name', type: 'text', admin: { width: '50%' } },
-            { name: 'excerpt', label: 'Excerpt', type: 'text', admin: { description: 'Short supporting copy.' } },
+            { name: 'name', label: 'Name', type: 'text', localized: true, admin: { width: '50%' } },
+            {
+              name: 'excerpt',
+              label: 'Excerpt',
+              type: 'text',
+              localized: true,
+              admin: { description: 'Short supporting copy.' },
+            },
             tagsArray({ name: 'stack', label: 'Stack' }),
           ],
         },

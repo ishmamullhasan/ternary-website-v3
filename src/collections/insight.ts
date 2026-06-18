@@ -29,6 +29,7 @@ const Insight: CollectionConfig = {
       label: 'Title',
       type: 'text',
       required: true,
+      localized: true,
     },
     slugField(),
     {
@@ -64,6 +65,7 @@ const Insight: CollectionConfig = {
       name: 'readTime',
       label: 'Read Time',
       type: 'text',
+      localized: true,
       admin: {
         description: 'e.g. "8 min"',
         position: 'sidebar',
@@ -73,6 +75,7 @@ const Insight: CollectionConfig = {
       name: 'categoryLabel',
       label: 'Category Label',
       type: 'text',
+      localized: true,
       admin: {
         description: 'e.g. "Engineering Studio"',
         position: 'sidebar',
@@ -82,6 +85,7 @@ const Insight: CollectionConfig = {
       name: 'excerpts',
       label: 'Excerpt',
       type: 'textarea',
+      localized: true,
       admin: {
         description: 'Short summary used on listing cards.',
       },
@@ -101,6 +105,7 @@ const Insight: CollectionConfig = {
           name: 'name',
           label: 'Name',
           type: 'text',
+          localized: true,
         },
       ],
     },
@@ -114,6 +119,7 @@ const Insight: CollectionConfig = {
               name: 'leadParagraph',
               label: 'Lead Paragraph',
               type: 'textarea',
+              localized: true,
               admin: {
                 description: 'Opening paragraph shown beside the article body.',
               },
@@ -122,6 +128,7 @@ const Insight: CollectionConfig = {
               name: 'content',
               label: 'Content',
               type: 'richText',
+              localized: true,
             },
           ],
         },
@@ -137,11 +144,13 @@ const Insight: CollectionConfig = {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'insights',
@@ -166,11 +175,13 @@ const Insight: CollectionConfig = {
                   name: 'heading',
                   label: 'Heading',
                   type: 'text',
+                  localized: true,
                 },
                 {
                   name: 'description',
                   label: 'Description',
                   type: 'textarea',
+                  localized: true,
                 },
                 {
                   name: 'backgroundImage',
@@ -187,6 +198,7 @@ const Insight: CollectionConfig = {
                       name: 'label',
                       label: 'Label',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'link',
@@ -204,6 +216,7 @@ const Insight: CollectionConfig = {
                       name: 'label',
                       label: 'Label',
                       type: 'text',
+                      localized: true,
                     },
                     {
                       name: 'link',

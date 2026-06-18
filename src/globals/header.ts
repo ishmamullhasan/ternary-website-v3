@@ -26,6 +26,7 @@ const Header: GlobalConfig = {
     {
       name: 'siteName',
       type: 'text',
+      localized: true,
     },
     {
       name: 'menu',
@@ -38,6 +39,7 @@ const Header: GlobalConfig = {
           label: 'Label',
           type: 'text',
           required: false,
+          localized: true,
         },
         {
           name: 'link',
@@ -60,6 +62,7 @@ const Header: GlobalConfig = {
               name: 'label',
               label: 'Label',
               type: 'text',
+              localized: true,
             },
             {
               name: 'link',
@@ -81,6 +84,7 @@ const Header: GlobalConfig = {
           label: 'Label',
           type: 'text',
           required: false,
+          localized: true,
         },
         {
           name: 'link',

@@ -20,24 +20,27 @@ export const FeatureCaseStudy: Block = {
       name: 'highlights',
       label: 'Highlights',
       type: 'array',
-      fields: [{ name: 'text', label: 'Text', type: 'text', required: true }],
+      fields: [{ name: 'text', label: 'Text', type: 'text', required: true, localized: true }],
     },
     {
       name: 'readTime',
       label: 'Read Time',
       type: 'text',
+      localized: true,
       admin: { description: 'e.g. "12 min"' },
     },
     {
       name: 'categoryLabel',
       label: 'Category Label',
       type: 'text',
+      localized: true,
       admin: { description: 'e.g. "Engineering Studio"' },
     },
     {
       name: 'buttonLabel',
       label: 'Button Label',
       type: 'text',
+      localized: true,
     },
   ],
 }
