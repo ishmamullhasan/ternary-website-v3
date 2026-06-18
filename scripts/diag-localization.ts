@@ -49,4 +49,4 @@ async function run() {
   console.log('If Payload(locale=en) is null/undefined while RAW has a bare string → backfill REQUIRED.')
   process.exit(0)
 }
-run()
+await run()
