@@ -14,7 +14,10 @@ const Scale: CollectionConfig = {
     ],
   },
   admin: {
+    group: 'Content',
+    description: 'Engagement scale tiers and their showcase content.',
     useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', 'updatedAt'],
   },
   fields: [
     {

@@ -14,7 +14,10 @@ const Team: CollectionConfig = {
     ],
   },
   admin: {
+    group: 'Careers',
+    description: 'Team member profiles shown across the site.',
     useAsTitle: 'name',
+    defaultColumns: ['name', 'position', 'slug', 'updatedAt'],
   },
   fields: [
     {

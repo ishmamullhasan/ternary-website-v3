@@ -14,6 +14,8 @@ const Capability: CollectionConfig = {
     ],
   },
   admin: {
+    group: 'Content',
+    description: 'Engineering capabilities and their detail pages.',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
   },

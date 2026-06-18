@@ -12,7 +12,9 @@ const User: CollectionConfig = {
     update: authenticated,
   },
   admin: {
-    defaultColumns: ['name', 'email'],
+    group: 'System',
+    description: 'Admin accounts that can sign in and manage content.',
+    defaultColumns: ['name', 'email', 'updatedAt'],
     useAsTitle: 'name',
   },
   auth: true,

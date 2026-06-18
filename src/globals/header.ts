@@ -4,6 +4,10 @@ import { GlobalConfig } from 'payload'
 const Header: GlobalConfig = {
   slug: 'header',
   label: 'Header',
+  admin: {
+    group: 'Site Settings',
+    description: 'Site header: logo, primary navigation, and CTA button.',
+  },
   hooks: {
     afterChange: [
       () => {

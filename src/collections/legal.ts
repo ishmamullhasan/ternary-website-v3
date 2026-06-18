@@ -16,7 +16,10 @@ const Legal: CollectionConfig = {
     ],
   },
   admin: {
+    group: 'Legal',
+    description: 'Legal documents shown in the Legal Center.',
     useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', 'code', 'updatedAt'],
   },
   fields: [
     {
