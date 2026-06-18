@@ -10,20 +10,17 @@ import { AboutFundingStoryComponent } from './AboutFundingStory/Component'
 import { AboutHeroComponent } from './AboutHero/Component'
 import { AboutIntroComponent } from './AboutIntro/Component'
 import { AboutLeadershipComponent } from './AboutLeadership/Component'
-import { AboutPageComponent } from './AboutPage/Component'
 import { AboutProofOfScaleComponent } from './AboutProofOfScale/Component'
 import { AboutThesisComponent } from './AboutThesis/Component'
 import { CareersGridOneComponent } from './CareersGridOne/Component'
 import { CareersGridTwoComponent } from './CareersGridTwo/Component'
 import { CareersGrowthComponent } from './CareersGrowth/Component'
 import { CareersHeroComponent } from './CareersHero/Component'
-import { CareersPageComponent } from './CareersPage/Component'
 import { CareersTeamComponent } from './CareersTeam/Component'
 import { CategoryLandingComponent } from './CategoryLanding/Component'
 import { ContactFormComponent } from './ContactForm/Component'
 import { ContactHeroComponent } from './ContactHero/Component'
 import { ContactOfficesComponent } from './ContactOffices/Component'
-import { ContactPageComponent } from './ContactPage/Component'
 import { ContactRoutesComponent } from './ContactRoutes/Component'
 import { ContactStatsComponent } from './ContactStats/Component'
 import { CrossIndustryPatternsComponent } from './CrossIndustryPatterns/Component'
@@ -46,7 +43,6 @@ import {
 } from './homeSections/Component'
 import { IndustriesDetailsComponent } from './IndustriesDetails/Component'
 import { IndustriesHeroComponent } from './IndustriesHero/Component'
-import { IndustriesPageComponent } from './IndustriesPage/Component'
 import { IndustriesSectionComponent } from './IndustriesSection/Component'
 import { IndustryListComponent } from './IndustryList/Component'
 import { IndustryPanelsComponent } from './IndustryPanels/Component'
@@ -57,15 +53,12 @@ import { RegulatoryPostureComponent } from './RegulatoryPosture/Component'
 import { RelationGridBlockComponent } from './RelationGrid/Component'
 import { ScaleShowcaseComponent } from './ScaleShowcase/Component'
 import { ScalesHeroComponent } from './ScalesHero/Component'
-import { ScalesPageComponent } from './ScalesPage/Component'
 import { SolutionFeatureComponent } from './SolutionFeature/Component'
 import { SolutionsEngageComponent } from './SolutionsEngage/Component'
 import { SolutionsHeroComponent } from './SolutionsHero/Component'
-import { SolutionsPageComponent } from './SolutionsPage/Component'
 import { StepsBlockComponent } from './Steps/Component'
 import { StoriesArchiveComponent } from './StoriesArchive/Component'
 import { StoriesHeroComponent } from './StoriesHero/Component'
-import { StoriesPageComponent } from './StoriesPage/Component'
 import { SubscribeComponent } from './Subscribe/Component'
 import { TeamBlockComponent } from './Team/Component'
 
@@ -84,15 +77,7 @@ const motionSectionProps = {
 // such a block in the shared fade-up above gates the whole page on a single `whileInView` that
 // can never reach its 0.2 visibility threshold (the block is far taller than the viewport), so
 // it would stay at opacity:0 and the page renders blank. Render these without the outer fade.
-const FULL_PAGE_BLOCKS = new Set<string>([
-  'aboutPageSection',
-  'solutionsPageSection',
-  'industriesPageSection',
-  'scalesPageSection',
-  'contactPageSection',
-  'careersPageSection',
-  'storiesPageSection',
-])
+const FULL_PAGE_BLOCKS = new Set<string>([])
 
 // Granular redesign blocks (Phase 2) self-wrap in their own `<Motion tag="section">` (extracted
 // verbatim from the monolith Components). Render them directly so RenderBlocks does not add a
@@ -178,20 +163,6 @@ function renderBlock(block: BlockType): JSX.Element | null {
       return <TeamSectionComponent {...block} />
     case 'opportunitiesSection':
       return <OpportunitiesSectionComponent {...block} />
-    case 'aboutPageSection':
-      return <AboutPageComponent {...block} />
-    case 'solutionsPageSection':
-      return <SolutionsPageComponent {...block} />
-    case 'industriesPageSection':
-      return <IndustriesPageComponent {...block} />
-    case 'scalesPageSection':
-      return <ScalesPageComponent {...block} />
-    case 'contactPageSection':
-      return <ContactPageComponent {...block} />
-    case 'careersPageSection':
-      return <CareersPageComponent {...block} />
-    case 'storiesPageSection':
-      return <StoriesPageComponent {...block} />
     case 'scalesHero':
       return <ScalesHeroComponent {...block} />
     case 'qualityBar':

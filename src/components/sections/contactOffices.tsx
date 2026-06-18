@@ -2,12 +2,12 @@
 
 import Motion from '@/components/animation/motion'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
-import type { ContactPageBlock } from '@/payload-types'
+import type { ContactOfficesBlock } from '@/payload-types'
 import { ChevronLeft, ChevronRight, Clock, Mail, MapPin, Phone } from 'lucide-react'
 import type { JSX } from 'react'
 import { useState } from 'react'
 
-type OfficesData = NonNullable<ContactPageBlock['offices']>
+type OfficesData = ContactOfficesBlock
 
 const motionSectionProps = {
   initial: { opacity: 0, y: 12 },
