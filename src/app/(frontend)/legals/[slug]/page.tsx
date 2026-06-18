@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import { generateMeta } from '@/lib/seo/generateMeta'
 import type { Legal, Media } from '@/payload-types'
 import config from '@/payload.config'
 import { Download, FileText, Scale, Shield, type LucideIcon } from 'lucide-react'
@@ -100,9 +101,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!legal) notFound()
 
-  return {
-    title: legal.title ? `${legal.title} | Ternary Solutions` : 'Ternary Solutions',
-  }
+  return generateMeta({ doc: legal, fallbackTitle: 'Legal', pathname: `/legals/${slug}` })
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {

@@ -1,7 +1,11 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import JsonLd from '@/components/seo/JsonLd'
+import { generateMeta } from '@/lib/seo/generateMeta'
+import { article } from '@/lib/seo/structuredData'
 import type { Media, PressRelease } from '@/payload-types'
 import config from '@/payload.config'
+import { getServerSideURL } from '@/utilities/getURL'
 import {
   ArrowUpRight,
   Calendar,
@@ -66,10 +70,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!pressRelease) return {}
 
-  return {
-    title: pressRelease.title ? `${pressRelease.title} | Ternary Solutions` : 'Press Release | Ternary Solutions',
-    description: pressRelease.leadParagraph || pressRelease.excerpts || undefined,
-  }
+  return generateMeta({
+    doc: pressRelease,
+    fallbackTitle: 'Press Release',
+    fallbackDescription: pressRelease.leadParagraph || pressRelease.excerpts,
+    pathname: `/press-release/${slug}`,
+    ogType: 'article',
+  })
 }
 
 const motionSectionProps = {
@@ -192,8 +199,19 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const shareUrl = `https://ternary.studio/press-release/${slug}`
   const shareTitle = encodeURIComponent(pressRelease.title ?? '')
 
+  const thumbnail = pressRelease.thumbnail as Media | undefined
+  const articleLd = article({
+    title: pressRelease.title ?? 'Press Release',
+    description: pressRelease.leadParagraph || pressRelease.excerpts,
+    image: thumbnail?.url ?? null,
+    datePublished: pressRelease.releaseDate,
+    dateModified: pressRelease.updatedAt,
+    url: `${getServerSideURL()}/press-release/${slug}`,
+  })
+
   return (
     <div className="flex flex-col lg:gap-24 gap-10 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
+      <JsonLd data={articleLd} />
       {/* Headline + dateline */}
       <Motion tag="section" className="w-full lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
         <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 lg:px-0">

@@ -1,18 +1,16 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import JsonLd from '@/components/seo/JsonLd'
+import { generateMeta } from '@/lib/seo/generateMeta'
+import { pagePath } from '@/lib/seo/pagePath'
+import { breadcrumbList } from '@/lib/seo/structuredData'
 import type { Page as PageDoc } from '@/payload-types'
+import { getServerSideURL } from '@/utilities/getURL'
 import config from '@payload-config'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
-
-/** Full URL path of a page, derived from its nested-docs breadcrumb chain. */
-const pagePath = (page: PageDoc): string => {
-  const crumbs = page.breadcrumbs
-  const last = crumbs?.length ? crumbs[crumbs.length - 1]?.url : null
-  return last || `/${page.slug}`
-}
 
 const queryPageByPath = async (segments: string[], draft: boolean): Promise<PageDoc | null> => {
   const payload = await getPayload({ config })
@@ -46,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { isEnabled: draft } = await draftMode()
   const page = await queryPageByPath(slug, draft)
   if (!page) return {}
-  return { title: page.title ? `${page.title} | Ternary Solutions` : 'Ternary Solutions' }
+  return generateMeta({ doc: page, pathname: pagePath(page) })
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string[] }> }): Promise<JSX.Element> {
@@ -56,8 +54,15 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
 
   if (!page) notFound()
 
+  // BreadcrumbList from the nested-docs breadcrumb chain (absolute urls).
+  const base = getServerSideURL()
+  const crumbs = (page.breadcrumbs ?? [])
+    .filter((c) => c.label && c.url)
+    .map((c) => ({ name: c.label as string, url: `${base}${c.url}` }))
+
   return (
     <main>
+      {crumbs.length > 0 && <JsonLd data={breadcrumbList(crumbs)} />}
       <RenderBlocks blocks={page.layout} />
     </main>
   )

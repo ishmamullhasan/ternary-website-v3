@@ -1,6 +1,9 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import InsightShare from '@/components/sections/insights/InsightShare'
+import JsonLd from '@/components/seo/JsonLd'
+import { generateMeta } from '@/lib/seo/generateMeta'
+import { article } from '@/lib/seo/structuredData'
 import type { Insight, Media, Team } from '@/payload-types'
 import config from '@/payload.config'
 import { extractHeadings } from '@/utilities/extractHeadings'
@@ -58,10 +61,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!insight) return {}
 
-  return {
-    title: insight.title ? `${insight.title} | Ternary Solutions` : 'Insight | Ternary Solutions',
-    description: insight.leadParagraph || insight.excerpts || undefined,
-  }
+  return generateMeta({
+    doc: insight,
+    fallbackTitle: 'Insight',
+    fallbackDescription: insight.leadParagraph || insight.excerpts,
+    pathname: `/insights/${slug}`,
+    ogType: 'article',
+  })
 }
 
 const motionSectionProps = {
@@ -193,11 +199,21 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const headings = extractHeadings(insight.content as RichText)
   const shareUrl = `${getServerSideURL()}/insights/${slug}`
 
+  const articleLd = article({
+    title: insight.title ?? 'Insight',
+    description: insight.leadParagraph || insight.excerpts,
+    image: thumbnail?.url ?? null,
+    datePublished: insight.publishedDate,
+    dateModified: insight.updatedAt,
+    url: shareUrl,
+  })
+
   const showAuthorMeta = Boolean(author?.name || author?.position)
   const showMetaRow = showAuthorMeta || insight.publishedDate || insight.readTime || insight.slug
 
   return (
     <div className="flex flex-col lg:gap-24 gap-12 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
+      <JsonLd data={articleLd} />
       {/* Hero */}
       <Motion tag="section" className="w-full lg:pt-16 pt-8 px-4 lg:px-0" {...motionSectionProps}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">

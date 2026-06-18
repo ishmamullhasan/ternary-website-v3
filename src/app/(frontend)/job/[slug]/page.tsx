@@ -1,8 +1,12 @@
 import Motion from '@/components/animation/motion'
 import InterviewProcess from '@/components/sections/interviewProcess'
 import Jobs from '@/components/sections/job'
+import JsonLd from '@/components/seo/JsonLd'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
 import { formatComp, getJob, getJobs, getRelatedJobs } from '@/lib/jobs-data'
+import { generateMeta } from '@/lib/seo/generateMeta'
+import { jobPosting } from '@/lib/seo/structuredData'
+import { getServerSideURL } from '@/utilities/getURL'
 import { ArrowLeft, ArrowRight, DollarSign, GitCommitHorizontal, Minus, ShieldAlert, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -23,11 +27,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!jobData) return {}
 
-  return {
-    title: jobData.title ? `${jobData.title} | Ternary Solutions` : 'Job | Ternary Solutions',
+  // Jobs come from the recruiting API (not a Payload collection), so there's no `meta` group —
+  // pass a title-only synthetic doc; generateMeta applies site defaults for everything else.
+  return generateMeta({
+    doc: { title: jobData.title },
+    fallbackTitle: 'Job',
     // ✅ excerpt (API) → fall back to body_markdown
-    description: jobData.excerpt || jobData.body_markdown || undefined,
-  }
+    fallbackDescription: jobData.excerpt || jobData.body_markdown,
+    pathname: `/job/${slug}`,
+  })
 }
 
 const motionSectionProps = {
@@ -51,6 +59,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!jobData) notFound() // maps to API 404 {"detail": "role not open or no active JD"}
 
   const relatedJobs = await getRelatedJobs(slug)
+
+  const jobLd = jobPosting({
+    title: jobData.title ?? 'Job',
+    description: jobData.excerpt || jobData.body_markdown,
+    datePosted: jobData.published_at,
+    location: jobData.location,
+    url: `${getServerSideURL()}/job/${slug}`,
+  })
 
   // ✅ Compensation from the API band; facets are nullable (render only when present).
   const compDisplay = formatComp(jobData.comp_band_min, jobData.comp_band_max, jobData.comp_currency)
@@ -78,6 +94,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 
   return (
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
+      <JsonLd data={jobLd} />
       <main className=" pb-24 max-w-7xl mx-auto px-5 space-y-32">
         {/* Hero */}
         <Motion tag="section" {...motionSectionProps}>

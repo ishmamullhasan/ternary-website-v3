@@ -1,4 +1,5 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import { generateMeta } from '@/lib/seo/generateMeta'
 import config from '@payload-config'
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
@@ -26,7 +27,7 @@ const getHomePage = async (draft: boolean) => {
 export async function generateMetadata(): Promise<Metadata> {
   const { isEnabled: draft } = await draftMode()
   const page = await getHomePage(draft)
-  return { title: page?.title ? `${page.title} | Ternary Solutions` : 'Ternary Solutions' }
+  return generateMeta({ doc: page, pathname: '/' })
 }
 
 export default async function Page(): Promise<JSX.Element> {

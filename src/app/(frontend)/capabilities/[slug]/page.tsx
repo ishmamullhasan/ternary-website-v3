@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import { generateMeta } from '@/lib/seo/generateMeta'
 import { cn } from '@/lib/utils'
 import type { Capability, Media, Team } from '@/payload-types'
 import config from '@/payload.config'
@@ -55,10 +56,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   if (!capability) return {}
 
-  return {
-    title: capability.title ? `${capability.title} | Ternary Solutions` : 'Capability | Ternary Solutions',
-    description: capability.excerpts || capability.heroSection?.description || undefined,
-  }
+  return generateMeta({
+    doc: capability,
+    fallbackTitle: 'Capability',
+    fallbackDescription: capability.excerpts || capability.heroSection?.description,
+    pathname: `/capabilities/${slug}`,
+  })
 }
 
 const motionSectionProps = {

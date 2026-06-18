@@ -1,4 +1,5 @@
 import RichTextComp, { type RichText } from '@/components/richtext'
+import { generateMeta } from '@/lib/seo/generateMeta'
 import type { Insight, Media, PressRelease, Story } from '@/payload-types'
 import config from '@/payload.config'
 import type { Metadata } from 'next'
@@ -69,12 +70,15 @@ export function createContentDetailPage(collection: ContentCollection) {
     const { slug } = await params
     const doc = await getDocBySlug(collection, slug)()
 
-    if (!doc?.title) return {}
+    if (!doc) return {}
 
-    return {
-      title: `${doc.title} | Ternary Solutions`,
-      description: doc.excerpts ?? undefined,
-    }
+    return generateMeta({
+      doc,
+      fallbackTitle: COLLECTION_CONFIG[collection].label,
+      fallbackDescription: doc.excerpts,
+      pathname: getDetailPath(collection, slug),
+      ogType: 'article',
+    })
   }
 
   async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {
