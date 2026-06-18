@@ -1,3 +1,4 @@
+import Analytics from '@/collections/analytics'
 import Capability from '@/collections/capability'
 import Industry from '@/collections/industry'
 import Insight from '@/collections/insight'
@@ -15,6 +16,7 @@ import User from '@/collections/user'
 import Footer from '@/globals/footer'
 import Header from '@/globals/header'
 import LegalCenter from '@/globals/legalCenter'
+import { pruneAnalyticsTask } from '@/jobs/pruneAnalytics'
 import plugins from '@/plugins'
 import { getServerSideURL } from '@/utilities/getURL'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
@@ -29,7 +31,12 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    components: {},
+    components: {
+      // First-party analytics dashboard (WEB-447) rendered above the admin home dashboard. This is
+      // a path string resolved through the generated import map (pnpm generate:importmap), so the
+      // server component never leaks into the client admin bundle.
+      beforeDashboard: ['@/components/admin/AnalyticsDashboard'],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -85,6 +92,8 @@ export default buildConfig({
     Job,
     Team,
     Legal,
+    // System group — keep last so it sorts to the bottom of the admin nav.
+    Analytics,
   ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer, LegalCenter],
@@ -110,6 +119,9 @@ export default buildConfig({
         return authHeader === `Bearer ${secret}`
       },
     },
-    tasks: [],
+    // Retention: pruneAnalytics deletes pageview rows older than N days (default 90). Trigger it via
+    // a Vercel Cron hitting the Payload jobs run endpoint (gated by CRON_SECRET above) — see the
+    // scheduling note in src/jobs/pruneAnalytics.ts.
+    tasks: [pruneAnalyticsTask],
   },
 })

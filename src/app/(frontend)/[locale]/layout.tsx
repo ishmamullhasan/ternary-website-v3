@@ -1,3 +1,4 @@
+import AnalyticsBeacon from '@/components/analytics/AnalyticsBeacon'
 import LocaleSwitcher from '@/components/LocaleSwitcher'
 import Footer from '@/components/sections/footer'
 import Header from '@/components/sections/header'
@@ -77,6 +78,8 @@ export default async function RootLayout({
         <LocaleSwitcher currentLocale={typedLocale} />
         <main className="flex flex-col lg:pt-10 pt-4">{children}</main>
         <Footer footerData={footerData as React.ComponentProps<typeof Footer>['footerData']} />
+        {/* First-party pageview beacon (WEB-447). Leaf client component; posts to /api/track. */}
+        <AnalyticsBeacon />
       </body>
     </html>
   )
