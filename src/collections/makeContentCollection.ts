@@ -7,7 +7,10 @@ import { type CollectionConfig, slugField } from 'payload'
  * files. The slug drives both the collection slug and its revalidation tags, so output is
  * schema-identical to the hand-written versions (verified: zero type-regen drift).
  */
-export const makeContentCollection = (slug: string): CollectionConfig => ({
+export const makeContentCollection = (
+  slug: string,
+  adminOpts?: { group?: string; description?: string; defaultColumns?: string[] },
+): CollectionConfig => ({
   slug,
   hooks: {
     afterChange: [
@@ -21,6 +24,9 @@ export const makeContentCollection = (slug: string): CollectionConfig => ({
   },
   admin: {
     useAsTitle: 'title',
+    ...(adminOpts?.group ? { group: adminOpts.group } : {}),
+    ...(adminOpts?.description ? { description: adminOpts.description } : {}),
+    ...(adminOpts?.defaultColumns ? { defaultColumns: adminOpts.defaultColumns } : {}),
   },
   fields: [
     { name: 'title', label: 'Title', type: 'text' },

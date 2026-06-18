@@ -4,6 +4,10 @@ import type { GlobalConfig } from 'payload'
 const LegalCenter: GlobalConfig = {
   slug: 'legalCenter',
   label: 'Legal Menu Sidebar',
+  admin: {
+    group: 'Legal',
+    description: 'Legal Center sidebar heading, menu, and compliance notice.',
+  },
   hooks: {
     afterChange: [
       () => {

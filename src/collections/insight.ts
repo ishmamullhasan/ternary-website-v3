@@ -18,6 +18,8 @@ const Insight: CollectionConfig = {
     ],
   },
   admin: {
+    group: 'Newsroom',
+    description: 'Thought-leadership articles and insights.',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'publishedDate', 'updatedAt'],
   },

@@ -18,6 +18,8 @@ const PressRelease: CollectionConfig = {
     ],
   },
   admin: {
+    group: 'Newsroom',
+    description: 'Official press releases and announcements.',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'code', 'releaseDate', 'updatedAt'],
   },

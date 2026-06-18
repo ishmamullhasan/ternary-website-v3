@@ -67,8 +67,10 @@ export const Pages: CollectionConfig = {
     delete: authenticated,
   },
   admin: {
+    group: 'Pages',
+    description: 'Composable, blocks-based pages with drafts and live preview.',
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
     livePreview: {
       url: ({ data }) => pageUrl(data),
     },

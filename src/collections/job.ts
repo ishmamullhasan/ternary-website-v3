@@ -17,7 +17,10 @@ const Job: CollectionConfig = {
     ],
   },
   admin: {
+    group: 'Careers',
+    description: 'Open job postings and their detail content.',
     useAsTitle: 'code',
+    defaultColumns: ['code', 'title', 'location', 'active', 'updatedAt'],
   },
   fields: [
     {

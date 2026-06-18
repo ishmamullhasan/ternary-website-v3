@@ -4,6 +4,10 @@ import { GlobalConfig } from 'payload'
 const Footer: GlobalConfig = {
   slug: 'footer',
   label: 'Footer',
+  admin: {
+    group: 'Site Settings',
+    description: 'Site footer: menus, link columns, and copyright.',
+  },
   hooks: {
     afterChange: [
       () => {
