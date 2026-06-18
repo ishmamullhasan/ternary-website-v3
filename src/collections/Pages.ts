@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache'
 import { type CollectionConfig, slugField } from 'payload'
 
 import { anyone } from '@/access/anyone'
@@ -77,6 +78,20 @@ export const Pages: CollectionConfig = {
   versions: {
     drafts: { autosave: { interval: 100 } },
     maxPerDoc: 20,
+  },
+  hooks: {
+    // Future-proofing (mirrors makeContentCollection): emit this page's own slug tag plus the
+    // collection-wide tag so editor saves bust the corresponding cache entries. The frontend is
+    // revalidate=0 today (src/app/(frontend)/layout.tsx), so these tags are not yet consumed —
+    // this is a no-op until the WEB-445 cache-tag work wires the fetchers to read them.
+    afterChange: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`pages_${doc.slug}`, 'max')
+        }
+        revalidateTag('pages', 'max')
+      },
+    ],
   },
   fields: [
     { name: 'title', label: 'Title', type: 'text', required: true },

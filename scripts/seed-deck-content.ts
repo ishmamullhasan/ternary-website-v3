@@ -1,7 +1,8 @@
 // Seed the site's CMS content from the pitch-deck-derived JSON in scripts/deck-content/.
-// Idempotent: upserts collection records by slug (team by name) and updates page globals;
-// NO deletes. Relationship references are authored as slug markers and resolved here to ids.
-// richText is authored as { contentBlocks:[{heading?,paras:[]}] } and converted to Lexical.
+// Idempotent: upserts collection records by slug (team by name); NO deletes. (Page globals were
+// retired in WEB-404 — landing pages now come from the Pages collection — so this no longer
+// writes any page global.) richText is authored as { contentBlocks:[{heading?,paras:[]}] } and
+// converted to Lexical.
 //
 //   pnpm payload run ./scripts/seed-deck-content.ts            # write to DATABASE_URI
 //   SEED_DRY=1 pnpm payload run ./scripts/seed-deck-content.ts # preview (no writes)
@@ -64,39 +65,10 @@ const toLexical = (blocks: Block[]) => {
 }
 
 // ---- Reference resolution -------------------------------------------------
+// Lookup maps slug/name -> id, populated as each collection is upserted below so later
+// records can reference earlier ones by slug.
 type Lookups = Record<string, Map<string, string | number>>
 const lookups: Lookups = {}
-
-const resolveOne = (collection: string, key: string): string | number | null => {
-  const m = lookups[collection]
-  const id = m?.get(key) ?? m?.get(key.toLowerCase())
-  if (id == null) console.warn(`  ⚠ unresolved ${collection} ref "${key}"`)
-  return id ?? null
-}
-
-// Recursively convert { contentBlocks } -> Lexical and { _ref/_refs/_refsPoly } -> ids.
-const transform = (val: any): any => {
-  if (Array.isArray(val)) return val.map(transform)
-  if (val && typeof val === 'object') {
-    if (Array.isArray(val.contentBlocks)) return toLexical(val.contentBlocks)
-    if (val._ref) return resolveOne(val._ref.collection, val._ref.slug)
-    if (val._refs) {
-      return (val._refs.slugs as string[]).map((s) => resolveOne(val._refs.collection, s)).filter((x) => x != null)
-    }
-    if (val._refsPoly) {
-      return (val._refsPoly as { collection: string; slug: string }[])
-        .map((r) => {
-          const id = resolveOne(r.collection, r.slug)
-          return id == null ? null : { relationTo: r.collection, value: id }
-        })
-        .filter(Boolean)
-    }
-    const out: Record<string, unknown> = {}
-    for (const [k, v] of Object.entries(val)) out[k] = transform(v)
-    return out
-  }
-  return val
-}
 
 // ---- Upsert helpers -------------------------------------------------------
 const payload: Payload = await getPayload({ config })
@@ -181,59 +153,10 @@ for (const r of (read('team.json') as any[]) || []) {
 }
 payload.logger.info(`  team: ${((read('team.json') as any[]) || []).length} records`)
 
-// 4b) Preload externally-referenced docs (e.g. the home "top 8 cards" — pre-existing client
-// showcase docs this seed does not author) so their slug refs resolve too.
-const collectRefs = (val: any, acc: [string, string][]) => {
-  if (Array.isArray(val)) val.forEach((v) => collectRefs(v, acc))
-  else if (val && typeof val === 'object') {
-    if (val._ref) acc.push([val._ref.collection, val._ref.slug])
-    else if (val._refs) (val._refs.slugs as string[]).forEach((s) => acc.push([val._refs.collection, s]))
-    else if (val._refsPoly) (val._refsPoly as any[]).forEach((r) => acc.push([r.collection, r.slug]))
-    else Object.values(val).forEach((v) => collectRefs(v, acc))
-  }
-}
-const allRefs: [string, string][] = []
-for (const g of [
-  'global-home.json',
-  'global-about.json',
-  'global-solutions.json',
-  'global-industries.json',
-  'global-scales.json',
-  'global-contact.json',
-  'global-careers.json',
-  'global-stories.json',
-]) {
-  const raw = read(g)
-  if (raw) collectRefs(raw, allRefs)
-}
-for (const [collection, slug] of allRefs) {
-  if (collection === 'team') continue // team resolved by name above
-  if (lookups[collection]?.has(slug)) continue
-  const found = await payload.find({ collection: collection as any, where: { slug: { equals: slug } }, limit: 1, depth: 0 })
-  if (found.docs[0]) lookups[collection].set(slug, found.docs[0].id)
-}
-
-// 5) Page globals — resolve refs + richText, then updateGlobal.
-const GLOBALS: { file: string; slug: string }[] = [
-  { file: 'global-home.json', slug: 'homePage' },
-  { file: 'global-about.json', slug: 'aboutPage' },
-  { file: 'global-solutions.json', slug: 'solutionsPage' },
-  { file: 'global-industries.json', slug: 'industriesPage' },
-  { file: 'global-scales.json', slug: 'scalesPage' },
-  { file: 'global-contact.json', slug: 'contactPage' },
-  { file: 'global-careers.json', slug: 'careersPage' },
-  { file: 'global-stories.json', slug: 'storiesPage' },
-]
-for (const g of GLOBALS) {
-  const raw = read(g.file)
-  if (!raw) {
-    payload.logger.warn(`  ${g.slug}: ${g.file} missing — skipped`)
-    continue
-  }
-  const data = transform(raw)
-  if (!DRY) await ignoreRevalidate(() => payload.updateGlobal({ slug: g.slug as any, data, context: ctx }))
-  payload.logger.info(`  ${g.slug}: updated (${Object.keys(data).length} top-level fields)`)
-}
+// Page globals were retired (WEB-404): landing pages now render from the Pages collection
+// (blocks), not per-page globals. The block that upserted the homePage/aboutPage/…/storiesPage
+// globals from global-*.json — and the preload loop that only resolved refs for it — were
+// removed here as part of WEB-442. Their global-*.json source files were deleted too.
 
 payload.logger.info('Seed deck content complete.')
 process.exit(0)

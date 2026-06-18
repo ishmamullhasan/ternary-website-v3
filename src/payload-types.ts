@@ -231,6 +231,23 @@ export interface Page {
         id?: string | null;
       }[]
     | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -287,6 +304,23 @@ export interface Industry {
     };
     [k: string]: unknown;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -596,6 +630,23 @@ export interface Capability {
       link?: string | null;
     };
   };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -648,6 +699,23 @@ export interface Solution {
     };
     [k: string]: unknown;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -676,6 +744,23 @@ export interface Scale {
         id?: string | null;
       }[]
     | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -708,6 +793,23 @@ export interface Model {
     };
     [k: string]: unknown;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -981,6 +1083,23 @@ export interface Job {
       label?: string | null;
       link?: string | null;
     };
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1456,6 +1575,23 @@ export interface Story {
     };
     [k: string]: unknown;
   } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1562,6 +1698,23 @@ export interface Insight {
       label?: string | null;
       link?: string | null;
     };
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -1688,6 +1841,23 @@ export interface PressRelease {
     heading?: string | null;
     description?: string | null;
     pressReleases?: (string | PressRelease)[] | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -2409,6 +2579,23 @@ export interface Legal {
       link?: string | null;
     };
   };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -2630,6 +2817,16 @@ export interface PagesSelect<T extends boolean = true> {
         url?: T;
         label?: T;
         id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -3601,6 +3798,16 @@ export interface StorySelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3652,6 +3859,16 @@ export interface InsightSelect<T extends boolean = true> {
               label?: T;
               link?: T;
             };
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -3733,6 +3950,16 @@ export interface PressReleaseSelect<T extends boolean = true> {
         heading?: T;
         description?: T;
         pressReleases?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -3863,6 +4090,16 @@ export interface CapabilitySelect<T extends boolean = true> {
               link?: T;
             };
       };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3877,6 +4114,16 @@ export interface SolutionSelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3891,6 +4138,16 @@ export interface IndustrySelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3915,6 +4172,16 @@ export interface ScaleSelect<T extends boolean = true> {
         value?: T;
         id?: T;
       };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3929,6 +4196,16 @@ export interface ModelSelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -4051,6 +4328,16 @@ export interface JobSelect<T extends boolean = true> {
               link?: T;
             };
       };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -4103,6 +4390,16 @@ export interface LegalSelect<T extends boolean = true> {
               label?: T;
               link?: T;
             };
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        canonical?: T;
+        hideFromSitemap?: T;
+        twitterCard?: T;
       };
   updatedAt?: T;
   createdAt?: T;

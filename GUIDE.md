@@ -62,14 +62,11 @@ specific route / collection / global names are examples to replace with your own
 │   ├── app/
 │   │   ├── (frontend)/                   # public site — one folder per route
 │   │   │   ├── layout.tsx                # fetches header/footer; sets revalidate = 0
-│   │   │   ├── page.tsx                  # homepage  (homePage global)
-│   │   │   ├── about/page.tsx            # static page globals (one folder each):
-│   │   │   ├── careers/page.tsx          #   careers · contact · industries ·
-│   │   │   ├── contact/page.tsx          #   scales · solutions · stories
-│   │   │   ├── industries/page.tsx
-│   │   │   ├── scales/page.tsx
-│   │   │   ├── solutions/page.tsx
-│   │   │   ├── stories/page.tsx          # + stories/[slug]/page.tsx   (collection detail)
+│   │   │   ├── page.tsx                  # homepage  (fetches the `home` Page, blocks-driven)
+│   │   │   ├── [...slug]/page.tsx        # catch-all: every landing page (about/careers/
+│   │   │   │                             #   contact/industries/scales/solutions/stories…)
+│   │   │   │                             #   is a Pages doc rendered via RenderBlocks
+│   │   │   ├── stories/[slug]/page.tsx   # collection detail (story docs)
 │   │   │   ├── capabilities/[slug]/page.tsx
 │   │   │   ├── insights/[slug]/page.tsx
 │   │   │   ├── legals/[slug]/page.tsx
@@ -82,10 +79,10 @@ specific route / collection / global names are examples to replace with your own
 │   │   ├── capability.ts  solution.ts  industry.ts  scale.ts  model.ts
 │   │   └── job.ts  team.ts  legal.ts
 │   ├── globals/
-│   │   ├── header.ts  footer.ts  legalCenter.ts      # site-wide chrome
-│   │   └── pages/                        # one global per CMS-driven page (admin group "Pages")
-│   │       ├── home.ts  about.ts  careers.ts  contact.ts
-│   │       └── industries.ts  scales.ts  solutions.ts  stories.ts
+│   │   └── header.ts  footer.ts  legalCenter.ts      # site-wide chrome (the only globals)
+│   │                                     # Page globals were retired (WEB-404): landing pages
+│   │                                     # now live in the Pages collection as blocks.
+│   ├── blocks/                           # the block library + RenderBlocks.tsx (page rendering)
 │   ├── components/
 │   │   ├── animation/                    # motion.tsx (wrapper), corousel.tsx
 │   │   ├── grids/                        # one.tsx, two.tsx, three.tsx
@@ -377,84 +374,31 @@ sets `auth: true` and `timestamps: true`.
 
 ## 5. Globals
 
-A global = a single, named document. Two kinds here:
+A global = a single, named document. **The only globals are the site-wide chrome:**
+`header`, `footer`, `legalCenter` (live at `src/globals/`, registered in
+`src/payload.config.ts` as `globals: [Header, Footer, LegalCenter]`).
 
-1. **Chrome** — `header`, `footer`, `legalCenter` (live at `src/globals/`).
-2. **Page globals** — one per CMS-driven page, in `src/globals/pages/`, grouped under
-   `admin.group: 'Pages'`.
+> **Page globals were retired (WEB-404).** There is no longer a `src/globals/pages/`
+> directory and no `<page>Page` global. Every CMS-driven landing page (home, about,
+> careers, contact, industries, scales, solutions, stories) is now a **document in the
+> `pages` collection** (`src/collections/Pages.ts`) whose `layout` blocks field is composed
+> from the block library and rendered by `src/blocks/RenderBlocks.tsx`. Do **not** add page
+> globals back. See §"Blocks-based Pages" for the model; the home page is the `home` Pages
+> doc, fetched directly by `src/app/(frontend)/page.tsx`, and all other landing pages are
+> served by the `[...slug]` catch-all route.
 
-### Canonical page-global template
+### SEO meta attach point
 
-Sample page global (from `src/globals/pages/contact.ts`), trimmed:
-
-```ts
-import { revalidateTag } from 'next/cache'
-import { GlobalConfig } from 'payload'
-
-const ContactPage: GlobalConfig = {
-  slug: 'contactPage', // used by findGlobal + cache key + revalidation tag
-  label: 'Contact',
-  admin: { group: 'Pages' },
-  hooks: {
-    afterChange: [
-      () => {
-        revalidateTag('contactPage', 'max') // tag === slug
-      },
-    ],
-  },
-  fields: [
-    {
-      name: 'hero',
-      label: 'Hero Section',
-      type: 'group',
-      fields: [
-        { name: 'heading', label: 'Heading', type: 'text', required: false },
-        { name: 'description', label: 'Description', type: 'textarea', required: false },
-        {
-          name: 'button_1',
-          label: 'Button 1',
-          type: 'group',
-          fields: [
-            { name: 'label', label: 'Label', type: 'text', required: false },
-            { name: 'link', label: 'Link', type: 'text', required: false },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'stats',
-      label: 'Response-time Stats',
-      type: 'array',
-      admin: { description: 'Response-time cards shown below the hero.' },
-      fields: [
-        { name: 'value', label: 'Value', type: 'text', required: false },
-        { name: 'label', label: 'Label', type: 'text', required: false },
-        { name: 'detail', label: 'Detail', type: 'text', required: false },
-      ],
-    },
-    {
-      name: 'form',
-      label: 'Contact Form',
-      type: 'group',
-      admin: { description: 'Pick a form to show a "Send us a message" section. Leave empty to hide.' },
-      fields: [
-        { name: 'heading', label: 'Heading', type: 'text', required: false },
-        { name: 'description', label: 'Description', type: 'textarea', required: false },
-        { name: 'form', label: 'Form', type: 'relationship', relationTo: 'forms', required: false },
-      ],
-    },
-    // routes, offices, cta … all `group` → `array` of rows
-  ],
-}
-
-export default ContactPage
-```
+`@payloadcms/plugin-seo` (configured in `src/plugins/index.ts`) injects a `meta` group
+(`meta.title` / `meta.description` / `meta.image`) into the `pages` collection and the
+content collections. Via the plugin's `fields` callback we append three custom fields
+**into that same meta group**: `meta.canonical` (text override), `meta.hideFromSitemap`
+(checkbox), and `meta.twitterCard` (select). These are the schema attach point only — the
+generateMetadata / sitemap / JSON-LD readers are WEB-443.
 
 ### Global conventions
 
-- **Slug is camelCase `<page>Page`** for page globals (`homePage`, `aboutPage`,
-  `careersPage`, `contactPage`, `industriesPage`, `scalesPage`, `solutionsPage`,
-  `storiesPage`). Chrome globals are the plain noun (`header`, `footer`, `legalCenter`).
+- Chrome globals are the plain noun (`header`, `footer`, `legalCenter`).
 - **Structure with `group`** (a section), **`array`** (repeatable rows), and nested
   groups for sub-sections. Keep field names descriptive (`hero`, `stats`, `routes`,
   `offices`, `cta`).
@@ -478,22 +422,19 @@ redeploy.
 
 Sample globals and the tags they emit:
 
-| Global        | Slug             | Tag(s) emitted in `afterChange`       |
-| ------------- | ---------------- | ------------------------------------- |
-| Header        | `header`         | `header`                              |
-| Footer        | `footer`         | `footer`                              |
-| Legal sidebar | `legalCenter`    | `legal-center` + `legal` _(two tags)_ |
-| Homepage      | `homePage`       | `homePage`                            |
-| About         | `aboutPage`      | `aboutPage`                           |
-| Careers       | `careersPage`    | `careersPage`                         |
-| Contact       | `contactPage`    | `contactPage`                         |
-| Industries    | `industriesPage` | `industriesPage`                      |
-| Scales        | `scalesPage`     | `scalesPage`                          |
-| Solutions     | `solutionsPage`  | `solutionsPage`                       |
-| Stories       | `storiesPage`    | `storiesPage`                         |
+| Global        | Slug          | Tag(s) emitted in `afterChange`       |
+| ------------- | ------------- | ------------------------------------- |
+| Header        | `header`      | `header`                              |
+| Footer        | `footer`      | `footer`                              |
+| Legal sidebar | `legalCenter` | `legal-center` + `legal` _(two tags)_ |
 
 > `legalCenter` emits a **second** `legal` tag so that editing the sidebar also busts the
 > `legal` collection list (the two are rendered together on `legals/[slug]`).
+>
+> Landing pages are no longer globals: the `pages` collection emits `pages_<slug>` + `pages`
+> (`src/collections/Pages.ts`, mirroring `makeContentCollection`). These tags are
+> future-proofing — the frontend is `revalidate = 0` today, so they are a no-op until the
+> WEB-445 cache-tag work wires the fetchers to read them.
 
 Collections follow the parallel pattern: `revalidateTag('<collection>_<slug>', 'max')` for
 the single doc plus `revalidateTag('<collection>', 'max')` for the list. Always pass
@@ -507,9 +448,16 @@ Every page is an `async` Server Component returning `Promise<JSX.Element>`. Page
 fetched through Payload's local API wrapped in `unstable_cache`, tagged so the
 `afterChange` hooks above can invalidate it.
 
-### Pattern A — inline `unstable_cache` (the standard for pages)
+> **Landing pages no longer use the `findGlobal` pattern below.** They are `pages` docs:
+> the `[...slug]` route and `src/app/(frontend)/page.tsx` (home) `payload.find({ collection:
+'pages', where: { slug } })` and feed `layout` to `RenderBlocks`. The worked example below
+> is retained only to illustrate the cached-fetch + tag convention for the **chrome globals**
+> (`header`/`footer`/`legalCenter`); substitute `findGlobal('header')` etc. The
+> `contactPage`/`ContactPage` names here are historical (page globals were retired, WEB-404).
 
-Sample page (top of `src/app/(frontend)/contact/page.tsx`):
+### Pattern A — inline `unstable_cache` (the cached-fetch + tag convention)
+
+Sample (illustrative — the now-retired contact page global), top of a page Server Component:
 
 ```tsx
 import type { ContactPage, Form } from '@/payload-types'
@@ -870,19 +818,21 @@ Component that fetches chrome and passes typed props into `<Header>`/`<Footer>`.
 
 ### Add a new CMS-driven page
 
-1. Create `src/globals/pages/<name>.ts` (slug `<name>Page`, `label`,
-   `admin.group: 'Pages'`, `afterChange` → `revalidateTag('<name>Page', 'max')`, grouped
-   fields).
-2. Register it in `globals: [...]` in `payload.config.ts`.
-3. `pnpm generate:types`.
-4. Create `src/app/(frontend)/<name>/page.tsx` with Pattern A, key + tag `'<name>Page'`,
-   the null/error fallback, `metadata`, and section components fed typed slices.
+Landing pages are **Pages docs**, not globals — usually no code change is needed:
+
+1. If you need a section that doesn't exist yet, add a **block** under `src/blocks/<Name>/`
+   (config + component) and register it in the `Pages.layout` `blocks` list
+   (`src/collections/Pages.ts`) and in `RenderBlocks.tsx`.
+2. `pnpm generate:types` (only when you added/changed a block schema).
+3. In the admin, create a `pages` document, set its `slug`, compose `layout` from the blocks,
+   and **publish**. It is served by the `[...slug]` catch-all (or, for `home`, by
+   `src/app/(frontend)/page.tsx`). SEO is per-page via the injected `meta` group.
 
 ### Add a form to a page
 
 1. Editor builds the form in the admin **Forms** collection (form-builder plugin).
-2. Add a `group` with a `relationship` field (`relationTo: 'forms'`) to the page global
-   (see `contact.ts` `form` group).
+2. Use the `ContactForm` block (or any block with a `relationship` to `forms`) in the page's
+   `layout` and pick the form.
 3. Fetch the page with `depth: 2` so the Form doc is populated; narrow it
    (`typeof formGroup.form === 'object' ? (formGroup.form as Form) : null`) and render
    with `<ContactForm fields={form.fields ?? []} formId={form.id} submitLabel={form.submitButtonLabel} />`.
