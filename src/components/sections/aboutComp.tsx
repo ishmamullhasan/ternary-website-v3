@@ -1,8 +1,8 @@
 'use client'
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import type { Capability, Industry, Media, Model, Scale, Solution } from '@/payload-types'
 import Image from 'next/image'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 type MultiRelation =

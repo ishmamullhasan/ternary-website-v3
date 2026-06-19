@@ -1,11 +1,11 @@
 'use client'
 
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import { GradientPanel, toneFor, type Tone } from '@/components/sections/stories/gradient'
 import { cn } from '@/lib/utils'
 import type { Insight, PressRelease, Story } from '@/payload-types'
 import { ArrowUpRight, BookOpen, Clock, FileText, FlaskConical, Newspaper, Search, X } from 'lucide-react'
-import Link from 'next/link'
 import { useMemo, useState, type JSX } from 'react'
 
 export type StoryGridItem = { relationTo: 'story'; value: Story } | { relationTo: 'insight'; value: Insight }

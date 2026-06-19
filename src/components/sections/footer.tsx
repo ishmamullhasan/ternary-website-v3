@@ -1,7 +1,7 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import Image from 'next/image'
-import Link from 'next/link'
 
 type MenuItem = { label?: string | null; link?: string | null }
 type MediaWithUrl = { url?: string | null }

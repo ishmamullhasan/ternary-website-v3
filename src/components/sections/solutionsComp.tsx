@@ -1,9 +1,9 @@
 'use client'
 
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import type { Media, Solution } from '@/payload-types'
 import Image from 'next/image'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 interface SolutionsCompProps {

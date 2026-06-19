@@ -2,8 +2,8 @@
 import Motion from '@/components/animation/motion'
 // Type-only import: JobListing's runtime module (jobs-data) pulls in the Payload config, which must
 // never reach the client bundle — see the same pattern in components/sections/job.tsx.
+import Link from '@/components/LocalizedLink'
 import type { JobListing } from '@/lib/jobs-data'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 interface OpportunitiesCompProps {

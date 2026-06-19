@@ -1,8 +1,8 @@
 'use client'
 
+import Link from '@/components/LocalizedLink'
 import type { Form } from '@/payload-types'
 import { ArrowUpRight, Check, ShieldCheck } from 'lucide-react'
-import Link from 'next/link'
 import type { FormEvent, JSX } from 'react'
 import { useId, useState } from 'react'
 

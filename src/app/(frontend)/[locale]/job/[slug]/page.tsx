@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import InterviewProcess from '@/components/sections/interviewProcess'
 import Jobs from '@/components/sections/job'
 import JsonLd from '@/components/seo/JsonLd'
@@ -10,7 +11,6 @@ import { breadcrumbList, jobPosting } from '@/lib/seo/jsonLd'
 import { getServerSideURL } from '@/utilities/getURL'
 import { ArrowLeft, ArrowRight, DollarSign, GitCommitHorizontal, ShieldAlert, Users } from 'lucide-react'
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { JSX, ReactNode } from 'react'
 

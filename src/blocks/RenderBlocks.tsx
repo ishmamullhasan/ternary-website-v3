@@ -26,6 +26,7 @@ import { ContactStatsComponent } from './ContactStats/Component'
 import { CrossIndustryPatternsComponent } from './CrossIndustryPatterns/Component'
 import { CtaBlockComponent } from './Cta/Component'
 import { FeatureCaseStudyComponent } from './FeatureCaseStudy/Component'
+import { HeroFeaturedComponent } from './HeroFeatured/Component'
 import {
   AboutSectionComponent,
   CapabilitiesSectionComponent,
@@ -68,6 +69,7 @@ const motionSectionProps = {
 // verbatim from the monolith Components). Render them directly so RenderBlocks does not add a
 // second section/fade wrapper around them — keeping the rendered structure identical.
 const SELF_WRAPPED_BLOCKS = new Set<string>([
+  'heroFeatured',
   'scalesHero',
   'qualityBar',
   'scaleShowcase',
@@ -114,6 +116,8 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
  */
 function renderBlock(block: BlockType): JSX.Element | null {
   switch (block.blockType) {
+    case 'heroFeatured':
+      return <HeroFeaturedComponent {...block} />
     case 'industriesSection':
       return <IndustriesSectionComponent {...block} />
     case 'aboutSection':

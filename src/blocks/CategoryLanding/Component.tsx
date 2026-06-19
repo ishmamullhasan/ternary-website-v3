@@ -1,9 +1,9 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import { cn } from '@/lib/utils'
 import type { CategoryLandingBlock, Media } from '@/payload-types'
 import { ArrowUpRight, FileText, FlaskConical, Lightbulb, Newspaper, type LucideIcon } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 const CATEGORY_LANDING_ICONS = {

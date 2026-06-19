@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
@@ -8,7 +9,6 @@ import { Download, FileText, Scale, Shield, type LucideIcon } from 'lucide-react
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { PaginatedDocs, TypedLocale } from 'payload'
 import { getPayload } from 'payload'

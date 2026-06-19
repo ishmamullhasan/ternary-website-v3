@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
@@ -10,11 +11,10 @@ import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
-import type { CSSProperties, JSX, ReactNode } from 'react'
+import type { JSX, ReactNode } from 'react'
 
 const getIndustryList = unstable_cache(
   async () => {
@@ -210,15 +210,7 @@ function RelatedCard({
   )
 }
 
-function CtaButton({
-  href,
-  label,
-  primary,
-}: {
-  href: string
-  label: ReactNode
-  primary?: boolean
-}): JSX.Element {
+function CtaButton({ href, label, primary }: { href: string; label: ReactNode; primary?: boolean }): JSX.Element {
   return (
     <Link
       href={href}
@@ -304,12 +296,7 @@ export default async function Page({
       {industry.content && (
         <Motion tag="section" className={SECTION_SHELL} {...reveal}>
           <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
-            <SectionHeader
-              index={1}
-              label="Overview"
-              heading="Where we focus"
-              className="shrink-0 lg:w-[28%]"
-            />
+            <SectionHeader index={1} label="Overview" heading="Where we focus" className="shrink-0 lg:w-[28%]" />
 
             <div className="min-w-0 flex-1">
               <RichTextComp

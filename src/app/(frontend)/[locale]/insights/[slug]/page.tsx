@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import GradientAvatar from '@/components/sections/insights/GradientAvatar'
 import GradientPanel from '@/components/sections/insights/GradientPanel'
@@ -16,7 +17,6 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Linkedin, Mail } from 'lucide-reac
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'

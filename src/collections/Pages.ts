@@ -25,6 +25,7 @@ import { ContactStats } from '@/blocks/ContactStats/config'
 import { CrossIndustryPatterns } from '@/blocks/CrossIndustryPatterns/config'
 import { Cta } from '@/blocks/Cta/config'
 import { FeatureCaseStudy } from '@/blocks/FeatureCaseStudy/config'
+import { HeroFeatured } from '@/blocks/HeroFeatured/config'
 import { homeSectionBlocks } from '@/blocks/homeSections/config'
 import { IndustriesDetails } from '@/blocks/IndustriesDetails/config'
 import { IndustriesHero } from '@/blocks/IndustriesHero/config'
@@ -148,6 +149,7 @@ export const Pages: CollectionConfig = {
       label: 'Layout',
       type: 'blocks',
       blocks: [
+        HeroFeatured,
         Jobs,
         IndustriesSection,
         ...homeSectionBlocks,

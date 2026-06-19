@@ -1,5 +1,7 @@
 'use client'
 
+import LocaleSwitcher from '@/components/LocaleSwitcher'
+import { localeFromPath, localizedHref } from '@/lib/i18n/locales'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
 import { ChevronDown, Menu, X } from 'lucide-react'
@@ -48,6 +50,9 @@ function TernaryMark({ className }: { className?: string }) {
 
 export default function Header({ headerData }: HeaderProps) {
   const path = usePathname()
+  // CMS menu links are stored locale-LESS (WEB-445); prefix them with the active locale so nav
+  // clicks don't 301 back to /en. Derived from the URL — the layout already routes per [locale].
+  const locale = localeFromPath(path)
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -119,7 +124,9 @@ export default function Header({ headerData }: HeaderProps) {
         // Active when the route matches the item or any of its sub-items (so a nested page still
         // lights the parent in the bar).
         const itemActive =
-          (item.link && path === item.link) || item.subItems?.some((s) => s.link && path === s.link) || false
+          (item.link && path === localizedHref(locale, item.link)) ||
+          item.subItems?.some((s) => s.link && path === localizedHref(locale, s.link)) ||
+          false
 
         // Nav item type per design (UI/Nav Item): Inter Medium 14px, tracking 0 (reset from the
         // body's −0.05em), in the cream text token. Item box = px16/py8, radius/md.
@@ -147,7 +154,7 @@ export default function Header({ headerData }: HeaderProps) {
               }}
             >
               <Link
-                href={item.link || '#'}
+                href={localizedHref(locale, item.link)}
                 aria-haspopup="menu"
                 aria-expanded={isDropdownActive}
                 // Keyboard users can open the panel by focusing the trigger; blur is handled by the
@@ -174,7 +181,7 @@ export default function Header({ headerData }: HeaderProps) {
                   className="absolute top-full left-0 mt-2 min-w-[220px] origin-top rounded-md border border-white/10 bg-ink/95 p-1.5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)] backdrop-blur-md supports-[backdrop-filter]:bg-ink/80"
                 >
                   {item.subItems.map((subItem, j) => {
-                    const subHref = subItem.link || '#'
+                    const subHref = localizedHref(locale, subItem.link)
                     const subActive = path === subHref
                     return (
                       <Link
@@ -197,7 +204,7 @@ export default function Header({ headerData }: HeaderProps) {
             </div>
           )
         } else {
-          const href = item.link || '#'
+          const href = localizedHref(locale, item.link)
           return (
             <Link
               key={i}
@@ -219,7 +226,11 @@ export default function Header({ headerData }: HeaderProps) {
     'inline-flex items-center justify-center rounded-md bg-main px-4 py-2 text-[14px] font-semibold leading-[1.15] tracking-normal text-cream transition-colors duration-200 hover:bg-[#26241f]'
 
   const Logo = (
-    <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label={headerData?.siteName || 'Ternary'}>
+    <Link
+      href={localizedHref(locale, '/')}
+      className="flex shrink-0 items-center gap-2.5"
+      aria-label={headerData?.siteName || 'Ternary'}
+    >
       {logoUrl ? (
         <Image src={logoUrl} width={30} height={30} alt="" className="h-[30px] w-[30px]" />
       ) : (
@@ -247,19 +258,24 @@ export default function Header({ headerData }: HeaderProps) {
         {/* Desktop Navigation - center */}
         <div className="hidden md:flex flex-1 justify-center">{DesktopNav}</div>
 
-        {/* Desktop CTA - right (fixed min width keeps the menu optically centered) */}
-        <div className="hidden md:flex shrink-0 min-w-[110px] justify-end">
+        {/* Desktop language switcher + CTA - right (fixed min width keeps the menu optically centered) */}
+        <div className="hidden md:flex shrink-0 min-w-[110px] items-center justify-end gap-3">
+          <LocaleSwitcher currentLocale={locale} />
           {headerData?.button?.label && (
-            <Link href={headerData.button.link ?? '#'} className={ctaClass}>
+            <Link href={localizedHref(locale, headerData.button.link)} className={ctaClass}>
               {headerData.button.label}
             </Link>
           )}
         </div>
 
-        {/* Mobile: CTA + menu toggle - right */}
+        {/* Mobile: language switcher + CTA + menu toggle - right */}
         <div className="flex items-center gap-2 md:hidden">
+          <LocaleSwitcher currentLocale={locale} />
           {headerData?.button?.label && (
-            <Link href={headerData.button.link ?? '#'} className={cn(ctaClass, 'hidden sm:inline-flex')}>
+            <Link
+              href={localizedHref(locale, headerData.button.link)}
+              className={cn(ctaClass, 'hidden sm:inline-flex')}
+            >
               {headerData.button.label}
             </Link>
           )}
@@ -291,7 +307,9 @@ export default function Header({ headerData }: HeaderProps) {
             const itemId = `item-${i}`
             const isSubmenuOpen = mobileSubmenuOpen[itemId]
             const itemActive =
-              (item.link && path === item.link) || item.subItems?.some((s) => s.link && path === s.link) || false
+              (item.link && path === localizedHref(locale, item.link)) ||
+              item.subItems?.some((s) => s.link && path === localizedHref(locale, s.link)) ||
+              false
 
             if (hasSubmenu) {
               return (
@@ -318,7 +336,7 @@ export default function Header({ headerData }: HeaderProps) {
                   {isSubmenuOpen && (
                     <div className="flex flex-col gap-0.5 pb-2 pl-3">
                       {item.subItems?.map((subItem, j) => {
-                        const subHref = subItem.link || '#'
+                        const subHref = localizedHref(locale, subItem.link)
                         const subActive = path === subHref
                         return (
                           <Link
@@ -341,7 +359,7 @@ export default function Header({ headerData }: HeaderProps) {
                 </div>
               )
             } else {
-              const href = item.link || '#'
+              const href = localizedHref(locale, item.link)
               return (
                 <Link
                   key={i}
@@ -362,7 +380,7 @@ export default function Header({ headerData }: HeaderProps) {
           {/* CTA inside the mobile sheet so "Get in Touch" is always reachable below md */}
           {headerData?.button?.label && (
             <Link
-              href={headerData.button.link ?? '#'}
+              href={localizedHref(locale, headerData.button.link)}
               onClick={() => setOpen(false)}
               className={cn(ctaClass, 'mt-3 w-full')}
             >

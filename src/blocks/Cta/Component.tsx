@@ -1,6 +1,6 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import type { CtaBlock, Media } from '@/payload-types'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 /**
@@ -8,7 +8,13 @@ import type { JSX } from 'react'
  * (gradient/background-image panel, left typography + right action buttons). Self-wraps in a
  * Motion section, so RenderBlocks renders it directly (see SELF_WRAPPED).
  */
-export function CtaBlockComponent({ heading, description, backgroundImage, button_1, button_2 }: CtaBlock): JSX.Element {
+export function CtaBlockComponent({
+  heading,
+  description,
+  backgroundImage,
+  button_1,
+  button_2,
+}: CtaBlock): JSX.Element {
   const motionSectionProps = {
     initial: { opacity: 0, y: 12 },
     whileInView: { opacity: 1, y: 0 },

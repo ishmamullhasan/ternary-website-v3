@@ -1,9 +1,9 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
 import type { Story } from '@/payload-types'
 import { ArrowLeft, ArrowUpRight, Briefcase, Building2, CalendarDays, Clock, Users } from 'lucide-react'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]

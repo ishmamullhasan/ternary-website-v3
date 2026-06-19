@@ -1,6 +1,5 @@
 import AnalyticsBeacon from '@/components/analytics/AnalyticsBeacon'
 import LivePreviewListener from '@/components/LivePreviewListener'
-import LocaleSwitcher from '@/components/LocaleSwitcher'
 import Footer from '@/components/sections/footer'
 import Header from '@/components/sections/header'
 import JsonLd from '@/components/seo/JsonLd'
@@ -92,10 +91,8 @@ export default async function RootLayout({
         {/* Sitewide structured data: who publishes this site + the site itself. */}
         <JsonLd data={organization()} />
         <JsonLd data={website()} />
+        {/* Header renders the per-locale language switcher inside the navbar (WEB-445). */}
         <Header headerData={headerData as React.ComponentProps<typeof Header>['headerData']} />
-        {/* Per-locale URL switcher rendered next to the CMS-driven header global (kept light, no
-            rewrite of the header global itself). */}
-        <LocaleSwitcher currentLocale={typedLocale} />
         <main className="flex flex-col lg:pt-10 pt-4">{children}</main>
         <Footer footerData={footerData as React.ComponentProps<typeof Footer>['footerData']} />
         {/* First-party pageview beacon (WEB-447). Leaf client component; posts to /api/track. */}

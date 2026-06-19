@@ -1,8 +1,8 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import { GradientPanel } from '@/components/sections/stories/gradient'
 import type { FeatureCaseStudyBlock, Story } from '@/payload-types'
 import { ArrowRight, Clock } from 'lucide-react'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]

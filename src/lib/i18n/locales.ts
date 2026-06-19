@@ -37,3 +37,31 @@ export function localizedPath(locale: string, path: string): string {
   if (!path || path === '/') return `/${locale}`
   return `/${locale}${path.startsWith('/') ? path : `/${path}`}`
 }
+
+/** Matches a leading `/en` or `/bn` segment (anchored, segment-boundary aware). */
+const LOCALE_PREFIX_RE = new RegExp(`^/(${LOCALES.join('|')})(?=/|$)`)
+
+/**
+ * Read the routing locale from a pathname's leading segment (`/bn/insights` → `bn`), falling
+ * back to `DEFAULT_LOCALE` when there is no recognisable prefix. Lets client components recover
+ * the active locale from `usePathname()` without prop-drilling.
+ */
+export function localeFromPath(pathname: string | null | undefined): Locale {
+  const match = pathname?.match(LOCALE_PREFIX_RE)
+  return isLocale(match?.[1]) ? match[1] : DEFAULT_LOCALE
+}
+
+/**
+ * Prefix an internal CMS href with the active locale so in-site navigation stays in the current
+ * language (WEB-445 — CMS links are stored locale-LESS, e.g. `/insights`). Pass-through, untouched:
+ *   - external URLs (`http(s)://…`, protocol-relative `//…`), `mailto:`/`tel:`, hash anchors (`#…`)
+ *   - already locale-prefixed paths (`/en/…`, `/bn`) — never double-prefix.
+ * Empty/missing hrefs collapse to the locale home (`/en`). Non-rooted values are treated as
+ * root-relative. Without this, clicking a locale-less link 301s back to the default locale.
+ */
+export function localizedHref(locale: string, href: string | null | undefined): string {
+  if (!href) return `/${locale}`
+  if (/^(https?:)?\/\//i.test(href) || /^(mailto:|tel:|#)/i.test(href)) return href
+  if (LOCALE_PREFIX_RE.test(href)) return href
+  return localizedPath(locale, href)
+}

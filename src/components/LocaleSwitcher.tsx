@@ -14,17 +14,17 @@ const LOCALE_LABELS: Record<Locale, string> = {
  * Minimal per-locale URL switcher (WEB-445). Swaps the leading /[locale] segment of the current
  * path, keeping the rest of the route intact, so /en/insights/foo ↔ /bn/insights/foo.
  *
- * Rendered in the [locale] layout next to the CMS-driven Header global — intentionally light, and
- * does NOT rewrite the header global itself.
+ * Rendered inside the CMS-driven Header (desktop CTA cluster + mobile bar) — intentionally light,
+ * and does NOT rewrite the header global itself. `className` lets the host tune layout/spacing.
  */
-export default function LocaleSwitcher({ currentLocale }: { currentLocale: string }) {
+export default function LocaleSwitcher({ currentLocale, className }: { currentLocale: string; className?: string }) {
   const pathname = usePathname() || `/${currentLocale}`
 
   // Strip the leading locale segment to get a locale-LESS path; everything else is preserved.
   const rest = pathname.replace(new RegExp(`^/(${LOCALES.join('|')})(?=/|$)`), '') || '/'
 
   return (
-    <nav aria-label="Language" className="flex items-center justify-end gap-2 px-5 md:px-10 py-2 text-xs">
+    <nav aria-label="Language" className={cn('flex items-center gap-2 text-xs', className)}>
       {LOCALES.map((locale) => {
         const href = rest === '/' ? `/${locale}` : `/${locale}${rest}`
         const active = locale === currentLocale

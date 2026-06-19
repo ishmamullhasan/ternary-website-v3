@@ -188,6 +188,7 @@ export interface Page {
   slug: string;
   layout?:
     | (
+        | HeroFeaturedBlock
         | JobsBlockType
         | IndustriesSectionBlock
         | AboutSectionBlock
@@ -269,34 +270,47 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "JobsBlockType".
+ * via the `definition` "HeroFeaturedBlock".
  */
-export interface JobsBlockType {
-  heading?: string | null;
-  description?: string | null;
+export interface HeroFeaturedBlock {
+  /**
+   * Small line above the headline, e.g. "AI agents do the work. Human orchestrators own the outcome."
+   */
+  thesis?: string | null;
+  /**
+   * Display headline. Each line is rendered on its own row, e.g. "Agentic Engineering." / "Human Orchestration."
+   */
+  headline?: string | null;
+  /**
+   * Up to 8 work cards — case studies, insights, and press releases — shown in display order. Card gradient is assigned positionally.
+   */
+  items?:
+    | (
+        | {
+            relationTo: 'story';
+            value: string | Story;
+          }
+        | {
+            relationTo: 'insight';
+            value: string | Insight;
+          }
+        | {
+            relationTo: 'pressRelease';
+            value: string | PressRelease;
+          }
+      )[]
+    | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'jobsBlock';
+  blockType: 'heroFeatured';
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IndustriesSectionBlock".
- */
-export interface IndustriesSectionBlock {
-  heading?: string | null;
-  description?: string | null;
-  industries?: (string | Industry)[] | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'industriesSection';
-}
-/**
- * Industry verticals and their landing content.
+ * Customer success stories and case studies.
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "industry".
+ * via the `definition` "story".
  */
-export interface Industry {
+export interface Story {
   id: string;
   title?: string | null;
   /**
@@ -340,6 +354,7 @@ export interface Industry {
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Uploaded images and files used across the site.
@@ -483,6 +498,345 @@ export interface FolderInterface {
     totalDocs?: number;
   };
   folderType?: 'media'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Thought-leadership articles and insights.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "insight".
+ */
+export interface Insight {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * e.g. CS-014
+   */
+  code?: string | null;
+  author?: (string | null) | Team;
+  publishedDate?: string | null;
+  /**
+   * e.g. "8 min"
+   */
+  readTime?: string | null;
+  /**
+   * e.g. "Engineering Studio"
+   */
+  categoryLabel?: string | null;
+  /**
+   * Short summary used on listing cards.
+   */
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  tags?:
+    | {
+        name?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Opening paragraph shown beside the article body.
+   */
+  leadParagraph?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  relatedInsights?: {
+    heading?: string | null;
+    description?: string | null;
+    insights?: (string | Insight)[] | null;
+  };
+  cta?: {
+    heading?: string | null;
+    description?: string | null;
+    backgroundImage?: (string | null) | Media;
+    button_1?: {
+      label?: string | null;
+      link?: string | null;
+    };
+    button_2?: {
+      label?: string | null;
+      link?: string | null;
+    };
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Team member profiles shown across the site.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: string;
+  name?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  position?: string | null;
+  excerpt?: string | null;
+  description?: string | null;
+  image?: (string | null) | Media;
+  linkedin?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Official press releases and announcements.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pressRelease".
+ */
+export interface PressRelease {
+  id: string;
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  /**
+   * Pill label shown above the headline (e.g. Product Launch).
+   */
+  badge?: string | null;
+  /**
+   * e.g. PR-026
+   */
+  code?: string | null;
+  releaseDate?: string | null;
+  /**
+   * e.g. Dhaka, Bangladesh
+   */
+  datelineLocation?: string | null;
+  /**
+   * Short summary used on listing cards.
+   */
+  excerpts?: string | null;
+  /**
+   * e.g. "12 min"
+   */
+  readTime?: string | null;
+  /**
+   * e.g. "Engineering Studio"
+   */
+  categoryLabel?: string | null;
+  thumbnail?: (string | null) | Media;
+  tags?:
+    | {
+        name?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Opening paragraphs shown in The release section. Separate paragraphs with a blank line.
+   */
+  leadParagraph?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  quotes?:
+    | {
+        quote?: string | null;
+        name?: string | null;
+        /**
+         * e.g. Chief Revenue Officer · Counterfoil
+         */
+        role?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  releaseFacts?: {
+    /**
+     * e.g. Yes
+     */
+    forImmediateRelease?: string | null;
+    /**
+     * e.g. None
+     */
+    embargo?: string | null;
+    /**
+     * e.g. Global
+     */
+    distribution?: string | null;
+    mediaKit?: (string | null) | Media;
+    /**
+     * e.g. 24 MB
+     */
+    mediaKitSizeLabel?: string | null;
+  };
+  pressContact?: {
+    heading?: string | null;
+    description?: string | null;
+    press?: {
+      name?: string | null;
+      title?: string | null;
+      email?: string | null;
+      phone?: string | null;
+    };
+    analyst?: {
+      name?: string | null;
+      title?: string | null;
+      email?: string | null;
+      website?: string | null;
+    };
+    /**
+     * e.g. Logos, executive headshots, product screenshots, brand guidelines
+     */
+    mediaKitDescription?: string | null;
+    socialLinks?: {
+      twitter?: string | null;
+      linkedin?: string | null;
+      website?: string | null;
+    };
+  };
+  relatedPressReleases?: {
+    heading?: string | null;
+    description?: string | null;
+    pressReleases?: (string | PressRelease)[] | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "JobsBlockType".
+ */
+export interface JobsBlockType {
+  heading?: string | null;
+  description?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'jobsBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesSectionBlock".
+ */
+export interface IndustriesSectionBlock {
+  heading?: string | null;
+  description?: string | null;
+  industries?: (string | Industry)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industriesSection';
+}
+/**
+ * Industry verticals and their landing content.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "industry".
+ */
+export interface Industry {
+  id: string;
+  title?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  excerpts?: string | null;
+  thumbnail?: (string | null) | Media;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -692,28 +1046,6 @@ export interface Capability {
     hideFromSitemap?: boolean | null;
     twitterCard?: ('summary' | 'summary_large_image') | null;
   };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Team member profiles shown across the site.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "team".
- */
-export interface Team {
-  id: string;
-  name?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  position?: string | null;
-  excerpt?: string | null;
-  description?: string | null;
-  image?: (string | null) | Media;
-  linkedin?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1464,58 +1796,6 @@ export interface FeatureCaseStudyBlock {
   blockType: 'featureCaseStudy';
 }
 /**
- * Customer success stories and case studies.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "story".
- */
-export interface Story {
-  id: string;
-  title?: string | null;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  excerpts?: string | null;
-  thumbnail?: (string | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | Media;
-    /**
-     * Override canonical URL. Leave blank to use the page's own URL.
-     */
-    canonical?: string | null;
-    /**
-     * Exclude this entry from the XML sitemap.
-     */
-    hideFromSitemap?: boolean | null;
-    twitterCard?: ('summary' | 'summary_large_image') | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "StoriesArchiveBlock".
  */
@@ -1544,249 +1824,6 @@ export interface StoriesArchiveBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'storiesArchive';
-}
-/**
- * Thought-leadership articles and insights.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "insight".
- */
-export interface Insight {
-  id: string;
-  title: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  /**
-   * e.g. CS-014
-   */
-  code?: string | null;
-  author?: (string | null) | Team;
-  publishedDate?: string | null;
-  /**
-   * e.g. "8 min"
-   */
-  readTime?: string | null;
-  /**
-   * e.g. "Engineering Studio"
-   */
-  categoryLabel?: string | null;
-  /**
-   * Short summary used on listing cards.
-   */
-  excerpts?: string | null;
-  thumbnail?: (string | null) | Media;
-  tags?:
-    | {
-        name?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Opening paragraph shown beside the article body.
-   */
-  leadParagraph?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  relatedInsights?: {
-    heading?: string | null;
-    description?: string | null;
-    insights?: (string | Insight)[] | null;
-  };
-  cta?: {
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    button_1?: {
-      label?: string | null;
-      link?: string | null;
-    };
-    button_2?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | Media;
-    /**
-     * Override canonical URL. Leave blank to use the page's own URL.
-     */
-    canonical?: string | null;
-    /**
-     * Exclude this entry from the XML sitemap.
-     */
-    hideFromSitemap?: boolean | null;
-    twitterCard?: ('summary' | 'summary_large_image') | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * Official press releases and announcements.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pressRelease".
- */
-export interface PressRelease {
-  id: string;
-  title: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  /**
-   * Pill label shown above the headline (e.g. Product Launch).
-   */
-  badge?: string | null;
-  /**
-   * e.g. PR-026
-   */
-  code?: string | null;
-  releaseDate?: string | null;
-  /**
-   * e.g. Dhaka, Bangladesh
-   */
-  datelineLocation?: string | null;
-  /**
-   * Short summary used on listing cards.
-   */
-  excerpts?: string | null;
-  /**
-   * e.g. "12 min"
-   */
-  readTime?: string | null;
-  /**
-   * e.g. "Engineering Studio"
-   */
-  categoryLabel?: string | null;
-  thumbnail?: (string | null) | Media;
-  tags?:
-    | {
-        name?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Opening paragraphs shown in The release section. Separate paragraphs with a blank line.
-   */
-  leadParagraph?: string | null;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  quotes?:
-    | {
-        quote?: string | null;
-        name?: string | null;
-        /**
-         * e.g. Chief Revenue Officer · Counterfoil
-         */
-        role?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  releaseFacts?: {
-    /**
-     * e.g. Yes
-     */
-    forImmediateRelease?: string | null;
-    /**
-     * e.g. None
-     */
-    embargo?: string | null;
-    /**
-     * e.g. Global
-     */
-    distribution?: string | null;
-    mediaKit?: (string | null) | Media;
-    /**
-     * e.g. 24 MB
-     */
-    mediaKitSizeLabel?: string | null;
-  };
-  pressContact?: {
-    heading?: string | null;
-    description?: string | null;
-    press?: {
-      name?: string | null;
-      title?: string | null;
-      email?: string | null;
-      phone?: string | null;
-    };
-    analyst?: {
-      name?: string | null;
-      title?: string | null;
-      email?: string | null;
-      website?: string | null;
-    };
-    /**
-     * e.g. Logos, executive headshots, product screenshots, brand guidelines
-     */
-    mediaKitDescription?: string | null;
-    socialLinks?: {
-      twitter?: string | null;
-      linkedin?: string | null;
-      website?: string | null;
-    };
-  };
-  relatedPressReleases?: {
-    heading?: string | null;
-    description?: string | null;
-    pressReleases?: (string | PressRelease)[] | null;
-  };
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | Media;
-    /**
-     * Override canonical URL. Leave blank to use the page's own URL.
-     */
-    canonical?: string | null;
-    /**
-     * Exclude this entry from the XML sitemap.
-     */
-    hideFromSitemap?: boolean | null;
-    twitterCard?: ('summary' | 'summary_large_image') | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2981,6 +3018,7 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        heroFeatured?: T | HeroFeaturedBlockSelect<T>;
         jobsBlock?: T | JobsBlockTypeSelect<T>;
         industriesSection?: T | IndustriesSectionBlockSelect<T>;
         aboutSection?: T | AboutSectionBlockSelect<T>;
@@ -3051,6 +3089,17 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroFeaturedBlock_select".
+ */
+export interface HeroFeaturedBlockSelect<T extends boolean = true> {
+  thesis?: T;
+  headline?: T;
+  items?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

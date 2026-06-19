@@ -1,7 +1,7 @@
 import Motion from '@/components/animation/motion'
+import Link from '@/components/LocalizedLink'
 import type { ContactHeroBlock } from '@/payload-types'
 import { ArrowUpRight } from 'lucide-react'
-import Link from 'next/link'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
