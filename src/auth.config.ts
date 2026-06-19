@@ -23,6 +23,12 @@ export const authConfig: NextAuthConfig = {
   providers: googleConfigured
     ? [
         Google({
+          // Link the Google identity to a pre-existing Payload user with the same email instead of
+          // throwing OAuthAccountNotLinked. Normally "dangerous" (an unverified-email provider could
+          // be used to hijack an account), but safe here: Google verifies email ownership and the
+          // signIn callback below hard-gates on email_verified + hd === ternary.solutions, so the
+          // email is guaranteed to belong to the Workspace user.
+          allowDangerousEmailAccountLinking: true,
           authorization: {
             params: {
               hd: ALLOWED_HD,
