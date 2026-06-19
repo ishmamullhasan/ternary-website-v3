@@ -33,7 +33,7 @@ async function getGlobal(slug: Global, depth = 0, locale?: TypedLocale) {
  * `revalidate: 300` is a safety net for that same case: even with no tag bust, header/footer
  * self-heal within 5 minutes instead of staying stale indefinitely.
  */
-const CACHE_VERSION = 'v2'
+const CACHE_VERSION = 'v3'
 
 function cachedGlobal(slug: Global, depth: number, tags: string[], locale?: TypedLocale) {
   return unstable_cache(
