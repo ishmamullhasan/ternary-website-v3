@@ -3,24 +3,9 @@ import type { Payload, PayloadRequest } from 'payload'
 export const seed = async ({ payload, req: _req }: { payload: Payload; req: PayloadRequest }): Promise<void> => {
   payload.logger.info('Seeding database...')
 
-  payload.logger.info('— Seeding demo user...')
-  const existing = await payload.find({
-    collection: 'users',
-    where: { email: { equals: 'demo@example.com' } },
-    limit: 1,
-  })
-  if (existing.docs.length > 0) {
-    await payload.delete({ collection: 'users', id: existing.docs[0].id })
-  }
-
-  await payload.create({
-    collection: 'users',
-    data: {
-      name: 'Demo User',
-      email: 'demo@example.com',
-      password: 'password',
-    },
-  })
+  // NOTE: the template's demo-user seed (demo@example.com / "password") was removed — it created a
+  // weak credential in the DB and is unnecessary (real admin users exist; SSO + payload-authjs also
+  // changed the User create type so the literal no longer type-checks). seed() now only seeds globals.
 
   payload.logger.info('— Seeding globals (header, footer)...')
   await Promise.all([

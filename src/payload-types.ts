@@ -2540,24 +2540,20 @@ export interface CtaBlock {
  */
 export interface User {
   id: string;
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
   email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
+  emailVerified?: string | null;
+  name?: string | null;
+  image?: string | null;
+  accounts?:
     | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
+        provider: string;
+        providerAccountId: string;
+        type: 'oidc' | 'oauth' | 'email' | 'webauthn';
+        id?: string | null;
       }[]
     | null;
-  password?: string | null;
+  updatedAt: string;
+  createdAt: string;
   collection: 'users';
 }
 /**
@@ -3919,23 +3915,21 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  name?: T;
-  updatedAt?: T;
-  createdAt?: T;
+  id?: T;
   email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
-  sessions?:
+  emailVerified?: T;
+  name?: T;
+  image?: T;
+  accounts?:
     | T
     | {
+        provider?: T;
+        providerAccountId?: T;
+        type?: T;
         id?: T;
-        createdAt?: T;
-        expiresAt?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
