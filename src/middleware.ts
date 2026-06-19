@@ -36,5 +36,5 @@ export const config = {
   //   - /_next internals
   //   - any path containing a "." (favicon.ico, robots.txt, sitemap.xml, *.css, *.woff, images…)
   // Excluding dotted paths keeps file assets out of the redirect and off the [locale] segment.
-  matcher: ['/((?!api|admin|next|_next|.*\\..*).*)'],
+  matcher: ['/((?!api|admin|og|next|_next|.*\\..*).*)'],
 }
