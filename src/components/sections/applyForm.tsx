@@ -1,21 +1,22 @@
 'use client'
 
-import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
-import { ChevronDown, Loader2, Upload } from 'lucide-react'
+import { careersText } from '@/lib/careers-colors'
+import { ChevronDown, Loader2, Upload, X } from 'lucide-react'
 import type { ChangeEvent, FormEvent, JSX, ReactNode } from 'react'
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 
-/* ---------- shared field primitives ---------- */
+/* ---------- shared field primitives ----------
 
-const fieldBase = `w-full bg-[#1b1a17] border ${careersBorder.input} text-white rounded-lg px-4 py-3 text-sm placeholder:text-[#5a5a56] focus:outline-none focus:border-[#757571] hover:border-[#52525b] transition-colors`
+   Field surface = Surface/Card #1b1a17 (bg-main), Radius/sm = 4px (rounded-sm), subtle 1px line
+   border (border-line). Invalid fields shift the border to the destructive token and expose
+   aria-invalid. Focus relies on the global focus-visible ring (globals.css) for a consistent
+   keyboard outline across the site — no invented per-field colour shift. */
 
-function Label({ children, required }: { children: ReactNode; required?: boolean }): JSX.Element {
-  return (
-    <label className={`block mb-2 text-xs ${careersText.muted}`}>
-      {children}
-      {required ? <span className="text-[#D5D5D5]"> *</span> : null}
-    </label>
-  )
+const fieldBase =
+  'w-full bg-main border rounded-sm px-4 py-3 text-base text-cream placeholder:text-subtle/70 transition-colors focus:outline-none'
+
+function borderClass(invalid?: boolean): string {
+  return invalid ? 'border-red-500/70 focus-visible:border-red-500' : 'border-line hover:border-line-strong'
 }
 
 function Field({
@@ -24,24 +25,27 @@ function Field({
   htmlFor,
   children,
   className = '',
+  error,
 }: {
   label: string
   required?: boolean
   htmlFor?: string
   children: ReactNode
   className?: string
+  error?: string
 }): JSX.Element {
   return (
     <div className={className}>
-      {htmlFor ? (
-        <label htmlFor={htmlFor} className={`block mb-2 text-xs ${careersText.muted}`}>
-          {label}
-          {required ? <span className="text-[#D5D5D5]"> *</span> : null}
-        </label>
-      ) : (
-        <Label required={required}>{label}</Label>
-      )}
+      <label htmlFor={htmlFor} className={`block mb-2 text-xs ${careersText.muted}`}>
+        {label}
+        {required ? <span className="text-body"> *</span> : null}
+      </label>
       {children}
+      {error ? (
+        <p id={htmlFor ? `${htmlFor}-error` : undefined} className="mt-1.5 text-xs text-red-400" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   )
 }
@@ -52,12 +56,16 @@ function TextInput({
   onChange,
   placeholder,
   type = 'text',
+  required,
+  invalid,
 }: {
   id: string
   value: string
   onChange: (v: string) => void
   placeholder?: string
   type?: string
+  required?: boolean
+  invalid?: boolean
 }): JSX.Element {
   return (
     <input
@@ -66,7 +74,10 @@ function TextInput({
       value={value}
       onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={fieldBase}
+      required={required}
+      aria-invalid={invalid || undefined}
+      aria-describedby={invalid ? `${id}-error` : undefined}
+      className={`${fieldBase} ${borderClass(invalid)}`}
     />
   )
 }
@@ -77,12 +88,16 @@ function Select({
   onChange,
   options,
   placeholder,
+  required,
+  invalid,
 }: {
   id: string
   value: string
   onChange: (v: string) => void
   options: string[]
   placeholder: string
+  required?: boolean
+  invalid?: boolean
 }): JSX.Element {
   return (
     <div className="relative">
@@ -90,13 +105,16 @@ function Select({
         id={id}
         value={value}
         onChange={(e: ChangeEvent<HTMLSelectElement>) => onChange(e.target.value)}
-        className={`${fieldBase} appearance-none pr-10 cursor-pointer ${value ? 'text-white' : 'text-[#5a5a56]'}`}
+        required={required}
+        aria-invalid={invalid || undefined}
+        aria-describedby={invalid ? `${id}-error` : undefined}
+        className={`${fieldBase} ${borderClass(invalid)} appearance-none pr-10 cursor-pointer ${value ? 'text-cream' : 'text-subtle/70'}`}
       >
         <option value="" disabled>
           {placeholder}
         </option>
         {options.map((opt) => (
-          <option key={opt} value={opt} className="bg-[#1b1a17] text-white">
+          <option key={opt} value={opt} className="bg-main text-cream">
             {opt}
           </option>
         ))}
@@ -116,12 +134,14 @@ function FileUpload({
   file,
   onChange,
   accept,
+  invalid,
 }: {
   id: string
   label: string
   file: File | null
   onChange: (file: File | null) => void
   accept?: string
+  invalid?: boolean
 }): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)
   // Capture the actual File object (needed for multipart upload), not just its name.
@@ -133,26 +153,49 @@ function FileUpload({
         type="file"
         accept={accept}
         className="hidden"
+        aria-invalid={invalid || undefined}
+        aria-describedby={invalid ? `${id}-error` : undefined}
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.files?.[0] ?? null)}
       />
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        className={`${fieldBase} flex items-center justify-between text-left ${file ? 'text-white' : 'text-[#5a5a56]'}`}
-      >
-        <span className="truncate">{file?.name || label}</span>
-        <Upload size={16} className={`${careersText.body} shrink-0 ml-3`} aria-hidden />
-      </button>
+      <div className="flex items-stretch gap-2">
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className={`${fieldBase} ${borderClass(invalid)} group/file flex flex-1 items-center justify-between text-left ${file ? 'text-cream' : 'text-subtle/70'}`}
+        >
+          <span className="truncate">{file?.name || label}</span>
+          <Upload
+            size={16}
+            className="text-subtle shrink-0 ml-3 transition-colors group-hover/file:text-body"
+            aria-hidden
+          />
+        </button>
+        {file && (
+          <button
+            type="button"
+            onClick={() => {
+              onChange(null)
+              if (inputRef.current) inputRef.current.value = ''
+            }}
+            aria-label={`Remove ${file.name}`}
+            className="flex w-11 shrink-0 items-center justify-center rounded-sm border border-line bg-main text-subtle transition-colors hover:border-line-strong hover:text-cream focus-visible:outline-none"
+          >
+            <X size={16} aria-hidden />
+          </button>
+        )}
+      </div>
     </>
   )
 }
 
 function SectionHeading({ children }: { children: ReactNode }): JSX.Element {
-  return <h2 className={`text-2xl md:text-3xl font-semibold ${careersText.white} tracking-tight`}>{children}</h2>
+  return (
+    <h2 className="font-display text-[28px] md:text-[32px] font-medium leading-[1.15] text-cream/90">{children}</h2>
+  )
 }
 
 function SubHeading({ children }: { children: ReactNode }): JSX.Element {
-  return <h3 className={`text-lg font-medium ${careersText.white} tracking-tight`}>{children}</h3>
+  return <h3 className="text-lg font-medium text-cream">{children}</h3>
 }
 
 /* ---------- options ---------- */
@@ -219,6 +262,35 @@ interface ApplyFormProps {
 
 const API_BASE = process.env.RECRUIT_API_BASE ?? 'https://api.ternary.solutions/recruit/v1/public'
 
+// Accepted document types + a human-readable hint surfaced under the upload controls.
+const DOC_ACCEPT = '.pdf,.doc,.docx'
+const DOC_HINT = 'PDF, DOC or DOCX · up to 10MB'
+const MAX_FILE_BYTES = 10 * 1024 * 1024
+
+// Fields required client-side. The API is still the source of truth, but validating here gives
+// inline, per-field feedback instead of a single opaque server rejection.
+const REQUIRED_TEXT: (keyof FormState)[] = [
+  'firstName',
+  'lastName',
+  'email',
+  'countryCode',
+  'phone',
+  'country',
+  'city',
+  'employmentStatus',
+  'employerName',
+  'jobTitle',
+  'timeWithEmployer',
+  'educationLevel',
+  'institutionName',
+  'majorAreaOfStudy',
+  'degree',
+  'disability',
+  'veteran',
+]
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
   const [form, setForm] = useState<FormState>(initialState)
   // Files live outside `form` (text) state so we can POST the real File objects, not their names.
@@ -227,18 +299,64 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  // Per-field errors, keyed by field id; `resume` is included for the file control.
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const confirmationRef = useRef<HTMLDivElement>(null)
+  const formTitleId = useId()
 
-  const set = (key: keyof FormState) => (value: string) => setForm((prev) => ({ ...prev, [key]: value }))
+  const set = (key: keyof FormState) => (value: string) =>
+    setForm((prev) => {
+      // Clear a field's error as soon as the candidate starts correcting it.
+      if (errors[key]) setErrors((e) => ({ ...e, [key]: '' }))
+      return { ...prev, [key]: value }
+    })
+
+  const setResumeFile = (file: File | null) => {
+    if (file && file.size > MAX_FILE_BYTES) {
+      setErrors((e) => ({ ...e, resume: 'File is too large (max 10MB).' }))
+      return
+    }
+    setErrors((e) => ({ ...e, resume: '' }))
+    setResume(file)
+  }
+
+  const setCoverLetterFile = (file: File | null) => {
+    if (file && file.size > MAX_FILE_BYTES) {
+      setErrors((e) => ({ ...e, coverLetter: 'File is too large (max 10MB).' }))
+      return
+    }
+    setErrors((e) => ({ ...e, coverLetter: '' }))
+    setCoverLetter(file)
+  }
+
+  // Validate required text/selects + resume + email format. Returns the error map (also stored).
+  const validate = (): Record<string, string> => {
+    const next: Record<string, string> = {}
+    for (const key of REQUIRED_TEXT) {
+      if (!form[key]?.trim()) next[key] = 'This field is required.'
+    }
+    if (form.email && !EMAIL_RE.test(form.email)) next.email = 'Enter a valid email address.'
+    if (!resume) next.resume = 'Please attach your resume.'
+    return next
+  }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
 
-    // Client-side required validation. Resume is mandatory; the rest is enforced by the API.
-    if (!resume) {
-      setError('Please attach your resume before submitting.')
+    const validationErrors = validate()
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      setError('Please complete the required fields highlighted below.')
+      // Move focus/scroll to the first field with an error.
+      const firstKey = Object.keys(validationErrors)[0]
+      document.getElementById(firstKey)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      document.getElementById(firstKey)?.focus({ preventScroll: true })
       return
     }
+    setErrors({})
+
+    if (!resume) return
 
     setSubmitting(true)
 
@@ -271,6 +389,8 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
         throw new Error(detail?.detail || `Submission failed (${res.status})`)
       }
       setSubmitted(true)
+      // The form is long; bring the confirmation into view so the candidate sees the result.
+      requestAnimationFrame(() => confirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
@@ -278,8 +398,18 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
     }
   }
 
+  // Small helpers so each field forwards its inline-error/invalid state without 3× boilerplate.
+  const fieldProps = (key: keyof FormState) => ({ error: errors[key], required: REQUIRED_TEXT.includes(key) })
+  const inputProps = (key: keyof FormState) => ({
+    invalid: Boolean(errors[key]),
+    required: REQUIRED_TEXT.includes(key),
+  })
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-16">
+    <form onSubmit={handleSubmit} noValidate aria-labelledby={formTitleId} className="space-y-16">
+      <h2 id={formTitleId} className="sr-only">
+        Job application form
+      </h2>
       {/* Personal Information */}
       <section className="space-y-8">
         <SectionHeading>Personal Information</SectionHeading>
@@ -287,41 +417,62 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
         <div className="space-y-4">
           <SubHeading>Legal Name</SubHeading>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Field label="First Name" required htmlFor="firstName">
-              <TextInput id="firstName" value={form.firstName} onChange={set('firstName')} placeholder="John" />
+            <Field label="First Name" htmlFor="firstName" {...fieldProps('firstName')}>
+              <TextInput
+                id="firstName"
+                value={form.firstName}
+                onChange={set('firstName')}
+                placeholder="John"
+                {...inputProps('firstName')}
+              />
             </Field>
             <Field label="Middle Name" htmlFor="middleName">
               <TextInput id="middleName" value={form.middleName} onChange={set('middleName')} placeholder="Quincy" />
             </Field>
-            <Field label="Last Name" required htmlFor="lastName">
-              <TextInput id="lastName" value={form.lastName} onChange={set('lastName')} placeholder="Doe" />
+            <Field label="Last Name" htmlFor="lastName" {...fieldProps('lastName')}>
+              <TextInput
+                id="lastName"
+                value={form.lastName}
+                onChange={set('lastName')}
+                placeholder="Doe"
+                {...inputProps('lastName')}
+              />
             </Field>
           </div>
         </div>
 
         <div className="space-y-4">
           <SubHeading>Contact Information</SubHeading>
-          <Field label="Email" required htmlFor="email">
+          <Field label="Email" htmlFor="email" {...fieldProps('email')}>
             <TextInput
               id="email"
               type="email"
               value={form.email}
               onChange={set('email')}
               placeholder="john.doe@gmail.com"
+              {...inputProps('email')}
             />
           </Field>
           <div className="grid grid-cols-2 sm:grid-cols-[140px_1fr_120px] gap-4">
-            <Field label="Country Code" required htmlFor="countryCode">
+            <Field label="Country Code" htmlFor="countryCode" {...fieldProps('countryCode')}>
               <Select
                 id="countryCode"
                 value={form.countryCode}
                 onChange={set('countryCode')}
                 options={COUNTRY_CODES}
                 placeholder="BD +880"
+                {...inputProps('countryCode')}
               />
             </Field>
-            <Field label="Phone Number" required htmlFor="phone">
-              <TextInput id="phone" type="tel" value={form.phone} onChange={set('phone')} placeholder="1712345678" />
+            <Field label="Phone Number" htmlFor="phone" {...fieldProps('phone')}>
+              <TextInput
+                id="phone"
+                type="tel"
+                value={form.phone}
+                onChange={set('phone')}
+                placeholder="1712345678"
+                {...inputProps('phone')}
+              />
             </Field>
             <Field label="Extension" htmlFor="extension">
               <TextInput id="extension" value={form.extension} onChange={set('extension')} placeholder="123" />
@@ -332,20 +483,27 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
         <div className="space-y-4">
           <SubHeading>Location</SubHeading>
           <div className="grid sm:grid-cols-3 gap-4">
-            <Field label="Country" required htmlFor="country">
+            <Field label="Country" htmlFor="country" {...fieldProps('country')}>
               <Select
                 id="country"
                 value={form.country}
                 onChange={set('country')}
                 options={COUNTRIES}
                 placeholder="Select Country"
+                {...inputProps('country')}
               />
             </Field>
             <Field label="State / Province" htmlFor="state">
               <TextInput id="state" value={form.state} onChange={set('state')} placeholder="Example State" />
             </Field>
-            <Field label="City" required htmlFor="city">
-              <TextInput id="city" value={form.city} onChange={set('city')} placeholder="Example City" />
+            <Field label="City" htmlFor="city" {...fieldProps('city')}>
+              <TextInput
+                id="city"
+                value={form.city}
+                onChange={set('city')}
+                placeholder="Example City"
+                {...inputProps('city')}
+              />
             </Field>
           </div>
         </div>
@@ -355,36 +513,49 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
       <section className="space-y-8">
         <SectionHeading>Career</SectionHeading>
 
-        <Field label="Current Employment Status" required htmlFor="employmentStatus" className="max-w-sm">
+        <Field
+          label="Current Employment Status"
+          htmlFor="employmentStatus"
+          className="max-w-sm"
+          {...fieldProps('employmentStatus')}
+        >
           <Select
             id="employmentStatus"
             value={form.employmentStatus}
             onChange={set('employmentStatus')}
             options={EMPLOYMENT_STATUS}
             placeholder="Select One"
+            {...inputProps('employmentStatus')}
           />
         </Field>
 
         <div className="space-y-4">
           <SubHeading>Most Recent Employer</SubHeading>
           <div className="grid sm:grid-cols-2 gap-4">
-            <Field label="Employer Name" required htmlFor="employerName">
+            <Field label="Employer Name" htmlFor="employerName" {...fieldProps('employerName')}>
               <TextInput
                 id="employerName"
                 value={form.employerName}
                 onChange={set('employerName')}
                 placeholder="ABC Corporation, Inc."
+                {...inputProps('employerName')}
               />
             </Field>
-            <Field label="Job Title" required htmlFor="jobTitle">
-              <TextInput id="jobTitle" value={form.jobTitle} onChange={set('jobTitle')} placeholder="Product Manager" />
+            <Field label="Job Title" htmlFor="jobTitle" {...fieldProps('jobTitle')}>
+              <TextInput
+                id="jobTitle"
+                value={form.jobTitle}
+                onChange={set('jobTitle')}
+                placeholder="Product Manager"
+                {...inputProps('jobTitle')}
+              />
             </Field>
           </div>
           <Field
             label="Time Spent with Employer"
-            required
             htmlFor="timeWithEmployer"
             className="sm:max-w-[calc(50%-0.5rem)]"
+            {...fieldProps('timeWithEmployer')}
           >
             <Select
               id="timeWithEmployer"
@@ -392,6 +563,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
               onChange={set('timeWithEmployer')}
               options={TIME_WITH_EMPLOYER}
               placeholder="Select Duration"
+              {...inputProps('timeWithEmployer')}
             />
           </Field>
         </div>
@@ -401,42 +573,51 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
       <section className="space-y-8">
         <SectionHeading>Education</SectionHeading>
 
-        <Field label="Highest Level of Education Completed" required htmlFor="educationLevel" className="max-w-sm">
+        <Field
+          label="Highest Level of Education Completed"
+          htmlFor="educationLevel"
+          className="max-w-sm"
+          {...fieldProps('educationLevel')}
+        >
           <Select
             id="educationLevel"
             value={form.educationLevel}
             onChange={set('educationLevel')}
             options={EDUCATION_LEVELS}
-            placeholder="Example Degree"
+            placeholder="Select One"
+            {...inputProps('educationLevel')}
           />
         </Field>
 
         <div className="space-y-4">
           <SubHeading>Most Recent Educational Qualification</SubHeading>
-          <Field label="Institution Name" required htmlFor="institutionName">
+          <Field label="Institution Name" htmlFor="institutionName" {...fieldProps('institutionName')}>
             <TextInput
               id="institutionName"
               value={form.institutionName}
               onChange={set('institutionName')}
               placeholder="Example University"
+              {...inputProps('institutionName')}
             />
           </Field>
-          <Field label="Major Area of Study" required htmlFor="majorAreaOfStudy">
+          <Field label="Major Area of Study" htmlFor="majorAreaOfStudy" {...fieldProps('majorAreaOfStudy')}>
             <TextInput
               id="majorAreaOfStudy"
               value={form.majorAreaOfStudy}
               onChange={set('majorAreaOfStudy')}
               placeholder="Computer Science"
+              {...inputProps('majorAreaOfStudy')}
             />
           </Field>
           <div className="grid sm:grid-cols-[220px_1fr] gap-4">
-            <Field label="Degree" required htmlFor="degree">
+            <Field label="Degree" htmlFor="degree" {...fieldProps('degree')}>
               <Select
                 id="degree"
                 value={form.degree}
                 onChange={set('degree')}
                 options={DEGREES}
                 placeholder="Bachelor of Science"
+                {...inputProps('degree')}
               />
             </Field>
             <Field
@@ -458,17 +639,27 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
       <section className="space-y-8">
         <SectionHeading>Upload Documents</SectionHeading>
         <div className="space-y-4">
-          <Field label="Resume" required htmlFor="resume">
-            <FileUpload id="resume" label="Upload Resume" file={resume} onChange={setResume} accept=".pdf,.doc,.docx" />
+          <Field label="Resume" required htmlFor="resume" error={errors.resume}>
+            <FileUpload
+              id="resume"
+              label="Upload Resume"
+              file={resume}
+              onChange={setResumeFile}
+              accept={DOC_ACCEPT}
+              invalid={Boolean(errors.resume)}
+            />
+            <p className="mt-1.5 text-xs text-subtle">{DOC_HINT}</p>
           </Field>
-          <Field label="Cover Letter" htmlFor="coverLetter">
+          <Field label="Cover Letter" htmlFor="coverLetter" error={errors.coverLetter}>
             <FileUpload
               id="coverLetter"
               label="Upload Cover Letter"
               file={coverLetter}
-              onChange={setCoverLetter}
-              accept=".pdf,.doc,.docx"
+              onChange={setCoverLetterFile}
+              accept={DOC_ACCEPT}
+              invalid={Boolean(errors.coverLetter)}
             />
+            <p className="mt-1.5 text-xs text-subtle">{DOC_HINT} · optional</p>
           </Field>
         </div>
       </section>
@@ -476,7 +667,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
       {/* Voluntary Self Identification */}
       <section className="space-y-8">
         <SectionHeading>Voluntary Self Identification</SectionHeading>
-        <div className={`space-y-4 text-sm leading-relaxed ${careersText.muted} max-w-3xl`}>
+        <div className="space-y-4 text-sm leading-relaxed text-subtle max-w-3xl">
           <p>
             At Ternary we are committed to attracting diverse talent and cultivating a culture of equity, inclusion, and
             belonging. Below is a set of voluntary demographic questions that are a part of our inclusion efforts and
@@ -490,8 +681,9 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
           </p>
         </div>
 
-        <div className="space-y-4">
-          <SubHeading>Diversity, Equity, and Inclusion</SubHeading>
+        {/* Grouped as a fieldset so assistive tech announces these questions as one related set. */}
+        <fieldset className="space-y-4 border-0 p-0 m-0">
+          <legend className="text-lg font-medium text-cream mb-4">Diversity, Equity, and Inclusion</legend>
           <div className="grid sm:grid-cols-3 gap-4">
             <Field label="Gender Identity" htmlFor="genderIdentity">
               <Select
@@ -523,8 +715,8 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
           </div>
           <Field
             label="Do you have a disability/chronic condition (physical, visual, auditory, cognitive, mental, emotional or other) that substantially limits one or more of your major life activities, including mobility, communication (seeing/hearing/speaking) and learning?"
-            required
             htmlFor="disability"
+            {...fieldProps('disability')}
           >
             <Select
               id="disability"
@@ -532,12 +724,13 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
               onChange={set('disability')}
               options={YES_NO_DISCLOSE}
               placeholder="Please Select an Option"
+              {...inputProps('disability')}
             />
           </Field>
           <Field
             label="Are you a veteran or active member of the United States Armed Forces?"
-            required
             htmlFor="veteran"
+            {...fieldProps('veteran')}
           >
             <Select
               id="veteran"
@@ -545,31 +738,35 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
               onChange={set('veteran')}
               options={YES_NO_DISCLOSE}
               placeholder="Please Select an Option"
+              {...inputProps('veteran')}
             />
           </Field>
-        </div>
+        </fieldset>
 
-        <div className="flex justify-end pt-2">
+        <div className="flex flex-col items-end gap-3 pt-2">
+          {error && (
+            <p role="alert" className="text-right text-sm text-red-400">
+              {error}
+            </p>
+          )}
           <button
             type="submit"
             disabled={submitting || submitted}
-            className={`${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} inline-flex items-center gap-2 font-medium px-8 py-3 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed`}
+            className="group/submit inline-flex items-center gap-2 rounded-md bg-cream px-8 py-3 text-sm font-medium text-ink transition-[background-color,box-shadow] duration-200 hover:bg-cream-hover hover:shadow-[0_10px_30px_-12px_rgba(244,243,236,0.55)] focus-visible:outline-none disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none"
           >
             {submitting && <Loader2 size={16} className="animate-spin" aria-hidden />}
             {submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}
           </button>
         </div>
-        {error && (
-          <p role="alert" className="text-right text-sm text-red-400">
-            {error}
-          </p>
-        )}
+
         {submitted && (
           <div
-            className={`${careersBg.card} border ${careersBorder.input} rounded-lg p-5 text-sm ${careersText.body}`}
+            ref={confirmationRef}
+            className="bg-main border border-line rounded-md p-5 text-sm text-body"
             role="status"
+            aria-live="polite"
           >
-            <p className={`font-medium ${careersText.white} mb-1`}>Application received</p>
+            <p className="font-medium text-cream mb-1">Application received</p>
             <p>Thanks for applying. We&rsquo;ll review your application and be in touch soon.</p>
           </div>
         )}

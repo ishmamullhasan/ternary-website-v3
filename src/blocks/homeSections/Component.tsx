@@ -21,6 +21,7 @@ import ProcessComp from '@/components/sections/processComp'
 import ScalesComp from '@/components/sections/scalesComp'
 import SolutionsComp from '@/components/sections/solutionsComp'
 import TeamComp from '@/components/sections/teamComp'
+import { getJobs, type JobListing } from '@/lib/jobs-data'
 
 // Each wrapper forwards the block's content to the real hand-built component. The block
 // fields mirror the component props; at depth-2 the relationships are populated docs, so
@@ -51,6 +52,22 @@ export const ProcessSectionComponent = (p: ProcessSectionBlock): JSX.Element => 
 export const TeamSectionComponent = (p: TeamSectionBlock): JSX.Element => (
   <TeamComp {...(p as unknown as Props<typeof TeamComp>)} />
 )
-export const OpportunitiesSectionComponent = (p: OpportunitiesSectionBlock): JSX.Element => (
-  <OpportunitiesComp {...(p as unknown as Props<typeof OpportunitiesComp>)} />
-)
+// Unlike the other home sections (whose data is the block's own relationships), the Opportunities
+// section sources its roles LIVE from the recruiting system — getJobs() → GET /jobs, newest first —
+// rather than from hand-picked CMS `job` records. Mirrors the careers JobsBlockComponent: an async
+// server component that falls back to an empty list on fetch failure instead of throwing the whole
+// homepage render. The block only supplies the heading/description and an optional cap.
+export const OpportunitiesSectionComponent = async ({
+  heading,
+  description,
+  limit,
+}: OpportunitiesSectionBlock): Promise<JSX.Element> => {
+  let jobs: JobListing[]
+  try {
+    jobs = await getJobs()
+  } catch {
+    jobs = []
+  }
+  const opportunity = typeof limit === 'number' && limit > 0 ? jobs.slice(0, limit) : jobs
+  return <OpportunitiesComp heading={heading} description={description} opportunity={opportunity} />
+}

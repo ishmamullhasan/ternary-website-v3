@@ -1,20 +1,24 @@
 'use client'
 
 import Motion from '@/components/animation/motion'
-import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
 import type { ContactOfficesBlock } from '@/payload-types'
 import { ChevronLeft, ChevronRight, Clock, Mail, MapPin, Phone } from 'lucide-react'
-import type { JSX } from 'react'
+import type { JSX, KeyboardEvent } from 'react'
 import { useState } from 'react'
 
 type OfficesData = ContactOfficesBlock
 
-const motionSectionProps = {
-  initial: { opacity: 0, y: 12 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: false, amount: 0.2 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
-}
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+// Per-office gradient so each studio reads as a distinct surface (azure/violet alternating). The
+// signature grain sits on top — no external map asset, degrades to the gradient gracefully.
+const TONE: string[] = [
+  'radial-gradient(120% 120% at 30% 20%, #2f93da 0%, #134a78 46%, #08233c 100%)',
+  'radial-gradient(120% 120% at 70% 25%, #7c3aed 0%, #3a1c8c 46%, #140f2c 100%)',
+]
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/80 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
 function Detail({
   icon: Icon,
@@ -27,11 +31,11 @@ function Detail({
 }): JSX.Element {
   return (
     <div className="space-y-1">
-      <div className={`flex items-center gap-1.5 text-xs ${careersText.muted}`}>
+      <div className="flex items-center gap-1.5 text-[12px] text-subtle">
         <Icon size={13} aria-hidden />
         {label}
       </div>
-      <div className={`text-sm ${careersText.body}`}>{children}</div>
+      <div className="text-[14px] text-body">{children}</div>
     </div>
   )
 }
@@ -43,75 +47,113 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
   if (offices.length === 0) return null
 
   const office = offices[index] ?? offices[0]
+  const multiple = offices.length > 1
+  const tone = TONE[index % TONE.length]
   const go = (dir: 1 | -1) => setIndex((i) => (i + dir + offices.length) % offices.length)
   const phoneHref = (office.phone ?? '').replace(/[^\d+]/g, '')
 
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (!multiple) return
+    if (e.key === 'ArrowRight') {
+      e.preventDefault()
+      go(1)
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault()
+      go(-1)
+    }
+  }
+
   return (
-    <Motion tag="section" id="offices" className="space-y-8" {...motionSectionProps}>
-      <div className="space-y-3">
-        <h2 className={`text-2xl md:text-3xl font-semibold ${careersText.white} tracking-tight`}>{data?.heading}</h2>
-        <p className={`text-sm md:text-base ${careersText.muted} max-w-2xl`}>{data?.description}</p>
+    <Motion
+      tag="section"
+      id="offices"
+      className="space-y-8"
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease: EASE }}
+    >
+      <div className="max-w-2xl space-y-3">
+        <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.125rem)] font-medium leading-[1.12] tracking-[-0.04em] text-cream">
+          {data?.heading}
+        </h2>
+        <p className="text-[15px] leading-relaxed text-body md:text-[16px]">{data?.description}</p>
       </div>
 
-      <div className={`relative rounded-lg overflow-hidden border ${careersBorder.subtle}`}>
-        {/* Map placeholder — image not wired yet. */}
-        <div className="relative h-[360px] md:h-[460px] bg-[#0F0E0E]">
-          <div
-            className="absolute inset-0 opacity-[0.15]"
-            style={{
-              backgroundImage:
-                'linear-gradient(#52525b 1px, transparent 1px), linear-gradient(90deg, #52525b 1px, transparent 1px)',
-              backgroundSize: '48px 48px',
-            }}
+      <div
+        className="relative overflow-hidden rounded-md border border-line"
+        role={multiple ? 'group' : undefined}
+        aria-roledescription={multiple ? 'carousel' : undefined}
+        aria-label={multiple ? 'Office locations' : undefined}
+        tabIndex={multiple ? 0 : undefined}
+        onKeyDown={onKeyDown}
+      >
+        {/* Studio surface — signature gradient + grain. No external map dependency; this is the
+            graceful fallback when a map/photo asset is unavailable. */}
+        <Motion
+          key={`surface-${index}`}
+          className="relative h-[340px] md:h-[440px]"
+          initial={{ opacity: 0.4 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, ease: EASE }}
+        >
+          <span aria-hidden className="absolute inset-0" style={{ backgroundImage: tone }} />
+          <span
+            aria-hidden
+            className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:260px] opacity-[0.14] mix-blend-overlay"
           />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-[#7c3aed] to-[#4c1d95] shadow-xl">
-              <MapPin size={22} className="text-white" aria-hidden />
+          <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+          <div className="absolute inset-0 flex items-start justify-center pt-16 md:pt-24">
+            <span className="inline-flex size-12 items-center justify-center rounded-full bg-cream/95 shadow-[0_12px_32px_-8px_rgba(0,0,0,0.6)]">
+              <MapPin size={22} className="text-ink" aria-hidden />
             </span>
           </div>
-        </div>
+        </Motion>
 
         {/* Office card overlay */}
         <Motion
           key={office.city ?? index}
-          className={`absolute inset-x-3 bottom-3 md:inset-x-6 md:bottom-6 ${careersBg.card}/95 backdrop-blur border ${careersBorder.subtle} rounded-lg p-5 md:p-6`}
-          initial={{ opacity: 0, y: 8 }}
+          className="absolute inset-x-3 bottom-3 rounded-md border border-line bg-main/95 p-5 backdrop-blur md:inset-x-6 md:bottom-6 md:p-6"
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
+          transition={{ duration: 0.35, ease: EASE }}
+          aria-live="polite"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
-              <p className={`text-xs ${careersText.muted}`}>{office.tag}</p>
+              {office.tag && <p className="text-[12px] text-subtle">{office.tag}</p>}
               <div className="flex items-center gap-3">
-                <h3 className={`text-lg font-semibold ${careersText.white}`}>{office.city}</h3>
-                <span
-                  className={`${careersBg.badge} ${careersText.muted} text-[11px] px-2 py-0.5 rounded-full border ${careersBorder.subtle}`}
-                >
-                  {office.timezone}
-                </span>
+                <h3 className="text-[18px] font-medium text-cream">{office.city}</h3>
+                {office.timezone && (
+                  <span className="rounded-full border border-line bg-badge px-2 py-0.5 text-[11px] text-subtle">
+                    {office.timezone}
+                  </span>
+                )}
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => go(-1)}
-                aria-label="Previous office"
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg ${careersBg.cardInner} border ${careersBorder.input} ${careersText.body} hover:border-[#52525b] transition-colors`}
-              >
-                <ChevronLeft size={16} aria-hidden />
-              </button>
-              <button
-                type="button"
-                onClick={() => go(1)}
-                aria-label="Next office"
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-lg ${careersBg.cardInner} border ${careersBorder.input} ${careersText.body} hover:border-[#52525b] transition-colors`}
-              >
-                <ChevronRight size={16} aria-hidden />
-              </button>
-            </div>
+            {multiple && (
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => go(-1)}
+                  aria-label="Previous office"
+                  className={`inline-flex size-8 items-center justify-center rounded-full border border-line-strong bg-ink text-body transition-colors hover:border-subtle hover:text-cream ${focusRing}`}
+                >
+                  <ChevronLeft size={16} aria-hidden />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go(1)}
+                  aria-label="Next office"
+                  className={`inline-flex size-8 items-center justify-center rounded-full border border-line-strong bg-ink text-body transition-colors hover:border-subtle hover:text-cream ${focusRing}`}
+                >
+                  <ChevronRight size={16} aria-hidden />
+                </button>
+              </div>
+            )}
           </div>
 
-          <div className={`mt-5 pt-5 border-t ${careersBorder.subtle} grid grid-cols-2 lg:grid-cols-4 gap-5`}>
+          <div className="mt-5 grid grid-cols-2 gap-5 border-t border-line pt-5 lg:grid-cols-4">
             <Detail icon={MapPin} label="Address">
               {(office.address ?? []).map((entry, i) => (
                 <span key={entry.id ?? i} className="block">
@@ -123,16 +165,37 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
               {office.hours ?? ''}
             </Detail>
             <Detail icon={Mail} label="Email">
-              <a href={`mailto:${office.email ?? ''}`} className="hover:text-white transition-colors break-all">
+              <a
+                href={`mailto:${office.email ?? ''}`}
+                className={`break-all transition-colors hover:text-cream ${focusRing} rounded-sm`}
+              >
                 {office.email}
               </a>
             </Detail>
             <Detail icon={Phone} label="Phone">
-              <a href={`tel:${phoneHref}`} className="hover:text-white transition-colors">
+              <a href={`tel:${phoneHref}`} className={`transition-colors hover:text-cream ${focusRing} rounded-sm`}>
                 {office.phone}
               </a>
             </Detail>
           </div>
+
+          {/* Slide indicators */}
+          {multiple && (
+            <div className="mt-5 flex items-center gap-2 border-t border-line pt-4">
+              {offices.map((o, i) => (
+                <button
+                  key={o.id ?? i}
+                  type="button"
+                  onClick={() => setIndex(i)}
+                  aria-label={`Show ${o.city ?? `office ${i + 1}`}`}
+                  aria-current={i === index ? 'true' : undefined}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${focusRing} ${
+                    i === index ? 'w-6 bg-cream' : 'w-1.5 bg-line-strong hover:bg-subtle'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </Motion>
       </div>
     </Motion>

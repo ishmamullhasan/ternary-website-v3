@@ -3,7 +3,14 @@
 @plugin '@tailwindcss/typography';
 
 body {
-  font-family: var(--font-poppins), sans-serif;
+  /* Two-font system: Inter is the default/body family (body, nav, footer, labels, cards,
+     eyebrows); Poppins is reserved for display headlines via --font-display and the h1,h2
+     base rule below. The design loaded only Poppins before, so all body text was wrong. */
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* The design's tracking scale is uniform −0.05em (−2px @ 40px, −0.8px @ 16px, −0.7px @ 14px,
+     −0.6px @ 12px). Setting it once on body reproduces every step proportionally; nav and
+     buttons reset to tracking-normal where the design specifies 0. */
+  letter-spacing: -0.05em;
 }
 
 /* Tailwind v4's Preflight no longer sets cursor:pointer on buttons (it inherits the
@@ -18,26 +25,79 @@ body {
   }
 }
 
+@layer base {
+  /* Display headlines render in Poppins; everything else inherits Inter from body. Non-semantic
+     display text (divs/spans used as headlines) can opt in with the `font-display` utility. */
+  h1,
+  h2 {
+    font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  }
+
+  /* Visible keyboard focus on a near-black surface. The legacy --ring (#393939) was almost
+     invisible against #050505; a cream outline meets contrast on every page. */
+  a:focus-visible,
+  button:focus-visible,
+  [role='button']:focus-visible,
+  summary:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--color-cream);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+}
+
+/* Respect reduced-motion for CSS transitions/animations. JS-driven Motion reveals are also
+   gated in components/animation/motion.tsx via useReducedMotion(). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Font utilities reference the runtime CSS variables injected by next/font on <body>
+   (--font-poppins, --font-inter) directly. Tailwind v4 @theme can't resolve those runtime
+   vars at build time, so these are plain utilities rather than --font-* theme tokens. */
+@layer utilities {
+  .font-display {
+    font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  }
+  .font-body {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
+/* Legacy shadcn HSL tokens, reconciled to the brand palette. Several were actively wrong:
+   --foreground was #393939 (unreadable as text), --background was #000 (not #050505),
+   --primary was pure white (not eggshell), --ring was a near-invisible #393939. Values now
+   track the @theme brand tokens. (Full removal of the unused ones is a follow-up cleanup.) */
 :root {
-  --background: 0 0% 0%;
-  --foreground: 0 0% 22.2%;
+  --background: 0 0% 2%; /* #050505 page */
+  --foreground: 52 24% 94%; /* #f4f3ec eggshell — readable default text */
   --muted: 0 0% 11.2%;
   --muted-foreground: 0 0% 78.9%;
-  --card: 0 0% 5.2%;
+  --card: 0 0% 6%; /* ~#0f0e0e ink */
   --card-foreground: 0 0% 88.2%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 47.4% 11.2%;
+  --popover: 0 0% 6%;
+  --popover-foreground: 52 24% 94%;
   --border: 0 0% 16.2%;
   --input: 0 0% 22.2%;
-  --primary: 0 0% 100%;
-  --primary-foreground: 0 0% 0%;
+  --primary: 52 24% 94%; /* eggshell */
+  --primary-foreground: 0 0% 2%; /* dark label on cream surfaces */
   --secondary: 0 0% 22.2%;
   --secondary-foreground: 0 0% 88.8%;
   --accent: 0 0% 22.2%;
-  --accent-foreground: 222.2 47.4% 11.2%;
+  --accent-foreground: 52 24% 94%;
   --destructive: 0 100% 50%;
   --destructive-foreground: 210 40% 98%;
-  --ring: 0 0% 22.2%;
+  --ring: 52 24% 94%; /* cream — visible focus on near-black */
   --radius: 0.5rem;
   --main: #1b1a17;
   --dark: #151515;
@@ -48,6 +108,11 @@ body {
      container across the site, so overriding its scale token raises every cap at once
      (gutters kept at a uniform 20px via px-5 on the container call sites). */
   --container-7xl: 1480px;
+
+  /* Brand radii (Radius/md = 5px, sm = 4px). Overriding the default scale makes the pervasive
+     `rounded-md` / `rounded-sm` utilities resolve to the design values everywhere. */
+  --radius-sm: 4px;
+  --radius-md: 5px;
 
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);

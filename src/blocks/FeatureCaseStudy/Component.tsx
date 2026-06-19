@@ -1,97 +1,108 @@
 import Motion from '@/components/animation/motion'
-import type { FeatureCaseStudyBlock, Media, Story } from '@/payload-types'
+import { GradientPanel } from '@/components/sections/stories/gradient'
+import type { FeatureCaseStudyBlock, Story } from '@/payload-types'
 import { ArrowRight, Clock } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 import type { JSX } from 'react'
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+// Accent greens cycle across the overlay stat tiles (design: #2dd280 / #26d9bb).
+const STAT_ACCENTS = ['#2dd280', '#26d9bb']
+
 export const FeatureCaseStudyComponent = (data: FeatureCaseStudyBlock): JSX.Element | null => {
-  const motionSectionProps = {
-    initial: { opacity: 0, y: 12 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.2 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
-
   const featuredStory = data.story as Story | undefined
-  const featuredImage = featuredStory?.thumbnail as Media | undefined
-
   if (!featuredStory) return null
 
+  const stats = data.stats ?? []
+  const highlights = data.highlights ?? []
+  const href = featuredStory.slug ? `/stories/${featuredStory.slug}` : '#'
+
   return (
-    <Motion tag="section" className="w-full lg:m-0 m-4 space-y-8" {...motionSectionProps}>
+    <section className="mx-auto w-full max-w-7xl px-5">
       {(data.heading || data.description) && (
-        <div className="space-y-3 max-w-3xl">
+        <Motion
+          tag="div"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="mb-6 max-w-3xl space-y-3"
+        >
           {data.heading && (
-            <h2 className="lg:text-3xl text-2xl font-medium tracking-tight text-white">{data.heading}</h2>
+            <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.04em] text-cream">
+              {data.heading}
+            </h2>
           )}
           {data.description && (
-            <p className="lg:text-sm text-xs text-[#D5D5D5] leading-relaxed">{data.description}</p>
+            <p className="text-[15px] leading-[1.55] tracking-[-0.01em] text-body lg:text-base">{data.description}</p>
           )}
-        </div>
+        </Motion>
       )}
 
-      <div className="rounded-lg overflow-hidden border border-zinc-800/40 bg-main">
-        <div className="relative w-full h-[280px] lg:h-[440px]">
-          {featuredImage?.url ? (
-            <Image
-              src={featuredImage.url}
-              alt={featuredImage.alt || featuredStory.title || 'Featured case study'}
-              fill
-              className="object-cover"
-              priority
-              sizes="(max-width: 1024px) 100vw, 1280px"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-linear-to-tr from-[#f3535b] via-[#5c1c49] to-[#f9a655] opacity-90" />
-          )}
+      <Motion
+        tag="div"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease: EASE }}
+        className="overflow-hidden rounded-md border border-white/5 bg-main"
+      >
+        {/* Signature green gradient panel — the gradient IS the artwork, never a photo. */}
+        <div className="relative h-[280px] w-full lg:h-[440px]">
+          <GradientPanel featured />
 
-          {data.stats && data.stats.length > 0 && (
-            <div className="absolute bottom-6 right-6 flex gap-3">
-              {data.stats.map((stat, index) => (
+          {stats.length > 0 && (
+            <div className="absolute inset-x-4 bottom-4 flex flex-wrap justify-end gap-3 sm:inset-x-auto sm:bottom-6 sm:right-6">
+              {stats.map((stat, index) => (
                 <div
                   key={stat.id ?? `stat-${index}`}
-                  className="rounded-lg bg-black/50 backdrop-blur-sm border border-white/10 px-4 py-3 text-center min-w-[120px]"
+                  className="min-w-[110px] flex-1 rounded-[4px] border border-white/5 bg-main/90 p-4 text-center backdrop-blur-sm sm:flex-none"
                 >
-                  <p className="text-2xl font-medium text-white">{stat.value}</p>
-                  <p className="text-xs text-[#D5D5D5]">{stat.label}</p>
+                  <p
+                    className="font-display text-2xl font-medium tracking-[-0.04em] lg:text-[30px]"
+                    style={{ color: STAT_ACCENTS[index % STAT_ACCENTS.length] }}
+                  >
+                    {stat.value}
+                  </p>
+                  <p className="mt-1 text-[12px] tracking-[-0.02em] text-cream">{stat.label}</p>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className="p-6 lg:p-8 space-y-6">
+        <div className="space-y-6 p-6">
           <div className="space-y-4">
-            <h3 className="text-2xl lg:text-3xl font-medium tracking-tight text-white leading-tight">
+            <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.04em] text-cream lg:text-[30px]">
               {featuredStory.title}
             </h3>
             {featuredStory.excerpts && (
-              <p className="text-sm lg:text-base text-[#D5D5D5] leading-relaxed max-w-2xl">
+              <p className="max-w-2xl text-[15px] leading-[1.55] tracking-[-0.01em] text-body lg:text-base">
                 {featuredStory.excerpts}
               </p>
             )}
           </div>
 
-          {data.highlights && data.highlights.length > 0 && (
+          {highlights.length > 0 && (
             <ul className="space-y-3">
-              {data.highlights.map((highlight, index) => (
+              {highlights.map((highlight, index) => (
                 <li
                   key={highlight.id ?? `highlight-${index}`}
-                  className="flex items-start gap-3 text-sm text-[#D5D5D5]"
+                  className="flex items-start gap-3 text-[15px] leading-[1.45] tracking-[-0.01em] text-cream lg:text-base"
                 >
-                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#757571] shrink-0" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2dd280]" />
                   <span>{highlight.text}</span>
                 </li>
               ))}
             </ul>
           )}
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-zinc-800/60">
-            <div className="flex items-center gap-2 text-xs text-[#757571]">
+          <div className="flex flex-col gap-4 border-t border-subtle/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-[12px] tracking-[-0.02em] text-body">
               {data.readTime && (
                 <>
-                  <Clock size={12} />
+                  <Clock size={12} aria-hidden />
                   <span>{data.readTime}</span>
                 </>
               )}
@@ -99,16 +110,16 @@ export const FeatureCaseStudyComponent = (data: FeatureCaseStudyBlock): JSX.Elem
             </div>
 
             <Link
-              href={featuredStory.slug ? `/stories/${featuredStory.slug}` : '#'}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-[#F4F3EC] text-[#0F0E0E] font-medium text-sm hover:bg-[#E8E7DF] transition-colors"
+              href={href}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-cream px-5 text-sm text-ink transition-colors hover:bg-cream-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
             >
-              {data.buttonLabel || 'Read case study'}
-              <ArrowRight size={16} />
+              {data.buttonLabel || 'Read Case Study'}
+              <ArrowRight size={16} aria-hidden />
             </Link>
           </div>
         </div>
-      </div>
-    </Motion>
+      </Motion>
+    </section>
   )
 }
 

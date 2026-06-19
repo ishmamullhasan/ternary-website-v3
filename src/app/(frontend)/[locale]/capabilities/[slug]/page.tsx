@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
-import type { JSX } from 'react'
+import type { CSSProperties, JSX, ReactNode } from 'react'
 
 const getCapabilityList = unstable_cache(
   async () => {
@@ -79,46 +79,87 @@ export async function generateMetadata({
   })
 }
 
-const motionSectionProps = {
-  initial: { opacity: 0, y: 12 },
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+// Shared reveal — quiet upward fade, fires once. Motion already honors prefers-reduced-motion.
+const reveal = {
+  initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: false, amount: 0.2 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
+  viewport: { once: true, margin: '-60px' } as const,
+  transition: { duration: 0.6, ease: EASE },
 }
 
-const motionBlockProps = {
-  initial: { opacity: 0, y: 10 },
+const revealItem = (index: number) => ({
+  initial: { opacity: 0, y: 18 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: false, amount: 0.4 as const },
-  transition: { duration: 0.35, ease: 'easeOut' as const },
+  viewport: { once: true, margin: '-40px' } as const,
+  transition: { duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.42) },
+})
+
+// The site's signature noise-gradient device. A radial tone field + a local grain overlay
+// (no external image dependency) + a bottom legibility scrim. Used for the hero header card
+// when no media is present, and as the CTA artwork.
+const HERO_TONE = 'radial-gradient(120% 120% at 78% 18%, #1f9d6b 0%, #134a78 46%, #08233c 100%)'
+const CTA_TONE = 'radial-gradient(135% 135% at 22% 18%, #6d3bd6 0%, #3a1c8c 46%, #1a1448 100%)'
+
+function NoiseGradient({ tone, className }: { tone: string; className?: string }): JSX.Element {
+  return (
+    <span aria-hidden className={cn('absolute inset-0', className)}>
+      <span className="absolute inset-0" style={{ backgroundImage: tone }} />
+      <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
+      <span className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45" />
+    </span>
+  )
 }
 
-const motionGridItemProps = {
-  initial: { opacity: 0, scale: 0.985 },
-  whileInView: { opacity: 1, scale: 1 },
-  viewport: { once: false, amount: 0.35 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
+// Eyebrow: "Section 0X / Label" or a plain label. Uniform Inter uppercase micro-typography.
+function Eyebrow({ index, label }: { index?: number; label?: string | null }): JSX.Element | null {
+  if (!label) return null
+  return (
+    <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
+      {typeof index === 'number' && (
+        <span className="text-cream/70">{`Section ${String(index).padStart(2, '0')} / `}</span>
+      )}
+      {label}
+    </p>
+  )
 }
 
 function SectionHeader({
+  index,
   label,
   heading,
   description,
   className,
 }: {
+  index?: number
   label?: string | null
   heading?: string | null
   description?: string | null
   className?: string
-}) {
+}): JSX.Element | null {
   if (!heading && !description && !label) return null
 
   return (
-    <Motion className={cn('flex flex-col gap-4', className)} {...motionBlockProps}>
-      {label && <p className="text-xs text-[#D5D5D5] tracking-tight">{label}</p>}
-      {heading && <h2 className="lg:text-3xl text-2xl font-medium tracking-tight leading-[1.15]">{heading}</h2>}
-      {description && <p className="text-base text-[#D5D5D5] max-w-3xl leading-relaxed">{description}</p>}
+    <Motion className={cn('flex flex-col gap-4', className)} {...reveal}>
+      <Eyebrow index={index} label={label} />
+      {heading && (
+        <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream whitespace-pre-line">
+          {heading}
+        </h2>
+      )}
+      {description && <p className="max-w-3xl text-[15px] leading-relaxed text-body">{description}</p>}
     </Motion>
+  )
+}
+
+// Outlined hairline chip. Optionally interactive (used for nothing clickable here, but the
+// hover affordance keeps the static pills consistent with the rest of the system).
+function Pill({ children }: { children: ReactNode }): JSX.Element {
+  return (
+    <span className="inline-flex items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream">
+      {children}
+    </span>
   )
 }
 
@@ -127,17 +168,13 @@ function StackTags({ tags }: { tags?: { name?: string | null; id?: string | null
 
   return (
     <div className="flex flex-wrap gap-1.5">
-      {tags.map((tag, index) => (
-        <span
-          key={tag.id ?? `tag-${index}`}
-          className="text-xs border border-[#757571] px-4 py-1 rounded-full text-[#F4F3EC]"
-        >
-          {tag.name}
-        </span>
-      ))}
+      {tags.map((tag, index) => (tag.name ? <Pill key={tag.id ?? `tag-${index}`}>{tag.name}</Pill> : null))}
     </div>
   )
 }
+
+// Reusable section shell: near-black bordered panel with generous editorial padding.
+const SECTION_SHELL = 'rounded-md border border-white/[0.06] bg-ink p-6 lg:p-12'
 
 export default async function Page({
   params,
@@ -153,45 +190,81 @@ export default async function Page({
     notFound()
   }
 
-  const heroImage = capability.heroSection?.heroImage as Media | undefined
+  const hero = capability.heroSection
+  const heroImage = hero?.heroImage as Media | undefined
   const practiceMember = capability.practiceLead?.member as Team | undefined
   const memberImage = practiceMember?.image as Media | undefined
   const relatedCapabilities = (capability.relatedCapabilities?.capabilities as Capability[] | undefined)?.filter(
     (item) => item.id !== capability.id,
   )
 
+  const heroButton = hero?.button
+  const cta = capability.cta
+  const ctaButtons = [cta?.button_1, cta?.button_2].filter((b): b is { label: string; link?: string | null } =>
+    Boolean(b?.label),
+  )
+  const ctaBackground = cta?.backgroundImage as Media | undefined
+
+  // Focus-visible affordance shared across every interactive element.
+  const focusRing =
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
+
   return (
-    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-16 px-5 pb-16 lg:gap-20 lg:pb-24">
       {/* Hero */}
-      <Motion tag="section" className="w-full lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
-        <div className="w-full mx-auto flex flex-col lg:flex-row lg:items-center gap-8 px-4 lg:px-0">
-          <Motion className="flex flex-col items-start text-left lg:w-1/2 gap-6" {...motionBlockProps}>
-            {capability.heroSection?.badge && (
-              <span className="inline-block border border-[#757571] text-sm px-4 py-1 rounded-full text-[#F4F3EC]">
-                {capability.heroSection.badge}
+      <Motion tag="section" className="w-full pt-8 lg:pt-14" {...reveal}>
+        <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <Motion
+            className="flex flex-col items-start gap-6 text-left"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE }}
+          >
+            {hero?.badge && (
+              <span className="inline-flex items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] font-medium uppercase tracking-[0.12em] text-cream">
+                {hero.badge}
               </span>
             )}
-            <h1 className="lg:text-4xl text-3xl font-medium tracking-tight leading-[1.15]">
-              {capability.heroSection?.heading || capability.title}
-            </h1>
-            <p className="lg:text-base text-sm text-[#D5D5D5] max-w-xl">
-              {capability.heroSection?.description || capability.excerpts}
+
+            {/* Small ID / discipline row above the headline (design node 1835:7100). */}
+            <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">
+              {capability.title ? `Capability — ${capability.title}` : 'Capability'}
             </p>
-            {capability.heroSection?.button?.label && (
+
+            <h1 className="font-display text-[clamp(2rem,4.5vw,2.875rem)] font-medium leading-[1.08] tracking-[-0.03em] text-cream">
+              {hero?.heading || capability.title}
+            </h1>
+
+            {(hero?.description || capability.excerpts) && (
+              <p className="max-w-xl text-[15px] leading-relaxed text-body lg:text-[16px]">
+                {hero?.description || capability.excerpts}
+              </p>
+            )}
+
+            {heroButton?.label && (
               <Link
-                href={capability.heroSection.button.link || '#'}
-                className="px-4 py-2 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-lg text-base"
+                href={heroButton.link || '#'}
+                className={cn(
+                  'mt-1 inline-flex items-center gap-2 rounded-md border border-line-strong bg-transparent px-5 py-2.5 text-[14px] font-medium text-cream transition-colors duration-300 hover:border-subtle hover:bg-white/[0.04]',
+                  focusRing,
+                )}
               >
-                {capability.heroSection.button.label}
+                {heroButton.label}
+                <ArrowUpRight size={15} strokeWidth={2} aria-hidden />
               </Link>
             )}
           </Motion>
 
-          {heroImage?.url && (
-            <Motion
-              className="relative lg:w-1/2 w-full h-[280px] lg:h-[458px] rounded-md overflow-hidden"
-              {...motionGridItemProps}
-            >
+          {/* Right header card — always present. Falls back to the noise-gradient device when
+              media is missing so the hero never collapses to a single column. */}
+          <Motion
+            className="relative aspect-[724/458] w-full overflow-hidden rounded-md ring-1 ring-white/[0.06]"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
+          >
+            <NoiseGradient tone={HERO_TONE} />
+            {heroImage?.url && (
               <Image
                 src={heroImage.url}
                 alt={heroImage.alt || capability.title || 'Capability hero'}
@@ -200,82 +273,88 @@ export default async function Page({
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
               />
-            </Motion>
-          )}
+            )}
+          </Motion>
         </div>
       </Motion>
 
       {/* What this means to us */}
       {capability.whatThisMeansToUs?.heading && (
-        <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-6 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
+          <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
             <SectionHeader
-              label={capability.whatThisMeansToUs.sectionLabel ?? undefined}
+              index={1}
+              label={capability.whatThisMeansToUs.sectionLabel ?? 'What this means to us'}
               heading={capability.whatThisMeansToUs.heading}
               description={capability.whatThisMeansToUs.description}
-              className="lg:w-2/5 shrink-0"
+              className="shrink-0 lg:w-[28%]"
             />
 
-            <div className="flex flex-col gap-8 lg:w-3/5">
+            <ol className="flex flex-1 flex-col">
               {capability.whatThisMeansToUs.items?.map((item, index) => (
                 <Motion
+                  tag="li"
                   key={item.id ?? `means-${index}`}
-                  className="flex gap-6 items-start"
-                  {...motionGridItemProps}
-                  transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}
+                  className="flex items-start gap-6 border-t border-white/[0.06] py-6 first:border-t-0 first:pt-0"
+                  {...revealItem(index)}
                 >
-                  <span className="text-[10px] tracking-[0.18em] uppercase text-[#F4F3EC] pt-1 shrink-0">
+                  <span className="shrink-0 pt-1 text-[12px] font-medium tabular-nums tracking-[0.06em] text-subtle">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-base font-medium">{item.title}</h3>
-                    <p className="text-base text-[#757571] leading-relaxed">{item.excerpt}</p>
+                    <h3 className="text-[16px] font-medium leading-snug text-cream">{item.title}</h3>
+                    <p className="max-w-2xl text-[14px] leading-relaxed text-body">{item.excerpt}</p>
                   </div>
                 </Motion>
               ))}
-            </div>
+            </ol>
           </div>
         </Motion>
       )}
 
       {/* How we do it */}
       {capability?.howWeDoIt?.heading && (
-        <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-6 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
+        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
           <SectionHeader
-            label={capability.howWeDoIt.sectionLabel ?? undefined}
+            index={2}
+            label={capability.howWeDoIt.sectionLabel ?? 'How we do it'}
             heading={capability.howWeDoIt.heading}
             description={capability.howWeDoIt.description}
-            className="mb-8"
+            className="mb-10"
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Alternating wide/narrow rhythm: items 0 & 3 span two columns. */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             {capability.howWeDoIt.items?.map((item, index) => {
-              const isFeatured = index === 0 || index === 3
+              const isWide = index === 0 || index === 3
 
               return (
                 <Motion
                   key={item.id ?? `practice-${index}`}
                   className={cn(
-                    'bg-[#0F0E0E] p-6 rounded flex flex-col justify-between min-h-[280px]',
-                    isFeatured ? 'lg:col-span-2' : 'lg:col-span-1',
+                    'group flex min-h-[280px] flex-col justify-between rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.14]',
+                    isWide ? 'lg:col-span-2' : 'lg:col-span-1',
                   )}
-                  {...motionGridItemProps}
-                  transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}
+                  {...revealItem(index)}
                 >
                   <div className="flex flex-col gap-4">
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-xs text-[#757571]">{String(index + 1).padStart(2, '0')}</span>
-                        <h3 className="text-xl lg:text-2xl font-medium tracking-tight">{item.title}</h3>
+                      <div className="flex items-baseline gap-2.5">
+                        <span className="text-[12px] font-medium tabular-nums text-subtle">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                        <h3 className="text-[20px] font-medium leading-tight tracking-[-0.01em] text-cream lg:text-[22px]">
+                          {item.title}
+                        </h3>
                       </div>
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#F4F3EC] shrink-0 mt-2" />
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-cream/60 transition-colors duration-300 group-hover:bg-cream" />
                     </div>
-                    <p className="text-base text-[#D5D5D5] leading-relaxed">{item.excerpt}</p>
+                    <p className="max-w-xl text-[14px] leading-relaxed text-body">{item.excerpt}</p>
                   </div>
 
                   {item.stack && item.stack.length > 0 && (
-                    <div className="mt-6 flex flex-col gap-2">
-                      <span className="text-xs text-[#757571]">Stack</span>
+                    <div className="mt-8 flex flex-col gap-3">
+                      <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Stack</span>
                       <StackTags tags={item.stack} />
                     </div>
                   )}
@@ -288,56 +367,60 @@ export default async function Page({
 
       {/* Case studies */}
       {capability.caseStudies?.heading && (
-        <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-6 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
+        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
           <SectionHeader
-            label={capability.caseStudies.sectionLabel ?? undefined}
+            index={3}
+            label={capability.caseStudies.sectionLabel ?? 'Case studies'}
             heading={capability.caseStudies.heading}
             description={capability.caseStudies.description}
-            className="mb-8"
+            className="mb-10"
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {capability.caseStudies.items?.map((item, index) => (
               <Motion
                 key={item.id ?? `case-${index}`}
-                className="bg-[#0F0E0E] p-6 rounded-lg flex flex-col justify-between min-h-[400px]"
-                {...motionGridItemProps}
-                transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}
+                className="group flex min-h-[400px] flex-col justify-between rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.14]"
+                {...revealItem(index)}
               >
                 <div className="flex flex-col gap-6">
-                  <div className="flex flex-col gap-1">
-                    {item.meta && <span className="text-xs text-[#757571]">{item.meta}</span>}
-                    <h3 className="text-base font-medium leading-snug">{item.title}</h3>
+                  <div className="flex flex-col gap-2">
+                    {item.meta && (
+                      <span className="text-[12px] uppercase tracking-[0.12em] text-subtle">{item.meta}</span>
+                    )}
+                    <h3 className="text-[18px] font-medium leading-snug tracking-[-0.01em] text-cream">{item.title}</h3>
                   </div>
 
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-4">
                     {item.problem && (
-                      <div>
-                        <p className="text-xs text-[#757571] mb-1">Problem</p>
-                        <p className="text-sm text-[#D5D5D5] leading-relaxed">{item.problem}</p>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Problem</p>
+                        <p className="text-[14px] leading-relaxed text-body">{item.problem}</p>
                       </div>
                     )}
                     {item.approach && (
-                      <div>
-                        <p className="text-xs text-[#757571] mb-1">Approach</p>
-                        <p className="text-sm text-[#D5D5D5] leading-relaxed">{item.approach}</p>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Approach</p>
+                        <p className="text-[14px] leading-relaxed text-body">{item.approach}</p>
                       </div>
                     )}
                     {item.outcome && (
-                      <div>
-                        <p className="text-xs text-[#757571] mb-1">Outcome</p>
-                        <p className="text-sm text-[#D5D5D5] leading-relaxed">{item.outcome}</p>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Outcome</p>
+                        <p className="text-[14px] leading-relaxed text-body">{item.outcome}</p>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {(item.metricValue || item.metricLabel) && (
-                  <div className="flex items-end gap-2 mt-6">
+                  <div className="mt-8 flex items-baseline gap-2 border-t border-white/[0.06] pt-5">
                     {item.metricValue && (
-                      <span className="text-3xl font-medium tracking-tight">{item.metricValue}</span>
+                      <span className="font-display text-[30px] font-medium leading-none tracking-[-0.02em] text-cream">
+                        {item.metricValue}
+                      </span>
                     )}
-                    {item.metricLabel && <span className="text-xs text-[#757571] pb-1">{item.metricLabel}</span>}
+                    {item.metricLabel && <span className="text-[12px] text-subtle">{item.metricLabel}</span>}
                   </div>
                 )}
               </Motion>
@@ -348,17 +431,16 @@ export default async function Page({
 
       {/* Practice lead */}
       {practiceMember && (
-        <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-6 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
-          {capability.practiceLead?.sectionLabel && (
-            <p className="text-xs text-[#D5D5D5] mb-6">{capability.practiceLead.sectionLabel}</p>
-          )}
+        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
+          <Eyebrow index={4} label={capability.practiceLead?.sectionLabel ?? 'The practice lead'} />
 
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="mt-8 flex flex-col gap-8 lg:flex-row">
             <Motion
-              className="relative w-full lg:w-[320px] h-[320px] lg:h-[388px] rounded-lg overflow-hidden shrink-0"
-              {...motionGridItemProps}
+              className="relative aspect-[320/388] w-full shrink-0 overflow-hidden rounded-md ring-1 ring-white/[0.06] lg:w-[320px]"
+              {...revealItem(0)}
             >
-              {memberImage?.url ? (
+              <NoiseGradient tone={HERO_TONE} />
+              {memberImage?.url && (
                 <Image
                   src={memberImage.url}
                   alt={practiceMember.name || 'Practice lead'}
@@ -366,36 +448,39 @@ export default async function Page({
                   className="object-cover"
                   sizes="320px"
                 />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0F0E0E]" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h3 className="text-2xl font-medium mb-2">{practiceMember.name}</h3>
+              <span
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80"
+              />
+              <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-6">
+                <h3 className="text-[22px] font-medium leading-tight text-cream">{practiceMember.name}</h3>
                 {practiceMember.position && (
-                  <span className="inline-block border border-[#757571] text-xs px-4 py-1 rounded-full">
+                  <span className="inline-flex w-fit items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] text-cream">
                     {practiceMember.position}
                   </span>
                 )}
               </div>
             </Motion>
 
-            <div className="flex flex-col gap-4 flex-1">
+            <div className="flex flex-1 flex-col gap-5">
               {(capability.practiceLead?.bio || practiceMember.description) && (
-                <p className="text-base font-medium leading-relaxed">
+                <p className="max-w-3xl text-[15px] font-medium leading-relaxed text-cream">
                   {capability.practiceLead?.bio || practiceMember.description}
                 </p>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+              <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
                 {capability.practiceLead?.credentials && capability.practiceLead.credentials.length > 0 && (
-                  <div className="bg-[#0F0E0E] p-4 rounded flex flex-col gap-4">
-                    <span className="text-xs text-[#757571]">Credentials</span>
+                  <div className="flex flex-col gap-4 rounded-md border border-white/[0.07] bg-white/[0.015] p-5">
+                    <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Credentials</span>
                     <ul className="flex flex-col gap-3">
                       {capability.practiceLead.credentials.map((item, index) => (
-                        <li key={item.id ?? `cred-${index}`} className="flex gap-2 text-xs">
-                          <span className="text-[#757571] shrink-0">{String(index + 1).padStart(2, '0')}</span>
-                          <span className="text-[#D5D5D5]">{item.text}</span>
+                        <li key={item.id ?? `cred-${index}`} className="flex gap-3 text-[14px]">
+                          <span className="shrink-0 tabular-nums text-subtle">
+                            {String(index + 1).padStart(2, '0')}
+                          </span>
+                          <span className="text-body">{item.text}</span>
                         </li>
                       ))}
                     </ul>
@@ -403,19 +488,27 @@ export default async function Page({
                 )}
 
                 {capability.practiceLead?.writings && capability.practiceLead.writings.length > 0 && (
-                  <div className="bg-[#0F0E0E] p-4 rounded flex flex-col gap-4">
-                    <span className="text-xs text-[#757571]">Recent writing &amp; talks</span>
-                    <ul className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-4 rounded-md border border-white/[0.07] bg-white/[0.015] p-5">
+                    <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">
+                      Recent writing &amp; talks
+                    </span>
+                    <ul className="flex flex-col gap-4">
                       {capability.practiceLead.writings.map((item, index) => (
                         <li key={item.id ?? `writing-${index}`} className="flex flex-col gap-1">
                           {item.link ? (
-                            <Link href={item.link} className="text-sm hover:underline">
+                            <Link
+                              href={item.link}
+                              className={cn(
+                                'w-fit rounded-sm text-[15px] text-cream transition-colors duration-200 hover:text-cream/70',
+                                focusRing,
+                              )}
+                            >
                               {item.title}
                             </Link>
                           ) : (
-                            <span className="text-sm">{item.title}</span>
+                            <span className="text-[15px] text-cream">{item.title}</span>
                           )}
-                          {item.category && <span className="text-xs text-[#757571]">{item.category}</span>}
+                          {item.category && <span className="text-[12px] text-subtle">{item.category}</span>}
                         </li>
                       ))}
                     </ul>
@@ -423,39 +516,50 @@ export default async function Page({
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {capability.practiceLead?.email && (
-                  <Link
-                    href={`mailto:${capability.practiceLead.email}`}
-                    className="inline-flex items-center gap-2 text-xs border border-[#757571] px-4 py-2 rounded-full hover:bg-white/5 transition-colors"
-                  >
-                    <Mail size={14} />
-                    {capability.practiceLead.email}
-                  </Link>
-                )}
-                {practiceMember.linkedin && (
-                  <Link
-                    href={practiceMember.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs border border-[#757571] px-4 py-2 rounded-full hover:bg-white/5 transition-colors"
-                  >
-                    <Linkedin size={14} />
-                    LinkedIn
-                  </Link>
-                )}
-                {capability.practiceLead?.github && (
-                  <Link
-                    href={capability.practiceLead.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs border border-[#757571] px-4 py-2 rounded-full hover:bg-white/5 transition-colors"
-                  >
-                    <Github size={14} />
-                    GitHub
-                  </Link>
-                )}
-              </div>
+              {(capability.practiceLead?.email || practiceMember.linkedin || capability.practiceLead?.github) && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {capability.practiceLead?.email && (
+                    <Link
+                      href={`mailto:${capability.practiceLead.email}`}
+                      className={cn(
+                        'inline-flex items-center gap-2 rounded-md border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
+                        focusRing,
+                      )}
+                    >
+                      <Mail size={14} aria-hidden />
+                      {capability.practiceLead.email}
+                    </Link>
+                  )}
+                  {practiceMember.linkedin && (
+                    <Link
+                      href={practiceMember.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        'inline-flex items-center gap-2 rounded-md border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
+                        focusRing,
+                      )}
+                    >
+                      <Linkedin size={14} aria-hidden />
+                      LinkedIn
+                    </Link>
+                  )}
+                  {capability.practiceLead?.github && (
+                    <Link
+                      href={capability.practiceLead.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(
+                        'inline-flex items-center gap-2 rounded-md border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
+                        focusRing,
+                      )}
+                    >
+                      <Github size={14} aria-hidden />
+                      GitHub
+                    </Link>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </Motion>
@@ -463,32 +567,34 @@ export default async function Page({
 
       {/* Related capabilities */}
       {capability.relatedCapabilities?.heading && relatedCapabilities && relatedCapabilities.length > 0 && (
-        <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-6 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
+        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
           <SectionHeader
-            label={capability.relatedCapabilities.sectionLabel ?? undefined}
+            index={5}
+            label={capability.relatedCapabilities.sectionLabel ?? 'Related capabilities'}
             heading={capability.relatedCapabilities.heading}
-            className="mb-8"
+            className="mb-10"
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {relatedCapabilities.map((item, index) => (
-              <Motion
-                key={item.id ?? `related-${index}`}
-                {...motionGridItemProps}
-                transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}
-              >
+              <Motion key={item.id ?? `related-${index}`} {...revealItem(index)}>
                 <Link
                   href={`/${typedLocale}/capabilities/${item.slug}`}
-                  className="bg-[#0F0E0E] p-6 rounded flex flex-col gap-2 group hover:bg-[#14120B] transition-colors h-full"
+                  className={cn(
+                    'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-white/[0.03]',
+                    focusRing,
+                  )}
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-base font-medium">{item.title}</h3>
+                    <h3 className="text-[16px] font-medium text-cream">{item.title}</h3>
                     <ArrowUpRight
-                      size={14}
-                      className="shrink-0 text-[#757571] group-hover:text-[#F4F3EC] transition-colors"
+                      size={15}
+                      strokeWidth={2}
+                      aria-hidden
+                      className="shrink-0 text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream"
                     />
                   </div>
-                  {item.excerpts && <p className="text-xs text-[#757571] leading-relaxed">{item.excerpts}</p>}
+                  {item.excerpts && <p className="text-[13px] leading-relaxed text-subtle">{item.excerpts}</p>}
                 </Link>
               </Motion>
             ))}
@@ -496,52 +602,57 @@ export default async function Page({
         </Motion>
       )}
 
-      {/* CTA Section */}
-      <Motion
-        tag="section"
-        className="lg:p-10 p-6 rounded-lg overflow-hidden lg:m-0 m-4 relative border border-white/[0.04]"
-        style={{
-          background: (capability.cta?.backgroundImage as Media)?.url
-            ? `url(${(capability.cta?.backgroundImage as Media)?.url}) center/cover no-repeat`
-            : 'linear-gradient(135deg, #1e3a5f 0%, #4c1d95 60%, #2e1065 100%)', // Fallback matching image_4c91c8.jpg
-        }}
-        {...motionSectionProps}
-      >
-        {/* Grain/Texture Overlay Effect (Optional simulation matching the texture in image_4c91c8.jpg) */}
-        <div className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=10')] bg-repeat" />
+      {/* CTA — the page's signature noise-gradient moment. Guarded so empty records degrade. */}
+      {cta?.heading && (
+        <Motion
+          tag="section"
+          className="relative overflow-hidden rounded-md border border-white/[0.06] p-8 lg:p-12"
+          {...reveal}
+        >
+          {ctaBackground?.url ? (
+            <span
+              aria-hidden
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${ctaBackground.url})` } as CSSProperties}
+            />
+          ) : null}
+          <NoiseGradient tone={CTA_TONE} className={ctaBackground?.url ? 'opacity-90 mix-blend-multiply' : ''} />
 
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 max-w-6xl mx-auto">
-          {/* Left Side: Typography */}
-          <Motion className="flex flex-col items-start text-left lg:max-w-xl" {...motionBlockProps}>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-white leading-[1.2]">
-              {capability.cta?.heading}
-            </h2>
-            <p className="text-xs md:text-sm text-[#D5D5D5]/80 max-w-lg leading-relaxed">
-              {capability.cta?.description}
-            </p>
-          </Motion>
+          <div className="relative z-10 flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <Motion className="flex max-w-xl flex-col items-start gap-3" {...revealItem(0)}>
+              <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
+                {cta.heading}
+              </h2>
+              {cta.description && (
+                <p className="max-w-lg text-[14px] leading-relaxed text-cream/75">{cta.description}</p>
+              )}
+            </Motion>
 
-          {/* Right Side: Action Buttons */}
-          <div className="flex sm:flex-row flex-col gap-3 items-center shrink-0 lg:ml-auto">
-            {capability.cta?.button_1?.label && (
-              <Link
-                href={capability.cta?.button_1?.link as string}
-                className="w-full sm:w-auto px-5 py-2.5 bg-[#14120B] font-medium rounded-2xl text-base"
-              >
-                {capability.cta?.button_1?.label}
-              </Link>
-            )}
-            {capability.cta?.button_2?.label && (
-              <Link
-                href={capability.cta?.button_2?.link as string}
-                className="px-5 sm:w-auto w-full py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
-              >
-                {capability.cta?.button_2?.label}
-              </Link>
+            {ctaButtons.length > 0 && (
+              <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row lg:ml-auto">
+                {ctaButtons.map((button, index) => {
+                  const isPrimary = index === 0
+                  return (
+                    <Link
+                      key={`${button.label}-${index}`}
+                      href={button.link || '#'}
+                      className={cn(
+                        'inline-flex w-full items-center justify-center rounded-md px-5 py-2.5 text-[14px] font-medium transition-colors duration-300 sm:w-auto',
+                        isPrimary
+                          ? 'bg-cream text-ink hover:bg-cream-hover'
+                          : 'border border-white/20 bg-white/[0.06] text-cream hover:bg-white/[0.12]',
+                        focusRing,
+                      )}
+                    >
+                      {button.label}
+                    </Link>
+                  )
+                })}
+              </div>
             )}
           </div>
-        </div>
-      </Motion>
+        </Motion>
+      )}
     </div>
   )
 }

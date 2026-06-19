@@ -1,6 +1,9 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import GradientAvatar from '@/components/sections/insights/GradientAvatar'
+import GradientPanel from '@/components/sections/insights/GradientPanel'
 import InsightShare from '@/components/sections/insights/InsightShare'
+import InsightToc from '@/components/sections/insights/InsightToc'
 import JsonLd from '@/components/seo/JsonLd'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
@@ -9,11 +12,10 @@ import type { Insight, Media, Team } from '@/payload-types'
 import config from '@/payload.config'
 import { extractHeadings } from '@/utilities/extractHeadings'
 import { getServerSideURL } from '@/utilities/getURL'
-import { ArrowRight, ArrowUpRight, Linkedin, Mail } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUpRight, Linkedin, Mail } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
@@ -85,25 +87,13 @@ export async function generateMetadata({
   })
 }
 
-const motionSectionProps = {
-  initial: { opacity: 0, y: 12 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: false, amount: 0.2 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
-}
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-const motionBlockProps = {
-  initial: { opacity: 0, y: 10 },
+const reveal = {
+  initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: false, amount: 0.4 as const },
-  transition: { duration: 0.35, ease: 'easeOut' as const },
-}
-
-const motionGridItemProps = {
-  initial: { opacity: 0, scale: 0.985 },
-  whileInView: { opacity: 1, scale: 1 },
-  viewport: { once: false, amount: 0.35 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
+  viewport: { once: true, margin: '-60px' } as const,
+  transition: { duration: 0.6, ease: EASE },
 }
 
 function formatDate(date?: string | null): string {
@@ -124,69 +114,53 @@ function formatShortDate(date?: string | null): string {
   })
 }
 
-function MetaColumn({ label, value }: { label: string; value?: string | null }) {
+function MetaPair({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-xs text-[#757571]">{label}</span>
-      <span className="text-sm text-white">{value}</span>
+      <span className="text-[12px] tracking-[-0.01em] text-subtle">{label}</span>
+      <span className="text-[16px] text-cream">{value}</span>
     </div>
   )
 }
 
-function AuthorAvatar({ image, name }: { image?: Media; name?: string | null }) {
-  if (image?.url) {
-    return (
-      <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
-        <Image src={image.url} alt={image.alt || name || 'Author'} fill className="object-cover" sizes="40px" />
-      </div>
-    )
-  }
-
-  return <div className="h-10 w-10 shrink-0 rounded-full bg-linear-to-br from-violet-500 to-fuchsia-500" />
-}
-
 function RelatedInsightCard({ item, index, locale }: { item: Insight; index: number; locale: TypedLocale }) {
-  const thumbnail = item.thumbnail as Media | undefined
-
   return (
-    <Motion {...motionGridItemProps} transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.05 }}>
+    <Motion
+      tag="div"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.6, ease: EASE, delay: Math.min(index * 0.06, 0.36) }}
+    >
       <Link
         href={`/${locale}/insights/${item.slug}`}
-        className="group flex flex-col rounded-lg overflow-hidden border border-zinc-800/40 h-full"
+        className="group flex h-full flex-col overflow-hidden rounded-md bg-main ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
       >
-        <div className="relative h-[220px] overflow-hidden">
-          {thumbnail?.url ? (
-            <Image
-              src={thumbnail.url}
-              alt={thumbnail.alt || item.title || 'Insight'}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-              sizes="(max-width: 768px) 100vw, 33vw"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-linear-to-br from-teal-950 via-emerald-800 to-green-500" />
-          )}
-
-          <span className="absolute top-4 left-4 inline-flex items-center rounded-full bg-black/70 px-3 py-1 text-xs text-white">
-            Insight
-          </span>
-
-          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-white/90">
-            <span>{item.code ?? ''}</span>
-            <span>{item.publishedDate ? formatShortDate(item.publishedDate) : ''}</span>
+        {/* Signature gradient-noise media (no photo) — renders identically with or without CMS media. */}
+        <GradientPanel tone="emerald" scrim className="h-[224px] rounded-none">
+          <div className="flex h-full flex-col p-6">
+            <span className="inline-flex w-fit items-center rounded-full bg-black/55 px-3.5 py-1.5 text-[13px] text-cream backdrop-blur-sm">
+              {item.code || 'Insight'}
+            </span>
+            <div className="mt-auto flex items-center justify-between text-[12px] text-cream/90">
+              <span>{item.categoryLabel ?? ''}</span>
+              <span>{item.publishedDate ? formatShortDate(item.publishedDate) : ''}</span>
+            </div>
           </div>
-        </div>
+        </GradientPanel>
 
-        <div className="bg-[#0F0E0E] p-6 flex flex-col flex-1 gap-3">
-          <h3 className="text-base font-medium tracking-tight text-white leading-snug line-clamp-3">{item.title}</h3>
+        <div className="flex flex-1 flex-col gap-3 p-6">
+          <h3 className="font-display text-[20px] font-medium leading-[1.18] tracking-[-0.02em] text-cream line-clamp-3">
+            {item.title}
+          </h3>
 
-          {item.excerpts && <p className="text-sm text-[#D5D5D5] leading-relaxed line-clamp-3">{item.excerpts}</p>}
+          {item.excerpts && <p className="text-[15px] leading-relaxed text-body line-clamp-3">{item.excerpts}</p>}
 
-          <div className="flex items-center justify-between pt-4 mt-auto border-t border-zinc-800/60 text-xs">
-            <span className="text-[#757571]">{item.categoryLabel ?? ''}</span>
-            <span className="flex items-center gap-1 text-sm text-white group-hover:gap-2 transition-all">
+          <div className="mt-auto flex items-center justify-between border-t border-subtle/60 pt-4 text-[12px]">
+            <span className="text-body">{item.categoryLabel ?? 'Insight'}</span>
+            <span className="flex items-center gap-1 text-[16px] text-cream transition-all group-hover:gap-2">
               Read <ArrowUpRight size={14} />
             </span>
           </div>
@@ -210,7 +184,6 @@ export default async function Page({
     notFound()
   }
 
-  const thumbnail = insight.thumbnail as Media | undefined
   const author = insight.author as Team | undefined
   const authorImage = author?.image as Media | undefined
   const tagNames = insight.tags?.map((tag) => tag.name).filter(Boolean) as string[] | undefined
@@ -220,6 +193,7 @@ export default async function Page({
   const headings = extractHeadings(insight.content as RichText)
   const baseUrl = getServerSideURL()
   const shareUrl = `${baseUrl}/${typedLocale}/insights/${slug}`
+  const thumbnail = insight.thumbnail as Media | undefined
 
   const articleLd = article({
     headline: insight.title ?? 'Insight',
@@ -239,145 +213,124 @@ export default async function Page({
 
   const showAuthorMeta = Boolean(author?.name || author?.position)
   const showMetaRow = showAuthorMeta || insight.publishedDate || insight.readTime || insight.slug
+  const authorEmail = `mailto:hello@ternary.solutions`
 
   return (
-    <div className="flex flex-col lg:gap-24 gap-12 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-5 pb-16 lg:gap-[72px] lg:pb-24">
       <JsonLd data={articleLd} />
       <JsonLd data={breadcrumbsLd} />
-      {/* Hero */}
-      <Motion tag="section" className="w-full lg:pt-16 pt-8 px-4 lg:px-0" {...motionSectionProps}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
-          <Motion className="flex flex-col justify-between gap-10 lg:min-h-[458px]" {...motionBlockProps}>
+
+      {/* Breadcrumb / utility bar */}
+      <div className="flex items-center justify-between gap-4 pt-8 lg:pt-12">
+        <Link
+          href={`/${typedLocale}/stories`}
+          className="group inline-flex items-center gap-2 rounded-[2px] text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
+        >
+          <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5" />
+          All insights
+        </Link>
+        {insight.categoryLabel && <span className="text-[14px] text-subtle">{insight.categoryLabel}</span>}
+      </div>
+
+      {/* Hero — left text column + signature gradient-noise panel (no photo) */}
+      <Motion tag="section" {...reveal}>
+        <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-[576px_1fr] lg:gap-[72px]">
+          <div className="flex min-h-[392px] flex-col justify-between gap-10">
             <div className="flex flex-col gap-6">
-              <h1 className="lg:text-5xl text-3xl font-medium tracking-tight leading-[1.1] text-white">
+              <h1 className="font-display text-3xl font-medium leading-[1.15] tracking-[-0.04em] text-cream lg:text-[40px]">
                 {insight.title}
               </h1>
 
               {insight.leadParagraph && (
-                <p className="text-base text-[#D5D5D5] leading-relaxed max-w-xl">{insight.leadParagraph}</p>
+                <p className="max-w-xl text-[16px] leading-relaxed tracking-[-0.01em] text-body">
+                  {insight.leadParagraph}
+                </p>
               )}
             </div>
 
             {showMetaRow && (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-6 border-t border-zinc-800/60">
+              <div className="flex flex-wrap items-center gap-x-8 gap-y-6">
                 {showAuthorMeta && (
-                  <div className="col-span-2 lg:col-span-1 flex items-center gap-3">
-                    <AuthorAvatar image={authorImage} name={author?.name} />
+                  <div className="flex items-center gap-3">
+                    <GradientAvatar image={authorImage} name={author?.name} size={40} />
                     <div className="min-w-0">
-                      {author?.name && <p className="text-sm font-medium text-white truncate">{author.name}</p>}
-                      {author?.position && <p className="text-xs text-[#757571] truncate">{author.position}</p>}
+                      {author?.name && <p className="truncate text-[16px] text-cream">{author.name}</p>}
+                      {author?.position && <p className="truncate text-[12px] text-subtle">{author.position}</p>}
                     </div>
                   </div>
                 )}
 
-                <MetaColumn
-                  label="Published"
-                  value={insight.publishedDate ? formatDate(insight.publishedDate) : null}
-                />
-                <MetaColumn label="Read time" value={insight.readTime} />
-                <MetaColumn label="Slug" value={insight.slug} />
+                <MetaPair label="Published" value={insight.publishedDate ? formatDate(insight.publishedDate) : null} />
+                <MetaPair label="Read time" value={insight.readTime} />
+                <MetaPair label="Slug" value={insight.slug} />
               </div>
             )}
-          </Motion>
+          </div>
 
-          <Motion
-            className="relative w-full h-[280px] lg:h-[458px] rounded-3xl overflow-hidden"
-            {...motionGridItemProps}
-          >
-            {thumbnail?.url ? (
-              <Image
-                src={thumbnail.url}
-                alt={thumbnail.alt || insight.title || 'Insight hero'}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-              />
-            ) : (
-              <div className="absolute inset-0 bg-linear-to-br from-teal-950 via-emerald-900 to-green-600" />
-            )}
-          </Motion>
+          <GradientPanel tone="emerald" className="h-[280px] w-full lg:h-[392px]" />
         </div>
       </Motion>
 
       {/* Article body */}
       {(insight.content || tagNames?.length || author) && (
-        <Motion tag="section" className="w-full px-4 lg:px-0" {...motionSectionProps}>
-          <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-10 lg:gap-16">
-            <aside className="lg:sticky lg:top-24 lg:self-start flex flex-col gap-8">
-              {headings.length > 0 && (
-                <nav>
-                  <p className="text-xs text-[#757571] mb-4">On this page</p>
-                  <ul className="flex flex-col gap-2">
-                    {headings.map((heading) => (
-                      <li key={heading.id}>
-                        <a
-                          href={`#${heading.id}`}
-                          className="text-sm text-[#757571] hover:text-white transition-colors leading-snug"
-                        >
-                          {heading.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              )}
-
+        <Motion tag="section" {...reveal}>
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[278px_1fr] lg:gap-16">
+            <aside className="flex flex-col gap-8 lg:sticky lg:top-24 lg:self-start">
+              {headings.length > 0 && <InsightToc headings={headings} />}
               <InsightShare url={shareUrl} title={insight.title} />
             </aside>
 
-            <div className="flex flex-col gap-10 min-w-0">
+            <div className="flex min-w-0 flex-col gap-10">
               {insight.content && (
                 <RichTextComp
                   content={insight.content as RichText}
-                  className="flex flex-col gap-2 [&_h2]:scroll-mt-24 [&_h3]:scroll-mt-24 [&_p]:text-base [&_p]:text-[#D5D5D5] [&_p]:leading-[1.7] [&_p]:mt-0 [&_h2]:text-2xl [&_h2]:lg:text-3xl [&_h2]:font-medium [&_h2]:text-white [&_h2]:mt-10 [&_h2]:mb-4 [&_h3]:text-xl [&_h3]:font-medium [&_h3]:text-white [&_h3]:mt-8 [&_h3]:mb-3 [&_ul]:mt-2 [&_ul]:space-y-2 [&_li]:text-[#D5D5D5] [&_code]:block [&_code]:bg-[#1B1A17] [&_code]:border [&_code]:border-zinc-800/60 [&_code]:rounded-lg [&_code]:p-4 [&_code]:text-sm [&_code]:text-[#D5D5D5] [&_code]:overflow-x-auto [&_blockquote]:border-l-2 [&_blockquote]:border-violet-500 [&_blockquote]:pl-4 [&_blockquote]:text-[#D5D5D5]"
+                  className="flex flex-col gap-2 [&_blockquote]:border-l-2 [&_blockquote]:border-cream/40 [&_blockquote]:pl-4 [&_blockquote]:text-body [&_code]:block [&_code]:overflow-x-auto [&_code]:rounded-md [&_code]:border [&_code]:border-line [&_code]:bg-ink [&_code]:p-6 [&_code]:font-mono [&_code]:text-[14px] [&_code]:leading-relaxed [&_code]:text-body [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:scroll-mt-24 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-medium [&_h2]:tracking-[-0.02em] [&_h2]:text-cream [&_h2]:lg:text-[28px] [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:scroll-mt-24 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-medium [&_h3]:tracking-[-0.02em] [&_h3]:text-cream [&_h3]:lg:text-2xl [&_li]:text-body [&_p]:mt-0 [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:tracking-[-0.01em] [&_p]:text-body [&_ul]:mt-2 [&_ul]:space-y-2"
                 />
               )}
 
               {tagNames && tagNames.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-4">
+                <div className="flex flex-wrap gap-2 pt-2">
                   {tagNames.map((tag, index) => (
-                    <span
-                      key={`tag-${index}`}
-                      className="text-xs border border-[#757571] px-4 py-1.5 rounded-full text-[#F4F3EC]"
-                    >
+                    <span key={`tag-${index}`} className="rounded-full bg-badge px-4 py-1.5 text-[12px] text-cream">
                       {tag}
                     </span>
                   ))}
                 </div>
               )}
 
+              {/* Author bio */}
               {author?.name && (
-                <div className="bg-[#1B1A17] rounded-lg p-6 flex flex-col sm:flex-row gap-5">
-                  <AuthorAvatar image={authorImage} name={author.name} />
-                  <div className="flex flex-col gap-3 min-w-0">
-                    <div>
-                      <p className="text-sm text-[#757571]">
-                        Written by <span className="text-white font-medium">{author.name}</span>
-                        {author.position ? `, ${author.position}` : ''}
-                      </p>
+                <div className="flex flex-col gap-5 rounded-md bg-main p-6 sm:flex-row">
+                  <GradientAvatar image={authorImage} name={author.name} size={58} />
+                  <div className="flex min-w-0 flex-col gap-3">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Written by</span>
+                      <p className="text-[16px] text-cream">{author.name}</p>
+                      {author.position && <p className="text-[12px] text-subtle">{author.position}</p>}
                     </div>
                     {author.description && (
-                      <p className="text-sm text-[#D5D5D5] leading-relaxed">{author.description}</p>
+                      <p className="text-[16px] leading-relaxed tracking-[-0.01em] text-body">{author.description}</p>
                     )}
-                    <div className="flex items-center gap-4 pt-1">
+                    <div className="flex items-center gap-5 pt-1">
                       {author.linkedin && (
                         <a
                           href={author.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#757571] hover:text-white transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-[2px] text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
                           aria-label={`${author.name} on LinkedIn`}
                         >
-                          <Linkedin size={16} />
+                          <Linkedin size={14} />
+                          LinkedIn
                         </a>
                       )}
                       <a
-                        href="mailto:hello@ternary.studio"
-                        className="text-[#757571] hover:text-white transition-colors"
+                        href={authorEmail}
+                        className="inline-flex items-center gap-1.5 rounded-[2px] text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
                         aria-label="Email Ternary"
                       >
-                        <Mail size={16} />
+                        <Mail size={14} />
+                        Email
                       </a>
                     </div>
                   </div>
@@ -390,27 +343,27 @@ export default async function Page({
 
       {/* Related insights */}
       {relatedItems && relatedItems.length > 0 && (
-        <Motion tag="section" className="w-full px-4 lg:px-0" {...motionSectionProps}>
-          <div className="flex items-center justify-between gap-4 mb-8">
-            <h2 className="lg:text-3xl text-2xl font-medium tracking-tight text-white">
+        <Motion tag="section" {...reveal}>
+          <div className="mb-8 flex items-center justify-between gap-4">
+            <h2 className="font-display text-2xl font-medium tracking-[-0.02em] text-cream lg:text-[28px]">
               {insight.relatedInsights?.heading || 'Related insights'}
             </h2>
             <Link
               href={`/${typedLocale}/stories`}
-              className="inline-flex items-center gap-1.5 text-sm text-[#D5D5D5] hover:text-white transition-colors shrink-0"
+              className="group inline-flex shrink-0 items-center gap-1.5 rounded-[2px] text-[16px] text-body transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
             >
-              All Insights
-              <ArrowRight size={14} />
+              All insights
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
 
           {insight.relatedInsights?.description && (
-            <p className="text-base text-[#D5D5D5] leading-relaxed mb-8 max-w-3xl">
+            <p className="mb-8 max-w-3xl text-[16px] leading-relaxed text-body">
               {insight.relatedInsights.description}
             </p>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {relatedItems.map((item, index) => (
               <RelatedInsightCard key={item.id} item={item} index={index} locale={typedLocale} />
             ))}
@@ -418,37 +371,43 @@ export default async function Page({
         </Motion>
       )}
 
-      {/* CTA */}
+      {/* CTA — local noise-gradient panel (no external image dependency) */}
       {insight.cta?.heading && (
         <Motion
           tag="section"
-          className="lg:p-10 p-6 rounded-lg overflow-hidden lg:mx-0 mx-4 relative border border-white/[0.04]"
-          style={{
-            background: (insight.cta.backgroundImage as Media)?.url
-              ? `url(${(insight.cta.backgroundImage as Media)?.url}) center/cover no-repeat`
-              : 'linear-gradient(135deg, #1e3a5f 0%, #4c1d95 60%, #2e1065 100%)',
-          }}
-          {...motionSectionProps}
+          {...reveal}
+          className="relative overflow-hidden rounded-md p-6 ring-1 ring-white/5 lg:p-10"
         >
-          <div className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=10')] bg-repeat" />
+          <span
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'radial-gradient(120% 130% at 16% 12%, #2f5ad8 0%, #4c1d95 52%, #1b1230 100%)',
+            }}
+          />
+          <span
+            aria-hidden
+            className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay"
+          />
+          <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/45" />
 
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 max-w-6xl mx-auto">
-            <Motion className="flex flex-col items-start text-left lg:max-w-xl" {...motionBlockProps}>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-white leading-[1.2]">
+          <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col items-start text-left lg:max-w-xl">
+              <h2 className="mb-3 font-display text-2xl font-medium leading-[1.2] tracking-[-0.02em] text-cream md:text-3xl lg:text-4xl">
                 {insight.cta.heading}
               </h2>
               {insight.cta.description && (
-                <p className="text-xs md:text-sm text-[#D5D5D5]/80 max-w-lg leading-relaxed">
+                <p className="max-w-lg text-[14px] leading-relaxed text-body/85 md:text-[15px]">
                   {insight.cta.description}
                 </p>
               )}
-            </Motion>
+            </div>
 
-            <div className="flex sm:flex-row flex-col gap-3 items-center shrink-0 lg:ml-auto">
+            <div className="flex shrink-0 flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:ml-auto">
               {insight.cta.button_1?.label && (
                 <Link
                   href={insight.cta.button_1.link || '#'}
-                  className="w-full sm:w-auto px-5 py-2.5 bg-[#14120B] font-medium rounded-2xl text-base text-center"
+                  className="rounded-md bg-button-dark px-5 py-2.5 text-center text-[16px] font-medium text-cream transition-colors hover:bg-button-dark/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 sm:w-auto"
                 >
                   {insight.cta.button_1.label}
                 </Link>
@@ -456,7 +415,7 @@ export default async function Page({
               {insight.cta.button_2?.label && (
                 <Link
                   href={insight.cta.button_2.link || '#'}
-                  className="px-5 sm:w-auto w-full py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base text-center"
+                  className="rounded-md bg-cream px-5 py-2.5 text-center text-[16px] font-medium text-ink transition-colors hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 sm:w-auto"
                 >
                   {insight.cta.button_2.label}
                 </Link>

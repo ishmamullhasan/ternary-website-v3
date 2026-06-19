@@ -1,59 +1,79 @@
 import Motion from '@/components/animation/motion'
 import type { Industry, IndustryListBlock } from '@/payload-types'
-import { Zap } from 'lucide-react'
-import Link from 'next/link'
+import {
+  Banknote,
+  Factory,
+  HeartPulse,
+  Landmark,
+  Plane,
+  ShieldCheck,
+  ShoppingBag,
+  Trophy,
+  Workflow,
+  type LucideIcon,
+} from 'lucide-react'
 import type { JSX } from 'react'
 
-export function IndustryListComponent(props: IndustryListBlock): JSX.Element {
-  const motionSectionProps = {
-    initial: { opacity: 0, y: 12 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.2 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-  const motionGridItemProps = {
-    initial: { opacity: 0, scale: 0.985 },
-    whileInView: { opacity: 1, scale: 1 },
-    viewport: { once: false, amount: 0.35 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
+// Deterministic per-industry glyph so each benefit block reads as its own topic rather than the
+// repeated placeholder bolt. Matched on keywords in the title; falls back to a neutral workflow
+// glyph and finally cycles a small set so adjacent tiles never share the same icon.
+const KEYWORD_ICONS: ReadonlyArray<readonly [RegExp, LucideIcon]> = [
+  [/bank|capital|financ|invest/i, Banknote],
+  [/insur|risk/i, ShieldCheck],
+  [/manufactur|industrial|supply/i, Factory],
+  [/health|life science|care|medic/i, HeartPulse],
+  [/sport|entertain|media|leisure|hospitality|travel/i, Trophy],
+  [/consumer|retail|goods|commerce/i, ShoppingBag],
+  [/software|platform|tech|saas|cloud/i, Workflow],
+  [/public|govern|sector|civic/i, Landmark],
+]
 
-  const industries = props?.industry as Industry[] | undefined
+const FALLBACK_CYCLE: readonly LucideIcon[] = [Workflow, Factory, ShoppingBag, Plane]
+
+function iconFor(title: string | null | undefined, index: number): LucideIcon {
+  if (title) {
+    for (const [pattern, Icon] of KEYWORD_ICONS) {
+      if (pattern.test(title)) return Icon
+    }
+  }
+  return FALLBACK_CYCLE[index % FALLBACK_CYCLE.length]
+}
+
+export function IndustryListComponent(props: IndustryListBlock): JSX.Element | null {
+  const industries = (props?.industry ?? []).filter((i): i is Industry => typeof i === 'object' && i !== null)
+
+  if (industries.length === 0) return null
 
   return (
-    <Motion tag="section" className="w-full py-16 lg:m-0 m-4" {...motionSectionProps}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
-        {industries?.map((item, index) => (
-          <Link href={`/industries`} key={item.id ?? index} className="group block">
+    <section className="w-full py-4 lg:py-8">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+        {industries.map((item, index) => {
+          const Icon = iconFor(item.title, index)
+          return (
             <Motion
-              className="bg-[#1B1A17] hover:bg-[#252420] border border-zinc-800/40 rounded-lg p-6 lg:p-8 h-[320px] flex flex-col justify-end transition-colors duration-300"
-              {...motionGridItemProps}
-              transition={{
-                duration: 0.4,
-                ease: 'easeOut',
-                delay: index * 0.05,
-              }}
+              key={item.id ?? index}
+              tag="div"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+              className="group flex flex-col"
             >
-              <div className="flex flex-col space-y-6">
-                <div className="w-10 h-10 rounded-full bg-[#14120B] border border-zinc-800/60 flex items-center justify-center text-white/80 shadow-inner">
-                  <Zap size={16} className="stroke-[2.5]" />
-                </div>
+              <span className="flex size-12 items-center justify-center rounded-full border border-white/10 bg-main text-cream/80 shadow-inner transition-colors duration-300 group-hover:border-white/20 group-hover:text-cream">
+                <Icon size={22} strokeWidth={1.75} aria-hidden />
+              </span>
 
-                <div className="space-y-2">
-                  <h3 className="text-lg lg:text-xl font-medium tracking-tight text-white transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-[#D5D5D5] font-normal leading-relaxed line-clamp-4">
-                    {item.excerpts ||
-                      'Clear processes enable weekly releases and predictable continuous deployment, avoiding technical debt.'}
-                  </p>
-                </div>
-              </div>
+              <h3 className="font-display mt-6 max-w-[14rem] text-[19px] font-medium leading-[1.18] tracking-tight text-cream lg:text-xl">
+                {item.title}
+              </h3>
+
+              {item.excerpts && <p className="mt-3 max-w-[20rem] text-sm leading-relaxed text-body">{item.excerpts}</p>}
             </Motion>
-          </Link>
-        ))}
+          )
+        })}
       </div>
-    </Motion>
+    </section>
   )
 }

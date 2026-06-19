@@ -3,6 +3,8 @@ import type { Media, SolutionsHeroBlock } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
 // --- Isometric 3D SVG Renderer ---
 // Mathematically projects 3D coordinates (x, y, z) into 2D isometric space.
 const Cube = ({ cx, cy, x, y, z }: { cx: number; cy: number; x: number; y: number; z: number }) => {
@@ -20,24 +22,24 @@ const Cube = ({ cx, cy, x, y, z }: { cx: number; cy: number; x: number; y: numbe
       {/* Top face */}
       <polygon
         points={`${px},${py - dy} ${px + dx},${py} ${px},${py + dy} ${px - dx},${py}`}
-        fill="#a3a3a3"
-        stroke="#a3a3a3"
+        fill="#b6b5ad"
+        stroke="#b6b5ad"
         strokeWidth="0.5"
         strokeLinejoin="round"
       />
       {/* Left face */}
       <polygon
         points={`${px - dx},${py} ${px},${py + dy} ${px},${py + dy + dz} ${px - dx},${py + dz}`}
-        fill="#737373"
-        stroke="#737373"
+        fill="#75746f"
+        stroke="#75746f"
         strokeWidth="0.5"
         strokeLinejoin="round"
       />
       {/* Right face */}
       <polygon
         points={`${px},${py + dy} ${px + dx},${py} ${px + dx},${py + dz} ${px},${py + dy + dz}`}
-        fill="#525252"
-        stroke="#525252"
+        fill="#4c4b47"
+        stroke="#4c4b47"
         strokeWidth="0.5"
         strokeLinejoin="round"
       />
@@ -56,7 +58,7 @@ const IconShapes = ({ cubes, cx = 50, cy = 60 }: { cubes: number[][]; cx?: numbe
   })
 
   return (
-    <svg className="mb-4 h-20 w-20 shrink-0 drop-shadow-2xl md:h-21 md:w-21" viewBox="0 0 100 100" overflow="visible">
+    <svg className="h-16 w-16 shrink-0 drop-shadow-2xl" viewBox="0 0 100 100" overflow="visible" aria-hidden>
       {sortedCubes.map((c, i) => (
         <Cube key={i} cx={cx} cy={cy} x={c[0]} y={c[1]} z={c[2]} />
       ))}
@@ -140,57 +142,95 @@ const cardShapes = [
 
 export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
   const heroCards = props?.cards ?? []
+  const heroImage = props?.backgroundImage as Media | undefined
+  // Only render decorated cells that have CMS-backed copy so missing data collapses gracefully.
+  const cells = cardShapes
+    .map((shape, index) => ({ shape, card: heroCards[index] }))
+    .filter((c) => Boolean(c.card?.title))
 
   return (
-    <Motion
-      tag="section"
-      className="space-y-32"
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
-    >
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-5">
-        <h1 className="text-[40px] font-bold text-white mb-6 leading-tight text-center">{props?.heading}</h1>
-        <p className="text-neutral-400 mb-10 text-base leading-relaxed text-center">{props?.description}</p>
-      </section>
+    <section className="mx-auto w-full max-w-7xl px-5">
+      {/* Intro block — centered institutional statement. */}
+      <div className="flex flex-col items-center gap-5 py-16 text-center lg:py-24">
+        {props?.heading ? (
+          <Motion
+            tag="h1"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="font-display text-[clamp(2rem,4.5vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream"
+          >
+            {props.heading}
+          </Motion>
+        ) : null}
+        {props?.description ? (
+          <Motion
+            tag="p"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE, delay: 0.08 }}
+            className="max-w-2xl text-[15px] leading-relaxed text-body lg:text-base"
+          >
+            {props.description}
+          </Motion>
+        ) : null}
+      </div>
 
-      <section className="relative z-10 shrink-0 mx-auto w-full max-w-7xl px-5">
-        <div className="relative flex min-h-[min(70vh,540px)] w-full flex-col justify-end overflow-hidden rounded-xl sm:h-[70vh] sm:min-h-0">
+      {/* Signature header image — degrades to a brand gradient + grain when media is absent. */}
+      <Motion
+        tag="div"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.7, ease: EASE }}
+        className="relative aspect-[16/9] w-full overflow-hidden rounded-md ring-1 ring-white/5 sm:aspect-[1480/720]"
+      >
+        {/* Always-present gradient + grain so the frame never reads as an empty/broken box. */}
+        <span
+          aria-hidden
+          className="absolute inset-0"
+          style={{ backgroundImage: 'radial-gradient(120% 120% at 30% 10%, #1c1b26 0%, #121119 46%, #0b0a0f 100%)' }}
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay"
+        />
+        {heroImage?.url ? (
           <Image
-            src={(props?.backgroundImage as Media)?.url || 'https://dummyimage.com/1920x1080/37624F/ffffff'}
-            alt={(props?.backgroundImage as Media)?.alt || ''}
-            width={1920}
-            height={1080}
+            src={heroImage.url}
+            alt={heroImage.alt || ''}
+            fill
+            sizes="(min-width: 1024px) 1480px, 100vw"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
+        ) : null}
+        {/* Bottom scrim keeps the band beneath cohesive with the photo. */}
+        <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
+      </Motion>
 
-          <div className="relative z-20 px-6 lg:px-8 pb-4 sm:absolute sm:inset-x-0 sm:bottom-0 lg:pb-8">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-              {cardShapes.map((card, index) => (
-                <div
-                  key={index}
-                  className="group flex cursor-pointer flex-col items-center rounded-md bg-main px-5 py-6 text-center shadow-xl shadow-black/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#1f1f1f]/95 md:px-6 md:py-7"
-                >
-                  <div className="transition-transform duration-500 group-hover:scale-105">
-                    <IconShapes cubes={card.cubes} cy={card.cy} />
-                  </div>
-
-                  <h3 className="mt-6 mb-1 text-[15px] font-bold leading-snug tracking-wide text-white md:text-base">
-                    {heroCards[index]?.title}
-                  </h3>
-
-                  <p className="text-[12px] font-normal leading-relaxed tracking-wide text-neutral-400 md:text-[13px]">
-                    {heroCards[index]?.excerpt}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Offering row — four disciplines on a flat band, divided by hairlines (no card fills). */}
+      {cells.length > 0 ? (
+        <div className="mt-px grid grid-cols-1 divide-y divide-white/5 overflow-hidden rounded-md bg-ink sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
+          {cells.map(({ shape, card }, index) => (
+            <Motion
+              tag="div"
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.07, 0.42) }}
+              className="group flex flex-col items-center px-6 py-8 text-center sm:border-r sm:border-white/5 sm:last:border-r-0 lg:px-7 lg:py-9"
+            >
+              <div className="transition-transform duration-500 ease-out group-hover:-translate-y-1">
+                <IconShapes cubes={shape.cubes} cy={shape.cy} />
+              </div>
+              <h3 className="font-display mt-5 text-[18px] font-medium leading-snug text-cream">{card?.title}</h3>
+              {card?.excerpt ? <p className="mt-1.5 text-[13px] leading-relaxed text-subtle">{card.excerpt}</p> : null}
+            </Motion>
+          ))}
         </div>
-      </section>
-    </Motion>
+      ) : null}
+    </section>
   )
 }
 

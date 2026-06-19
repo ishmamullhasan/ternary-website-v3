@@ -2,29 +2,54 @@ import Motion from '@/components/animation/motion'
 import type { AboutHeroBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
-export function AboutHeroComponent({ heading, description }: AboutHeroBlock): JSX.Element {
-  const motionSectionProps = {
-    initial: { opacity: 0, y: 12 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.2 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-  const motionBlockProps = {
-    initial: { opacity: 0, y: 10 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.4 as const },
-    transition: { duration: 0.35, ease: 'easeOut' as const },
-  }
+/**
+ * About page intro hero (design node 1255:2819). A centered display headline in Poppins
+ * (`font-display`) over a short supporting line. Above-the-fold text animates with `animate`
+ * (not `whileInView`) so the headline is never gated behind a scroll trigger.
+ *
+ * The heading may arrive as a single string with an embedded newline ("line one\nline two") or
+ * with a literal "/" delimiter — we split so the two-line editorial cadence from the design holds
+ * without hardcoding copy.
+ */
+export function AboutHeroComponent({ heading, description }: AboutHeroBlock): JSX.Element {
+  const lines = (heading ?? '')
+    .split(/\n|\s*\/\s*/)
+    .map((l) => l.trim())
+    .filter(Boolean)
 
   return (
-    <Motion tag="section" className="lg:pb-16 pb-8" {...motionSectionProps}>
-      <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
-        <Motion className="flex flex-col items-center lg:w-3/5" {...motionBlockProps}>
-          <h1 className="text-center lg:text-3xl text-2xl font-medium mb-3">{heading}</h1>
-          <p className="text-center lg:text-base text-sm text-[#D5D5D5] ">{description}</p>
+    <section className="lg:pb-16 pb-8 lg:pt-8">
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-4 text-center lg:px-0">
+        <Motion
+          tag="h1"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: EASE }}
+          className="font-display text-[clamp(1.9rem,4.5vw,2.75rem)] font-medium leading-[1.08] tracking-[-0.02em] text-cream text-balance"
+        >
+          {lines.length > 1
+            ? lines.map((line, i) => (
+                <span key={i} className="block">
+                  {line}
+                </span>
+              ))
+            : (heading ?? '')}
         </Motion>
+
+        {description ? (
+          <Motion
+            tag="p"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
+            className="mt-4 max-w-xl text-[15px] leading-relaxed text-body lg:text-base"
+          >
+            {description}
+          </Motion>
+        ) : null}
       </div>
-    </Motion>
+    </section>
   )
 }

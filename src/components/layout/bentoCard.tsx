@@ -29,7 +29,7 @@ export function BentoCard({
 }: BentoCardProps): JSX.Element {
   if (variant === 'splitImageRight') {
     const splitClassName = cn(
-      `bg-main border border-white/5 rounded-lg relative overflow-hidden flex flex-col group transition-all duration-300 hover:bg-dark`,
+      `bg-main border border-white/5 rounded-md relative overflow-hidden flex flex-col group transition-all duration-300 hover:bg-dark`,
       className,
     )
     const splitInner = (
@@ -47,11 +47,11 @@ export function BentoCard({
         <div className="relative z-10 h-full p-8 flex flex-col justify-end max-w-xl">
           {!noIcon && (
             <div className="p-2 bg-white/5 rounded-full inline-flex backdrop-blur-sm w-fit mb-6">
-              <Zap className="w-4 h-4 text-white/70" />
+              <Zap className="w-4 h-4 text-cream/70" />
             </div>
           )}
-          {title && <h3 className="max-w-lg text-2xl font-medium text-white mb-4 tracking-tight">{title}</h3>}
-          {desc && <p className="max-w-lg text-zinc-400 text-sm leading-relaxed">{desc}</p>}
+          {title && <h3 className="font-display max-w-lg text-2xl font-medium text-cream mb-4">{title}</h3>}
+          {desc && <p className="max-w-lg text-body text-sm leading-relaxed">{desc}</p>}
         </div>
         {children}
       </div>
@@ -66,7 +66,7 @@ export function BentoCard({
         tag="div"
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.2 }}
+        viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
         className={splitClassName}
       >
@@ -76,7 +76,7 @@ export function BentoCard({
   }
 
   const defaultClassName = cn(
-    `bg-main rounded-lg p-6 lg:p-8 relative overflow-hidden flex flex-col group transition-all duration-300 hover:bg-dark`,
+    `bg-main rounded-md p-6 lg:p-8 relative overflow-hidden flex flex-col group transition-all duration-300 hover:bg-dark`,
     className,
   )
 
@@ -97,15 +97,15 @@ export function BentoCard({
       {!isImageOnly && !noIcon && (
         <div className="mb-auto relative z-10">
           <div className="p-2 bg-white/5 rounded-full inline-flex backdrop-blur-sm">
-            <Zap className="w-4 h-4 text-white/70" />
+            <Zap className="w-4 h-4 text-cream/70" />
           </div>
         </div>
       )}
 
       {!isImageOnly && (
         <div className={`mt-auto max-w-lg ${noIcon ? 'h-full flex flex-col justify-end' : ''} relative z-10`}>
-          {title && <h3 className="text-lg lg:text-xl font-medium text-white mb-2 tracking-tight">{title}</h3>}
-          {desc && <p className="text-zinc-400 text-sm leading-relaxed">{desc}</p>}
+          {title && <h3 className="font-display text-lg lg:text-xl font-medium text-cream mb-2">{title}</h3>}
+          {desc && <p className="text-body text-sm leading-relaxed">{desc}</p>}
         </div>
       )}
       {children}
@@ -121,7 +121,7 @@ export function BentoCard({
       tag="div"
       initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
       className={defaultClassName}
     >

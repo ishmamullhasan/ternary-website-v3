@@ -46,9 +46,14 @@ export function CareersGrowthComponent(props: CareersGrowthBlock): JSX.Element {
           </div>
           <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-2 mt-8 border-t border-white/10 pt-6">
             {item1?.levels?.map((level, i) => (
-              <div key={i} className="bg-[#0f0f0f] p-4 rounded-lg flex flex-col items-start justify-center">
-                <div className="text-xs text-zinc-500 mb-1">LEVEL {i + 1}</div>
-                <div className="text-sm text-white">{level?.name || ''}</div>
+              <div
+                key={i}
+                className="flex flex-col items-start justify-center rounded-md border border-line bg-ink p-4 transition-colors duration-300 hover:border-white/15"
+              >
+                <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.14em] text-subtle">
+                  Level {i + 1}
+                </div>
+                <div className="text-sm font-medium text-cream">{level?.name || ''}</div>
               </div>
             ))}
           </div>
@@ -74,17 +79,13 @@ export function CareersGrowthComponent(props: CareersGrowthBlock): JSX.Element {
         <BentoCard
           title={item4?.title || 'Leadership & influence opportunities'}
           desc={
-            item4?.excerpt ||
-            'Take on leadership roles and shape the technical direction of our products and teams.'
+            item4?.excerpt || 'Take on leadership roles and shape the technical direction of our products and teams.'
           }
         />
         <BentoCard
           className="p-0 border-0 aspect-square"
           noIcon
-          imageBg={
-            (item5?.media as Media)?.url ||
-            'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1000&auto=format&fit=crop'
-          }
+          imageBg={(item5?.media as Media)?.url || undefined}
           title={item5?.title || 'Move with velocity'}
           desc={
             item5?.excerpt ||

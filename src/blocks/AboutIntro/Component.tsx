@@ -3,32 +3,44 @@ import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutIntroBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
-export function AboutIntroComponent({ heading, description, content }: AboutIntroBlock): JSX.Element {
-  const motionSectionProps = {
-    initial: { opacity: 0, y: 12 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.2 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-  const motionBlockProps = {
-    initial: { opacity: 0, y: 10 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.4 as const },
-    transition: { duration: 0.35, ease: 'easeOut' as const },
-  }
+/**
+ * Manifesto block (design node 1258:11547). A narrow left rail — short Poppins headline plus a
+ * muted Inter caption — sits beside a wide column of large stacked paragraphs (the body comes from
+ * the CMS rich-text `content`). Sits on the warm `bg-main` panel at the standard 5px radius.
+ *
+ * The wide column is intentionally typeset large (≈20px / 1.6) so the "We are standing at the
+ * threshold of the agentic era…" copy reads as an editorial statement, matching the comp.
+ */
+export function AboutIntroComponent({ heading, description, content }: AboutIntroBlock): JSX.Element | null {
+  if (!heading && !content) return null
 
   return (
-    <Motion tag="section" className="bg-[#1B1A17] lg:p-10 p-4 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
-      <div className="flex lg:flex-row flex-col  lg:items-start items-center lg:justify-between">
-        <Motion className="lg:w-1/5" {...motionBlockProps}>
-          <h3 className="lg:text-2xl text-xl mb-3 font-medium">{heading}</h3>
-          <p className="lg:text-sm text-xs text-[#D5D5D5]">{description}</p>
-        </Motion>
+    <Motion
+      tag="section"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.6, ease: EASE }}
+      className="rounded-md bg-main p-6 lg:p-12"
+    >
+      <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
+        <div className="lg:w-1/5 lg:shrink-0">
+          {heading ? (
+            <h2 className="font-display text-[22px] font-medium leading-[1.15] tracking-[-0.01em] text-cream lg:text-2xl">
+              {heading}
+            </h2>
+          ) : null}
+          {description ? <p className="mt-4 text-[13px] leading-relaxed text-subtle">{description}</p> : null}
+        </div>
 
-        <Motion className="lg:pl-8 pl-0 lg:pt-0 pt-4 lg:w-4/5" {...motionBlockProps}>
-          <RichTextComp content={content as RichText} />
-        </Motion>
+        <div className="lg:w-4/5">
+          <RichTextComp
+            content={content as RichText}
+            className="prose-p:text-[17px] prose-p:leading-[1.6] prose-p:text-body prose-p:tracking-[-0.01em] lg:prose-p:text-[20px] lg:prose-p:leading-[1.6]"
+          />
+        </div>
       </div>
     </Motion>
   )

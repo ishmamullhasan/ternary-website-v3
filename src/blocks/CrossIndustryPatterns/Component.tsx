@@ -1,112 +1,108 @@
 import Motion from '@/components/animation/motion'
 import { cn } from '@/lib/utils'
 import type { CrossIndustryPatternsBlock, Media } from '@/payload-types'
-import { Smile, Zap } from 'lucide-react'
+import { GitBranch, Layers, Network, Workflow, type LucideIcon } from 'lucide-react'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+// Distinct per-tile glyphs so the grid reads as different patterns rather than the repeated bolt.
+const TILE_ICONS: readonly LucideIcon[] = [Layers, Network, GitBranch, Workflow]
+
 export function CrossIndustryPatternsComponent(props: CrossIndustryPatternsBlock): JSX.Element | null {
-  const motionSectionProps = {
-    initial: { opacity: 0, y: 12 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.2 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
-
-  const motionBlockProps = {
-    initial: { opacity: 0, y: 10 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.4 as const },
-    transition: { duration: 0.35, ease: 'easeOut' as const },
-  }
-
-  const motionGridItemProps = {
-    initial: { opacity: 0, scale: 0.985 },
-    whileInView: { opacity: 1, scale: 1 },
-    viewport: { once: false, amount: 0.35 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
-
   if (!props?.heading) return null
 
+  const items = props.items ?? []
+
   return (
-    <Motion tag="section" className="bg-main p-10 rounded-lg lg:m-0 m-4" {...motionSectionProps}>
-      <div className="space-y-8 lg:space-y-10">
-        <Motion className="space-y-3" {...motionBlockProps}>
-          <h2 className="lg:text-3xl text-2xl font-semibold tracking-tight text-white">{props.heading}</h2>
-          {props.description && (
-            <p className="lg:text-sm text-xs text-[#D5D5D5] max-w-3xl leading-relaxed">{props.description}</p>
-          )}
+    <section className="w-full rounded-md bg-ink p-6 lg:p-10">
+      <div className="space-y-8 lg:space-y-12">
+        <Motion
+          tag="div"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="max-w-3xl space-y-3"
+        >
+          <h2 className="font-display text-2xl font-medium leading-tight tracking-tight text-cream lg:text-3xl">
+            {props.heading}
+          </h2>
+          {props.description && <p className="text-sm leading-relaxed text-body">{props.description}</p>}
         </Motion>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {props.items?.map((item, index) => {
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {items.map((item, index) => {
             const imageUrl = item.media ? ((item.media as Media)?.url ?? undefined) : undefined
             const isFirst = index === 0
-            const isLast = index === (props.items?.length ?? 0) - 1 && index > 0
+            const isLast = index === items.length - 1 && index > 0
+            const Icon = TILE_ICONS[index % TILE_ICONS.length]
 
             return (
               <Motion
                 key={item.id ?? `pattern-${index}`}
+                tag="div"
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.4) }}
                 className={cn(
-                  'relative overflow-hidden rounded-lg p-6 lg:p-8 flex flex-col min-h-[240px]',
-                  !isFirst && 'bg-[#0F0E0E]',
-                  isFirst && 'lg:col-span-2 lg:row-span-2 lg:min-h-[520px] justify-end',
-                  isFirst && !imageUrl && 'bg-[#0F0E0E]',
-                  !isFirst && !isLast && 'lg:col-start-3 justify-between',
+                  'group relative flex flex-col overflow-hidden rounded-md bg-main p-6 ring-1 ring-white/5 transition-colors duration-300 hover:ring-white/10 lg:p-8',
+                  isFirst && 'justify-end lg:col-span-2 lg:row-span-2 lg:min-h-[480px]',
+                  !isFirst && !isLast && 'justify-between lg:col-start-3 lg:min-h-[232px]',
                   index === 1 && 'lg:row-start-1',
                   index === 2 && 'lg:row-start-2',
-                  isLast && 'lg:col-span-3 lg:col-start-1 lg:row-start-3 lg:min-h-[180px] justify-between',
+                  isLast && 'justify-between lg:col-span-3 lg:col-start-1 lg:row-start-3 lg:min-h-[160px]',
                 )}
-                {...motionGridItemProps}
-                transition={{
-                  duration: 0.4,
-                  ease: 'easeOut',
-                  delay: index * 0.05,
-                }}
               >
-                {isFirst && imageUrl && (
-                  <div className="absolute inset-0 z-0">
-                    <Image
-                      src={imageUrl}
-                      alt={item.title || 'Pattern background'}
-                      fill
-                      className="object-cover"
-                      priority
-                      sizes="(max-width: 1024px) 100vw, 66vw"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/25 to-transparent" />
+                {/* Feature tile: image when present, otherwise the signature noise-gradient field. */}
+                {isFirst && (
+                  <div aria-hidden className="absolute inset-0">
+                    {imageUrl ? (
+                      <Image
+                        src={imageUrl}
+                        alt=""
+                        fill
+                        priority
+                        sizes="(max-width: 1024px) 100vw, 66vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <>
+                        <span
+                          className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                          style={{
+                            backgroundImage:
+                              'radial-gradient(130% 130% at 20% 14%, #4f6bed 0%, #25307e 46%, #0c1030 100%)',
+                          }}
+                        />
+                        <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
+                      </>
+                    )}
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                   </div>
                 )}
 
                 {!isFirst && (
-                  <div className="relative z-10 shrink-0">
-                    {isLast ? (
-                      <Zap size={16} className="text-[#757571] stroke-[2]" aria-hidden />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/[0.05] flex items-center justify-center text-[#757571]">
-                        <Zap size={14} className="stroke-[2.5]" aria-hidden />
-                      </div>
-                    )}
-                  </div>
+                  <span className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-cream/75 transition-colors duration-300 group-hover:text-cream">
+                    <Icon size={16} strokeWidth={1.75} aria-hidden />
+                  </span>
                 )}
 
-                <div className={cn('relative z-10 space-y-2 shrink-0', isFirst ? 'max-w-xl' : 'max-w-2xl mt-auto')}>
-                  {isFirst && (
-                    <div className="w-8 h-8 rounded-full bg-black/40 border border-white/10 flex items-center justify-center text-white mb-2">
-                      <Smile size={16} strokeWidth={1.75} aria-hidden />
-                    </div>
-                  )}
+                <div className={cn('relative z-10 mt-auto space-y-2', isFirst ? 'max-w-xl' : 'max-w-md')}>
                   {item.title && (
-                    <h3 className="text-lg lg:text-xl font-medium tracking-tight text-white">{item.title}</h3>
+                    <h3 className="font-display text-lg font-medium leading-tight tracking-tight text-cream lg:text-xl">
+                      {item.title}
+                    </h3>
                   )}
-                  {item.excerpt && <p className="text-sm text-[#D5D5D5] leading-relaxed">{item.excerpt}</p>}
+                  {item.excerpt && <p className="text-sm leading-relaxed text-body">{item.excerpt}</p>}
                 </div>
               </Motion>
             )
           })}
         </div>
       </div>
-    </Motion>
+    </section>
   )
 }

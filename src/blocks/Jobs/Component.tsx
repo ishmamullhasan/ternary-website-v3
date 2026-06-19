@@ -14,5 +14,11 @@ export async function JobsBlockComponent({ heading, description }: JobsBlockType
   } catch {
     jobs = null
   }
-  return <JobsList jobs={jobs} heading={heading ?? undefined} description={description ?? undefined} />
+  // The careers hero CTA targets `#open-roles`; the scroll-margin keeps the heading clear of the
+  // sticky header when jumped to.
+  return (
+    <div id="open-roles" className="scroll-mt-24">
+      <JobsList jobs={jobs} heading={heading ?? undefined} description={description ?? undefined} />
+    </div>
+  )
 }

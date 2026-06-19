@@ -94,19 +94,19 @@ export default async function Page({
 
   return (
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
-      <main className="pb-24 max-w-7xl mx-auto px-5 space-y-24">
+      <main className="pb-24 max-w-7xl mx-auto px-5 space-y-20 lg:space-y-24">
         {/* Hero */}
         <Motion tag="section" className="space-y-6" {...motionSectionProps}>
           <Link
             href={`/${typedLocale}/job/${jobData.slug}`}
-            className={`inline-flex items-center gap-2 text-base ${careersText.muted} hover:text-[#D5D5D5] transition-colors group`}
+            className={`group inline-flex items-center gap-2 text-sm ${careersText.muted} hover:text-cream transition-colors rounded-sm focus-visible:outline-none`}
           >
             <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
             Job Details
           </Link>
 
-          <Motion className="space-y-4" {...motionBlockProps}>
-            <h1 className={`text-3xl md:text-4xl font-semibold ${careersText.white} tracking-tight`}>
+          <Motion className="space-y-5" {...motionBlockProps}>
+            <h1 className="font-display text-[clamp(2rem,4.5vw,2.5rem)] font-medium leading-[1.15] text-cream">
               {jobData.title || 'Apply'}
             </h1>
             {pills.length > 0 && (
@@ -126,24 +126,24 @@ export default async function Page({
 
         {/* Form + Sidebar */}
         <Motion tag="section" {...motionSectionProps}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16 items-start">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_382px] gap-12 lg:gap-16 items-start">
+            <div>
               {/* Form submits to POST /recruit/v1/public/applications/{slug} (canonical doc). */}
               <ApplyForm slug={jobData.slug} />
             </div>
 
             {sidebarItems.length > 0 && (
-              <aside className="lg:sticky lg:top-32">
+              <aside className="lg:sticky lg:top-28">
                 <Motion
-                  className={`${careersBg.card} border ${careersBorder.subtle} rounded-lg p-6 space-y-6`}
+                  className={`${careersBg.card} border ${careersBorder.subtle} rounded-md p-6 space-y-5`}
                   {...motionBlockProps}
                 >
                   {sidebarItems.map(({ icon: Icon, label, value }) => (
                     <div key={label} className="flex items-start gap-3">
-                      <Icon size={18} className={`${careersText.muted} mt-0.5 shrink-0`} aria-hidden />
+                      <Icon size={18} className="text-subtle mt-0.5 shrink-0" aria-hidden />
                       <div>
-                        <span className={`block text-sm font-medium ${careersText.white}`}>{label}</span>
-                        <span className={`block text-sm ${careersText.muted}`}>{value}</span>
+                        <span className="block text-base font-medium text-cream">{label}</span>
+                        <span className="block text-base text-subtle">{value}</span>
                       </div>
                     </div>
                   ))}
@@ -160,7 +160,7 @@ export default async function Page({
         {relatedJobs.length > 0 && (
           <Jobs
             jobs={relatedJobs}
-            heading={jobData.openRoles?.heading || undefined}
+            heading={jobData.openRoles?.heading || 'Other Open Roles'}
             description={jobData.openRoles?.description || undefined}
             localePrefix={`/${typedLocale}`}
           />

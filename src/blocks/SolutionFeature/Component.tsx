@@ -1,102 +1,147 @@
+import Motion from '@/components/animation/motion'
 import ColumnSection from '@/components/layout/sectionColumn'
-import type { Media, SolutionFeatureBlock } from '@/payload-types'
-import Image from 'next/image'
+import type { SolutionFeatureBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
-const InfoCard = ({
-  title,
-  description,
-  variant = 'compact',
-}: {
-  title?: string | null
-  description?: string | null
-  variant?: 'compact' | 'large'
-}) => (
-  <div
-    className={
-      variant === 'large'
-        ? 'min-h-76 rounded-md bg-main p-6 lg:p-8 flex flex-col justify-end'
-        : 'bg-neutral-900 border border-neutral-800 rounded-xl p-6'
-    }
-  >
-    <h4
-      className={
-        variant === 'large'
-          ? 'text-2xl font-medium text-neutral-200 mb-4 tracking-tight'
-          : 'text-sm font-semibold text-white mb-2'
-      }
-    >
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+// Signature panel gradient keyed to the feature's widget so each block reads distinctly while
+// staying inside the brand palette. azure/indigo = build, emerald = reliability, indigo = teams.
+const PANEL_TONE: Record<string, string> = {
+  trajectory: 'radial-gradient(135% 135% at 24% 14%, #4f6bed 0%, #5b2b9e 46%, #140f2c 100%)',
+  incident: 'radial-gradient(135% 135% at 22% 16%, #1f9d6b 0%, #0f5a3d 46%, #07211a 100%)',
+  techStack: 'radial-gradient(135% 135% at 24% 16%, #4f6bed 0%, #25307e 46%, #0c1030 100%)',
+  none: 'radial-gradient(135% 135% at 26% 14%, #2f93da 0%, #134a78 46%, #08233c 100%)',
+}
+
+const InfoCard = ({ title, description }: { title?: string | null; description?: string | null }): JSX.Element => (
+  <div className="flex min-h-44 flex-col justify-end rounded-md bg-main p-6 ring-1 ring-white/5 lg:p-7">
+    <h4 className="font-display mb-3 text-xl font-medium leading-tight tracking-[-0.01em] text-cream lg:text-2xl">
       {title}
     </h4>
-    <p
-      className={
-        variant === 'large'
-          ? 'max-w-xl text-base leading-tight text-neutral-400'
-          : 'text-xs text-neutral-400 leading-relaxed'
-      }
-    >
-      {description}
-    </p>
+    <p className="max-w-xl text-[14px] leading-relaxed text-body">{description}</p>
   </div>
 )
 
 export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Element {
   const who = props?.detail?.[0]
   const shape = props?.detail?.[1]
+  const eyebrow = props?.eyebrow?.trim()
+  const widget = props?.widget ?? 'none'
+  const tone = PANEL_TONE[widget] ?? PANEL_TONE.none
 
   return (
     <ColumnSection
-      badge={props?.eyebrow || undefined}
-      title={props?.heading || undefined}
-      description={props?.description || undefined}
       mainSide={props?.mainSide === 'right' ? 'right' : 'left'}
       aside={
-        <div className="relative aspect-square md:aspect-[4/3] rounded-3xl overflow-hidden">
-          <Image
-            src={(props?.image as Media)?.url || 'https://dummyimage.com/800x600/37624F/ffffff'}
-            alt={(props?.image as Media)?.alt || props?.eyebrow || ''}
-            width={800}
-            height={600}
-            className="h-full w-full object-cover"
+        <Motion
+          tag="div"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7, ease: EASE }}
+          className="group relative aspect-[4/3] overflow-hidden rounded-md ring-1 ring-white/5 lg:aspect-auto lg:h-full lg:min-h-[28rem]"
+        >
+          {/* Signature gradient + grain — the panel always renders (no broken/empty media box). */}
+          <span
+            aria-hidden
+            className="absolute inset-0 scale-105 transition-transform duration-[1400ms] ease-out group-hover:scale-110"
+            style={{ backgroundImage: tone }}
           />
-        </div>
+          <span
+            aria-hidden
+            className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay"
+          />
+          {/* Concentric rings motif behind the stat — echoes the design's radial composition. */}
+          <span aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <span className="aspect-square w-[88%] rounded-full ring-1 ring-white/10" />
+            <span className="absolute aspect-square w-[60%] rounded-full ring-1 ring-white/[0.07]" />
+            <span className="absolute aspect-square w-[34%] rounded-full ring-1 ring-white/10" />
+          </span>
+          <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/55" />
+
+          {/* Top meta row — discipline label + live indicator. */}
+          {eyebrow ? (
+            <div className="absolute inset-x-6 top-6 flex items-center justify-between lg:inset-x-8 lg:top-8">
+              <span className="text-[12px] uppercase tracking-[0.12em] text-cream/70">{eyebrow}</span>
+              <span className="inline-flex items-center gap-1.5 text-[12px] uppercase tracking-[0.12em] text-cream/70">
+                <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px] shadow-emerald-400/70" />
+                Live
+              </span>
+            </div>
+          ) : null}
+
+          {/* Outcomes scrim — surfaces the feature description over a frosted band. */}
+          {props?.description ? (
+            <div className="absolute inset-x-6 bottom-6 rounded-md border border-white/10 bg-black/25 p-5 backdrop-blur-sm lg:inset-x-8 lg:bottom-8">
+              <span className="block text-[12px] uppercase tracking-[0.12em] text-cream/70">Outcomes</span>
+              <p className="mt-2 text-[13px] leading-relaxed text-cream/90">{props.description}</p>
+            </div>
+          ) : null}
+        </Motion>
       }
     >
-      {/* Middle widget: trajectory (Product Engineering) */}
-      {props?.widget === 'trajectory' && (
-        <div className="mb-6 rounded-b-xl bg-[#1a1a17] px-8 pb-8 pt-7">
-          <span className="block text-sm font-medium text-neutral-300">{props?.trajectory?.label}</span>
+      {/* Header — rendered here (not via ColumnSection) for correct eyebrow scale, eggshell heading and Inter labels. */}
+      <Motion
+        tag="div"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.55, ease: EASE }}
+        className="mb-8"
+      >
+        {eyebrow ? (
+          <span className="inline-flex items-center rounded-full border border-line bg-main px-3 py-1 text-[13px] font-medium text-body">
+            {eyebrow}
+          </span>
+        ) : null}
+        {props?.heading ? (
+          <h2 className="font-display mt-5 text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.12] tracking-[-0.01em] text-cream">
+            {props.heading}
+          </h2>
+        ) : null}
+        {props?.description ? (
+          <p className="mt-3 text-[15px] leading-relaxed text-body lg:text-base">{props.description}</p>
+        ) : null}
+      </Motion>
 
-          <div className="mt-14 grid grid-cols-4 gap-4">
+      {/* Middle widget: trajectory (Product Engineering) */}
+      {widget === 'trajectory' && (props?.trajectory?.steps?.length ?? 0) > 0 && (
+        <div className="mb-6 rounded-md bg-main p-6 ring-1 ring-white/5 lg:p-7">
+          <span className="block text-[12px] uppercase tracking-[0.12em] text-subtle">{props?.trajectory?.label}</span>
+
+          <div className="mt-10 grid grid-cols-4 gap-4">
             {(props?.trajectory?.steps ?? []).map((step, i) => (
-              <div key={i} className="flex flex-col items-center text-center">
+              <div key={step?.id ?? i} className="flex flex-col items-center text-center">
                 <div
-                  className={`mb-4 flex h-10 w-10 items-center justify-center rounded-full border text-sm ${
-                    step?.active
-                      ? 'border-white bg-white text-neutral-950'
-                      : 'border-neutral-600 bg-transparent text-white'
+                  className={`mb-3 flex size-9 items-center justify-center rounded-full border text-[13px] font-medium ${
+                    step?.active ? 'border-cream bg-cream text-ink' : 'border-line-strong bg-transparent text-body'
                   }`}
                 >
                   {i + 1}
                 </div>
-                <span className="text-base text-neutral-100">{step?.label}</span>
+                <span className="text-[13px] text-body">{step?.label}</span>
               </div>
             ))}
           </div>
 
-          <div className="mt-16 h-px w-full bg-neutral-200" />
+          <div className="mt-7 h-px w-full bg-line" />
         </div>
       )}
 
       {/* Middle widget: techStack (Engineering Augmentation) */}
-      {props?.widget === 'techStack' && (
-        <div className="mb-10">
-          <span className="text-xs text-neutral-500 uppercase mb-4 block">{props?.techStack?.label}</span>
-          <div className="flex gap-3">
+      {widget === 'techStack' && (props?.techStack?.items?.length ?? 0) > 0 && (
+        <div className="mb-8 rounded-md bg-main p-6 ring-1 ring-white/5 lg:p-7">
+          <span className="mb-4 block text-[12px] uppercase tracking-[0.12em] text-subtle">
+            {props?.techStack?.label}
+          </span>
+          <div className="flex flex-wrap gap-3">
             {(props?.techStack?.items ?? []).map((tech, i) => (
               <div
-                key={i}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold ${tech?.highlight ? 'bg-white text-black' : 'bg-neutral-800 text-neutral-300'}`}
+                key={tech?.id ?? i}
+                className={`flex size-11 items-center justify-center rounded-full text-[12px] font-medium transition-colors ${
+                  tech?.highlight ? 'bg-cream text-ink' : 'bg-ink text-body ring-1 ring-white/10'
+                }`}
               >
                 {tech?.label}
               </div>
@@ -106,20 +151,17 @@ export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Eleme
       )}
 
       {/* Middle widget: incident (Managed Services) */}
-      {props?.widget === 'incident' && (
-        <div className="bg-neutral-900/50 border border-neutral-800 p-4 rounded-xl mb-8">
-          <div className="flex justify-between text-[10px] text-neutral-500 mb-2">
+      {widget === 'incident' && (props?.incident?.totalCells ?? 0) > 0 && (
+        <div className="mb-8 rounded-md bg-main p-6 ring-1 ring-white/5 lg:p-7">
+          <div className="mb-3 flex justify-between text-[12px] uppercase tracking-[0.12em] text-subtle">
             <span>{props?.incident?.label}</span>
             <span>{props?.incident?.historyLabel}</span>
           </div>
-          <div className="grid grid-cols-10 gap-1">
+          <div className="grid grid-cols-10 gap-1.5">
             {Array.from({ length: props?.incident?.totalCells ?? 0 }).map((_, i) => {
               const active = (props?.incident?.activeCells ?? []).some((c) => c?.position === i + 1)
               return (
-                <div
-                  key={i}
-                  className={`aspect-square rounded-sm ${active ? 'bg-emerald-500/50' : 'bg-neutral-800'}`}
-                ></div>
+                <div key={i} className={`aspect-square rounded-[2px] ${active ? 'bg-emerald-400/80' : 'bg-white/5'}`} />
               )
             })}
           </div>
@@ -127,30 +169,10 @@ export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Eleme
       )}
 
       {/* Who/Shape detail cards */}
-      {props?.detailStyle === 'bigPanel' && (
-        <div className="grid sm:grid-cols-2 gap-6">
-          <div className="rounded-md bg-[#1a1a17] px-8 pb-12 pt-48">
-            <h4 className="mb-4 text-3xl font-semibold tracking-tight text-white">{who?.label}</h4>
-            <p className="text-xl leading-tight text-neutral-400">{who?.value}</p>
-          </div>
-          <div className="rounded-md bg-[#1a1a17] px-8 pb-12 pt-48">
-            <h4 className="mb-4 text-3xl font-semibold tracking-tight text-white">{shape?.label}</h4>
-            <p className="text-xl leading-tight text-neutral-400">{shape?.value}</p>
-          </div>
-        </div>
-      )}
-
-      {props?.detailStyle === 'largeStacked' && (
-        <div className="grid gap-4">
-          <InfoCard title={who?.label} description={who?.value} variant="large" />
-          <InfoCard title={shape?.label} description={shape?.value} variant="large" />
-        </div>
-      )}
-
-      {props?.detailStyle === 'compactGrid' && (
-        <div className="grid sm:grid-cols-2 gap-4">
-          <InfoCard title={who?.label} description={who?.value} />
-          <InfoCard title={shape?.label} description={shape?.value} />
+      {(who?.label || shape?.label) && (
+        <div className="grid gap-5 sm:grid-cols-2">
+          {who?.label ? <InfoCard title={who.label} description={who.value} /> : null}
+          {shape?.label ? <InfoCard title={shape.label} description={shape.value} /> : null}
         </div>
       )}
     </ColumnSection>

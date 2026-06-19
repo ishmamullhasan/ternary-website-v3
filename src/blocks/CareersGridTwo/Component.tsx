@@ -40,7 +40,7 @@ export function CareersGridTwoComponent(props: CareersGridTwoBlock): JSX.Element
 
   return (
     <Section
-      className="bg-main p-4 lg:p-8 rounded-lg"
+      className="bg-ink p-4 lg:p-8 rounded-md border border-line"
       title={props.heading || 'Work hard. Live fully.'}
       desc={
         props.description ||
@@ -55,10 +55,7 @@ export function CareersGridTwoComponent(props: CareersGridTwoBlock): JSX.Element
         <BentoCard
           className="lg:col-span-2 h-full"
           noIcon
-          imageBg={
-            (item1?.media as Media)?.url ||
-            'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop'
-          }
+          imageBg={(item1?.media as Media)?.url || undefined}
           title={item1?.title || 'Genuine Connection'}
           desc={
             item1?.excerpt ||
@@ -69,21 +66,18 @@ export function CareersGridTwoComponent(props: CareersGridTwoBlock): JSX.Element
         {/* Right stacked cards */}
         <div className="h-full lg:col-span-3 flex flex-col gap-4">
           <BentoCard
-            className="lg:col-span-2 p-0 overflow-hidden bg-[#050505]! flex-1"
+            className="lg:col-span-2 p-0 overflow-hidden bg-page! flex-1"
             title={item2?.title || 'Genuine Connection'}
             desc={
               item2?.excerpt ||
               'Build meaningful relationships with your colleagues. We foster a culture of collaboration and mutual support, where everyone feels like they belong.'
             }
-            imageBg={
-              (item2?.media as Media)?.url ||
-              'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop'
-            }
+            imageBg={(item2?.media as Media)?.url || undefined}
             variant="splitImageRight"
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
             <BentoCard
-              className="h-full bg-[#0f0f0f]!"
+              className="h-full bg-page!"
               title={item3?.title || 'Ship agentic products'}
               desc={
                 item3?.excerpt ||
@@ -91,7 +85,7 @@ export function CareersGridTwoComponent(props: CareersGridTwoBlock): JSX.Element
               }
             />
             <BentoCard
-              className="h-full bg-[#0f0f0f]!"
+              className="h-full bg-page!"
               title={item4?.title || 'Move with velocity'}
               desc={
                 item4?.excerpt ||

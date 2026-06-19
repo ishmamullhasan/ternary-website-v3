@@ -1,94 +1,134 @@
 import Motion from '@/components/animation/motion'
-import type { Media, Scale, ScaleShowcaseBlock } from '@/payload-types'
-import { Building2 } from 'lucide-react'
-import Image from 'next/image'
+import type { Scale, ScaleShowcaseBlock } from '@/payload-types'
+import { Building2, Landmark, Rocket, ShieldCheck, TrendingUp } from 'lucide-react'
 import type { JSX } from 'react'
 
-export function ScaleShowcaseComponent(props: ScaleShowcaseBlock): JSX.Element {
-  const motionSectionProps = {
-    initial: { opacity: 0, y: 12 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.2 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
+/**
+ * Scale showcase (design node 1459:5723 et al, elevated).
+ *
+ * One section per engagement tier. The design's figure/ground: the tier HEADER (pill + display
+ * heading + description + meta) sits on the page background, and only the structured content
+ * lives inside a Surface/Card (#1b1a17) data panel — followed by a divider and a Descriptions
+ * row of term/value pairs. The CMS schema currently exposes a tags string + a podSize array
+ * rather than the design's bespoke per-tier data viz (sprint log / Gantt / procurement timeline),
+ * so this renders those fields as a structured capability grid + metric row inside the data card;
+ * see sharedNeeds for the schema work needed to land the full per-tier panels.
+ *
+ * Reveals use the shared <Motion> wrapper (honors prefers-reduced-motion); hover is pure Tailwind.
+ */
 
-  const motionBlockProps = {
-    initial: { opacity: 0, y: 10 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.4 as const },
-    transition: { duration: 0.35, ease: 'easeOut' as const },
-  }
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+// Per-tier icon, cycled by index so each tier reads with its own glyph rather than a single
+// repeated Building2. Order tracks the typical tier sequence startup → scale → enterprise → gov.
+const TIER_ICONS = [Rocket, TrendingUp, Building2, ShieldCheck, Landmark]
+
+export function ScaleShowcaseComponent(props: ScaleShowcaseBlock): JSX.Element {
+  const scales = (props.scales as Scale[] | null | undefined)?.filter(Boolean) ?? []
+
+  if (scales.length === 0) return <></>
 
   return (
-    <div className="flex flex-col lg:gap-32 gap-10">
-      {(props.scales as Scale[])?.map((item, scaleIndex) => {
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-5 lg:gap-28">
+      {scales.map((item, scaleIndex) => {
         const tagsList = item.tags
           ? item.tags
               .split(/[•,|]/)
               .map((tag) => tag.trim())
               .filter(Boolean)
           : []
+        const metrics = (item.podSize ?? []).filter((m) => m?.value || m?.title)
+        const TierIcon = TIER_ICONS[scaleIndex % TIER_ICONS.length]
+        const hasPanelContent = tagsList.length > 0 || metrics.length > 0
 
         return (
           <Motion
             key={item.id ?? `scale-${scaleIndex}`}
             tag="section"
-            className="w-full bg-[#1B1A17] p-10 rounded-lg flex justify-center"
-            {...motionSectionProps}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="flex w-full flex-col"
           >
-            <div className="w-full flex flex-col">
-              <Motion className="flex flex-col items-start text-left mb-8" {...motionBlockProps}>
-                {item.subTitle && (
-                  <span className="inline-block border border-[#757571] text-lg  px-4 py-0.5 rounded-full text-[#d4d4d4] mb-6">
-                    {item.subTitle}
-                  </span>
-                )}
-
-                <h2 className="lg:text-3xl text-2xl font-medium tracking-tight mb-6 max-w-2xl leading-[1.15]">
-                  {item.title}
-                </h2>
-
-                {item.description && <p className="text-base text-[#D5D5D5] max-w-2xl mb-4">{item.description}</p>}
-
-                <div className="flex flex-wrap items-center gap-2 text-xs text-[#757571]">
-                  <span className="flex items-center gap-2">
-                    <Building2 size={18} strokeWidth={1.75} aria-hidden className="shrink-0" />
-                    {item.tags}
-                  </span>
-                </div>
-              </Motion>
-
-              {(item.image as Media)?.url && (
-                <div className="w-full mb-4">
-                  <div className="relative w-full lg:h-[200px] h-[150px]">
-                    <Image
-                      src={(item.image as Media).url || ''}
-                      alt={(item.image as Media).alt || item.title || 'Scale graphic'}
-                      priority={scaleIndex === 0}
-                      className="object-contain object-center"
-                      height={(item.image as Media).height || 200}
-                      width={(item.image as Media).width || 1000}
-                    />
-                  </div>
-                </div>
+            {/* Header — sits on the page background */}
+            <div className="flex max-w-3xl flex-col items-start text-left">
+              {item.subTitle && (
+                <span className="mb-6 inline-block rounded-full border border-subtle bg-main px-4 py-1.5 text-[18px] leading-none text-cream">
+                  {item.subTitle}
+                </span>
               )}
 
-              <hr className="border-[#757571] w-full mt-8" />
+              {item.title && (
+                <h2 className="font-display max-w-2xl text-[clamp(1.6rem,3.4vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.045em] text-cream">
+                  {item.title}
+                </h2>
+              )}
 
-              {item.podSize && item.podSize.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-                  {item.podSize.map((metric, idx) => (
-                    <div
-                      key={metric.id ?? idx}
-                      className={`flex flex-col gap-2 ${idx > 0 ? 'md:border-l md:border-[#757571] md:pl-4' : ''}`}
-                    >
-                      <span className="text-xs text-[#757571] pt-4 capitalize">{metric.title}</span>
-                      <span className="text-xl lg:text-2xl font-medium text-white tracking-tight">{metric.value}</span>
-                    </div>
-                  ))}
+              {item.description && (
+                <p className="mt-5 max-w-2xl text-[15px] leading-[1.5] text-body lg:text-[16px]">{item.description}</p>
+              )}
+
+              {tagsList.length > 0 && (
+                <div className="mt-5 flex items-center gap-2 text-[12px] tracking-[-0.01em] text-subtle">
+                  <TierIcon size={14} strokeWidth={1.75} aria-hidden className="shrink-0" />
+                  <span className="leading-none">{tagsList.join(' · ')}</span>
                 </div>
               )}
             </div>
+
+            {/* Data card — the only carded surface, per design */}
+            {hasPanelContent && (
+              <div className="mt-8 w-full rounded-md bg-main ring-1 ring-white/5">
+                {tagsList.length > 0 && (
+                  <div className="p-6 lg:p-8">
+                    <span className="text-[12px] tracking-[-0.01em] text-subtle">How we show up</span>
+                    <ul className="mt-5 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {tagsList.map((tag, idx) => (
+                        <li
+                          key={`${item.id ?? scaleIndex}-tag-${idx}`}
+                          className="group flex items-start gap-3 border-t border-white/10 pt-4"
+                        >
+                          <span className="mt-px text-[12px] tabular-nums leading-none text-subtle">
+                            {String(idx + 1).padStart(2, '0')}
+                          </span>
+                          <span className="text-[14px] font-medium capitalize leading-[1.3] tracking-[-0.01em] text-cream transition-colors duration-300 group-hover:text-cream">
+                            {tag}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Descriptions row — term caption + large display value */}
+                {metrics.length > 0 && (
+                  <div
+                    className={`grid grid-cols-1 border-t border-white/10 ${
+                      metrics.length >= 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'
+                    }`}
+                  >
+                    {metrics.map((metric, idx) => (
+                      <div
+                        key={metric.id ?? `${item.id ?? scaleIndex}-metric-${idx}`}
+                        className={`flex flex-col gap-2 p-6 lg:p-8 ${
+                          idx > 0 ? 'border-t border-white/10 sm:border-t-0 sm:border-l' : ''
+                        }`}
+                      >
+                        {metric.title && (
+                          <span className="text-[12px] tracking-[-0.01em] text-subtle">{metric.title}</span>
+                        )}
+                        {metric.value && (
+                          <span className="font-display text-[18px] font-medium leading-[1.25] tracking-[-0.02em] text-cream lg:text-[20px]">
+                            {metric.value}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </Motion>
         )
       })}

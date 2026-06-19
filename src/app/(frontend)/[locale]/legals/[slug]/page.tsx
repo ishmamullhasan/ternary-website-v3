@@ -2,7 +2,7 @@ import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
-import type { Legal, Media } from '@/payload-types'
+import type { Legal } from '@/payload-types'
 import config from '@/payload.config'
 import { Download, FileText, Scale, Shield, type LucideIcon } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -14,19 +14,26 @@ import type { PaginatedDocs, TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-const motionSectionProps = {
-  initial: { opacity: 0, y: 12 },
+// Shared reveal easing/curve, matching the signature hero (heroFeatured.tsx).
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+const sectionReveal = {
+  initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: false, amount: 0.2 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
+  viewport: { once: true, margin: '-60px' } as const,
+  transition: { duration: 0.6, ease: EASE },
 }
 
-const motionBlockProps = {
-  initial: { opacity: 0, y: 10 },
+const blockReveal = {
+  initial: { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: false, amount: 0.4 as const },
-  transition: { duration: 0.35, ease: 'easeOut' as const },
+  viewport: { once: true, margin: '-40px' } as const,
+  transition: { duration: 0.5, ease: EASE },
 }
+
+// Signature noise-gradient field used by the bottom CTA — the `violet` content-type tone
+// from the hero, rendered as CSS so it holds identically regardless of CMS/media availability.
+const VIOLET_GRADIENT = 'radial-gradient(135% 135% at 18% 12%, #7c3aed 0%, #3a1c8c 44%, #140f2c 100%)'
 
 async function fetchLegalList(locale: TypedLocale): Promise<PaginatedDocs<Legal>> {
   const payload = await getPayload({ config })
@@ -70,7 +77,7 @@ function sortLegalMenuItems(docs: Legal[]): Legal[] {
 function getMenuItemLabel(item: Legal): string {
   if (item.menuLabel) return item.menuLabel
   if (item.title) return item.title
-  return 'Untitled'
+  return item.slug
 }
 
 const LEGAL_MENU_ICONS = {
@@ -84,7 +91,14 @@ type LegalMenuIconKey = keyof typeof LEGAL_MENU_ICONS
 function LegalMenuIcon({ icon }: { icon: string | null | undefined }) {
   if (!icon || !(icon in LEGAL_MENU_ICONS)) return null
   const Icon = LEGAL_MENU_ICONS[icon as LegalMenuIconKey]
-  return <Icon size={18} strokeWidth={1.75} aria-hidden className="shrink-0" />
+  return <Icon size={20} strokeWidth={1.75} aria-hidden className="shrink-0" />
+}
+
+// Sanitize CMS link values — seed data has a leading space on some legal CTA links
+// (' /legal/privacy-policy') which breaks the href. Trim it and degrade to '#'.
+function safeLink(link: string | null | undefined): string {
+  const trimmed = link?.trim()
+  return trimmed && trimmed.length > 0 ? trimmed : '#'
 }
 
 async function fetchLegalBySlug(slug: string, locale: TypedLocale): Promise<PaginatedDocs<Legal>> {
@@ -144,168 +158,192 @@ export default async function Page({
 
   const [legalCenter, { docs: legalDocs }] = await Promise.all([getLegalCenter(typedLocale), getLegalList(typedLocale)])
   const menuItems = sortLegalMenuItems(legalDocs)
+  const title = legal.title ?? getMenuItemLabel(legal)
+  const ctaButtons = [legal.cta?.button_1, legal.cta?.button_2].filter(
+    (b): b is { label?: string | null; link?: string | null } => Boolean(b?.label),
+  )
 
   return (
     <div className="min-h-screen antialiased">
-      <div className="max-w-7xl mx-auto w-full px-5 flex flex-col gap-16 lg:gap-24  pb-12 lg:pb-20">
-        <Motion tag="section" {...motionSectionProps}>
-          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-12 lg:gap-24 items-stretch">
-            {/* LEFT SIDEBAR: Legal Center Menu & Notice Box */}
-            <aside className="flex h-full flex-col justify-between gap-16">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-5 pb-16 lg:gap-24 lg:pb-24">
+        <Motion tag="section" {...sectionReveal}>
+          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[300px_1fr] lg:gap-24">
+            {/* LEFT SIDEBAR: Legal Center menu & compliance notice. Sticky on desktop so the
+                navigation + notice stay reachable through long legal documents. */}
+            <aside className="flex flex-col gap-16 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:justify-between">
               <div className="space-y-10">
-                {/* Header Info */}
-                <Motion {...motionBlockProps}>
-                  <h2 className="text-3xl font-semibold tracking-tight mb-2">
-                    {legalCenter.heading || 'Legal Center'}
+                {/* Header info */}
+                <div>
+                  <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-tight text-cream">
+                    {legalCenter?.heading || 'Legal Center'}
                   </h2>
-                  <p className="text-base text-[#757571] leading-relaxed">
-                    {legalCenter.description || 'Institutional-grade transparency. Reviewed by external counsel.'}
+                  <p className="mt-3 text-[15px] leading-relaxed text-body">
+                    {legalCenter?.description || 'Institutional-grade transparency. Reviewed by external counsel.'}
                   </p>
-                </Motion>
+                </div>
 
-                {/* Navigation Menu Links */}
+                {/* Navigation menu */}
                 {menuItems.length > 0 && (
-                  <Motion {...motionBlockProps} transition={{ ...motionBlockProps.transition, delay: 0.06 }}>
-                    <nav className="flex flex-col gap-1.5">
-                      {legalCenter.menuTitle && (
-                        <h3 className="mb-2 px-3 text-xs text-[#757571]">{legalCenter.menuTitle}</h3>
-                      )}
-                      {menuItems.map((item, index) => {
-                        const isActive = item.slug === slug
-                        const hasIcon = Boolean(item.menuIcon && item.menuIcon in LEGAL_MENU_ICONS)
+                  <nav aria-label="Legal documents" className="flex flex-col gap-1">
+                    {legalCenter?.menuTitle && (
+                      <h3 className="mb-2 px-4 text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
+                        {legalCenter.menuTitle}
+                      </h3>
+                    )}
+                    {menuItems.map((item) => {
+                      const isActive = item.slug === slug
+                      const hasIcon = Boolean(item.menuIcon && item.menuIcon in LEGAL_MENU_ICONS)
 
-                        return (
-                          <Motion
-                            key={item.id}
-                            {...motionBlockProps}
-                            transition={{
-                              ...motionBlockProps.transition,
-                              delay: 0.08 + index * 0.04,
-                            }}
-                          >
-                            <Link
-                              href={`/${typedLocale}/legals/${item.slug}`}
-                              aria-current={isActive ? 'page' : undefined}
-                              className={`group flex items-center gap-1 px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                                isActive
-                                  ? 'border-l-2 border-[#757571] bg-[#1B1A17]'
-                                  : 'border-l-2 border-transparent text-[#757571] hover:text-[#F4F3EC]'
+                      return (
+                        <Link
+                          key={item.id}
+                          href={`/${typedLocale}/legals/${item.slug}`}
+                          aria-current={isActive ? 'page' : undefined}
+                          className={`group flex items-center gap-4 rounded-md border-l-2 px-4 py-3 text-[16px] font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream ${
+                            isActive
+                              ? 'border-subtle bg-main text-cream'
+                              : 'border-transparent text-body hover:bg-main/40 hover:text-cream'
+                          }`}
+                        >
+                          {hasIcon && (
+                            <span
+                              className={`shrink-0 transition-colors duration-200 ${
+                                isActive ? 'text-cream' : 'text-subtle group-hover:text-cream'
                               }`}
                             >
-                              {hasIcon && (
-                                <span
-                                  className={`flex h-10 w-10 shrink-0 items-center justify-center ${
-                                    isActive ? 'text-[#F4F3EC]' : 'text-[#757571] group-hover:text-[#F4F3EC]'
-                                  }`}
-                                >
-                                  <LegalMenuIcon icon={item.menuIcon} />
-                                </span>
-                              )}
-                              <span className="leading-snug">{getMenuItemLabel(item)}</span>
-                            </Link>
-                          </Motion>
-                        )
-                      })}
-                    </nav>
-                  </Motion>
+                              <LegalMenuIcon icon={item.menuIcon} />
+                            </span>
+                          )}
+                          <span className="leading-snug">{getMenuItemLabel(item)}</span>
+                        </Link>
+                      )
+                    })}
+                  </nav>
                 )}
               </div>
 
-              {/* Bottom Compliance Box */}
-              {(legalCenter.noticeTitle || legalCenter.noticeDescription) && (
-                <Motion
-                  className="space-y-2 bg-[#1B1A17] p-5"
-                  {...motionBlockProps}
-                  transition={{ ...motionBlockProps.transition, delay: 0.1 }}
-                >
-                  <h4 className="text-xs text-[#757571]">{legalCenter.noticeTitle || 'Compliance Notice'}</h4>
-                  <p className="text-base leading-relaxed text-[#D5D5D5]">
-                    {legalCenter.noticeDescription ||
+              {/* Bottom compliance box */}
+              {(legalCenter?.noticeTitle || legalCenter?.noticeDescription) && (
+                <div className="space-y-2 rounded-md bg-main p-6">
+                  <h4 className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
+                    {legalCenter?.noticeTitle || 'Compliance Notice'}
+                  </h4>
+                  <p className="text-[15px] leading-relaxed text-body">
+                    {legalCenter?.noticeDescription ||
                       'These documents are strictly for procurement review. Do not consider them legal advice.'}
                   </p>
-                </Motion>
+                </div>
               )}
             </aside>
 
-            {/* RIGHT CONTENT SECTION: Document View */}
-            <main className="space-y-12">
-              {/* Action Topbar Metadata */}
-              <Motion
-                className="flex flex-col justify-between gap-4 border-b border-[#757571] pb-6"
-                {...motionBlockProps}
-              >
-                <div className="flex flex-row items-center justify-start gap-3 text-base">
+            {/* RIGHT CONTENT: document view */}
+            <main className="flex flex-col gap-12 lg:gap-[72px]">
+              {/* Header: code pill + last-updated, title, Download PDF */}
+              <Motion className="flex flex-col gap-6 border-b border-subtle/60 pb-6" {...blockReveal}>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                   {legal.code && (
-                    <span className="px-2.5 py-1 bg-[#1B1A17] border border-[#757571] rounded-full">{legal.code}</span>
+                    <span className="inline-flex items-center rounded-full border border-subtle bg-main px-4 py-1.5 font-display text-[18px] leading-none text-cream">
+                      {legal.code}
+                    </span>
                   )}
-                  {legal.lastupdated && <span className="text-[#757571] text-sm">{legal.lastupdated}</span>}
+                  {legal.lastupdated && (
+                    <span className="text-[14px] tracking-[-0.05em] text-subtle">
+                      Last Updated: {legal.lastupdated}
+                    </span>
+                  )}
                 </div>
-                <div className="flex flex-row items-center justify-between gap-3">
-                  <h1 className="text-3xl md:text-4xl font-semibold text-white tracking-tight">{legal.title}</h1>
+                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                  <h1 className="font-display text-[30px] font-medium leading-[1.15] tracking-tight text-cream">
+                    {title}
+                  </h1>
 
                   {legal.downloadLink && (
                     <a
                       href={legal.downloadLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 text-base font-medium text-[#0F0E0E] bg-[#F4F3EC] hover:bg-[#E5E5E5] rounded-lg transition-colors"
+                      className="inline-flex shrink-0 items-center gap-2 rounded-md bg-cream px-8 py-2.5 text-[16px] font-medium text-ink transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-[0.98]"
                     >
-                      <Download size={14} />
+                      <Download size={16} strokeWidth={1.75} aria-hidden />
                       Download PDF
                     </a>
                   )}
                 </div>
               </Motion>
 
-              {/* Main Document Content */}
-              <article className="space-y-3">
-                <div className="max-w-none">
-                  <RichTextComp content={legal.content as RichText} />
-                </div>
-              </article>
+              {/* Main document content. The richtext wrapper exposes a className we use to apply
+                  the design's section rhythm (gap-32 between blocks, gap-16 heading→body),
+                  Poppins-Medium section headings, and the Inter body tracking/color. */}
+              <Motion tag="article" {...blockReveal} transition={{ ...blockReveal.transition, delay: 0.08 }}>
+                {legal.content ? (
+                  <RichTextComp
+                    content={legal.content as RichText}
+                    className="max-w-none space-y-8 text-[16px] leading-[1.6] text-body prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-cream prose-h2:text-[24px] prose-h3:mb-4 prose-h3:mt-0 prose-h3:text-[24px] prose-p:my-0 prose-p:text-body prose-a:text-cream prose-a:underline prose-a:underline-offset-2 prose-li:text-body prose-strong:text-cream"
+                  />
+                ) : (
+                  <div className="rounded-md border border-line bg-ink/60 px-6 py-12 text-center">
+                    <p className="text-[15px] text-subtle">
+                      This document is being prepared. Please check back shortly.
+                    </p>
+                  </div>
+                )}
+              </Motion>
             </main>
           </div>
         </Motion>
 
-        {/* Content Bottom CTA Block */}
+        {/* Bottom CTA — signature violet noise-gradient card (matches the hero pattern).
+            Renders only when CMS supplies a heading; degrades to the CSS gradient (no media). */}
         {legal.cta?.heading && (
           <Motion
             tag="section"
-            className="p-8 md:p-12 bg-cover bg-center rounded-lg overflow-hidden border border-[#1F1F1F] flex flex-col md:flex-row items-start md:items-center justify-between gap-8 min-h-[200px]"
-            style={{
-              backgroundImage: legal.cta.backgroundImage
-                ? `url(${(legal.cta.backgroundImage as Media).url})`
-                : 'linear-gradient(to bottom, #121212, #0A0A0A)',
-            }}
-            {...motionSectionProps}
+            className="group relative overflow-hidden rounded-md ring-1 ring-white/10"
+            {...sectionReveal}
           >
-            <Motion className="max-w-2xl text-left" {...motionBlockProps}>
-              <h3 className="text-3xl md:text-4xl font-medium mb-3">{legal.cta.heading}</h3>
-              {legal.cta.description && <p className="text-base leading-relaxed">{legal.cta.description}</p>}
-            </Motion>
+            {/* Gradient field */}
+            <span
+              aria-hidden
+              className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+              style={{ backgroundImage: VIOLET_GRADIENT }}
+            />
+            {/* Signature grain overlay (local asset, no external dependency) */}
+            <span
+              aria-hidden
+              className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay"
+            />
+            {/* Legibility scrim toward the right where the button sits */}
+            <span aria-hidden className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/40" />
 
-            <Motion
-              className="flex lg:flex-row flex-col gap-4 justify-center"
-              {...motionBlockProps}
-              transition={{ ...motionBlockProps.transition, delay: 0.06 }}
-            >
-              {legal.cta?.button_1?.label && (
-                <Link
-                  href={legal.cta?.button_1?.link as string}
-                  className="px-5 py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
-                >
-                  {legal.cta?.button_1?.label}
-                </Link>
+            <div className="relative flex flex-col items-start justify-between gap-8 p-8 md:flex-row md:items-center md:p-12">
+              <div className="max-w-2xl">
+                <h3 className="font-display text-[28px] font-medium leading-[1.12] tracking-tight text-cream md:text-[32px]">
+                  {legal.cta.heading}
+                </h3>
+                {legal.cta.description && (
+                  <p className="mt-3 text-[15px] leading-relaxed text-cream/80 lg:text-[16px]">
+                    {legal.cta.description}
+                  </p>
+                )}
+              </div>
+
+              {ctaButtons.length > 0 && (
+                <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+                  {ctaButtons.map((button, i) => (
+                    <Link
+                      key={`${button.label}-${i}`}
+                      href={safeLink(button.link)}
+                      className={`inline-flex items-center justify-center rounded-md px-6 py-3 text-[15px] font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-[0.98] ${
+                        i === 0
+                          ? 'bg-ink/80 text-cream ring-1 ring-white/15 backdrop-blur-sm hover:bg-ink'
+                          : 'text-cream/85 ring-1 ring-white/20 hover:bg-white/10 hover:text-cream'
+                      }`}
+                    >
+                      {button.label}
+                    </Link>
+                  ))}
+                </div>
               )}
-              {legal.cta?.button_2?.label && (
-                <Link
-                  href={legal.cta?.button_2?.link as string}
-                  className="px-5 py-2.5 bg-[#14120B] font-medium rounded-2xl text-base"
-                >
-                  {legal.cta?.button_2?.label}
-                </Link>
-              )}
-            </Motion>
+            </div>
           </Motion>
         )}
       </div>

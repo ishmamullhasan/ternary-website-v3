@@ -18,22 +18,22 @@ export default function Section({ title = '', desc = '', children, className = '
       className={cn('space-y-8', className)}
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
     >
       {showHeader ? (
         <Motion
           initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.4 }}
+          viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
         >
           {title?.trim() ? (
-            <h2 className="max-w-none lg:max-w-md lg:text-3xl text-2xl font-medium text-white tracking-tight mb-2">
+            <h2 className="font-display max-w-none lg:max-w-md lg:text-3xl text-2xl font-medium text-cream mb-2">
               {title}
             </h2>
           ) : null}
-          {desc?.trim() ? <p className="max-w-none lg:max-w-2xl text-[#D5D5D5] lg:text-base text-sm">{desc}</p> : null}
+          {desc?.trim() ? <p className="max-w-none lg:max-w-2xl text-body lg:text-base text-sm">{desc}</p> : null}
         </Motion>
       ) : null}
       {children}

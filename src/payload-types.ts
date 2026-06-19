@@ -1014,150 +1014,12 @@ export interface OpportunitiesSectionBlock {
   heading?: string | null;
   description?: string | null;
   /**
-   * Job openings to feature in this section, in display order.
+   * How many open roles to feature, newest first. Leave blank to show every open role from the recruiting system.
    */
-  opportunity?: (string | Job)[] | null;
+  limit?: number | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'opportunitiesSection';
-}
-/**
- * Open job postings and their detail content.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "job".
- */
-export interface Job {
-  id: string;
-  code: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  title?: string | null;
-  button?: {
-    label?: string | null;
-    link?: string | null;
-  };
-  team?: string | null;
-  department?: string | null;
-  type?: string | null;
-  location?: string | null;
-  salary?: string | null;
-  excerpts?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  level?: ('Junior' | 'Mid' | 'Senior' | 'Lead' | 'C-Suite') | null;
-  opened: string;
-  closed?: string | null;
-  image?: (string | null) | Media;
-  active?: boolean | null;
-  details?: {
-    item1?: {
-      title?: string | null;
-      description?: string | null;
-    };
-    item2?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    item3?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    item4?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-  };
-  teamBox?: {
-    reportingToName?: string | null;
-    reportingToRole?: string | null;
-    podSize?: string | null;
-    crossFunctional?: string | null;
-  };
-  compensationBox?: {
-    base?: string | null;
-    equity?: string | null;
-    note?: string | null;
-  };
-  interviewProcess?: {
-    heading?: string | null;
-    steps?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          /**
-           * e.g. 30m, 1h
-           */
-          duration?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  openRoles?: {
-    heading?: string | null;
-    description?: string | null;
-    jobs?: (string | Job)[] | null;
-  };
-  cta?: {
-    subheading?: string | null;
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    button?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | Media;
-    /**
-     * Override canonical URL. Leave blank to use the page's own URL.
-     */
-    canonical?: string | null;
-    /**
-     * Exclude this entry from the XML sitemap.
-     */
-    hideFromSitemap?: boolean | null;
-    twitterCard?: ('summary' | 'summary_large_image') | null;
-  };
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2591,6 +2453,144 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Open job postings and their detail content.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job".
+ */
+export interface Job {
+  id: string;
+  code: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  title?: string | null;
+  button?: {
+    label?: string | null;
+    link?: string | null;
+  };
+  team?: string | null;
+  department?: string | null;
+  type?: string | null;
+  location?: string | null;
+  salary?: string | null;
+  excerpts?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  level?: ('Junior' | 'Mid' | 'Senior' | 'Lead' | 'C-Suite') | null;
+  opened: string;
+  closed?: string | null;
+  image?: (string | null) | Media;
+  active?: boolean | null;
+  details?: {
+    item1?: {
+      title?: string | null;
+      description?: string | null;
+    };
+    item2?: {
+      title?: string | null;
+      points?:
+        | {
+            point?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    item3?: {
+      title?: string | null;
+      points?:
+        | {
+            point?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    item4?: {
+      title?: string | null;
+      points?:
+        | {
+            point?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+  };
+  teamBox?: {
+    reportingToName?: string | null;
+    reportingToRole?: string | null;
+    podSize?: string | null;
+    crossFunctional?: string | null;
+  };
+  compensationBox?: {
+    base?: string | null;
+    equity?: string | null;
+    note?: string | null;
+  };
+  interviewProcess?: {
+    heading?: string | null;
+    steps?:
+      | {
+          title?: string | null;
+          excerpt?: string | null;
+          /**
+           * e.g. 30m, 1h
+           */
+          duration?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  openRoles?: {
+    heading?: string | null;
+    description?: string | null;
+    jobs?: (string | Job)[] | null;
+  };
+  cta?: {
+    subheading?: string | null;
+    heading?: string | null;
+    description?: string | null;
+    backgroundImage?: (string | null) | Media;
+    button?: {
+      label?: string | null;
+      link?: string | null;
+    };
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+    /**
+     * Override canonical URL. Leave blank to use the page's own URL.
+     */
+    canonical?: string | null;
+    /**
+     * Exclude this entry from the XML sitemap.
+     */
+    hideFromSitemap?: boolean | null;
+    twitterCard?: ('summary' | 'summary_large_image') | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Legal documents shown in the Legal Center.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3194,7 +3194,7 @@ export interface TeamSectionBlockSelect<T extends boolean = true> {
 export interface OpportunitiesSectionBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
-  opportunity?: T;
+  limit?: T;
   id?: T;
   blockName?: T;
 }

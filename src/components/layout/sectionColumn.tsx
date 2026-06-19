@@ -35,18 +35,18 @@ export default function ColumnSection({
     <Motion
       initial={{ opacity: 0, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.4 }}
+      viewport={{ once: true, amount: 0.4 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
     >
       {badge?.trim() ? (
-        <div className="inline-flex items-center px-3 py-1 rounded-full bg-main border border-neutral-700 text-lg font-medium text-neutral-300 mb-6">
+        <div className="mb-6 inline-flex items-center rounded-md border border-line bg-main px-3 py-1 text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
           {badge}
         </div>
       ) : null}
       {title?.trim() ? (
-        <h2 className="text-2xl md:text-3xl font-medium text-white mb-2 leading-tight">{title}</h2>
+        <h2 className="font-display text-2xl md:text-3xl font-medium text-cream mb-2 leading-tight">{title}</h2>
       ) : null}
-      {resolvedDescription?.trim() ? <p className="text-neutral-400 mb-10 text-base">{resolvedDescription}</p> : null}
+      {resolvedDescription?.trim() ? <p className="text-body mb-10 text-base">{resolvedDescription}</p> : null}
     </Motion>
   ) : null
 
@@ -60,7 +60,7 @@ export default function ColumnSection({
         className={cn('max-w-7xl mx-auto px-5', className)}
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.2 }}
+        viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
         <div className="grid lg:grid-cols-2 gap-4 items-start">
@@ -80,7 +80,7 @@ export default function ColumnSection({
       className={cn('space-y-8', className)}
       initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
     >
       {headerBlock}

@@ -223,7 +223,7 @@ export function RenderBlocks({ blocks }: { blocks?: Page['layout'] }): JSX.Eleme
   if (!blocks?.length) return null
 
   return (
-    <div className="flex flex-col lg:gap-32 gap-10 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
+    <div className="flex flex-col lg:gap-32 gap-10 text-cream max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
       {blocks.map((block, i) => {
         const el = renderBlock(block)
         if (!el) return null

@@ -240,14 +240,17 @@ export const OpportunitiesSection: Block = {
   labels: { singular: 'Opportunities Section', plural: 'Opportunities Sections' },
   fields: [
     ...sectionHeader(),
+    // Roles are pulled LIVE from the recruiting system (getJobs → GET /jobs, newest first) — they are
+    // NOT hand-picked from the CMS `job` collection. Editors control the heading/description and,
+    // optionally, how many of the open roles to feature here.
     {
-      name: 'opportunity',
-      label: 'Opportunities',
-      type: 'relationship',
-      relationTo: 'job',
-      hasMany: true,
+      name: 'limit',
+      label: 'Max roles to show',
+      type: 'number',
+      min: 1,
       admin: {
-        description: 'Job openings to feature in this section, in display order.',
+        description:
+          'How many open roles to feature, newest first. Leave blank to show every open role from the recruiting system.',
       },
     },
   ],

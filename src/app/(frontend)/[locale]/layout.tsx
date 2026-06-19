@@ -11,7 +11,7 @@ import { getFooter, getHeader } from '@/utilities/getGlobals'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getServerSideURL } from '@/utilities/getURL'
 import type { Metadata } from 'next'
-import { Poppins } from 'next/font/google'
+import { Inter, Poppins } from 'next/font/google'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import '../globals.css'
@@ -27,10 +27,18 @@ export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
 }
 
+// Poppins = display headlines only (design uses Medium 500). Inter = body/UI (variable font,
+// all weights). Both exposed as CSS variables and wired to --font-display / --font-sans.
 const poppins = Poppins({
   subsets: ['latin'],
   variable: '--font-poppins',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
   display: 'swap',
 })
 
@@ -78,7 +86,9 @@ export default async function RootLayout({
 
   return (
     <html lang={typedLocale}>
-      <body className={`${poppins.variable} antialiased py-0 bg-black w-full overflow-x-hidden text-[#F4F3EC]`}>
+      <body
+        className={`${poppins.variable} ${inter.variable} antialiased py-0 bg-page text-cream w-full overflow-x-hidden`}
+      >
         {/* Sitewide structured data: who publishes this site + the site itself. */}
         <JsonLd data={organization()} />
         <JsonLd data={website()} />

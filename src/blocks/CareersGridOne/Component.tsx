@@ -27,10 +27,7 @@ export function CareersGridOneComponent(props: CareersGridOneBlock): JSX.Element
             item1?.excerpt ||
             'Build foundational systems that power our core products, ensuring reliability, scale, and performance across the board.'
           }
-          imageBg={
-            (item1?.media as Media)?.url ||
-            'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1000&auto=format&fit=crop'
-          }
+          imageBg={(item1?.media as Media)?.url || undefined}
         />
         <BentoCard
           title={item2?.title || 'Ship with intention'}
@@ -70,16 +67,19 @@ export function CareersGridOneComponent(props: CareersGridOneBlock): JSX.Element
             "We use the latest technologies to build robust and scalable systems. You'll have the opportunity to learn and grow with cutting-edge tools."
           }
         >
-          {/* Decorative graphic for this card */}
-          <div className="absolute right-8 top-1/2 -translate-y-1/2 w-32 h-32 hidden lg:block">
-            <div className="absolute inset-0 rounded-full border border-white/10 border-dashed animate-[spin_20s_linear_infinite]"></div>
-            <div className="absolute inset-4 rounded-full border border-white/20 animate-[spin_12s_linear_infinite_reverse]"></div>
-            <div className="absolute inset-5 rounded-full border border-white/25 animate-ping animation-duration-[2.4s]"></div>
-            <div className="absolute inset-5 rounded-full border border-white/20 animate-ping animation-duration-[2.4s] [animation-delay:0.8s]"></div>
-            <div className="absolute inset-5 rounded-full border border-white/15 animate-ping animation-duration-[2.4s] [animation-delay:1.6s]"></div>
+          {/* Decorative orbital graphic — concentric rings around a glowing core. All motion is
+              gated behind motion-reduce so prefers-reduced-motion renders it static. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute right-8 top-1/2 hidden h-32 w-32 -translate-y-1/2 lg:block"
+          >
+            <div className="absolute inset-0 animate-[spin_20s_linear_infinite] rounded-full border border-dashed border-white/10 motion-reduce:animate-none"></div>
+            <div className="absolute inset-4 animate-[spin_12s_linear_infinite_reverse] rounded-full border border-white/20 motion-reduce:animate-none"></div>
+            <div className="absolute inset-5 animate-ping rounded-full border border-white/20 [animation-duration:2.4s] motion-reduce:animate-none"></div>
+            <div className="absolute inset-5 animate-ping rounded-full border border-white/15 [animation-delay:1.2s] [animation-duration:2.4s] motion-reduce:animate-none"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm animate-pulse">
-                <div className="w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white] animate-[ping_2s_ease-in-out_infinite]"></div>
+              <div className="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-white/10 backdrop-blur-sm motion-reduce:animate-none">
+                <div className="h-2 w-2 rounded-full bg-cream shadow-[0_0_10px_rgba(244,243,236,0.8)]"></div>
               </div>
             </div>
           </div>

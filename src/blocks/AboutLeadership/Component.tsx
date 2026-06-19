@@ -5,89 +5,100 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { JSX } from 'react'
 
-export function AboutLeadershipComponent({ heading, description, members }: AboutLeadershipBlock): JSX.Element {
-  const motionSectionProps = {
-    initial: { opacity: 0, y: 12 },
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+/**
+ * Leadership grid — "Team voices. Production stories." (design node 1255:3051). Each card is a
+ * grayscale portrait filling a 3:4 frame with the name, a role pill and a LinkedIn link anchored to
+ * the bottom over a scrim. Portraits desaturate by default and warm to color on hover. No
+ * "Specialization" line (per design). Missing media degrades to a brand-token gradient rather than
+ * an empty/broken box; an empty members array collapses the whole block.
+ */
+export function AboutLeadershipComponent({ heading, description, members }: AboutLeadershipBlock): JSX.Element | null {
+  const motionBlockProps = {
+    initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: false, amount: 0.2 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
+    viewport: { once: true, margin: '-60px' as const },
   }
 
-  const motionGridItemProps = {
-    initial: { opacity: 0, scale: 0.985 },
-    whileInView: { opacity: 1, scale: 1 },
-    viewport: { once: false, amount: 0.35 as const },
-    transition: { duration: 0.4, ease: 'easeOut' as const },
-  }
+  const team = (members as Team[] | undefined)?.filter(Boolean) ?? []
+
+  if (!heading && team.length === 0) return null
 
   return (
-    <Motion
-      tag="section"
-      className="bg-[#1B1A17] text-white lg:p-10 p-4 rounded-lg lg:m-0 m-4"
-      {...motionSectionProps}
-    >
-      {/* Header */}
-      <div className="mb-4 lg:w-2/5">
-        <h2 className="lg:text-4xl text-2xl font-bold mb-4">{heading}</h2>
-        <p className="lg:text-base text-sm text-[#D5D5D5]">{description}</p>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:pt-0 pt-4">
-        {(members as Team[])?.map((member, index): JSX.Element => {
-          return (
-            <Motion
-              key={member.id ?? index}
-              className="relative lg:w-[280px] lg:h-[430px] h-[280px] rounded-lg overflow-hidden"
-              {...motionGridItemProps}
-              transition={{
-                duration: 0.4,
-                ease: 'easeOut',
-                delay: index * 0.05,
-              }}
-            >
-              {/* background image OR gradient */}
-              {member.image ? (
-                <Image
-                  src={(member.image as Media)?.url || 'https://dummyimage.com/280x300/37624F/FFF2'}
-                  alt={member.name || 'industry'}
-                  height={(member.image as Media)?.height || 250}
-                  width={(member.image as Media)?.width || 220}
-                  className="object-cover w-full h-full"
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500" />
-              )}
+    <section className="rounded-md bg-main p-6 lg:p-12">
+      <Motion className="mb-8 max-w-2xl" {...motionBlockProps} transition={{ duration: 0.6, ease: EASE }}>
+        {heading ? (
+          <h2 className="font-display text-2xl font-medium tracking-[-0.01em] text-cream lg:text-3xl">{heading}</h2>
+        ) : null}
+        {description ? <p className="mt-3 text-[15px] leading-relaxed text-body">{description}</p> : null}
+      </Motion>
 
-              {/* text */}
-              <div className="absolute bottom-5 left-5 right-5">
-                <h3 className="text-lg font-bold">{member.name}</h3>
-                {member.position && (
-                  <p className="text-xs border border-[#757571] px-2 py-.5 rounded-full w-fit my-1">
-                    {member.position}
-                  </p>
+      {team.length ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {team.map((member, index) => {
+            const portrait = (member.image as Media | undefined)?.url ?? undefined
+            return (
+              <Motion
+                key={member.id ?? index}
+                className="group relative aspect-[3/4] overflow-hidden rounded-md ring-1 ring-white/5 transition-transform duration-500 ease-out hover:-translate-y-1"
+                {...motionBlockProps}
+                transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+              >
+                {portrait ? (
+                  <Image
+                    src={portrait}
+                    alt={member.name ?? 'Team member'}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover grayscale transition-[filter,transform] duration-700 ease-out group-hover:scale-105 group-hover:grayscale-0"
+                  />
+                ) : (
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                    style={{
+                      backgroundImage: 'radial-gradient(135% 135% at 22% 14%, #4f6bed 0%, #25307e 44%, #0c1030 100%)',
+                    }}
+                  />
                 )}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.12] mix-blend-overlay"
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-t from-[#0f0e0e] via-[#0f0e0e]/35 to-transparent"
+                />
 
-                {member.description && <p className="text-base mb-2 flex-grow line-clamp-4">{member.description}</p>}
-
-                {member.excerpt && <p className="text-base mb-4">Specialization: {member.excerpt}</p>}
-
-                {/* Socials */}
-                {member.linkedin && (
-                  <div className="flex gap-4">
-                    <div className="flex gap-3">
+                <div className="absolute inset-x-5 bottom-5">
+                  {member.name ? (
+                    <h3 className="text-[17px] font-medium tracking-[-0.01em] text-cream">{member.name}</h3>
+                  ) : null}
+                  {member.position ? (
+                    <p className="mt-2 inline-flex w-fit rounded-full border border-white/20 px-2.5 py-0.5 text-[11px] font-medium text-cream/85">
+                      {member.position}
+                    </p>
+                  ) : null}
+                  {member.linkedin ? (
+                    <div className="mt-3">
                       <Link
                         href={member.linkedin}
-                        className="flex items-center justify-center w-8 h-8 rounded-md bg-[#FFFFFF1A]"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`LinkedIn — ${member.name ?? 'team member'}`}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-cream transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0e0e]"
                       >
-                        <Linkedin size={16} fill="currentColor" />
+                        <Linkedin aria-hidden className="h-4 w-4" fill="currentColor" />
                       </Link>
                     </div>
-                  </div>
-                )}
-              </div>
-            </Motion>
-          )
-        })}
-      </div>
-    </Motion>
+                  ) : null}
+                </div>
+              </Motion>
+            )
+          })}
+        </div>
+      ) : null}
+    </section>
   )
 }
