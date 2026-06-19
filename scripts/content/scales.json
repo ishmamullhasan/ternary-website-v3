@@ -1,0 +1,41 @@
+[
+  {
+    "slug": "startups-and-scale-ups",
+    "title": "Startups & Scale-Ups",
+    "excerpts": "From first product to scaling infrastructure — senior pods that turn vision into a launch-ready system, then re-architect it for growth without slowing the team down.",
+    "subTitle": "From idea to MVP, and from MVP to scale",
+    "description": "We partner with founders building their first product and with scale-ups whose growth is outrunning their infrastructure. Early on, we apply institutional engineering discipline without the overhead, shipping a launch-ready system with clear expansion paths. As load and complexity rise, we re-architect platforms for scale while the team keeps shipping — so capacity grows without sacrificing reliability.",
+    "tags": "MVP, product-market fit, founding engineering, scaling, platform engineering, reliability",
+    "podSize": [
+      { "title": "Typical pod", "value": "2-6 senior engineers, often with a product designer" },
+      { "title": "Engagement", "value": "Frame™ fixed-scope build or Flow™ continuous delivery" }
+    ]
+  },
+  {
+    "slug": "mid-market-and-enterprise",
+    "title": "Mid-Market & Enterprise",
+    "excerpts": "Modernizing the core and transforming operations — from legacy systems to cloud-native platforms, delivered with the governance and adoption that larger organizations require.",
+    "subTitle": "Modernize the core, transform the operating model",
+    "description": "We guide mid-market firms through pragmatic modernization — moving from monolithic, on-premise estates to cloud-native, maintainable platforms with measurable value — and we run enterprise programs as operating-model transformation, not software installation. Across both, we coordinate multiple pods, codify process controls and governance, and sustain adoption at scale, carrying production responsibility throughout.",
+    "tags": "modernization, cloud migration, legacy systems, digital transformation, governance, mission-critical systems",
+    "podSize": [
+      {
+        "title": "Typical pod",
+        "value": "Multiple coordinated pods of 4-8 engineers across backend, frontend, and platform"
+      },
+      { "title": "Engagement", "value": "Flow™ long-horizon partnership or Orchestra™ multi-program delivery" }
+    ]
+  },
+  {
+    "slug": "public-sector",
+    "title": "Public Sector",
+    "excerpts": "Secure, compliant, accountable delivery for institutions that demand security by architecture and verifiable governance — systems controlled at the infrastructure boundary and useful at the workflow boundary.",
+    "subTitle": "Secure and accountable delivery",
+    "description": "We support public-sector and regulated institutions that require security by architecture and verifiable governance. We deliver systems that are controlled at the infrastructure boundary — air-gapped and self-hosted where the data demands it — and useful at the workflow boundary, with full production responsibility and a governed handover. Compliance, auditability, and traceability are built in from the first phase, not bolted on at the end.",
+    "tags": "security, compliance, governed delivery, air-gapped systems, auditability, public sector",
+    "podSize": [
+      { "title": "Typical pod", "value": "Dedicated context-controlled pod of 3-6 engineers" },
+      { "title": "Engagement", "value": "Frame™ fixed-scope delivery with governed handover" }
+    ]
+  }
+]

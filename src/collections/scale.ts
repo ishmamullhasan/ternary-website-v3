@@ -1,8 +1,17 @@
 import { revalidateTag } from 'next/cache'
 import { CollectionConfig, slugField } from 'payload'
 
+import { anyone } from '@/access/anyone'
+import { authenticated } from '@/access/authenticated'
+
 const Scale: CollectionConfig = {
   slug: 'scale',
+  access: {
+    read: anyone,
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {

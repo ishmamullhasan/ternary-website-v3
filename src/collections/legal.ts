@@ -1,10 +1,18 @@
 import { revalidateTag } from 'next/cache'
 import { CollectionConfig, slugField } from 'payload'
 
+import { anyone } from '@/access/anyone'
+import { authenticated } from '@/access/authenticated'
 import { ctaGroup } from '@/fields/ctaGroup'
 
 const Legal: CollectionConfig = {
   slug: 'legal',
+  access: {
+    read: anyone,
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {

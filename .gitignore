@@ -29,3 +29,4 @@ public/sitemap*.xml
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+.vercel

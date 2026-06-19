@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "frame",
+    "title": "Frame™",
+    "excerpts": "Fixed scope, fixed timeline, fixed price. Built for discrete projects with well-understood objectives.",
+    "contentBlocks": [
+      {
+        "heading": "Fixed scope, fixed timeline, fixed price",
+        "paras": [
+          "Frame™ is built for discrete projects with well-understood objectives, delivered against a fixed scope, a fixed timeline, and a fixed price.",
+          "When the goal is clear, Frame™ gives you predictable delivery and total control over budget and schedule — with the same production responsibility we bring to every engagement."
+        ]
+      },
+      {
+        "heading": "Ideal for",
+        "paras": [
+          "Product launches, system migrations, platform implementations, proofs of concept, and governed public-sector delivery with a clean handover."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "flow",
+    "title": "Flow™",
+    "excerpts": "Retainer-based continuous delivery. A dedicated pod working iteratively to build and evolve your product.",
+    "contentBlocks": [
+      {
+        "heading": "Retainer-based continuous delivery",
+        "paras": [
+          "Flow™ provides a dedicated pod working iteratively against a rolling backlog — a standing team that builds and evolves your product through continuous delivery.",
+          "It is an ongoing partnership designed for sustained development, where the team stays close to your product as it matures and responds to the market."
+        ]
+      },
+      {
+        "heading": "Ideal for",
+        "paras": [
+          "Long-term product development, continuous feature delivery, market-responsive iteration, and modernization partnerships that run over a long horizon."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "orchestra",
+    "title": "Orchestra™",
+    "excerpts": "Multi-program engagements. Several coordinated pods across workstreams, with one accountable delivery lead.",
+    "contentBlocks": [
+      {
+        "heading": "Multi-program delivery, one accountable lead",
+        "paras": [
+          "Orchestra™ is for transformation at scale: several coordinated pods working across multiple workstreams, under a single accountable delivery lead.",
+          "It brings governance, shared standards, and cross-program coordination to large initiatives — so parallel teams move as one program rather than competing projects, with production responsibility held end to end."
+        ]
+      },
+      {
+        "heading": "Ideal for",
+        "paras": [
+          "Enterprise transformation, multi-workstream programs, portfolio delivery across business units, and modernization that spans several systems at once."
+        ]
+      }
+    ]
+  }
+]

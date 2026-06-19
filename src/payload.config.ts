@@ -13,6 +13,7 @@ import Solution from '@/collections/solution'
 import Story from '@/collections/story'
 import Team from '@/collections/team'
 import User from '@/collections/user'
+import { sesEmailAdapter } from '@/email/sesAdapter'
 import Footer from '@/globals/footer'
 import Header from '@/globals/header'
 import LegalCenter from '@/globals/legalCenter'
@@ -65,6 +66,9 @@ export default buildConfig({
     },
   },
   editor: lexicalEditor(),
+  // Amazon SES (SMTP). Resolves to undefined without SMTP creds so local dev/CI fall back to
+  // Payload's console mock transport. See src/email/sesAdapter.ts.
+  email: await sesEmailAdapter(),
   localization: {
     locales: [
       { label: 'English', code: 'en' },

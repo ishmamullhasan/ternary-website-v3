@@ -1,6 +1,9 @@
 import { revalidateTag } from 'next/cache'
 import { type CollectionConfig, slugField } from 'payload'
 
+import { anyone } from '@/access/anyone'
+import { authenticated } from '@/access/authenticated'
+
 /**
  * Factory for the simple {title, slug, excerpts, thumbnail, content} content collections
  * (story, insight, solution, industry, model) that were previously five byte-identical
@@ -12,6 +15,14 @@ export const makeContentCollection = (
   adminOpts?: { group?: string; description?: string; defaultColumns?: string[] },
 ): CollectionConfig => ({
   slug,
+  // Public marketing content: world-readable so the site can populate these relationships
+  // (else SSR/REST reads are access-filtered and sections render empty). Writes stay staff-only.
+  access: {
+    read: anyone,
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {

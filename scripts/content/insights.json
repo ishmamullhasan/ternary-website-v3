@@ -1,0 +1,72 @@
+[
+  {
+    "slug": "production-responsibility",
+    "title": "Production Responsibility: What \"We Own It\" Actually Means",
+    "code": "INS-001",
+    "authorName": "Shadman Shakib",
+    "publishedDate": "2026-05-20T00:00:00.000Z",
+    "readTime": "6 min",
+    "categoryLabel": "Engineering Institution",
+    "excerpts": "Most software is delivered and forgotten. We hold a harder standard: responsibility for how a system behaves once it's live. Here is what that actually changes in how we work.",
+    "tags": [{ "name": "Engineering culture" }, { "name": "Delivery" }, { "name": "Reliability" }],
+    "leadParagraph": "It is easy to say a team \"owns\" its work. It is harder to structure a company so that ownership survives the handoff, the on-call page, and the second year of a system's life. Production responsibility is the standard we hold, and it shapes every engagement.",
+    "contentBlocks": [
+      {
+        "heading": "Ownership doesn't end at delivery",
+        "paras": [
+          "A working prototype is the easy part. The real cost of software shows up in production — under real users, real data, and real failure conditions. A team that treats delivery as the finish line leaves that cost with the client.",
+          "We treat the system as something we remain accountable for: instrumented so problems surface before users hit them, and maintained rather than handed over as a brittle one-off."
+        ]
+      },
+      {
+        "heading": "What changes when you mean it",
+        "paras": [
+          "Owning outcomes changes the decisions upstream. We baseline real workflows before configuring anything. We choose architectures for the workload, not for fashion. We build governance — permissions, auditable actions, controlled overrides — into the system rather than into a document beside it.",
+          "It also changes who stays close to the work. From New York through our Dhaka delivery hub, the same team that builds a system carries responsibility for how it runs."
+        ]
+      },
+      {
+        "heading": "Control at the boundary, usefulness at the workflow",
+        "paras": [
+          "For sensitive environments the principle sharpens: control sits at the infrastructure boundary, usefulness at the workflow boundary, and extensibility at the platform boundary. That is how a system can be both secure by architecture and genuinely useful day to day.",
+          "Production responsibility isn't a slogan. It is the reason our clients can build on what we deliver for years, not months."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "air-gapped-ai-for-regulated-industries",
+    "title": "Air-Gapped AI for Regulated Industries",
+    "code": "INS-002",
+    "authorName": "Shakil Ahmed",
+    "publishedDate": "2026-06-02T00:00:00.000Z",
+    "readTime": "7 min",
+    "categoryLabel": "Applied AI",
+    "excerpts": "Regulated institutions don't have to choose between AI and control. Self-hosted, air-gapped models with a governed application layer deliver real workflow value while keeping proprietary data inside institutional boundaries.",
+    "tags": [{ "name": "Applied AI" }, { "name": "Security" }, { "name": "Governance" }],
+    "leadParagraph": "The fastest way to deploy AI is to send your data to someone else's model. For a securities firm, a hospital, or a public institution, that is also the fastest way to lose control of it. There is a better pattern.",
+    "contentBlocks": [
+      {
+        "heading": "The false trade-off",
+        "paras": [
+          "Teams in regulated environments are often told they must choose: adopt AI and accept the data-exposure risk, or stay safe and fall behind. That framing is wrong. The risk lives in where the model runs and how data reaches it, not in the use of AI itself.",
+          "Self-hosting changes the equation. An air-gapped, open-source model keeps inference — and the sensitive data feeding it — inside the institution's own boundary."
+        ]
+      },
+      {
+        "heading": "A governed application layer is the real work",
+        "paras": [
+          "A model on its own is not a system. The value comes from the application layer wrapped around it: retrieval grounded in governed sources, role-aware workflows, evaluation, and policy guardrails that keep responses traceable and operators in control.",
+          "We built exactly this for a capital-markets firm — an air-gapped LLM environment with an extensible layer delivering an assistant for dealer-brokers and behavior-aware retail marketing, without proprietary data ever leaving the institution."
+        ]
+      },
+      {
+        "heading": "Secure by architecture, not by policy alone",
+        "paras": [
+          "A policy that says \"don't paste sensitive data into external tools\" is a hope. An architecture where sensitive data physically cannot leave is a guarantee. For regulated industries, that distinction is the whole game.",
+          "Done well, air-gapped AI is not a compromise. It is practical workflow value with institutional control — and a foundation that extends as new functions are needed."
+        ]
+      }
+    ]
+  }
+]

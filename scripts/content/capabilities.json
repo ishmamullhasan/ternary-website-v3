@@ -1,0 +1,458 @@
+[
+  {
+    "slug": "enterprise-transformation",
+    "title": "Enterprise Transformation",
+    "excerpts": "We re-architect how an enterprise operates — codifying process controls, governance, and a single source of truth across the functions that run the business. We treat transformation as an operating-model change we stay accountable for, not a software install we hand over.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Enterprise Transformation",
+      "description": "We help established organizations modernize the systems and processes their operations depend on. From ERP programs to operating-model redesign, we deliver transformation that holds up under real governance — and we carry production responsibility for what we put live.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "Transformation is an operating model, not an install",
+      "description": "Large programs fail when they are treated as software projects. We treat them as changes to how an organization actually works, with controls, adoption, and accountability built in from the first phase.",
+      "items": [
+        {
+          "title": "Process before platform",
+          "excerpt": "We define and baseline the real workflows before we configure anything, so the system encodes how the business should run rather than freezing its current friction."
+        },
+        {
+          "title": "Governance is the deliverable",
+          "excerpt": "Approval rigor, traceability, and financial accuracy are the point in control-sensitive industries. We build those controls into the system, not into a binder beside it."
+        },
+        {
+          "title": "Phased and low-risk",
+          "excerpt": "We sequence transformation to protect production continuity, validating each phase against agreed workflows before the next one starts."
+        },
+        {
+          "title": "Adoption decides value",
+          "excerpt": "A program only pays off when people use it. We design for readiness and adoption so the new operating model sticks after we step back."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "From process baseline to a governed operating system",
+      "description": "We combine requirements engineering, ERP and platform implementation, and disciplined rollout to stand up systems an enterprise can run on for years.",
+      "items": [
+        {
+          "title": "Discovery & process baseline",
+          "excerpt": "Structured requirements discovery and management alignment that turn fragmented practices into a validated process model.",
+          "stack": [{ "name": "Requirements engineering" }, { "name": "Process mapping" }]
+        },
+        {
+          "title": "ERP & core systems",
+          "excerpt": "Selective, maintainable configuration of the core platform, mapped to validated workflows and extended only where it earns its keep.",
+          "stack": [{ "name": "Odoo" }, { "name": "PostgreSQL" }, { "name": "Python" }]
+        },
+        {
+          "title": "Integration & data",
+          "excerpt": "Governed interfaces between the core and the systems around it, so data and approvals flow without manual handoffs.",
+          "stack": [{ "name": "REST APIs" }, { "name": "ETL" }, { "name": "PostgreSQL" }]
+        },
+        {
+          "title": "Rollout & readiness",
+          "excerpt": "Backlog-driven implementation with readiness validation, controlled cutover, and the operational discipline to keep it reliable.",
+          "stack": [{ "name": "Terraform" }, { "name": "AWS" }, { "name": "CI/CD" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "Transformation we stand behind",
+      "description": "How we apply enterprise transformation under real governance and operating constraints.",
+      "items": [
+        {
+          "meta": "Oil & Gas · FAROGL",
+          "title": "An Odoo-centered ERP program for an oil-and-gas operator",
+          "problem": "FAROGL faced fragmented workflows and inconsistent process enforcement across key operational areas, with manual handoffs that slowed cycle times and limited enterprise-level visibility.",
+          "approach": "We ran a phased Odoo program — structured requirements discovery, management alignment, and process-baseline definition — then mapped module implementation to validated workflows with controlled, maintainable extension.",
+          "outcome": "A coherent ERP foundation that codifies process controls and gives the organization a lower-risk path to enterprise-wide standardization and future scaling.",
+          "metricValue": "Phased",
+          "metricLabel": "Governed ERP rollout"
+        },
+        {
+          "meta": "Franchise Operations · Hissho",
+          "title": "An operating layer for AI-enabled franchise execution",
+          "problem": "Hissho needed consistent execution across thousands of franchise locations, where insight rarely turned into repeatable day-to-day action across fragmented tools.",
+          "approach": "We built the governed, mobile-first application layer between franchise users and Hissho's AI and data platform — role-aware workflows for production planning, ordering, and regional coaching, with permissions, auditable actions, and controlled overrides.",
+          "outcome": "A practical execution surface that turns intelligence into accountable field behavior, consistently, at network scale.",
+          "metricValue": "1,000s",
+          "metricLabel": "Locations served"
+        }
+      ]
+    },
+    "practiceLead": {
+      "sectionLabel": "Practice lead",
+      "memberName": "Shadman Shakib",
+      "bio": "Shadman leads Ternary's enterprise transformation work, setting the standards for how the firm carries production responsibility from New York through its Dhaka delivery hub. He holds the line on ownership, governance, and adoption across large programs.",
+      "credentials": [
+        { "text": "Founder, Ternary" },
+        { "text": "Leads dual-hub delivery across New York and Dhaka" },
+        { "text": "Sets production-responsibility and governance standards" }
+      ],
+      "writings": [
+        {
+          "title": "Production Responsibility: What \"We Own It\" Actually Means",
+          "category": "Insight",
+          "link": "/insights/production-responsibility"
+        }
+      ]
+    },
+    "relatedCapabilities": {
+      "sectionLabel": "Related capabilities",
+      "heading": "Where transformation connects",
+      "capabilitySlugs": ["product-development", "engineering-augmentation", "managed-systems"]
+    },
+    "cta": {
+      "heading": "Modernize how your enterprise operates",
+      "description": "Let's talk about the ERP, integration, and operating-model work your organization needs — delivered by a team that stays accountable for it.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  },
+  {
+    "slug": "product-development",
+    "title": "Product Development",
+    "excerpts": "We take products from concept to production — web, mobile, and the services behind them — built to launch fast without accruing architecture or compliance debt. Design and engineering work as one team so the product is as dependable as it is usable.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Product Development",
+      "description": "We build digital products end to end and ship them to real users. From marketplaces to revenue platforms, we pair consumer-grade experience with production engineering, and stay close to the product as it grows.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "A product is something you launch and keep",
+      "description": "Prototypes are easy. We build products that hold up once real users and real load arrive, with a foundation that supports the next ten features rather than blocking them.",
+      "items": [
+        {
+          "title": "Launch without debt",
+          "excerpt": "We move fast to a launch-ready system while keeping the architecture extensible, so speed today doesn't become a rewrite tomorrow."
+        },
+        {
+          "title": "Experience is engineering",
+          "excerpt": "Speed, responsiveness, and reliability shape how a product feels. We engineer for them deliberately, design and code in the same loop."
+        },
+        {
+          "title": "Built on a real platform",
+          "excerpt": "The first features ship on reusable foundations — services, data, and orchestration — so the product compounds instead of fragmenting."
+        },
+        {
+          "title": "Close to the user and the operator",
+          "excerpt": "We model the product around the workflows it serves on both sides, so it fits the job for the people who use it and the business that runs it."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "Design and engineering, shipping together",
+      "description": "We compose products from a modern front end, well-bounded services, and the data and AI layers a product needs to feel intelligent.",
+      "items": [
+        {
+          "title": "Product & interaction design",
+          "excerpt": "Research-informed design and prototyping that turn user needs into clear, usable interfaces before code locks them in.",
+          "stack": [{ "name": "Figma" }, { "name": "Design systems" }]
+        },
+        {
+          "title": "Web & mobile engineering",
+          "excerpt": "Fast, accessible web apps and native-quality mobile experiences on modern, maintainable frameworks.",
+          "stack": [{ "name": "Next.js" }, { "name": "React" }, { "name": "Flutter" }, { "name": "TypeScript" }]
+        },
+        {
+          "title": "Services & APIs",
+          "excerpt": "Well-bounded backend services with clear contracts, sized to be deployable and maintainable on their own.",
+          "stack": [{ "name": "FastAPI" }, { "name": "Node.js" }, { "name": "PostgreSQL" }, { "name": "Redis" }]
+        },
+        {
+          "title": "Intelligence in the product",
+          "excerpt": "Recommendations, ranking, and dynamic logic embedded in the workflow — model-assisted, with operator control preserved.",
+          "stack": [{ "name": "Python" }, { "name": "ML ranking" }, { "name": "pgvector" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "Products we took to production",
+      "description": "How we move an idea to a launched, dependable product.",
+      "items": [
+        {
+          "meta": "Marketplace · Turfly",
+          "title": "A sports-facility booking marketplace, concept to production",
+          "problem": "Facility booking relied on phone calls and manual confirmation, leaving operators with low utilization, revenue leakage, and no real-time demand visibility.",
+          "approach": "We built the end-to-end platform — Flutter apps for players, a React operator portal, and a FastAPI backend with ML-ranked search, integrated payments, and demand-based dynamic pricing.",
+          "outcome": "Booking time dropped sharply and operators gained real-time visibility, with strong mobile adoption in the first month after launch.",
+          "metricValue": "85%",
+          "metricLabel": "Mobile adoption in 30 days"
+        },
+        {
+          "meta": "Revenue Platform · Counterfoil",
+          "title": "Continuum: an AI revenue operating layer",
+          "problem": "Experience-economy operators ran pricing, inventory, and distribution across fragmented tools, with manual interventions and yield leakage.",
+          "approach": "We built a modular, API-first, event-driven platform pairing configurable business rules with model-assisted recommendations, with policy boundaries and override-capable workflows that keep operators in control.",
+          "outcome": "A scalable operating foundation that connects previously siloed revenue levers and supports ongoing product evolution.",
+          "metricValue": "Production",
+          "metricLabel": "Revenue platform live"
+        }
+      ]
+    },
+    "practiceLead": {
+      "sectionLabel": "Practice lead",
+      "memberName": "Shakil Ahmed",
+      "bio": "Shakil sets Ternary's technical direction and the engineering bar that holds across the product lifecycle. He guides the architecture and platform decisions that let teams in New York and Dhaka ship products that last in production.",
+      "credentials": [
+        { "text": "Chief Technology Officer, Ternary" },
+        { "text": "Owns architecture and platform standards" },
+        { "text": "Leads design-and-engineering delivery" }
+      ],
+      "writings": [
+        {
+          "title": "Air-Gapped AI for Regulated Industries",
+          "category": "Insight",
+          "link": "/insights/air-gapped-ai-for-regulated-industries"
+        }
+      ]
+    },
+    "relatedCapabilities": {
+      "sectionLabel": "Related capabilities",
+      "heading": "Where product work connects",
+      "capabilitySlugs": ["enterprise-transformation", "engineering-augmentation", "managed-systems"]
+    },
+    "cta": {
+      "heading": "Build a product people want to use",
+      "description": "Let's talk about the web, mobile, and platform work your product needs to launch and grow.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  },
+  {
+    "slug": "engineering-augmentation",
+    "title": "Engineering Augmentation",
+    "excerpts": "We embed senior engineering pods into your team and workflows — adding capacity and specialized expertise exactly where you need it, while holding the same production responsibility for what we ship as for anything we build alone.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Engineering Augmentation",
+      "description": "We integrate engineering pods directly into your existing teams and roadmap. You get senior capacity and specialized skills — embedded engineering, full-stack to firmware — without losing ownership or the standards your systems need.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "Augmentation with ownership, not just hours",
+      "description": "Staffing bodies into a backlog doesn't move a roadmap. We embed pods that take real ownership, fit your workflows, and carry features through to production.",
+      "items": [
+        {
+          "title": "Senior pods, integrated",
+          "excerpt": "Our engineers plug into your rituals, tools, and standards and operate as part of your team, not a detached vendor over the wall."
+        },
+        {
+          "title": "Capacity where it's scarce",
+          "excerpt": "We add throughput and specialized expertise — from full-stack to embedded and AI — exactly where your roadmap is constrained."
+        },
+        {
+          "title": "Owned end to end",
+          "excerpt": "Embedded or not, we hold responsibility for the features we ship, from first commit to running reliably in production."
+        },
+        {
+          "title": "Flexes to the roadmap",
+          "excerpt": "Pods scale up and down as priorities shift, so you get the right shape of team for the work in front of you."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "Pods that ship across the stack",
+      "description": "We assemble pods matched to the work — web, mobile, backend, or embedded — and integrate them into your delivery so the cadence holds.",
+      "items": [
+        {
+          "title": "Full-stack delivery pods",
+          "excerpt": "Web, mobile, and backend engineers who take features from design through to production inside your codebase.",
+          "stack": [{ "name": "React" }, { "name": "Capacitor" }, { "name": "FastAPI" }, { "name": "TypeScript" }]
+        },
+        {
+          "title": "Platform & data engineering",
+          "excerpt": "Multi-tenant architecture, RBAC, real-time data, and the platform plumbing that keeps a growing system coherent.",
+          "stack": [{ "name": "PostgreSQL" }, { "name": "Redis" }, { "name": "WebSocket" }, { "name": "AWS" }]
+        },
+        {
+          "title": "Embedded & hardware",
+          "excerpt": "Firmware and edge engineering for connected products, from sensor processing to OTA updates in the field.",
+          "stack": [{ "name": "C/C++" }, { "name": "Embedded firmware" }, { "name": "BLE" }]
+        },
+        {
+          "title": "Delivery discipline",
+          "excerpt": "Clear ownership, low-noise process, and a steady cadence so embedded pods raise velocity instead of coordination cost.",
+          "stack": [{ "name": "CI/CD" }, { "name": "Code review" }, { "name": "Observability" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "Pods embedded in real delivery",
+      "description": "How we add engineering capacity and ownership inside a client's systems.",
+      "items": [
+        {
+          "meta": "Field Service · Amistee",
+          "title": "DoYouWork: an integrated field-service platform",
+          "problem": "Amistee's field-service operation ran on fragmented tools and paperwork, with no real-time view of schedules, assets, and approvals, and no self-service for field employees.",
+          "approach": "We built a three-app ecosystem — a Capacitor mobile employee app, a React admin portal, and a FastAPI backend — with role-based access, location-scoped data, multi-tenancy, real-time notifications, and S3-backed approval workflows.",
+          "outcome": "A unified, mobile-first system that replaced manual processes with real-time operational visibility and a scalable foundation for growth.",
+          "metricValue": "3 apps",
+          "metricLabel": "One source of truth"
+        },
+        {
+          "meta": "Sports Tech · Alley Analytix",
+          "title": "End-to-end coaching intelligence, hardware to cloud",
+          "problem": "Bowling analytics depended on expensive fixed installations, forcing a trade-off between affordability and analytical fidelity.",
+          "approach": "We engineered the full product — purpose-built finger-grip sensor hardware, real-time motion processing, high-concurrency cloud ingestion, coaching dashboards, an AI assistant, and OTA firmware updates.",
+          "outcome": "Portable coaching intelligence that preserves signal fidelity at scale, shifting analytics from fixed rigs to a device players can carry.",
+          "metricValue": "Edge-to-cloud",
+          "metricLabel": "Full-stack product"
+        }
+      ]
+    },
+    "practiceLead": {
+      "sectionLabel": "Practice lead",
+      "memberName": "Nahid Reza",
+      "bio": "Nahid runs delivery across Ternary's engineering teams and the practices that keep embedded work moving with low noise and clear ownership. He makes sure pods ship on a steady cadence and hold responsibility for production end to end.",
+      "credentials": [
+        { "text": "Head of Engineering, Ternary" },
+        { "text": "Runs multi-pod, embedded delivery" },
+        { "text": "Owns delivery cadence and production responsibility" }
+      ],
+      "writings": [
+        {
+          "title": "Production Responsibility: What \"We Own It\" Actually Means",
+          "category": "Insight",
+          "link": "/insights/production-responsibility"
+        }
+      ]
+    },
+    "relatedCapabilities": {
+      "sectionLabel": "Related capabilities",
+      "heading": "Where augmentation connects",
+      "capabilitySlugs": ["product-development", "enterprise-transformation", "managed-systems"]
+    },
+    "cta": {
+      "heading": "Add engineering capacity that owns the outcome",
+      "description": "Let's talk about the pods and expertise your roadmap needs — embedded into your team and accountable for what ships.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  },
+  {
+    "slug": "managed-systems",
+    "title": "Managed Systems",
+    "excerpts": "We run and evolve the systems we build — taking ongoing responsibility for reliability, security, and governance long after launch. For regulated and sensitive environments, we keep control at the infrastructure boundary and usefulness at the workflow boundary.",
+    "heroSection": {
+      "badge": "Capability",
+      "heading": "Managed Systems",
+      "description": "Launch is the beginning. We operate, monitor, and extend production systems as a long-term responsibility — including air-gapped and compliance-grade environments where security and governance are non-negotiable.",
+      "button": { "label": "Talk to us", "link": "/contact" }
+    },
+    "whatThisMeansToUs": {
+      "sectionLabel": "What this means to us",
+      "heading": "We operate what we build",
+      "description": "A system is something to maintain, not a launch to celebrate. We carry reliability, security, and cost as ongoing responsibilities, with control built into the architecture.",
+      "items": [
+        {
+          "title": "Reliability we stand behind",
+          "excerpt": "We instrument systems so problems surface before users hit them, and we carry production responsibility for what we run."
+        },
+        {
+          "title": "Secure by architecture",
+          "excerpt": "For sensitive environments, control sits at the infrastructure boundary — air-gapped and self-hosted where the data demands it."
+        },
+        {
+          "title": "Governed by design",
+          "excerpt": "Permissions, auditable actions, and controlled overrides are foundational, so the system stays accountable as it evolves."
+        },
+        {
+          "title": "Evolves without drift",
+          "excerpt": "We extend live systems on reusable foundations, adding capability without eroding the reliability or compliance already earned."
+        }
+      ]
+    },
+    "howWeDoIt": {
+      "sectionLabel": "How we do it",
+      "heading": "Run, secure, and extend in production",
+      "description": "We combine self-hosted and governed infrastructure, observability, and disciplined operations to keep systems healthy and compliant over time.",
+      "items": [
+        {
+          "title": "Self-hosted & air-gapped AI",
+          "excerpt": "Open-source models deployed inside institutional boundaries, with a governed application layer over them for real workflow value.",
+          "stack": [{ "name": "Open-source LLMs" }, { "name": "Docker" }, { "name": "Ollama" }]
+        },
+        {
+          "title": "Compliance-grade platforms",
+          "excerpt": "HIPAA-aligned and policy-governed service architectures, designed for controlled, auditable rollout.",
+          "stack": [{ "name": "Secure service architecture" }, { "name": "RBAC" }, { "name": "Audit logging" }]
+        },
+        {
+          "title": "Observability & operations",
+          "excerpt": "Monitoring, alerting, and cost visibility so reliability and spend are managed together, continuously.",
+          "stack": [{ "name": "Prometheus" }, { "name": "Grafana" }, { "name": "CloudWatch" }]
+        },
+        {
+          "title": "Reproducible infrastructure",
+          "excerpt": "Everything defined as code, so environments are auditable, repeatable, and recoverable rather than hand-assembled.",
+          "stack": [{ "name": "Terraform" }, { "name": "Kubernetes" }, { "name": "AWS" }]
+        }
+      ]
+    },
+    "caseStudies": {
+      "sectionLabel": "In practice",
+      "heading": "Systems we run and govern",
+      "description": "How we operate sensitive, compliance-grade systems in production.",
+      "items": [
+        {
+          "meta": "Capital Markets · LankaBangla Securities",
+          "title": "An air-gapped LLM application layer",
+          "problem": "Dealer-brokers needed faster access to synthesized information and more relevant retail outreach, without exposing sensitive data to external AI services.",
+          "approach": "We deployed an air-gapped open-source LLM environment and built the extensible application layer over it — an AI assistant for dealer-brokers and behavior-aware retail marketing — with control held at the infrastructure boundary.",
+          "outcome": "A secure, extensible AI foundation that is useful in high-tempo decisions while keeping data inside institutional boundaries.",
+          "metricValue": "Air-gapped",
+          "metricLabel": "Control at the boundary"
+        },
+        {
+          "meta": "Digital Health · Reality Meets Science",
+          "title": "Flex5: a HIPAA-grade health platform launch",
+          "problem": "Reality Meets Science needed a production-capable, HIPAA-aligned platform that could launch quickly without accruing compliance or architecture debt.",
+          "approach": "We built the application and platform layer end to end — a mobile-first experience, secure backend services, and an extensible AI orchestration layer for controlled, scalable rollout of coaching and engagement functions.",
+          "outcome": "A launch-ready system with HIPAA-aligned governance and a credible base for enterprise conversations and iterative growth.",
+          "metricValue": "HIPAA-aligned",
+          "metricLabel": "Governed platform"
+        }
+      ]
+    },
+    "practiceLead": {
+      "sectionLabel": "Practice lead",
+      "memberName": "Nahid Reza",
+      "bio": "Nahid leads the practices that keep Ternary's production systems reliable and accountable after launch. He owns the operational discipline behind run-and-operate engagements, from observability to governed change.",
+      "credentials": [
+        { "text": "Head of Engineering, Ternary" },
+        { "text": "Owns run-and-operate and reliability practices" },
+        { "text": "Leads governed, secure-by-architecture delivery" }
+      ],
+      "writings": [
+        {
+          "title": "Air-Gapped AI for Regulated Industries",
+          "category": "Insight",
+          "link": "/insights/air-gapped-ai-for-regulated-industries"
+        }
+      ]
+    },
+    "relatedCapabilities": {
+      "sectionLabel": "Related capabilities",
+      "heading": "Where managed systems connect",
+      "capabilitySlugs": ["enterprise-transformation", "product-development", "engineering-augmentation"]
+    },
+    "cta": {
+      "heading": "Keep your systems reliable, secure, and evolving",
+      "description": "Let's talk about operating, securing, and extending the systems your business runs on — including the sensitive ones.",
+      "button_1": { "label": "Start a conversation", "link": "/contact" },
+      "button_2": { "label": "See our work", "link": "/stories" }
+    }
+  }
+]

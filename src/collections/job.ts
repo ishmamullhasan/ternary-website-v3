@@ -4,8 +4,17 @@ import { FixedToolbarFeature } from 'node_modules/@payloadcms/richtext-lexical/d
 import { InlineToolbarFeature } from 'node_modules/@payloadcms/richtext-lexical/dist/features/toolbars/inline/server'
 import { CollectionConfig, slugField } from 'payload'
 
+import { anyone } from '@/access/anyone'
+import { authenticated } from '@/access/authenticated'
+
 const Job: CollectionConfig = {
   slug: 'job',
+  access: {
+    read: anyone,
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {

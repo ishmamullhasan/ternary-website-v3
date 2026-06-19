@@ -1,0 +1,100 @@
+[
+  {
+    "slug": "dual-hub-delivery-model",
+    "title": "Ternary Operationalizes a Dual-Hub Delivery Model Across New York and Dhaka",
+    "badge": "Company",
+    "code": "PR-001",
+    "releaseDate": "2026-06-10T00:00:00.000Z",
+    "datelineLocation": "New York, USA",
+    "excerpts": "Ternary formalizes a dual-hub operating model — client partnership in New York, production engineering in Dhaka — built to carry production responsibility for client systems end to end.",
+    "readTime": "4 min",
+    "categoryLabel": "Company",
+    "tags": [{ "name": "Company" }, { "name": "Operating model" }],
+    "leadParagraph": "Ternary today formalized the dual-hub model that has anchored its delivery: client partnership and engagement leadership in New York, paired with a senior production-engineering hub in Dhaka. The model is built around a single standard — production responsibility for the systems Ternary delivers, held end to end.",
+    "contentBlocks": [
+      {
+        "heading": "One standard across two hubs",
+        "paras": [
+          "The dual-hub model keeps engagement leadership close to clients while concentrating senior engineering capacity in Dhaka. Rather than treating the hubs as separate vendors, Ternary runs them as one team under shared standards for ownership, transparency, and engineering quality.",
+          "The result is continuity: the same team that designs a system carries responsibility for how it behaves in production."
+        ]
+      },
+      {
+        "heading": "Why it matters",
+        "paras": [
+          "For clients, the model means access to senior engineering at scale without losing accountability. Work is delivered against the same governance and reliability standards regardless of which hub leads a given workstream."
+        ]
+      }
+    ],
+    "quotes": [
+      {
+        "quote": "We built Ternary as an engineering institution, not a staffing desk. The dual-hub model is how we keep ownership intact — the people who build a system stay responsible for how it runs.",
+        "name": "Shadman Shakib",
+        "role": "Founder · Ternary"
+      }
+    ],
+    "releaseFacts": {
+      "forImmediateRelease": "Yes",
+      "embargo": "None",
+      "distribution": "Global"
+    },
+    "pressContact": {
+      "heading": "Press & analyst contact",
+      "description": "For interviews, background, or additional information, please contact Ternary's communications team.",
+      "press": {
+        "name": "Ariba Chowdhury",
+        "title": "Marketing Specialist · Ternary",
+        "email": "press@ternary.solutions"
+      }
+    }
+  },
+  {
+    "slug": "engagement-framework-frame-flow-orchestra",
+    "title": "Ternary Formalizes Frame, Flow, and Orchestra as Its Engagement Framework",
+    "badge": "Company",
+    "code": "PR-002",
+    "releaseDate": "2026-06-16T00:00:00.000Z",
+    "datelineLocation": "Dhaka, Bangladesh",
+    "excerpts": "Ternary names three engagement models — Frame for fixed-scope projects, Flow for retainer-based continuous delivery, and Orchestra for multi-program engagements — giving clients a clear way to match the engagement to the work.",
+    "readTime": "4 min",
+    "categoryLabel": "Company",
+    "tags": [{ "name": "Company" }, { "name": "Engagement models" }],
+    "leadParagraph": "Ternary today formalized the three engagement models it uses to shape client work: Frame™ for fixed-scope projects, Flow™ for retainer-based continuous delivery, and Orchestra™ for multi-program engagements. The framework gives clients a clear, consistent way to match the structure of an engagement to the shape of the work.",
+    "contentBlocks": [
+      {
+        "heading": "Three models, one standard of ownership",
+        "paras": [
+          "Frame™ delivers discrete projects against a fixed scope, timeline, and price — ideal for launches, migrations, and governed public-sector delivery. Flow™ provides a dedicated pod working a rolling backlog for sustained product development. Orchestra™ coordinates several pods across workstreams under one accountable delivery lead for transformation at scale.",
+          "Across all three, the standard is the same: Ternary carries production responsibility for what it ships."
+        ]
+      },
+      {
+        "heading": "Why it matters",
+        "paras": [
+          "Mismatched engagement structures are a common source of failed programs. By naming the models explicitly, Ternary makes it easier for clients to choose the right delivery shape up front — and to scale between them as needs change."
+        ]
+      }
+    ],
+    "quotes": [
+      {
+        "quote": "Frame, Flow, and Orchestra aren't pricing tiers — they're delivery shapes. Naming them lets us be honest with clients about how a piece of work should actually be run.",
+        "name": "Sajid Islam",
+        "role": "Chief Revenue Officer · Ternary"
+      }
+    ],
+    "releaseFacts": {
+      "forImmediateRelease": "Yes",
+      "embargo": "None",
+      "distribution": "Global"
+    },
+    "pressContact": {
+      "heading": "Press & analyst contact",
+      "description": "For interviews, background, or additional information, please contact Ternary's communications team.",
+      "press": {
+        "name": "Ariba Chowdhury",
+        "title": "Marketing Specialist · Ternary",
+        "email": "press@ternary.solutions"
+      }
+    }
+  }
+]

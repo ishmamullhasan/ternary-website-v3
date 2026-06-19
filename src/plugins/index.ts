@@ -1,3 +1,4 @@
+import { authConfig } from '@/auth.config'
 import { getServerSideURL } from '@/utilities/getURL'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
@@ -5,6 +6,7 @@ import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { Plugin } from 'payload'
+import { authjsPlugin } from 'payload-authjs'
 
 const generateTitle = ({ doc }: { doc?: { title?: string | null } }) => {
   return doc?.title ? `${doc.title} | Ternary Solutions` : 'Ternary Solutions'
@@ -105,6 +107,11 @@ const plugins: Plugin[] = [
       },
     ],
   }),
+  // Google Workspace SSO into the admin (Auth.js v5). Registered unconditionally so the
+  // /api/auth route and auth strategy are always present; the "Sign in with Google" button only
+  // appears once AUTH_GOOGLE_ID/SECRET enable the provider in auth.config.ts. Email/password
+  // login is unaffected. See docs/claude/google-admin-sso.md.
+  authjsPlugin({ authjsConfig: authConfig }),
 ]
 
 export default plugins
