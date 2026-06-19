@@ -55,6 +55,16 @@ function absolute(pathname: string): string {
 }
 
 /**
+ * Absolute URL of a dynamically rendered Open Graph card (src/app/og/route.tsx), used as the
+ * og:image / twitter:image fallback when a page has no explicit SEO image. Encodes the page
+ * title + a sensible subtitle into the query string so each page gets a branded, unique card.
+ */
+function dynamicOgImageUrl(title: string, subtitle: string): string {
+  const params = new URLSearchParams({ title, subtitle })
+  return `${getServerSideURL()}/og?${params.toString()}`
+}
+
+/**
  * Build a Next.js `Metadata` object from a doc's plugin-seo `meta` group + site defaults.
  *
  * Precedence:
@@ -94,8 +104,12 @@ export async function generateMeta({
   }
   languages['x-default'] = absolute(localizedPath(DEFAULT_LOCALE, pathname))
 
+  // Explicit SEO image wins. Otherwise render a branded per-page OG card via /og (WEB-451),
+  // built from the page title + description so each page gets a unique social image. The static
+  // DEFAULT_OG_IMAGE remains the final fallback if the title is somehow empty.
   const resolvedImage = resolveImageUrl(meta?.image)
-  const ogImage = resolvedImage || (DEFAULT_OG_IMAGE ? getMediaUrl(DEFAULT_OG_IMAGE) : null)
+  const dynamicImage = title ? dynamicOgImageUrl(title, description) : null
+  const ogImage = resolvedImage || dynamicImage || (DEFAULT_OG_IMAGE ? getMediaUrl(DEFAULT_OG_IMAGE) : null)
   const images = ogImage ? [{ url: ogImage }] : undefined
 
   const twitterCard = meta?.twitterCard || 'summary_large_image'

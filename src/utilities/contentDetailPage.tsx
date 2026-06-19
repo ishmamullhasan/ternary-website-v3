@@ -1,10 +1,14 @@
 import RichTextComp, { type RichText } from '@/components/richtext'
+import JsonLd from '@/components/seo/JsonLd'
 import { asTypedLocale, LOCALES, localizedPath } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
+import { article, breadcrumbList } from '@/lib/seo/jsonLd'
 import type { Insight, Media, PressRelease, Story } from '@/payload-types'
 import config from '@/payload.config'
+import { getServerSideURL } from '@/utilities/getURL'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
+import { draftMode } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -22,22 +26,36 @@ const COLLECTION_CONFIG: Record<ContentCollection, { label: string; listPath: st
   pressRelease: { label: 'Press Release', listPath: '/stories', tag: 'pressRelease' },
 }
 
-function getDocBySlug(collection: ContentCollection, slug: string, locale: TypedLocale) {
-  return unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      const result = await payload.find({
-        collection,
-        where: { slug: { equals: slug } },
-        locale,
-        limit: 1,
-        depth: 2,
-      })
-      return (result.docs[0] as ContentDoc | undefined) ?? null
-    },
-    [`${collection}_${slug}_${locale}`],
-    { tags: [`${collection}_${slug}`, COLLECTION_CONFIG[collection].tag] },
-  )
+async function fetchDocBySlug(
+  collection: ContentCollection,
+  slug: string,
+  locale: TypedLocale,
+): Promise<ContentDoc | null> {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection,
+    where: { slug: { equals: slug } },
+    locale,
+    limit: 1,
+    depth: 2,
+  })
+  return (result.docs[0] as ContentDoc | undefined) ?? null
+}
+
+// Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
+// `revalidateTag('<slug>')` / `revalidateTag('<slug>_<docSlug>')` calls in the
+// makeContentCollection afterChange hook. In draft mode (live preview) we bypass the cache so
+// editors always see the freshest data.
+async function getDocBySlug(
+  collection: ContentCollection,
+  slug: string,
+  locale: TypedLocale,
+): Promise<ContentDoc | null> {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) return fetchDocBySlug(collection, slug, locale)
+  return unstable_cache(() => fetchDocBySlug(collection, slug, locale), [`${collection}_${slug}_${locale}`], {
+    tags: [`${collection}_${slug}`, COLLECTION_CONFIG[collection].tag],
+  })()
 }
 
 function getListPath(collection: ContentCollection): string {
@@ -76,7 +94,7 @@ export function createContentDetailPage(collection: ContentCollection) {
     const { locale, slug } = await params
     const typedLocale = asTypedLocale(locale)
     if (!typedLocale) return {}
-    const doc = await getDocBySlug(collection, slug, typedLocale)()
+    const doc = await getDocBySlug(collection, slug, typedLocale)
 
     if (!doc) return {}
 
@@ -94,15 +112,38 @@ export function createContentDetailPage(collection: ContentCollection) {
     const { locale, slug } = await params
     const typedLocale = asTypedLocale(locale)
     if (!typedLocale) notFound()
-    const doc = await getDocBySlug(collection, slug, typedLocale)()
+    const doc = await getDocBySlug(collection, slug, typedLocale)
 
     if (!doc) notFound()
 
     const thumbnail = doc.thumbnail as Media | undefined
     const { label, listPath } = COLLECTION_CONFIG[collection]
 
+    const baseUrl = getServerSideURL()
+    const detailUrl = `${baseUrl}/${typedLocale}${getDetailPath(collection, slug)}`
+    // Insights expose an explicit publishedDate; stories/press releases fall back to createdAt.
+    const publishedDate = (doc as Insight).publishedDate
+    const datePublished = publishedDate ?? doc.createdAt
+
+    const articleLd = article({
+      headline: doc.title ?? label,
+      description: doc.excerpts,
+      image: thumbnail?.url ?? null,
+      datePublished,
+      dateModified: doc.updatedAt,
+      url: detailUrl,
+    })
+
+    const breadcrumbsLd = breadcrumbList([
+      { name: 'Home', url: `${baseUrl}/${typedLocale}` },
+      { name: 'Stories', url: `${baseUrl}/${typedLocale}${listPath}` },
+      { name: doc.title ?? label, url: detailUrl },
+    ])
+
     return (
       <div className="max-w-4xl mx-auto w-full px-4 lg:px-0 py-12 lg:py-20 text-primary">
+        <JsonLd data={articleLd} />
+        <JsonLd data={breadcrumbsLd} />
         <Link
           href={localizedPath(typedLocale, listPath)}
           className="text-sm text-[#757571] hover:text-white transition-colors mb-8 inline-block"

@@ -1,3 +1,4 @@
+import { detailPreviewURL } from '@/utilities/livePreview'
 import { revalidateTag } from 'next/cache'
 import { CollectionConfig, slugField } from 'payload'
 
@@ -16,6 +17,14 @@ const Insight: CollectionConfig = {
     singular: 'Insight',
     plural: 'Insights',
   },
+  // Drafts + scheduled publishing (WEB-454): editors can stage an article and pick a future
+  // publish time. The Payload jobs queue (jobs.autoRun in payload.config.ts) flips the scheduled
+  // draft to published when its time arrives. Public fetchers omit `draft`, so they default to
+  // draft:false and only ever read the published version.
+  versions: {
+    drafts: { schedulePublish: true },
+    maxPerDoc: 20,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -31,6 +40,11 @@ const Insight: CollectionConfig = {
     description: 'Thought-leadership articles and insights.',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'publishedDate', 'updatedAt'],
+    // Live preview routes through /next/preview so draft mode is on; detail route is
+    // /<locale>/insights/<slug> (WEB-449).
+    livePreview: {
+      url: ({ data }) => detailPreviewURL('insight', 'insights', data),
+    },
   },
   fields: [
     {

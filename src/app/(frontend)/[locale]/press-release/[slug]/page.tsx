@@ -3,7 +3,7 @@ import RichTextComp, { type RichText } from '@/components/richtext'
 import JsonLd from '@/components/seo/JsonLd'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
-import { article } from '@/lib/seo/structuredData'
+import { article, breadcrumbList } from '@/lib/seo/jsonLd'
 import type { Media, PressRelease } from '@/payload-types'
 import config from '@/payload.config'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
+import { draftMode } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
@@ -42,22 +43,27 @@ const getPressReleaseList = unstable_cache(
   { tags: ['pressRelease'] },
 )
 
-function getPressReleaseBySlug(slug: string, locale: TypedLocale) {
-  return unstable_cache(
-    async (): Promise<PressRelease | null> => {
-      const payload = await getPayload({ config })
-      const result = await payload.find({
-        collection: 'pressRelease',
-        where: { slug: { equals: slug } },
-        locale,
-        limit: 1,
-        depth: 2,
-      })
-      return (result.docs[0] as PressRelease | undefined) ?? null
-    },
-    [`pressRelease_${slug}_${locale}`],
-    { tags: [`pressRelease_${slug}`, 'pressRelease'] },
-  )
+async function fetchPressReleaseBySlug(slug: string, locale: TypedLocale): Promise<PressRelease | null> {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'pressRelease',
+    where: { slug: { equals: slug } },
+    locale,
+    limit: 1,
+    depth: 2,
+  })
+  return (result.docs[0] as PressRelease | undefined) ?? null
+}
+
+// Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
+// `revalidateTag('pressRelease')` / `revalidateTag('pressRelease_<slug>')` calls in the pressRelease
+// afterChange hook. In draft mode (live preview) we bypass the cache so editors see fresh data.
+async function getPressReleaseBySlug(slug: string, locale: TypedLocale): Promise<PressRelease | null> {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) return fetchPressReleaseBySlug(slug, locale)
+  return unstable_cache(() => fetchPressReleaseBySlug(slug, locale), [`pressRelease_${slug}_${locale}`], {
+    tags: [`pressRelease_${slug}`, 'pressRelease'],
+  })()
 }
 
 export async function generateStaticParams() {
@@ -74,7 +80,7 @@ export async function generateMetadata({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) return {}
-  const pressRelease = await getPressReleaseBySlug(slug, typedLocale)()
+  const pressRelease = await getPressReleaseBySlug(slug, typedLocale)
 
   if (!pressRelease) return {}
 
@@ -199,7 +205,7 @@ export default async function Page({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) notFound()
-  const pressRelease = await getPressReleaseBySlug(slug, typedLocale)()
+  const pressRelease = await getPressReleaseBySlug(slug, typedLocale)
 
   if (!pressRelease) {
     notFound()
@@ -211,12 +217,13 @@ export default async function Page({
     (item) => item.id !== pressRelease.id,
   )
 
-  const shareUrl = `${getServerSideURL()}/${typedLocale}/press-release/${slug}`
+  const baseUrl = getServerSideURL()
+  const shareUrl = `${baseUrl}/${typedLocale}/press-release/${slug}`
   const shareTitle = encodeURIComponent(pressRelease.title ?? '')
 
   const thumbnail = pressRelease.thumbnail as Media | undefined
   const articleLd = article({
-    title: pressRelease.title ?? 'Press Release',
+    headline: pressRelease.title ?? 'Press Release',
     description: pressRelease.leadParagraph || pressRelease.excerpts,
     image: thumbnail?.url ?? null,
     datePublished: pressRelease.releaseDate,
@@ -224,9 +231,16 @@ export default async function Page({
     url: shareUrl,
   })
 
+  const breadcrumbsLd = breadcrumbList([
+    { name: 'Home', url: `${baseUrl}/${typedLocale}` },
+    { name: 'Stories', url: `${baseUrl}/${typedLocale}/stories` },
+    { name: pressRelease.title ?? 'Press Release', url: shareUrl },
+  ])
+
   return (
     <div className="flex flex-col lg:gap-24 gap-10 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
       <JsonLd data={articleLd} />
+      <JsonLd data={breadcrumbsLd} />
       {/* Headline + dateline */}
       <Motion tag="section" className="w-full lg:pt-16 lg:pb-8 pt-8 pb-4" {...motionSectionProps}>
         <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 px-4 lg:px-0">

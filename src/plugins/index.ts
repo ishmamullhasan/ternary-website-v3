@@ -1,11 +1,14 @@
 import { authConfig } from '@/auth.config'
+import { sendFormSubmissionNotification } from '@/plugins/formSubmissionNotification'
 import { getServerSideURL } from '@/utilities/getURL'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
+import { searchPlugin } from '@payloadcms/plugin-search'
+import type { BeforeSync, SearchPluginConfig } from '@payloadcms/plugin-search/types'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { s3Storage } from '@payloadcms/storage-s3'
-import { Plugin } from 'payload'
+import { Field, Plugin } from 'payload'
 import { authjsPlugin } from 'payload-authjs'
 
 const generateTitle = ({ doc }: { doc?: { title?: string | null } }) => {
@@ -15,6 +18,65 @@ const generateTitle = ({ doc }: { doc?: { title?: string | null } }) => {
 const generateURL = ({ doc }: { doc?: { slug?: string | null } }) => {
   const url = getServerSideURL()
   return doc?.slug ? `${url}/${doc.slug}` : url
+}
+
+// Collections fed into the global site search (WEB-456). Each synced search doc carries enough
+// to render a linked result without a second read: title, slug, excerpt, and the source `type`.
+const SEARCHABLE_COLLECTIONS = ['insight', 'pressRelease', 'story', 'capability'] as const
+
+// Newsroom items rank above evergreen content so fresh announcements surface first.
+const searchDefaultPriorities: NonNullable<SearchPluginConfig['defaultPriorities']> = {
+  pressRelease: 40,
+  insight: 30,
+  story: 20,
+  capability: 10,
+}
+
+// Extra renderable fields appended to the plugin's default search schema (title/priority/doc/docUrl).
+const searchExtraFields: Field[] = [
+  {
+    name: 'type',
+    type: 'text',
+    index: true,
+    admin: { readOnly: true, description: 'Source collection slug (insight, pressRelease, story, capability).' },
+  },
+  {
+    name: 'slug',
+    type: 'text',
+    index: true,
+    admin: { readOnly: true },
+  },
+  {
+    name: 'excerpt',
+    type: 'textarea',
+    admin: { readOnly: true },
+  },
+]
+
+// Copy the renderable fields from the source doc into the search doc on every save. The plugin
+// already sets `title` and `doc`; we add `type`, `slug`, and `excerpt` so the search page can link
+// straight to the real detail route and show a summary with no follow-up fetch.
+const searchBeforeSync: BeforeSync = ({ originalDoc, searchDoc, collectionSlug }) => {
+  const title = typeof originalDoc?.title === 'string' ? originalDoc.title : searchDoc.title
+  const slug = typeof originalDoc?.slug === 'string' ? originalDoc.slug : ''
+  // `excerpts` is the canonical summary field across these collections; `summary`/`excerpt` are
+  // tolerated as fallbacks for forward-compat.
+  const excerpt =
+    typeof originalDoc?.excerpts === 'string'
+      ? originalDoc.excerpts
+      : typeof originalDoc?.summary === 'string'
+        ? originalDoc.summary
+        : typeof originalDoc?.excerpt === 'string'
+          ? originalDoc.excerpt
+          : ''
+
+  return {
+    ...searchDoc,
+    title,
+    type: collectionSlug,
+    slug,
+    excerpt,
+  }
 }
 
 const plugins: Plugin[] = [
@@ -40,6 +102,13 @@ const plugins: Plugin[] = [
       date: true,
       radio: true,
       payment: false,
+    },
+    // WEB-452: email every new submission to the team inbox via the SES adapter. The hook
+    // is fire-and-forget (try/catch inside) so a mail failure never blocks the submission.
+    formSubmissionOverrides: {
+      hooks: {
+        afterChange: [sendFormSubmissionNotification],
+      },
     },
   }),
   s3Storage({
@@ -106,6 +175,18 @@ const plugins: Plugin[] = [
         defaultValue: 'summary_large_image',
       },
     ],
+  }),
+  // Global site search (WEB-456). Creates a `search` collection the plugin keeps in sync via an
+  // afterChange hook on each source collection — `beforeSync` copies title/slug/excerpt/type into
+  // each search doc so the /[locale]/search page can render linked results from one read. The
+  // search collection is publicly readable by default; writes are plugin-only.
+  searchPlugin({
+    collections: [...SEARCHABLE_COLLECTIONS],
+    defaultPriorities: searchDefaultPriorities,
+    beforeSync: searchBeforeSync,
+    searchOverrides: {
+      fields: ({ defaultFields }) => [...defaultFields, ...searchExtraFields],
+    },
   }),
   // Google Workspace SSO into the admin (Auth.js v5). Registered unconditionally so the
   // /api/auth route and auth strategy are always present; the "Sign in with Google" button only

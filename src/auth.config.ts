@@ -9,13 +9,22 @@ import Google from 'next-auth/providers/google'
  * callback below, which requires a verified email AND the `hd` claim (present only on Workspace
  * accounts). Returning false there blocks both login and user auto-provisioning.
  *
- * The Google provider is only attached when AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET are present, so
- * the admin keeps working with email/password login until the OAuth client is created. Auth.js v5
- * auto-reads those two env vars, so they are not passed explicitly here.
+ * NOTE: payload-authjs disables the local email/password strategy by default, so this is the ONLY
+ * way into the admin. Because any verified Workspace account would otherwise auto-provision, two
+ * controls narrow that: (1) optional AUTH_ALLOWED_EMAILS allowlist below; (2) new users land as
+ * role 'editor' (see the users collection) — promote to 'admin' manually.
  *
+ * Auth.js v5 auto-reads AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET, so they are not passed explicitly.
  * Setup: docs/claude/google-admin-sso.md.
  */
 const ALLOWED_HD = 'ternary.solutions'
+
+// Optional explicit allowlist. If AUTH_ALLOWED_EMAILS is set (comma-separated), ONLY those emails
+// may sign in (and auto-provision). If unset, any verified ternary.solutions Workspace account may.
+const ALLOWED_EMAILS = (process.env.AUTH_ALLOWED_EMAILS ?? '')
+  .split(',')
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean)
 
 const googleConfigured = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET)
 
@@ -53,7 +62,11 @@ export const authConfig: NextAuthConfig = {
     signIn({ account, profile }) {
       if (account?.provider !== 'google') return false
       const p = profile as { email_verified?: boolean; hd?: string; email?: string }
-      return p.email_verified === true && p.hd === ALLOWED_HD && Boolean(p.email?.endsWith(`@${ALLOWED_HD}`))
+      const email = p.email?.toLowerCase()
+      const workspaceOk = p.email_verified === true && p.hd === ALLOWED_HD && Boolean(email?.endsWith(`@${ALLOWED_HD}`))
+      if (!workspaceOk) return false
+      // If an allowlist is configured, the email must be on it; otherwise any Workspace account is ok.
+      return ALLOWED_EMAILS.length === 0 || (Boolean(email) && ALLOWED_EMAILS.includes(email!))
     },
   },
 }

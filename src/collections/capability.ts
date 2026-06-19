@@ -1,3 +1,4 @@
+import { detailPreviewURL } from '@/utilities/livePreview'
 import { revalidateTag } from 'next/cache'
 import { CollectionConfig, slugField } from 'payload'
 
@@ -27,6 +28,11 @@ const Capability: CollectionConfig = {
     description: 'Engineering capabilities and their detail pages.',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
+    // Live preview routes through /next/preview so draft mode is on; detail route is
+    // /<locale>/capabilities/<slug> (WEB-449).
+    livePreview: {
+      url: ({ data }) => detailPreviewURL('capability', 'capabilities', data),
+    },
   },
   fields: [
     {

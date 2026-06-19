@@ -4,7 +4,7 @@ import InsightShare from '@/components/sections/insights/InsightShare'
 import JsonLd from '@/components/seo/JsonLd'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
-import { article } from '@/lib/seo/structuredData'
+import { article, breadcrumbList } from '@/lib/seo/jsonLd'
 import type { Insight, Media, Team } from '@/payload-types'
 import config from '@/payload.config'
 import { extractHeadings } from '@/utilities/extractHeadings'
@@ -12,6 +12,7 @@ import { getServerSideURL } from '@/utilities/getURL'
 import { ArrowRight, ArrowUpRight, Linkedin, Mail } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
+import { draftMode } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -33,22 +34,27 @@ const getInsightList = unstable_cache(
   { tags: ['insight'] },
 )
 
-function getInsightBySlug(slug: string, locale: TypedLocale) {
-  return unstable_cache(
-    async (): Promise<Insight | null> => {
-      const payload = await getPayload({ config })
-      const result = await payload.find({
-        collection: 'insight',
-        where: { slug: { equals: slug } },
-        locale,
-        limit: 1,
-        depth: 2,
-      })
-      return (result.docs[0] as Insight | undefined) ?? null
-    },
-    [`insight_${slug}_${locale}`],
-    { tags: [`insight_${slug}`, 'insight'] },
-  )
+async function fetchInsightBySlug(slug: string, locale: TypedLocale): Promise<Insight | null> {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'insight',
+    where: { slug: { equals: slug } },
+    locale,
+    limit: 1,
+    depth: 2,
+  })
+  return (result.docs[0] as Insight | undefined) ?? null
+}
+
+// Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
+// `revalidateTag('insight')` / `revalidateTag('insight_<slug>')` calls in the insight afterChange
+// hook. In draft mode (live preview) we bypass the cache so editors see fresh data.
+async function getInsightBySlug(slug: string, locale: TypedLocale): Promise<Insight | null> {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) return fetchInsightBySlug(slug, locale)
+  return unstable_cache(() => fetchInsightBySlug(slug, locale), [`insight_${slug}_${locale}`], {
+    tags: [`insight_${slug}`, 'insight'],
+  })()
 }
 
 export async function generateStaticParams() {
@@ -65,7 +71,7 @@ export async function generateMetadata({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) return {}
-  const insight = await getInsightBySlug(slug, typedLocale)()
+  const insight = await getInsightBySlug(slug, typedLocale)
 
   if (!insight) return {}
 
@@ -198,7 +204,7 @@ export default async function Page({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) notFound()
-  const insight = await getInsightBySlug(slug, typedLocale)()
+  const insight = await getInsightBySlug(slug, typedLocale)
 
   if (!insight) {
     notFound()
@@ -212,16 +218,24 @@ export default async function Page({
     (item) => item.id !== insight.id,
   )
   const headings = extractHeadings(insight.content as RichText)
-  const shareUrl = `${getServerSideURL()}/${typedLocale}/insights/${slug}`
+  const baseUrl = getServerSideURL()
+  const shareUrl = `${baseUrl}/${typedLocale}/insights/${slug}`
 
   const articleLd = article({
-    title: insight.title ?? 'Insight',
+    headline: insight.title ?? 'Insight',
     description: insight.leadParagraph || insight.excerpts,
     image: thumbnail?.url ?? null,
     datePublished: insight.publishedDate,
     dateModified: insight.updatedAt,
+    authorName: author?.name,
     url: shareUrl,
   })
+
+  const breadcrumbsLd = breadcrumbList([
+    { name: 'Home', url: `${baseUrl}/${typedLocale}` },
+    { name: 'Stories', url: `${baseUrl}/${typedLocale}/stories` },
+    { name: insight.title ?? 'Insight', url: shareUrl },
+  ])
 
   const showAuthorMeta = Boolean(author?.name || author?.position)
   const showMetaRow = showAuthorMeta || insight.publishedDate || insight.readTime || insight.slug
@@ -229,6 +243,7 @@ export default async function Page({
   return (
     <div className="flex flex-col lg:gap-24 gap-12 text-primary max-w-7xl mx-auto w-full px-5 lg:pb-24 pb-10">
       <JsonLd data={articleLd} />
+      <JsonLd data={breadcrumbsLd} />
       {/* Hero */}
       <Motion tag="section" className="w-full lg:pt-16 pt-8 px-4 lg:px-0" {...motionSectionProps}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">

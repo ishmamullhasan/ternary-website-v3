@@ -1,3 +1,4 @@
+import { landingPreviewURL } from '@/utilities/livePreview'
 import { revalidateTag } from 'next/cache'
 import { CollectionConfig, slugField } from 'payload'
 
@@ -27,6 +28,11 @@ const Scale: CollectionConfig = {
     description: 'Engagement scale tiers and their showcase content.',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
+    // Scale tiers have no per-slug detail route; they render via the ScaleShowcase block on the
+    // /scales landing page. Live preview routes through /next/preview so draft mode is on (WEB-449).
+    livePreview: {
+      url: ({ data }) => landingPreviewURL('scale', '/scales', data),
+    },
   },
   fields: [
     {

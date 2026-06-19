@@ -1,3 +1,4 @@
+import { Callout } from '@/blocks/Callout/config'
 import Analytics from '@/collections/analytics'
 import Capability from '@/collections/capability'
 import Industry from '@/collections/industry'
@@ -21,7 +22,14 @@ import { pruneAnalyticsTask } from '@/jobs/pruneAnalytics'
 import plugins from '@/plugins'
 import { getServerSideURL } from '@/utilities/getURL'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  BlocksFeature,
+  FixedToolbarFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+  LinkFeature,
+  UploadFeature,
+} from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import sharp from 'sharp'
@@ -65,7 +73,33 @@ export default buildConfig({
       ],
     },
   },
-  editor: lexicalEditor(),
+  // Richer Lexical editor (WEB-455). Keeps all defaultFeatures (paragraphs, headings,
+  // blockquote, ordered/unordered lists, inline code, bold/italic/etc.) and layers on:
+  //  - LinkFeature: internal links to the main content collections + external URLs.
+  //  - UploadFeature: inline media images.
+  //  - BlocksFeature: the reusable Callout block (rendered via the JSX converter in
+  //    src/components/richtext/index.tsx).
+  //  - Fixed + Inline toolbars so the controls are always reachable.
+  // Lexical features are config-level only and do not alter generated types — richText
+  // values stay the generic SerializedEditorState shape.
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      LinkFeature({
+        enabledCollections: ['pages', 'insight', 'pressRelease', 'story', 'capability'],
+      }),
+      UploadFeature({
+        collections: {
+          media: { fields: [] },
+        },
+      }),
+      BlocksFeature({
+        blocks: [Callout],
+      }),
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  }),
   // Amazon SES (SMTP). Resolves to undefined without SMTP creds so local dev/CI fall back to
   // Payload's console mock transport. See src/email/sesAdapter.ts.
   email: await sesEmailAdapter(),
@@ -123,6 +157,24 @@ export default buildConfig({
         return authHeader === `Bearer ${secret}`
       },
     },
+    // Auto-run the jobs queue so scheduled-publish jobs (WEB-454) actually execute. Payload enqueues
+    // a publish job when an editor schedules a draft on pages/insight/pressRelease/story; this cron
+    // promotes those drafts to published once their time arrives. autoRun runs the queue inside the
+    // long-lived Node process (local/self-hosted). On Vercel, where the server is serverless and a
+    // persistent cron timer cannot stay alive, autoRun is a no-op — instead point a Vercel Cron at
+    // the Payload jobs run endpoint (gated by jobs.access.run / CRON_SECRET below), e.g. in
+    // vercel.json: { "crons": [{ "path": "/api/payload-jobs/run", "schedule": "*/5 * * * *" }] }.
+    autoRun: [
+      {
+        // Every 5 minutes. The leading field is the (optional) seconds slot in Payload's cron format.
+        cron: '*/5 * * * *',
+        // Run scheduled-publish jobs plus any other default-queue jobs (e.g. pruneAnalytics if it is
+        // ever enqueued onto the default queue).
+        queue: 'default',
+      },
+    ],
+    // Only auto-run outside Vercel's serverless runtime; there the Vercel Cron above drives the queue.
+    shouldAutoRun: () => !process.env.VERCEL,
     // Retention: pruneAnalytics deletes pageview rows older than N days (default 90). Trigger it via
     // a Vercel Cron hitting the Payload jobs run endpoint (gated by CRON_SECRET above) — see the
     // scheduling note in src/jobs/pruneAnalytics.ts.

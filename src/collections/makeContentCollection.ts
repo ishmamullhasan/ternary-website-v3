@@ -1,3 +1,4 @@
+import { detailPreviewURL } from '@/utilities/livePreview'
 import { revalidateTag } from 'next/cache'
 import { type CollectionConfig, slugField } from 'payload'
 
@@ -12,7 +13,23 @@ import { authenticated } from '@/access/authenticated'
  */
 export const makeContentCollection = (
   slug: string,
-  adminOpts?: { group?: string; description?: string; defaultColumns?: string[] },
+  adminOpts?: {
+    group?: string
+    description?: string
+    defaultColumns?: string[]
+    /**
+     * Opt-in drafts + scheduled publishing (WEB-454). Off by default so the structurally identical
+     * content collections that have no editorial-scheduling need (industry/model/solution) are not
+     * forced into a versioned workflow. Only `story` enables it today. When on, public fetchers must
+     * keep omitting `draft` (defaults to draft:false) so the site only renders published versions.
+     */
+    drafts?: boolean
+    /**
+     * Locale-less detail-route segment for the collection (e.g. `stories`). When set, enables admin
+     * live preview routed through /next/preview → `/<locale>/<previewPathSegment>/<slug>` (WEB-449).
+     */
+    previewPathSegment?: string
+  },
 ): CollectionConfig => ({
   slug,
   // Public marketing content: world-readable so the site can populate these relationships
@@ -33,11 +50,17 @@ export const makeContentCollection = (
       },
     ],
   },
+  // Spread the versions config in only when the caller opts in, so non-versioned collections keep
+  // their original (versionless) shape and zero type-regen drift.
+  ...(adminOpts?.drafts ? { versions: { drafts: { schedulePublish: true }, maxPerDoc: 20 } as const } : {}),
   admin: {
     useAsTitle: 'title',
     ...(adminOpts?.group ? { group: adminOpts.group } : {}),
     ...(adminOpts?.description ? { description: adminOpts.description } : {}),
     ...(adminOpts?.defaultColumns ? { defaultColumns: adminOpts.defaultColumns } : {}),
+    ...(adminOpts?.previewPathSegment
+      ? { livePreview: { url: ({ data }) => detailPreviewURL(slug, adminOpts.previewPathSegment!, data) } }
+      : {}),
   },
   fields: [
     { name: 'title', label: 'Title', type: 'text', localized: true },

@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../access/authenticated'
+import { isAdmin } from '../access/isAdmin'
 
 // First-party pageview log (WEB-447). One row per pageview, written via the local API from the
 // /api/track route with overrideAccess (see src/app/api/track/route.ts) — NOT publicly creatable.
@@ -8,12 +8,13 @@ import { authenticated } from '../access/authenticated'
 const Analytics: CollectionConfig = {
   slug: 'analytics',
   access: {
-    // Reads power the admin dashboard; writes/edits/deletes are staff-only. The public track route
-    // is the only creator and it bypasses access via overrideAccess, so create stays authenticated.
-    read: authenticated,
-    create: authenticated,
-    update: authenticated,
-    delete: authenticated,
+    // Admin-only: analytics is sensitive ops data. The public track route creates rows via
+    // overrideAccess and the dashboard reads via overrideAccess, so neither is affected by this —
+    // this only restricts the REST API + the admin collection view to admins (not editors).
+    read: isAdmin,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
   },
   admin: {
     group: 'System',

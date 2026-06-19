@@ -7,6 +7,7 @@ import config from '@/payload.config'
 import { ArrowUpRight, Github, Linkedin, Mail } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
+import { draftMode } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -28,22 +29,27 @@ const getCapabilityList = unstable_cache(
   { tags: ['capability'] },
 )
 
-function getCapabilityBySlug(slug: string, locale: TypedLocale) {
-  return unstable_cache(
-    async (): Promise<Capability | null> => {
-      const payload = await getPayload({ config })
-      const result = await payload.find({
-        collection: 'capability',
-        where: { slug: { equals: slug } },
-        locale,
-        limit: 1,
-        depth: 2,
-      })
-      return (result.docs[0] as Capability | undefined) ?? null
-    },
-    [`capability_${slug}_${locale}`],
-    { tags: [`capability_${slug}`, 'capability'] },
-  )
+async function fetchCapabilityBySlug(slug: string, locale: TypedLocale): Promise<Capability | null> {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'capability',
+    where: { slug: { equals: slug } },
+    locale,
+    limit: 1,
+    depth: 2,
+  })
+  return (result.docs[0] as Capability | undefined) ?? null
+}
+
+// Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
+// `revalidateTag('capability')` / `revalidateTag('capability_<slug>')` calls in the capability
+// afterChange hook. In draft mode (live preview) we bypass the cache so editors see fresh data.
+async function getCapabilityBySlug(slug: string, locale: TypedLocale): Promise<Capability | null> {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) return fetchCapabilityBySlug(slug, locale)
+  return unstable_cache(() => fetchCapabilityBySlug(slug, locale), [`capability_${slug}_${locale}`], {
+    tags: [`capability_${slug}`, 'capability'],
+  })()
 }
 
 export async function generateStaticParams() {
@@ -60,7 +66,7 @@ export async function generateMetadata({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) return {}
-  const capability = await getCapabilityBySlug(slug, typedLocale)()
+  const capability = await getCapabilityBySlug(slug, typedLocale)
 
   if (!capability) return {}
 
@@ -141,7 +147,7 @@ export default async function Page({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) notFound()
-  const capability = await getCapabilityBySlug(slug, typedLocale)()
+  const capability = await getCapabilityBySlug(slug, typedLocale)
 
   if (!capability) {
     notFound()

@@ -2,19 +2,20 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import JsonLd from '@/components/seo/JsonLd'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
+import { breadcrumbList } from '@/lib/seo/jsonLd'
 import { pagePath } from '@/lib/seo/pagePath'
-import { breadcrumbList } from '@/lib/seo/structuredData'
 import type { Page as PageDoc } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
 import config from '@payload-config'
 import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-const queryPageByPath = async (segments: string[], draft: boolean, locale: TypedLocale): Promise<PageDoc | null> => {
+const fetchPageByPath = async (segments: string[], draft: boolean, locale: TypedLocale): Promise<PageDoc | null> => {
   const payload = await getPayload({ config })
   const path = `/${segments.join('/')}`
   const result = await payload.find({
@@ -32,6 +33,20 @@ const queryPageByPath = async (segments: string[], draft: boolean, locale: Typed
   })
   // Disambiguate same-slug pages under different parents by the full breadcrumb path.
   return result.docs.find((page) => pagePath(page) === path) ?? null
+}
+
+// Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
+// `revalidateTag('pages')` / `revalidateTag('pages_<slug>')` calls in the Pages afterChange hook.
+// The cache key is the full path (segments disambiguate same-slug pages under different parents);
+// tags are the collection-wide `pages` tag plus the per-slug `pages_<lastSegment>` tag the hook
+// emits. In draft mode (live preview) we bypass the cache so editors always see the freshest draft.
+const queryPageByPath = (segments: string[], draft: boolean, locale: TypedLocale): Promise<PageDoc | null> => {
+  if (draft) return fetchPageByPath(segments, true, locale)
+  const slug = segments[segments.length - 1]
+  const path = segments.join('/')
+  return unstable_cache(() => fetchPageByPath(segments, false, locale), [`pages_${path}_${locale}`], {
+    tags: ['pages', `pages_${slug}`],
+  })()
 }
 
 export async function generateStaticParams(): Promise<{ locale: string; slug: string[] }[]> {

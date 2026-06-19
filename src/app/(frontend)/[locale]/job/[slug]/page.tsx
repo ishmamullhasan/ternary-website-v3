@@ -6,7 +6,7 @@ import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { formatComp, getJob, getJobs, getRelatedJobs } from '@/lib/jobs-data'
 import { generateMeta } from '@/lib/seo/generateMeta'
-import { jobPosting } from '@/lib/seo/structuredData'
+import { breadcrumbList, jobPosting } from '@/lib/seo/jsonLd'
 import { getServerSideURL } from '@/utilities/getURL'
 import { ArrowLeft, ArrowRight, DollarSign, GitCommitHorizontal, Minus, ShieldAlert, Users } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -83,13 +83,22 @@ export default async function Page({
     relatedJobs = []
   }
 
+  const baseUrl = getServerSideURL()
+  const jobUrl = `${baseUrl}/${typedLocale}/job/${slug}`
   const jobLd = jobPosting({
     title: jobData.title ?? 'Job',
     description: jobData.excerpt || jobData.body_markdown,
     datePosted: jobData.published_at,
-    location: jobData.location,
-    url: `${getServerSideURL()}/${typedLocale}/job/${slug}`,
+    employmentType: jobData.employment_type,
+    locationName: jobData.location,
+    url: jobUrl,
   })
+
+  const breadcrumbsLd = breadcrumbList([
+    { name: 'Home', url: `${baseUrl}/${typedLocale}` },
+    { name: 'Careers', url: `${baseUrl}/${typedLocale}/careers` },
+    { name: jobData.title ?? 'Job', url: jobUrl },
+  ])
 
   // ✅ Compensation from the API band; facets are nullable (render only when present).
   const compDisplay = formatComp(jobData.comp_band_min, jobData.comp_band_max, jobData.comp_currency)
@@ -118,6 +127,7 @@ export default async function Page({
   return (
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
       <JsonLd data={jobLd} />
+      <JsonLd data={breadcrumbsLd} />
       <main className=" pb-24 max-w-7xl mx-auto px-5 space-y-32">
         {/* Hero */}
         <Motion tag="section" {...motionSectionProps}>

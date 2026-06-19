@@ -1,3 +1,5 @@
+import type { CalloutBlock } from '@/payload-types'
+import type { SerializedBlockNode } from '@payloadcms/richtext-lexical'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import { type JSXConvertersFunction, RichText as LexicalRichText } from '@payloadcms/richtext-lexical/react'
 import type { JSX } from 'react'
@@ -5,13 +7,33 @@ import type { JSX } from 'react'
 import { getNodeText, slugify } from '@/utilities/headings'
 import { cn } from '@/utilities/ui'
 
+// Tailwind tone classes per Callout variant (WEB-455). Kept inline so the styled box
+// works without a dedicated stylesheet.
+const calloutVariantStyles: Record<NonNullable<CalloutBlock['variant']>, string> = {
+  info: 'border-sky-500/40 bg-sky-500/10 text-sky-100',
+  warning: 'border-amber-500/40 bg-amber-500/10 text-amber-100',
+  success: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-100',
+}
+
 // Add slugified ids to headings so in-page anchors / tables of contents resolve
-// (the default Lexical converter renders headings without an id).
+// (the default Lexical converter renders headings without an id). Also renders the
+// reusable Callout block (BlocksFeature) as a small styled box.
 const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
   ...defaultConverters,
   heading: ({ node, nodesToJSX }) => {
     const Tag = (node.tag || 'h2') as keyof JSX.IntrinsicElements
     return <Tag id={slugify(getNodeText(node))}>{nodesToJSX({ nodes: node.children })}</Tag>
+  },
+  blocks: {
+    callout: ({ node }: { node: SerializedBlockNode<CalloutBlock> }) => {
+      const { variant, body } = node.fields
+      const tone = calloutVariantStyles[variant ?? 'info']
+      return (
+        <div className={cn('not-prose my-6 rounded-lg border px-5 py-4', tone)}>
+          {body ? <RichTextComp content={body as RichText} className="prose-sm prose-invert max-w-none" /> : null}
+        </div>
+      )
+    },
   },
 })
 

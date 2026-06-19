@@ -1,3 +1,4 @@
+import { detailPreviewURL } from '@/utilities/livePreview'
 import { revalidateTag } from 'next/cache'
 import { CollectionConfig, slugField } from 'payload'
 
@@ -16,6 +17,14 @@ const PressRelease: CollectionConfig = {
     singular: 'Press Release',
     plural: 'Press Releases',
   },
+  // Drafts + scheduled publishing (WEB-454): a press release can be embargoed by scheduling a
+  // future publish time. The Payload jobs queue (jobs.autoRun in payload.config.ts) promotes the
+  // scheduled draft when that time arrives. Public fetchers omit `draft`, so they default to
+  // draft:false and only ever read the published version.
+  versions: {
+    drafts: { schedulePublish: true },
+    maxPerDoc: 20,
+  },
   hooks: {
     afterChange: [
       ({ doc }) => {
@@ -31,6 +40,11 @@ const PressRelease: CollectionConfig = {
     description: 'Official press releases and announcements.',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'code', 'releaseDate', 'updatedAt'],
+    // Live preview routes through /next/preview so draft mode is on; detail route is
+    // /<locale>/press-release/<slug> (WEB-449).
+    livePreview: {
+      url: ({ data }) => detailPreviewURL('pressRelease', 'press-release', data),
+    },
   },
   fields: [
     {

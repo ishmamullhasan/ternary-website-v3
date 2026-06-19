@@ -28,7 +28,7 @@ const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      //required: true,
+      required: true,
       localized: true,
     },
     {
@@ -46,37 +46,87 @@ const Media: CollectionConfig = {
     staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
+    // Restrict uploads to images so the sharp pipeline below always applies.
+    mimeTypes: ['image/*'],
+    // Emit the original upload as WebP — broadly supported by all modern browsers
+    // and far smaller than JPEG/PNG. Each derivative below inherits this format
+    // unless it sets its own `formatOptions`.
+    formatOptions: {
+      format: 'webp',
+      options: { quality: 80 },
+    },
     imageSizes: [
+      // Small fixed-fit derivatives (e.g. admin/list thumbnails, avatars).
       {
         name: 'thumbnail',
-        width: 300,
+        width: 400,
+        height: 300,
+        fit: 'inside',
+        withoutEnlargement: true,
       },
       {
         name: 'square',
         width: 500,
         height: 500,
+        fit: 'cover',
+        withoutEnlargement: true,
       },
       {
         name: 'small',
         width: 600,
+        fit: 'inside',
+        withoutEnlargement: true,
+      },
+      // Responsive content widths.
+      {
+        name: 'card',
+        width: 768,
+        fit: 'inside',
+        withoutEnlargement: true,
       },
       {
         name: 'medium',
         width: 900,
+        fit: 'inside',
+        withoutEnlargement: true,
+      },
+      {
+        name: 'tablet',
+        width: 1024,
+        fit: 'inside',
+        withoutEnlargement: true,
       },
       {
         name: 'large',
         width: 1400,
+        fit: 'inside',
+        withoutEnlargement: true,
+      },
+      {
+        name: 'desktop',
+        width: 1920,
+        fit: 'inside',
+        withoutEnlargement: true,
       },
       {
         name: 'xlarge',
         width: 1920,
+        fit: 'inside',
+        withoutEnlargement: true,
       },
+      // Open Graph / social card. Cropped to the exact 1.91:1 ratio social
+      // platforms expect, and pinned to JPEG for the widest scraper support.
       {
         name: 'og',
         width: 1200,
         height: 630,
         crop: 'center',
+        fit: 'cover',
+        withoutEnlargement: false,
+        formatOptions: {
+          format: 'jpeg',
+          options: { quality: 85 },
+        },
       },
     ],
   },

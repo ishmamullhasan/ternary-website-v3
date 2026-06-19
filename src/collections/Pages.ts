@@ -42,6 +42,7 @@ import { SolutionsHero } from '@/blocks/SolutionsHero/config'
 import { StoriesArchive } from '@/blocks/StoriesArchive/config'
 import { StoriesHero } from '@/blocks/StoriesHero/config'
 import { Subscribe } from '@/blocks/Subscribe/config'
+import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
 import { getServerSideURL } from '@/utilities/getURL'
 
 type Breadcrumb = { url?: string | null }
@@ -53,12 +54,32 @@ type Breadcrumb = { url?: string | null }
  */
 const RESERVED_LOCALE_SLUGS = new Set(['en', 'bn'])
 
-/** Build the preview URL from the page's nested-docs breadcrumb path (falls back to slug). */
+/**
+ * Build the live-preview / preview-button URL for a page (WEB-449).
+ *
+ * Routes THROUGH the /next/preview route (src/app/(frontend)/next/preview/route.ts) so that
+ * draft mode is enabled before the editor is redirected to the page — without that, the iframe
+ * renders the published version and the live-preview listener never receives draft updates.
+ *
+ * The redirect target (`path`) is always locale-prefixed with the default locale:
+ *   - the home page (slug 'home') → `/en`
+ *   - any other page → `/en/<slug>` (or `/en<breadcrumb>` when nested-docs breadcrumbs exist)
+ */
 const pageUrl = (data?: { slug?: unknown; breadcrumbs?: unknown }): string => {
+  const slug = typeof data?.slug === 'string' ? data.slug : ''
   const crumbs = Array.isArray(data?.breadcrumbs) ? (data.breadcrumbs as Breadcrumb[]) : []
   const fromCrumbs = crumbs.length ? crumbs[crumbs.length - 1]?.url : null
-  const path = fromCrumbs || (typeof data?.slug === 'string' ? `/${data.slug}` : '')
-  return `${getServerSideURL()}${path}`
+
+  // Locale-prefixed, root-relative path the previewer should land on after draft mode is enabled.
+  // `home` is the site root, so it maps to just the locale prefix.
+  const localePath =
+    slug === 'home' || !slug
+      ? `/${DEFAULT_LOCALE}`
+      : fromCrumbs
+        ? `/${DEFAULT_LOCALE}${fromCrumbs}`
+        : `/${DEFAULT_LOCALE}/${slug}`
+
+  return `${getServerSideURL()}/next/preview?path=${encodeURIComponent(localePath)}&collection=pages&slug=${slug}&previewSecret=${process.env.PREVIEW_SECRET}`
 }
 
 /**
@@ -85,7 +106,9 @@ export const Pages: CollectionConfig = {
     preview: (data) => pageUrl(data),
   },
   versions: {
-    drafts: { autosave: { interval: 100 } },
+    // schedulePublish lets editors pick a future publish time; the Payload jobs queue
+    // (jobs.autoRun in payload.config.ts) promotes the scheduled draft when that time arrives.
+    drafts: { autosave: { interval: 100 }, schedulePublish: true },
     maxPerDoc: 20,
   },
   hooks: {

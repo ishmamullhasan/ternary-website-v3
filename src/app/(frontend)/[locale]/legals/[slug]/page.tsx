@@ -7,9 +7,10 @@ import config from '@/payload.config'
 import { Download, FileText, Scale, Shield, type LucideIcon } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
+import { draftMode } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import type { TypedLocale } from 'payload'
+import type { PaginatedDocs, TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
@@ -27,26 +28,32 @@ const motionBlockProps = {
   transition: { duration: 0.35, ease: 'easeOut' as const },
 }
 
-function getLegalList(locale: TypedLocale) {
-  return unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.find({ collection: 'legal', sort: 'menuOrder', locale, limit: 100 })
-    },
-    [`legal_list_${locale}`],
-    { tags: ['legal'] },
-  )
+async function fetchLegalList(locale: TypedLocale): Promise<PaginatedDocs<Legal>> {
+  const payload = await getPayload({ config })
+  return payload.find({ collection: 'legal', sort: 'menuOrder', locale, limit: 100 })
 }
 
-function getLegalCenter(locale: TypedLocale) {
-  return unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.findGlobal({ slug: 'legalCenter', locale })
-    },
-    [`legalCenter_${locale}`],
-    { tags: ['legalCenter', 'legal'] },
-  )
+// Tag-based ISR (WEB-457): cached + busted by `revalidateTag('legal')` (legal afterChange hook);
+// bypassed in draft mode so live preview stays real-time.
+async function getLegalList(locale: TypedLocale): Promise<PaginatedDocs<Legal>> {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) return fetchLegalList(locale)
+  return unstable_cache(() => fetchLegalList(locale), [`legal_list_${locale}`], { tags: ['legal'] })()
+}
+
+async function fetchLegalCenter(locale: TypedLocale) {
+  const payload = await getPayload({ config })
+  return payload.findGlobal({ slug: 'legalCenter', locale })
+}
+
+// Tag-based ISR (WEB-457): cached + busted by `revalidateTag('legalCenter')` / `revalidateTag('legal')`
+// (legalCenter afterChange hook); bypassed in draft mode so live preview stays real-time.
+async function getLegalCenter(locale: TypedLocale) {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) return fetchLegalCenter(locale)
+  return unstable_cache(() => fetchLegalCenter(locale), [`legalCenter_${locale}`], {
+    tags: ['legalCenter', 'legal'],
+  })()
 }
 
 function sortLegalMenuItems(docs: Legal[]): Legal[] {
@@ -80,25 +87,30 @@ function LegalMenuIcon({ icon }: { icon: string | null | undefined }) {
   return <Icon size={18} strokeWidth={1.75} aria-hidden className="shrink-0" />
 }
 
-function getLegalBySlug(slug: string, locale: TypedLocale) {
-  return unstable_cache(
-    async () => {
-      const payload = await getPayload({ config })
-      return payload.find({
-        collection: 'legal',
-        where: {
-          slug: {
-            equals: slug,
-          },
-        },
-        locale,
-        depth: 2,
-        limit: 1,
-      })
+async function fetchLegalBySlug(slug: string, locale: TypedLocale): Promise<PaginatedDocs<Legal>> {
+  const payload = await getPayload({ config })
+  return payload.find({
+    collection: 'legal',
+    where: {
+      slug: {
+        equals: slug,
+      },
     },
-    [`legal_${slug}_${locale}`],
-    { tags: [`legal_${slug}`, 'legal'] },
-  )
+    locale,
+    depth: 2,
+    limit: 1,
+  })
+}
+
+// Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
+// `revalidateTag('legal')` / `revalidateTag('legal_<slug>')` calls in the legal afterChange hook.
+// In draft mode (live preview) we bypass the cache so editors see fresh data.
+async function getLegalBySlug(slug: string, locale: TypedLocale): Promise<PaginatedDocs<Legal>> {
+  const { isEnabled: draft } = await draftMode()
+  if (draft) return fetchLegalBySlug(slug, locale)
+  return unstable_cache(() => fetchLegalBySlug(slug, locale), [`legal_${slug}_${locale}`], {
+    tags: [`legal_${slug}`, 'legal'],
+  })()
 }
 
 export async function generateMetadata({
@@ -109,7 +121,7 @@ export async function generateMetadata({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) notFound()
-  const { docs } = await getLegalBySlug(slug, typedLocale)()
+  const { docs } = await getLegalBySlug(slug, typedLocale)
   const legal = docs[0]
 
   if (!legal) notFound()
@@ -125,15 +137,12 @@ export default async function Page({
   const { locale, slug } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) notFound()
-  const { docs } = await getLegalBySlug(slug, typedLocale)()
+  const { docs } = await getLegalBySlug(slug, typedLocale)
   const legal: Legal | undefined = docs[0]
 
   if (!legal) notFound()
 
-  const [legalCenter, { docs: legalDocs }] = await Promise.all([
-    getLegalCenter(typedLocale)(),
-    getLegalList(typedLocale)(),
-  ])
+  const [legalCenter, { docs: legalDocs }] = await Promise.all([getLegalCenter(typedLocale), getLegalList(typedLocale)])
   const menuItems = sortLegalMenuItems(legalDocs)
 
   return (

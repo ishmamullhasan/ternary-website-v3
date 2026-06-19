@@ -2,7 +2,7 @@ import type { JSX } from 'react'
 
 /**
  * Server component that renders a single JSON-LD <script>. Inline the structured-data object built
- * by the helpers in src/lib/seo/structuredData.ts.
+ * by the helpers in src/lib/seo/jsonLd.ts.
  *
  * Security: escape '<' to its unicode form so a string value containing "</script>" (or any markup)
  * can't break out of the script element.

@@ -3,6 +3,7 @@ import { asTypedLocale } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
 import config from '@payload-config'
 import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
@@ -12,7 +13,7 @@ import type { JSX } from 'react'
 // The home page is now a blocks-driven Page (slug `home`) rendered by <RenderBlocks>, the
 // same path as every other [...slug] page. The index route ("/[locale]") can't be matched by the
 // catch-all (it requires ≥1 segment), so it fetches the `home` Page directly here.
-const getHomePage = async (draft: boolean, locale: TypedLocale) => {
+const fetchHomePage = async (draft: boolean, locale: TypedLocale) => {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'pages',
@@ -27,6 +28,16 @@ const getHomePage = async (draft: boolean, locale: TypedLocale) => {
   })
   return result.docs[0] ?? null
 }
+
+// Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
+// `revalidateTag('pages')` / `revalidateTag('pages_home')` calls in the Pages afterChange hook.
+// In draft mode (live preview) we bypass the cache so editors always see the freshest draft.
+const getHomePage = (draft: boolean, locale: TypedLocale) =>
+  draft
+    ? fetchHomePage(true, locale)
+    : unstable_cache(() => fetchHomePage(false, locale), [`pages_home_${locale}`], {
+        tags: ['pages', 'pages_home'],
+      })()
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params

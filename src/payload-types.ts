@@ -84,6 +84,7 @@ export interface Config {
     analytics: Analytics;
     forms: Form;
     'form-submissions': FormSubmission;
+    search: Search;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-folders': FolderInterface;
@@ -114,6 +115,7 @@ export interface Config {
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
+    search: SearchSelect<false> | SearchSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
@@ -143,6 +145,7 @@ export interface Config {
   jobs: {
     tasks: {
       pruneAnalytics: TaskPruneAnalytics;
+      schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
         output: unknown;
@@ -346,7 +349,7 @@ export interface Industry {
  */
 export interface Media {
   id: string;
-  alt?: string | null;
+  alt: string;
   caption?: {
     root: {
       type: string;
@@ -399,6 +402,14 @@ export interface Media {
       filesize?: number | null;
       filename?: string | null;
     };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
     medium?: {
       url?: string | null;
       width?: number | null;
@@ -407,7 +418,23 @@ export interface Media {
       filesize?: number | null;
       filename?: string | null;
     };
+    tablet?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
     large?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    desktop?: {
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -1624,6 +1651,7 @@ export interface Story {
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1750,6 +1778,7 @@ export interface Insight {
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Official press releases and announcements.
@@ -1895,6 +1924,7 @@ export interface PressRelease {
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2544,6 +2574,10 @@ export interface User {
   emailVerified?: string | null;
   name?: string | null;
   image?: string | null;
+  /**
+   * Admins manage users, analytics, and settings. Editors manage content.
+   */
+  role?: ('admin' | 'editor') | null;
   accounts?:
     | {
         provider: string;
@@ -2667,6 +2701,42 @@ export interface FormSubmission {
   createdAt: string;
 }
 /**
+ * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search".
+ */
+export interface Search {
+  id: string;
+  title?: string | null;
+  priority?: number | null;
+  doc:
+    | {
+        relationTo: 'insight';
+        value: string | Insight;
+      }
+    | {
+        relationTo: 'pressRelease';
+        value: string | PressRelease;
+      }
+    | {
+        relationTo: 'story';
+        value: string | Story;
+      }
+    | {
+        relationTo: 'capability';
+        value: string | Capability;
+      };
+  /**
+   * Source collection slug (insight, pressRelease, story, capability).
+   */
+  type?: string | null;
+  slug?: string | null;
+  excerpt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -2735,7 +2805,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'pruneAnalytics';
+        taskSlug: 'inline' | 'pruneAnalytics' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -2768,7 +2838,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'pruneAnalytics') | null;
+  taskSlug?: ('inline' | 'pruneAnalytics' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -2849,6 +2919,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'form-submissions';
         value: string | FormSubmission;
+      } | null)
+    | ({
+        relationTo: 'search';
+        value: string | Search;
       } | null)
     | ({
         relationTo: 'payload-folders';
@@ -3868,6 +3942,16 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
         medium?:
           | T
           | {
@@ -3878,7 +3962,27 @@ export interface MediaSelect<T extends boolean = true> {
               filesize?: T;
               filename?: T;
             };
+        tablet?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
         large?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        desktop?:
           | T
           | {
               url?: T;
@@ -3920,6 +4024,7 @@ export interface UsersSelect<T extends boolean = true> {
   emailVerified?: T;
   name?: T;
   image?: T;
+  role?: T;
   accounts?:
     | T
     | {
@@ -3954,6 +4059,7 @@ export interface StorySelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4016,6 +4122,7 @@ export interface InsightSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4107,6 +4214,7 @@ export interface PressReleaseSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4741,6 +4849,20 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search_select".
+ */
+export interface SearchSelect<T extends boolean = true> {
+  title?: T;
+  priority?: T;
+  doc?: T;
+  type?: T;
+  slug?: T;
+  excerpt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -5004,6 +5126,67 @@ export interface TaskPruneAnalytics {
   output: {
     deleted?: number | null;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSchedulePublish".
+ */
+export interface TaskSchedulePublish {
+  input: {
+    type?: ('publish' | 'unpublish') | null;
+    locale?: string | null;
+    doc?:
+      | ({
+          relationTo: 'pages';
+          value: string | Page;
+        } | null)
+      | ({
+          relationTo: 'story';
+          value: string | Story;
+        } | null)
+      | ({
+          relationTo: 'insight';
+          value: string | Insight;
+        } | null)
+      | ({
+          relationTo: 'pressRelease';
+          value: string | PressRelease;
+        } | null);
+    global?: string | null;
+    user?: (string | null) | User;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CalloutBlock".
+ */
+export interface CalloutBlock {
+  /**
+   * Controls the colour/tone of the callout box.
+   */
+  variant?: ('info' | 'warning' | 'success') | null;
+  /**
+   * Callout content. Supports inline formatting and links.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callout';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
