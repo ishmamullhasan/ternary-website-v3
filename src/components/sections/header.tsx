@@ -5,10 +5,12 @@ import { localeFromPath, localizedHref } from '@/lib/i18n/locales'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
 import { ChevronDown, Menu, X } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { useNavState } from './useNavState'
 
 type SubMenuItem = { label?: string | null; link?: string | null }
 type MenuItem = { label?: string | null; link?: string | null; subItems?: SubMenuItem[] | null }
@@ -54,12 +56,16 @@ export default function Header({ headerData }: HeaderProps) {
   // clicks don't 301 back to /en. Derived from the URL — the layout already routes per [locale].
   const locale = localeFromPath(path)
   const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<{ [key: string]: boolean }>({})
   const panelRef = useRef<HTMLDivElement>(null)
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Liquid-glass floating-pill state: shrinks while actively scrolling, re-expands at rest or
+  // while hovered/focused. Replaces the old inline `scrolled` state + scroll useEffect.
+  const { compact, setInteracting } = useNavState()
+  const reduce = useReducedMotion()
 
   const menuItems = headerData?.menu?.filter((item) => item?.label) ?? []
   const logoUrl = getLogoUrl(headerData?.logo)
@@ -69,13 +75,6 @@ export default function Header({ headerData }: HeaderProps) {
     setActiveDropdown(null)
     setMobileSubmenuOpen({})
   }, [path])
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -124,9 +123,7 @@ export default function Header({ headerData }: HeaderProps) {
         // Active when the route matches the item or any of its sub-items (so a nested page still
         // lights the parent in the bar).
         const itemActive =
-          (item.link && path === localizedHref(locale, item.link)) ||
-          item.subItems?.some((s) => s.link && path === localizedHref(locale, s.link)) ||
-          false
+          (item.link && path === item.link) || item.subItems?.some((s) => s.link && path === s.link) || false
 
         // Nav item type per design (UI/Nav Item): Inter Medium 14px, tracking 0 (reset from the
         // body's −0.05em), in the cream text token. Item box = px16/py8, radius/md.
@@ -226,78 +223,100 @@ export default function Header({ headerData }: HeaderProps) {
     'inline-flex items-center justify-center rounded-md bg-main px-4 py-2 text-[14px] font-semibold leading-[1.15] tracking-normal text-cream transition-colors duration-200 hover:bg-[#26241f]'
 
   const Logo = (
-    <Link
-      href={localizedHref(locale, '/')}
-      className="flex shrink-0 items-center gap-2.5"
-      aria-label={headerData?.siteName || 'Ternary'}
-    >
+    <Link href={localizedHref(locale, '/')} className="flex shrink-0 items-center gap-2.5" aria-label={headerData?.siteName || 'Ternary'}>
       {logoUrl ? (
-        <Image src={logoUrl} width={30} height={30} alt="" className="h-[30px] w-[30px]" />
+        <Image
+          src={logoUrl}
+          width={30}
+          height={30}
+          alt=""
+          // Under reduced motion the spring scale is off, so a slightly smaller logo when compact
+          // reads the shrink without animating the bar.
+          className={cn('w-auto transition-[height] duration-200', reduce && compact ? 'h-[26px]' : 'h-[30px]')}
+        />
       ) : (
         // Inline brand mark fallback — CMS logo media (S3) degrades to a broken box, the mark does not.
-        <TernaryMark className="h-[30px] w-auto text-cream" />
+        <TernaryMark
+          className={cn('w-auto text-cream transition-[height] duration-200', reduce && compact ? 'h-[26px]' : 'h-[30px]')}
+        />
       )}
     </Link>
   )
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 w-full transition-[background-color,box-shadow,backdrop-filter] duration-300',
-        // Resting state carries a faint scrim + blur so nav text always holds contrast over the hero;
-        // scrolling deepens it into the surface tone.
-        scrolled
-          ? 'border-b border-white/[0.06] bg-page/80 shadow-[0_12px_30px_-18px_rgba(0,0,0,0.9)] backdrop-blur-md supports-[backdrop-filter]:bg-page/65'
-          : 'bg-page/40 backdrop-blur-sm supports-[backdrop-filter]:bg-page/20',
-      )}
-    >
-      <div className="mx-auto flex w-full max-w-7xl flex-row items-center justify-between px-5 py-3">
-        {/* Logo — combination mark only (design shows no wordmark beside it in the bar) */}
-        {Logo}
+    // Outer fixed positioner — never animates; just centers the floating pill at the top and
+    // stays click-through outside the bar so the page below remains interactive.
+    <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:pt-4 pointer-events-none">
+      {/* Inner animated liquid-glass pill. Springs between expanded/compact padding + scale; under
+          reduced motion the spring is dropped and padding is applied via conditional classes. */}
+      <motion.header
+        className={cn(
+          'pointer-events-auto w-full max-w-3xl rounded-2xl px-5 glass',
+          // Reduced-motion fallback for the padding shrink (the spring `animate` is undefined below).
+          reduce && (compact ? 'py-2' : 'py-3.5'),
+        )}
+        initial={false}
+        animate={reduce ? undefined : compact ? 'compact' : 'expanded'}
+        variants={{
+          expanded: { paddingTop: 14, paddingBottom: 14, scale: 1 },
+          compact: { paddingTop: 8, paddingBottom: 8, scale: 0.97 },
+        }}
+        transition={{ type: 'spring', stiffness: 380, damping: 34, mass: 0.7 }}
+        style={{ transformOrigin: 'top center' }}
+        // Hover/focus keeps the bar expanded so menus + CTA are full-size under the pointer/keyboard.
+        onMouseEnter={() => setInteracting(true)}
+        onMouseLeave={() => setInteracting(false)}
+        onFocus={() => setInteracting(true)}
+        onBlur={(e) => {
+          // Only treat focus as leaving when it moves OUTSIDE the bar — tabbing between nav items
+          // within the bar shouldn't flicker it back to compact.
+          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setInteracting(false)
+        }}
+      >
+        <div className="flex w-full flex-row items-center justify-between">
+          {/* Logo — combination mark only (design shows no wordmark beside it in the bar) */}
+          {Logo}
 
-        {/* Desktop Navigation - center */}
-        <div className="hidden md:flex flex-1 justify-center">{DesktopNav}</div>
+          {/* Desktop Navigation - center */}
+          <div className="hidden md:flex flex-1 justify-center">{DesktopNav}</div>
 
-        {/* Desktop language switcher + CTA - right (fixed min width keeps the menu optically centered) */}
-        <div className="hidden md:flex shrink-0 min-w-[110px] items-center justify-end gap-3">
-          <LocaleSwitcher currentLocale={locale} />
-          {headerData?.button?.label && (
-            <Link href={localizedHref(locale, headerData.button.link)} className={ctaClass}>
-              {headerData.button.label}
-            </Link>
-          )}
-        </div>
+          {/* Desktop right cluster: locale switcher + CTA (fixed min width keeps the menu optically centered) */}
+          <div className="hidden md:flex shrink-0 items-center justify-end gap-2">
+            <LocaleSwitcher currentLocale={locale} className="text-cream" />
+            {headerData?.button?.label && (
+              <Link href={localizedHref(locale, headerData.button.link)} className={ctaClass}>
+                {headerData.button.label}
+              </Link>
+            )}
+          </div>
 
-        {/* Mobile: language switcher + CTA + menu toggle - right */}
-        <div className="flex items-center gap-2 md:hidden">
-          <LocaleSwitcher currentLocale={locale} />
-          {headerData?.button?.label && (
-            <Link
-              href={localizedHref(locale, headerData.button.link)}
-              className={cn(ctaClass, 'hidden sm:inline-flex')}
+          {/* Mobile: CTA + menu toggle - right */}
+          <div className="flex items-center gap-2 md:hidden">
+            {headerData?.button?.label && (
+              <Link href={localizedHref(locale, headerData.button.link)} className={cn(ctaClass, 'hidden sm:inline-flex')}>
+                {headerData.button.label}
+              </Link>
+            )}
+            <button
+              type="button"
+              aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              onClick={() => setOpen((v) => !v)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-cream transition-colors duration-200 hover:bg-white/[0.06] active:scale-95"
             >
-              {headerData.button.label}
-            </Link>
-          )}
-          <button
-            type="button"
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            aria-expanded={open}
-            aria-controls="mobile-nav"
-            onClick={() => setOpen((v) => !v)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-cream transition-colors duration-200 hover:bg-white/[0.06] active:scale-95"
-          >
-            {open ? <X className="size-6" /> : <Menu className="size-6" />}
-          </button>
+              {open ? <X className="size-6" /> : <Menu className="size-6" />}
+            </button>
+          </div>
         </div>
-      </div>
+      </motion.header>
 
-      {/* Mobile Panel */}
+      {/* Mobile Panel — a second floating glass card anchored just below the pill */}
       <div
         id="mobile-nav"
         ref={panelRef}
         className={cn(
-          'fixed inset-x-0 top-16 z-[110] w-full max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-page/95 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)] backdrop-blur-md supports-[backdrop-filter]:bg-page/85 md:hidden',
+          'fixed inset-x-4 top-[76px] z-[60] max-h-[calc(100vh-5.5rem)] overflow-y-auto rounded-2xl glass pointer-events-auto md:hidden',
           open ? 'animate-[accordion-down_200ms_ease-out]' : 'hidden',
         )}
       >
@@ -307,9 +326,7 @@ export default function Header({ headerData }: HeaderProps) {
             const itemId = `item-${i}`
             const isSubmenuOpen = mobileSubmenuOpen[itemId]
             const itemActive =
-              (item.link && path === localizedHref(locale, item.link)) ||
-              item.subItems?.some((s) => s.link && path === localizedHref(locale, s.link)) ||
-              false
+              (item.link && path === item.link) || item.subItems?.some((s) => s.link && path === s.link) || false
 
             if (hasSubmenu) {
               return (
@@ -377,6 +394,9 @@ export default function Header({ headerData }: HeaderProps) {
             }
           })}
 
+          {/* Locale switcher above the CTA inside the mobile sheet */}
+          <LocaleSwitcher currentLocale={locale} className="mt-3 px-3 text-cream" />
+
           {/* CTA inside the mobile sheet so "Get in Touch" is always reachable below md */}
           {headerData?.button?.label && (
             <Link
@@ -389,6 +409,6 @@ export default function Header({ headerData }: HeaderProps) {
           )}
         </div>
       </div>
-    </header>
+    </div>
   )
 }

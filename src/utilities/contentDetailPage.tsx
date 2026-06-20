@@ -146,21 +146,21 @@ export function createContentDetailPage(collection: ContentCollection) {
         <JsonLd data={breadcrumbsLd} />
         <Link
           href={localizedPath(typedLocale, listPath)}
-          className="text-sm text-[#757571] hover:text-white transition-colors mb-8 inline-block"
+          className="text-sm text-subtle hover:text-cream transition-colors mb-8 inline-block"
         >
           ← Back to stories
         </Link>
 
         <div className="space-y-6 mb-10">
-          <span className="inline-flex items-center rounded-full border border-zinc-700/60 bg-[#14120B] px-4 py-2 text-xs text-[#D5D5D5]">
+          <span className="inline-flex items-center rounded-full border border-line bg-button-dark px-4 py-2 text-xs text-body">
             {label}
           </span>
-          <h1 className="text-3xl lg:text-5xl font-medium tracking-tight text-white leading-tight">{doc.title}</h1>
-          {doc.excerpts && <p className="text-base text-[#D5D5D5] leading-relaxed max-w-2xl">{doc.excerpts}</p>}
+          <h1 className="text-3xl lg:text-5xl font-medium tracking-tight text-cream leading-tight">{doc.title}</h1>
+          {doc.excerpts && <p className="text-base text-body leading-relaxed max-w-2xl">{doc.excerpts}</p>}
         </div>
 
         {thumbnail?.url && (
-          <div className="relative w-full h-[280px] lg:h-[420px] rounded-lg overflow-hidden mb-10">
+          <div className="relative w-full h-[280px] lg:h-[420px] rounded-md overflow-hidden mb-10">
             <Image
               src={thumbnail.url}
               alt={thumbnail.alt || doc.title || label}

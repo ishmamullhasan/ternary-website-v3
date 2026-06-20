@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import { Button } from '@/components/ui/button'
 import type { CtaBlock, Media } from '@/payload-types'
 import type { JSX } from 'react'
 
@@ -31,7 +32,7 @@ export function CtaBlockComponent({
   return (
     <Motion
       tag="section"
-      className="lg:p-10 p-6 rounded-lg overflow-hidden lg:m-0 m-4 relative border border-white/[0.04]"
+      className="lg:p-10 p-6 rounded-md overflow-hidden lg:m-0 m-4 relative border border-white/[0.04]"
       style={{
         background: (backgroundImage as Media)?.url
           ? `url(${(backgroundImage as Media)?.url}) center/cover no-repeat`
@@ -39,32 +40,30 @@ export function CtaBlockComponent({
       }}
       {...motionSectionProps}
     >
-      <div className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?auto=format&fit=crop&q=10')] bg-repeat" />
+      {/* Local grain overlay (no external image dependency) — the signature noise texture. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('/noise.svg')] bg-[length:240px] bg-repeat"
+      />
 
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 max-w-6xl mx-auto">
         <Motion className="flex flex-col items-start text-left lg:max-w-xl" {...motionBlockProps}>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-white leading-[1.2]">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-cream leading-[1.2]">
             {heading}
           </h2>
-          <p className="text-xs md:text-sm text-[#D5D5D5]/80 max-w-lg leading-relaxed">{description}</p>
+          <p className="text-xs md:text-sm text-body/80 max-w-lg leading-relaxed">{description}</p>
         </Motion>
 
         <div className="flex sm:flex-row flex-col gap-3 items-center shrink-0 lg:ml-auto">
           {button_1?.label && (
-            <Link
-              href={button_1?.link as string}
-              className="w-full sm:w-auto px-5 py-2.5 bg-[#14120B] font-medium rounded-2xl text-base"
-            >
-              {button_1.label}
-            </Link>
+            <Button asChild className="w-full sm:w-auto px-5 py-2.5 h-auto bg-button-dark text-cream text-base hover:bg-button-dark/90">
+              <Link href={button_1?.link as string}>{button_1.label}</Link>
+            </Button>
           )}
           {button_2?.label && (
-            <Link
-              href={button_2?.link as string}
-              className="px-5 sm:w-auto w-full py-2.5 bg-[#F4F3EC] text-[#0F0E0E] font-medium rounded-2xl text-base"
-            >
-              {button_2.label}
-            </Link>
+            <Button asChild className="w-full sm:w-auto px-5 py-2.5 h-auto bg-cream text-ink text-base hover:bg-cream-hover">
+              <Link href={button_2?.link as string}>{button_2.label}</Link>
+            </Button>
           )}
         </div>
       </div>

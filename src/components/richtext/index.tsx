@@ -29,7 +29,7 @@ const jsxConverters: JSXConvertersFunction = ({ defaultConverters }) => ({
       const { variant, body } = node.fields
       const tone = calloutVariantStyles[variant ?? 'info']
       return (
-        <div className={cn('not-prose my-6 rounded-lg border px-5 py-4', tone)}>
+        <div className={cn('not-prose my-6 rounded-md border px-5 py-4', tone)}>
           {body ? <RichTextComp content={body as RichText} className="prose-sm prose-invert max-w-none" /> : null}
         </div>
       )
@@ -58,7 +58,9 @@ export interface RichText {
 }
 
 interface RichTextProps {
-  content?: RichText | null
+  // Accepts a plain string too: fields newly converted to richText may still hold a plain string in
+  // the DB until the production data migration runs, so render those gracefully instead of crashing.
+  content?: RichText | string | null
   className?: string
 }
 
@@ -69,6 +71,21 @@ interface RichTextProps {
  */
 export default function RichTextComp({ content, className }: RichTextProps): JSX.Element | null {
   if (!content) return null
+
+  // Defensive fallback: a field converted to richText may still contain a plain string in the DB
+  // until the production migration wraps it into Lexical state. Render it as paragraphs (split on
+  // blank lines) so content shows correctly rather than disappearing or throwing in the converter.
+  if (typeof content === 'string') {
+    const text = content.trim()
+    if (!text) return null
+    return (
+      <div className={cn('prose prose-invert max-w-none', className)}>
+        {text.split(/\n[ \t]*\n+/).map((para, i) => (
+          <p key={i}>{para.trim()}</p>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div className={cn('prose prose-invert max-w-none', className)}>

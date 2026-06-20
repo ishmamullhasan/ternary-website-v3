@@ -16,6 +16,11 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX, ReactNode } from 'react'
 
+// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
+// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
+export const revalidate = 300
+export const dynamicParams = true
+
 const getSolutionList = unstable_cache(
   async () => {
     const payload = await getPayload({ config })

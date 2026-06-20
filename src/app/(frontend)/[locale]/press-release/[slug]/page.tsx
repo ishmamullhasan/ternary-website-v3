@@ -31,6 +31,11 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
+// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
+// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
+export const revalidate = 300
+export const dynamicParams = true
+
 const getPressReleaseList = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
@@ -89,7 +94,7 @@ export async function generateMetadata({
   return generateMeta({
     doc: pressRelease,
     fallbackTitle: 'Press Release',
-    fallbackDescription: pressRelease.leadParagraph || pressRelease.excerpts,
+    fallbackDescription: pressRelease.excerpts,
     pathname: `/press-release/${slug}`,
     locale: typedLocale,
     ogType: 'article',
@@ -112,14 +117,6 @@ function formatDate(date?: string | null): string {
     day: 'numeric',
     year: 'numeric',
   })
-}
-
-function splitLeadParagraphs(text?: string | null): string[] {
-  if (!text?.trim()) return []
-  return text
-    .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean)
 }
 
 function formatShortDate(date?: string | null): string {
@@ -209,8 +206,6 @@ export default async function Page({
   const relatedItems = (pressRelease.relatedPressReleases?.pressReleases as PressRelease[] | undefined)?.filter(
     (item) => item.id !== pressRelease.id,
   )
-  const leadParagraphs = splitLeadParagraphs(pressRelease.leadParagraph)
-
   const baseUrl = getServerSideURL()
   const shareUrl = `${baseUrl}/${typedLocale}/press-release/${slug}`
   const shareTitle = encodeURIComponent(pressRelease.title ?? '')
@@ -218,7 +213,7 @@ export default async function Page({
   const thumbnail = pressRelease.thumbnail as Media | undefined
   const articleLd = article({
     headline: pressRelease.title ?? 'Press Release',
-    description: pressRelease.leadParagraph || pressRelease.excerpts,
+    description: pressRelease.excerpts,
     image: thumbnail?.url ?? null,
     datePublished: pressRelease.releaseDate,
     dateModified: pressRelease.updatedAt,
@@ -344,7 +339,7 @@ export default async function Page({
       </Motion>
 
       {/* The release — 3-rail editorial grid */}
-      {(leadParagraphs.length > 0 ||
+      {(pressRelease.leadParagraph ||
         pressRelease.content ||
         (pressRelease.quotes && pressRelease.quotes.length > 0)) && (
         <Motion tag="section" {...reveal}>
@@ -354,19 +349,11 @@ export default async function Page({
             </div>
 
             <div className="flex flex-col gap-6 lg:col-span-7">
-              {leadParagraphs.length > 0 && (
-                <div className="flex flex-col gap-4">
-                  {leadParagraphs.map((paragraph, index) => (
-                    <p
-                      key={`lead-${index}`}
-                      className={`leading-[1.7] tracking-[-0.01em] ${
-                        index === 0 ? 'text-[18px] text-cream' : 'text-[16px] text-body'
-                      }`}
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
+              {pressRelease.leadParagraph && (
+                <RichTextComp
+                  content={pressRelease.leadParagraph as RichText}
+                  className="flex flex-col gap-4 [&_p]:m-0 [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:tracking-[-0.01em] [&_p]:text-body [&>:first-child]:text-[18px] [&>:first-child]:text-cream"
+                />
               )}
 
               {pressRelease.content && (
@@ -459,7 +446,10 @@ export default async function Page({
                 {pressRelease.pressContact.heading}
               </h2>
               {pressRelease.pressContact.description && (
-                <p className="text-[16px] leading-relaxed text-body">{pressRelease.pressContact.description}</p>
+                <RichTextComp
+                  content={pressRelease.pressContact.description as RichText}
+                  className="[&_p]:m-0 [&_p]:text-[16px] [&_p]:leading-relaxed [&_p]:text-body"
+                />
               )}
             </div>
 
@@ -609,7 +599,10 @@ export default async function Page({
               {pressRelease.relatedPressReleases.heading}
             </h2>
             {pressRelease.relatedPressReleases.description && (
-              <p className="text-[16px] leading-relaxed text-body">{pressRelease.relatedPressReleases.description}</p>
+              <RichTextComp
+                content={pressRelease.relatedPressReleases.description as RichText}
+                className="[&_p]:m-0 [&_p]:text-[16px] [&_p]:leading-relaxed [&_p]:text-body"
+              />
             )}
           </div>
 

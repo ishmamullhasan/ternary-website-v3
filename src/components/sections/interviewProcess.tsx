@@ -52,15 +52,15 @@ export default function InterviewProcess({ interviewProcess }: InterviewProcessP
           setIsHovered(false)
           setHoverPercent(0)
         }}
-        className={`w-full ${careersBg.card} border ${careersBorder.subtle} rounded-xl p-8 md:p-10`}
+        className={`w-full ${careersBg.card} border ${careersBorder.subtle} rounded-md p-8 md:p-10`}
       >
-        <div className="flex items-center gap-3 mb-10 text-[#D5D5D5]">
-          <Clock size={20} />
+        <div className="flex items-center gap-3 mb-10 text-body">
+          <Clock size={20} aria-hidden />
           <h2 className="text-base font-medium tracking-tight">{interviewProcess?.heading || 'Interview Process'}</h2>
         </div>
 
         <div className={`grid grid-cols-1 ${gridClass} gap-8 relative`}>
-          <div className="hidden md:block absolute top-[14px] left-[14px] right-[14px] h-[2px] bg-[#27272a] z-0 pointer-events-none overflow-hidden rounded-full">
+          <div className="hidden md:block absolute top-[14px] left-[14px] right-[14px] h-[2px] bg-line z-0 pointer-events-none overflow-hidden rounded-full">
             <div
               className="h-full bg-white transition-[width] duration-75 ease-out"
               style={{ width: isHovered ? `${hoverPercent}%` : '0%' }}
@@ -75,11 +75,11 @@ export default function InterviewProcess({ interviewProcess }: InterviewProcessP
               <div key={step.id || index} className="flex flex-col relative z-10 group">
                 <div className="flex items-center w-full mb-4 relative">
                   <div
-                    className={`flex items-center text-sm justify-center w-7 h-7 rounded-full bg-[#121212] border transition-colors duration-300 text-xs font-medium z-10 shrink-0
+                    className={`flex items-center text-sm justify-center w-7 h-7 rounded-full bg-ink border transition-colors duration-300 text-xs font-medium z-10 shrink-0
                       ${
                         isStepPassed
                           ? 'border-white text-white shadow-[0_0_10px_rgba(255,255,255,0.2)]'
-                          : 'border-[#3f3f46] text-[#757571] group-hover:border-[#d5d5d5]'
+                          : 'border-line-strong text-subtle group-hover:border-body'
                       }`}
                   >
                     {index + 1}
@@ -90,20 +90,20 @@ export default function InterviewProcess({ interviewProcess }: InterviewProcessP
                   <div className="flex items-baseline justify-between gap-2">
                     <h3
                       className={`text-base font-semibold tracking-tight transition-colors duration-300
-                      ${isStepPassed ? 'text-white' : 'text-[#D5D5D5]'}`}
+                      ${isStepPassed ? 'text-white' : 'text-body'}`}
                     >
                       {step.title || 'Initial Screen'}
                     </h3>
 
                     {step.duration && (
-                      <span className="text-sm text-[#757571] font-mono font-medium whitespace-nowrap">
+                      <span className="text-sm text-subtle font-mono font-medium whitespace-nowrap">
                         {step.duration}
                       </span>
                     )}
                   </div>
 
                   {step.excerpt && (
-                    <p className="text-base text-[#757571] leading-relaxed max-w-[220px]">{step.excerpt}</p>
+                    <p className="text-base text-subtle leading-relaxed max-w-[220px]">{step.excerpt}</p>
                   )}
                 </div>
               </div>

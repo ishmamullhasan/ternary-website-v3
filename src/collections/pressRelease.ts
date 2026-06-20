@@ -150,7 +150,7 @@ const PressRelease: CollectionConfig = {
             {
               name: 'leadParagraph',
               label: 'Lead Paragraph',
-              type: 'textarea',
+              type: 'richText',
               localized: true,
               admin: {
                 description: 'Opening paragraphs shown in The release section. Separate paragraphs with a blank line.',
@@ -263,7 +263,7 @@ const PressRelease: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {
@@ -376,7 +376,7 @@ const PressRelease: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {

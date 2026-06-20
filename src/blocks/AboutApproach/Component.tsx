@@ -32,7 +32,7 @@ function BentoMedia({ url, alt }: { url?: string; alt?: string }): JSX.Element {
         />
       )}
       <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
-      <span className="absolute inset-0 bg-gradient-to-t from-[#0f0e0e] via-[#0f0e0e]/45 to-transparent" />
+      <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/45 to-transparent" />
     </div>
   )
 }

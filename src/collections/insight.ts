@@ -141,7 +141,7 @@ const Insight: CollectionConfig = {
             {
               name: 'leadParagraph',
               label: 'Lead Paragraph',
-              type: 'textarea',
+              type: 'richText',
               localized: true,
               admin: {
                 description: 'Opening paragraph shown beside the article body.',
@@ -172,7 +172,7 @@ const Insight: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {
@@ -203,7 +203,7 @@ const Insight: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {

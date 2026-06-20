@@ -1,6 +1,7 @@
 'use client'
 import Motion from '@/components/animation/motion'
-import { GradientPanel, toneFor } from '@/components/sections/stories/gradient'
+import { reveal, revealItem } from '@/components/animation/reveal'
+import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import type { Media, Scale } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
@@ -11,57 +12,48 @@ interface EngagementCompProps {
   model?: Scale[] | null
 }
 
-const motionGridItemProps = {
-  initial: { opacity: 0, scale: 0.985 },
-  whileInView: { opacity: 1, scale: 1 },
-  viewport: { once: false, amount: 0.35 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
-}
-
 export default function EngagementComp({ heading, description, model }: EngagementCompProps) {
+  if (!model?.length) return null
+
   return (
-    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
-      <div className="flex lg:flex-row flex-col lg:justify-between lg:items-start items-center">
+    <section>
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
         {/* top header */}
-        <div className="lg:w-2/5">
-          <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{heading}</h2>
-          <p className="lg:text-base text-sm text-[#D5D5D5]">{description}</p>
-        </div>
+        <Motion className="lg:w-2/5" {...reveal}>
+          <h2 className="text-section font-display font-medium text-cream">{heading}</h2>
+          <p className="mt-3 text-body">{description}</p>
+        </Motion>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4 gap-3 lg:pt-0 pt-4">
-          {model?.map((item, index): JSX.Element => {
+        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:w-auto lg:grid-cols-3">
+          {model.map((item, index): JSX.Element => {
+            const thumbnail = item.thumbnail as Media | undefined
+            const url = thumbnail?.url
+
             return (
-              <div key={index} className="group">
-                {/* gradient card */}
-                <Motion
-                  className="relative lg:w-[220px] lg:h-[250px]  rounded-lg overflow-hidden"
-                  {...motionGridItemProps}
-                  transition={{
-                    duration: 0.4,
-                    ease: 'easeOut',
-                    delay: index * 0.05,
-                  }}
-                >
-                  {/* Cover: uploaded thumbnail if present, else the signature colorful noise-gradient. */}
-                  {(item.thumbnail as Media)?.url ? (
-                    <Image
-                      src={(item.thumbnail as Media).url as string}
-                      alt={item.title || 'cover'}
-                      height={(item.thumbnail as Media)?.height || 250}
-                      width={(item.thumbnail as Media)?.width || 220}
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
-                    <GradientPanel tone={toneFor(undefined, index)} interactive />
-                  )}
+              <Motion
+                key={index}
+                className="group relative aspect-[22/25] overflow-hidden rounded-md border border-white/[0.06] bg-ink"
+                {...revealItem(index)}
+              >
+                {/* gradient base IS the fallback — always rendered */}
+                <GradientPanel tone={toneFor(undefined, index)} interactive />
 
-                  {/* text */}
-                  <div className="absolute bottom-5 left-5 right-5">
-                    <h3 className="lg:text-base text-sm font-semibold">{item.title}</h3>
-                    <p className="lg:text-sm text-xs"> {item.excerpts}</p>
-                  </div>
-                </Motion>
-              </div>
+                {/* optional CMS media layered on top */}
+                {url && (
+                  <Image
+                    src={url}
+                    alt={item.title || 'engagement model'}
+                    fill
+                    className="relative object-cover"
+                  />
+                )}
+
+                {/* text */}
+                <div className="absolute inset-x-5 bottom-5">
+                  <h3 className="font-display font-medium text-cream">{item.title}</h3>
+                  <p className="mt-1 text-sm text-body">{item.excerpts}</p>
+                </div>
+              </Motion>
             )
           })}
         </div>

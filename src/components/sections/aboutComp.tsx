@@ -1,8 +1,9 @@
 'use client'
 import Motion from '@/components/animation/motion'
+import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
-import { GradientPanel, toneFor } from '@/components/sections/stories/gradient'
 import type { Capability, Industry, Insight, Media, Model, PressRelease, Scale, Solution, Story } from '@/payload-types'
+import { ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
@@ -12,9 +13,21 @@ type MultiRelation =
   | { relationTo: 'industry'; value: Industry }
   | { relationTo: 'scale'; value: Scale }
   | { relationTo: 'model'; value: Model }
-  | { relationTo: 'insight'; value: Insight }
   | { relationTo: 'story'; value: Story }
+  | { relationTo: 'insight'; value: Insight }
   | { relationTo: 'pressRelease'; value: PressRelease }
+
+// Human-readable label for the card badge, keyed by the relationship's content type.
+const CONTENT_TYPE_LABEL: Record<MultiRelation['relationTo'], string> = {
+  capability: 'Capability',
+  solution: 'Solution',
+  industry: 'Industry',
+  scale: 'Scale',
+  model: 'Model',
+  story: 'Story',
+  insight: 'Insight',
+  pressRelease: 'Press Release',
+}
 
 interface AboutProps {
   heading?: string | null
@@ -33,11 +46,15 @@ interface AboutProps {
   bottomDescription?: string | null
 }
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+const focusRing =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/80 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
+
 const motionGridItemProps = {
-  initial: { opacity: 0, scale: 0.985 },
-  whileInView: { opacity: 1, scale: 1 },
-  viewport: { once: false, amount: 0.35 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.35 as const },
 }
 
 function getItemHref(item: MultiRelation): string {
@@ -54,10 +71,10 @@ function getItemHref(item: MultiRelation): string {
       return '/scales'
     case 'model':
       return '/solutions'
-    case 'insight':
-      return `/insights/${item.value.slug}`
     case 'story':
       return `/stories/${item.value.slug}`
+    case 'insight':
+      return `/insights/${item.value.slug}`
     case 'pressRelease':
       return `/press-release/${item.value.slug}`
     default:
@@ -66,91 +83,123 @@ function getItemHref(item: MultiRelation): string {
 }
 
 export default function AboutComp({ heading, description, items, organizations, bottomDescription }: AboutProps) {
+  const list = (items as MultiRelation[]) ?? []
+  if (list.length === 0) return null
+
   return (
-    <section className="lg:pb-16 pb-8">
-      <div className="w-full mx-auto flex flex-col items-center lg:p-0 p-4">
+    <section className="w-full">
+      <div className="flex flex-col items-center">
         {/* heading */}
-        <div className="flex flex-col items-center lg:w-2/5">
-          <h1 className="text-center lg:text-4xl text-2xl font-semibold mb-3">{heading}</h1>
-          <p className="text-center lg:text-base text-sm text-[#D5D5D5] ">{description}</p>
-        </div>
+        {(heading || description) && (
+          <div className="flex max-w-2xl flex-col items-center text-center">
+            {heading && (
+              <h1 className="text-section font-display font-medium text-cream">{heading}</h1>
+            )}
+            {description && <p className="mt-3 text-body">{description}</p>}
+          </div>
+        )}
+
         {/* cards grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:mt-10 mt-4">
-          {(items as MultiRelation[])?.map((item, index: number): JSX.Element => {
+        <div className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {list.map((item, index: number): JSX.Element => {
+            const thumbnail = item.value.thumbnail as Media | null | undefined
+            const imageUrl = thumbnail?.url
+
             return (
-              <Link href={getItemHref(item)} key={index} className="group block">
-                {/* gradient card */}
-                <Motion
-                  className="relative lg:w-[300px] lg:h-[480px] w-[280px]  rounded-lg overflow-hidden"
-                  {...motionGridItemProps}
-                  transition={{
-                    duration: 0.4,
-                    ease: 'easeOut',
-                    delay: index * 0.05,
-                  }}
+              <Motion
+                tag="div"
+                key={index}
+                {...motionGridItemProps}
+                transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+              >
+                <Link
+                  href={getItemHref(item)}
+                  className={`group relative block aspect-[3/4] overflow-hidden rounded-md border border-white/[0.06] bg-ink transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${focusRing}`}
                 >
-                  {/* Cover: the uploaded thumbnail if present, else the signature colorful
-                      noise-gradient (content-type tone, falling across the palette by index). */}
-                  {(item.value.thumbnail as Media)?.url ? (
+                  {/* gradient field IS the fallback; optional CMS image layers on top */}
+                  <GradientPanel tone={toneFor(undefined, index)} interactive />
+                  {imageUrl && (
                     <Image
-                      src={(item.value.thumbnail as Media).url as string}
-                      alt={item.value.title || 'cover'}
-                      height={(item.value.thumbnail as Media)?.height || 480}
-                      width={(item.value.thumbnail as Media)?.width || 300}
-                      className="object-cover w-full h-full"
+                      src={imageUrl}
+                      alt={item.value.title || 'story'}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      className="relative object-cover"
                     />
-                  ) : (
-                    <GradientPanel tone={toneFor(item.relationTo, index)} interactive />
                   )}
 
-                  {/* text */}
-                  <div className="absolute top-5 left-5 right-5">
-                    <p className="lg:text-base text-xs">{item.value.excerpts}</p>
-                    <p className="lg:text-sm">{item.value.title}</p>
+                  {/* text — content-type badge + single-line title header, with a Learn more affordance
+                       pinned to the bottom (the whole card is already the link). */}
+                  <div className="absolute inset-5 flex flex-col">
+                    <div>
+                      <span className="inline-flex items-center rounded-md border border-white/15 bg-white/[0.06] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/85 backdrop-blur-sm">
+                        {CONTENT_TYPE_LABEL[item.relationTo]}
+                      </span>
+                      {item.value.title && (
+                        <h3 className="mt-3 line-clamp-1 font-display text-lg font-medium tracking-tight text-cream">
+                          {item.value.title}
+                        </h3>
+                      )}
+                      {item.value.excerpts && (
+                        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-cream/75">{item.value.excerpts}</p>
+                      )}
+                    </div>
+
+                    <span className="mt-auto inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-cream/90 transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:transition-none">
+                      Learn more
+                      <ArrowUpRight size={15} strokeWidth={2} aria-hidden />
+                    </span>
                   </div>
-                </Motion>
-              </Link>
+                </Link>
+              </Motion>
             )
           })}
         </div>
 
         {/* organizations */}
         {organizations?.heading && (
-          <p className="lg:text-base text-xs lg:mt-15 mt-8 mb-6 text-center">{organizations.heading}</p>
+          <p className="mt-12 mb-6 text-center text-xs uppercase tracking-[0.14em] text-subtle lg:text-[13px]">
+            {organizations.heading}
+          </p>
         )}
 
-        <div className="lg:flex lg:flex-row grid grid-cols-2 justify-center lg:gap-5 gap-4">
-          {organizations?.organization?.map((item, index) => (
-            <Motion
-              key={index}
-              className="flex flex-row items-center lg:px-3 lg:py-2 px-2 py-1"
-              {...motionGridItemProps}
-              transition={{
-                duration: 0.4,
-                ease: 'easeOut',
-                delay: index * 0.05,
-              }}
-            >
-              <Link href={item.link || '#'} className="flex flex-row items-center">
-                <div className="lg:w-auto lg:h-[35px] h-[30px]">
-                  <Image
-                    src={(item.icon as Media)?.url || 'https://dummyimage.com/365x375/37624F/FFF2'}
-                    alt={(item.icon as Media)?.alt || 'org'}
-                    width={(item.icon as Media)?.width || 40}
-                    height={(item.icon as Media)?.height || 35}
-                    className="object-contain grayscale hover:grayscale-0 transition w-full h-full"
-                  />
-                </div>
+        <div className="grid grid-cols-2 justify-center gap-4 lg:flex lg:flex-row lg:gap-5">
+          {organizations?.organization?.map((item, index) => {
+            const orgIcon = item.icon as Media | null | undefined
+            const orgIconUrl = orgIcon?.url
 
-                <p className="lg:text-base text-sm pl-2">{item.name}</p>
-              </Link>
-            </Motion>
-          ))}
+            return (
+              <Motion
+                tag="div"
+                key={index}
+                {...motionGridItemProps}
+                transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+              >
+                <Link
+                  href={item.link || '#'}
+                  className={`flex flex-row items-center rounded-md px-3 py-2 transition-colors hover:bg-white/[0.04] ${focusRing}`}
+                >
+                  {orgIconUrl && (
+                    <span className="h-[30px] lg:h-[35px]">
+                      <Image
+                        src={orgIconUrl}
+                        alt={orgIcon?.alt || 'org'}
+                        width={orgIcon?.width || 40}
+                        height={orgIcon?.height || 35}
+                        className="h-full w-full object-contain grayscale transition group-hover:grayscale-0 hover:grayscale-0"
+                      />
+                    </span>
+                  )}
+                  {item.name && <span className="pl-2 text-sm text-body lg:text-base">{item.name}</span>}
+                </Link>
+              </Motion>
+            )
+          })}
         </div>
 
         {/* bottom text */}
         {bottomDescription && (
-          <p className="text-center lg:max-w-[900px] lg:mt-15 mt-8 lg:text-sm text-xs">{bottomDescription}</p>
+          <p className="mt-12 max-w-[900px] text-center text-xs text-body lg:text-sm">{bottomDescription}</p>
         )}
       </div>
     </section>

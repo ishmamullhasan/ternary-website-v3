@@ -44,7 +44,11 @@ export default function SearchInput({
       <label htmlFor={inputId} className="sr-only">
         {label}
       </label>
-      <Search size={16} aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 text-[#757571]" />
+      <Search
+        size={16}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtle"
+      />
       <input
         id={inputId}
         name="q"
@@ -53,11 +57,11 @@ export default function SearchInput({
         onChange={(event) => setValue(event.target.value)}
         placeholder={placeholder}
         autoComplete="off"
-        className="h-11 w-full rounded-lg border border-zinc-800/60 bg-[#0F0E0E] pl-11 pr-24 text-sm text-white placeholder:text-[#757571] focus:border-zinc-600 focus:outline-none"
+        className="h-12 w-full rounded-md border border-line bg-ink pl-11 pr-28 text-sm text-cream transition-colors placeholder:text-subtle hover:border-line-strong focus:outline-none focus-visible:border-cream/60 focus-visible:ring-2 focus-visible:ring-cream/40"
       />
       <button
         type="submit"
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-[#F4F3EC] px-4 py-1.5 text-xs font-medium text-[#0F0E0E] transition-opacity hover:opacity-90"
+        className="absolute right-2 top-1/2 inline-flex min-h-[40px] -translate-y-1/2 items-center rounded-md bg-cream px-4 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
       >
         Search
       </button>

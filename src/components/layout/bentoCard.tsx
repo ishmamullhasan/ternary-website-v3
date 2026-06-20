@@ -41,7 +41,7 @@ export function BentoCard({
               className="absolute inset-0 w-full h-full object-cover opacity-55"
               alt={title ?? 'Card image'}
             />
-            <div className="absolute inset-0 bg-linear-to-l from-transparent via-black/35 to-[#050505]"></div>
+            <div className="absolute inset-0 bg-linear-to-l from-transparent via-black/35 to-page"></div>
           </div>
         )}
         <div className="relative z-10 h-full p-8 flex flex-col justify-end max-w-xl">

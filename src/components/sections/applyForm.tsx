@@ -13,7 +13,7 @@ import { useId, useRef, useState } from 'react'
    keyboard outline across the site — no invented per-field colour shift. */
 
 const fieldBase =
-  'w-full bg-main border rounded-sm px-4 py-3 text-base text-cream placeholder:text-subtle/70 transition-colors focus:outline-none'
+  'w-full min-h-[44px] bg-main border rounded-sm px-4 py-3 text-base text-cream placeholder:text-subtle/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
 function borderClass(invalid?: boolean): string {
   return invalid ? 'border-red-500/70 focus-visible:border-red-500' : 'border-line hover:border-line-strong'
@@ -178,7 +178,7 @@ function FileUpload({
               if (inputRef.current) inputRef.current.value = ''
             }}
             aria-label={`Remove ${file.name}`}
-            className="flex w-11 shrink-0 items-center justify-center rounded-sm border border-line bg-main text-subtle transition-colors hover:border-line-strong hover:text-cream focus-visible:outline-none"
+            className="flex w-11 min-h-[44px] shrink-0 items-center justify-center rounded-sm border border-line bg-main text-subtle transition-colors hover:border-line-strong hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page"
           >
             <X size={16} aria-hidden />
           </button>
@@ -453,7 +453,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
               {...inputProps('email')}
             />
           </Field>
-          <div className="grid grid-cols-2 sm:grid-cols-[140px_1fr_120px] gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr_120px] gap-4">
             <Field label="Country Code" htmlFor="countryCode" {...fieldProps('countryCode')}>
               <Select
                 id="countryCode"
@@ -752,7 +752,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
           <button
             type="submit"
             disabled={submitting || submitted}
-            className="group/submit inline-flex items-center gap-2 rounded-md bg-cream px-8 py-3 text-sm font-medium text-ink transition-[background-color,box-shadow] duration-200 hover:bg-cream-hover hover:shadow-[0_10px_30px_-12px_rgba(244,243,236,0.55)] focus-visible:outline-none disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none"
+            className="group/submit inline-flex min-h-[44px] items-center gap-2 rounded-md bg-cream px-8 py-3 text-sm font-medium text-ink transition-[background-color,box-shadow] duration-200 hover:bg-cream-hover hover:shadow-[0_10px_30px_-12px_rgba(244,243,236,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none"
           >
             {submitting && <Loader2 size={16} className="animate-spin" aria-hidden />}
             {submitting ? 'Submitting…' : submitted ? 'Submitted' : 'Submit'}

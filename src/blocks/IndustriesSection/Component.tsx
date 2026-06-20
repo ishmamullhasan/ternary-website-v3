@@ -1,47 +1,17 @@
 import Motion from '@/components/animation/motion'
-import type { IndustriesSectionBlock, Industry } from '@/payload-types'
-import {
-  Banknote,
-  Factory,
-  HeartPulse,
-  Landmark,
-  Plane,
-  ShieldCheck,
-  ShoppingBag,
-  Trophy,
-  Workflow,
-  type LucideIcon,
-} from 'lucide-react'
+import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
+import LocalizedLink from '@/components/LocalizedLink'
+import type { IndustriesSectionBlock, Industry, Media } from '@/payload-types'
+import { ArrowUpRight } from 'lucide-react'
+import Image from 'next/image'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-// Deterministic per-industry glyph (mirrors IndustryList) so each benefit block reads as its own
-// topic. Matched on title keywords; falls back to a small cycle so adjacent tiles never repeat.
-const KEYWORD_ICONS: ReadonlyArray<readonly [RegExp, LucideIcon]> = [
-  [/bank|capital|financ|invest/i, Banknote],
-  [/insur|risk/i, ShieldCheck],
-  [/manufactur|industrial|supply/i, Factory],
-  [/health|life science|care|medic/i, HeartPulse],
-  [/sport|entertain|media|leisure|hospitality|travel/i, Trophy],
-  [/consumer|retail|goods|commerce/i, ShoppingBag],
-  [/software|platform|tech|saas|cloud/i, Workflow],
-  [/public|govern|sector|civic/i, Landmark],
-]
-
-const FALLBACK_CYCLE: readonly LucideIcon[] = [Workflow, Factory, ShoppingBag, Plane]
-
-function iconFor(title: string | null | undefined, index: number): LucideIcon {
-  if (title) {
-    for (const [pattern, Icon] of KEYWORD_ICONS) {
-      if (pattern.test(title)) return Icon
-    }
-  }
-  return FALLBACK_CYCLE[index % FALLBACK_CYCLE.length]
-}
-
-// Renders the design's plain 8-up benefit grid directly (no off-brand gradient cards): an optional
-// heading/intro followed by icon + title + excerpt blocks sitting on the flat section surface.
+// Renders the Industries section as a uniform 8-up grid of equal rich cards. Each card layers the
+// signature GradientPanel device (always-on) under an optional cover image, with a foreground text
+// stack (numbered eyebrow, title, excerpt) and an ArrowUpRight affordance — keeping the surface
+// cohesive whether or not CMS thumbnails are present.
 export function IndustriesSectionComponent({
   heading,
   description,
@@ -51,7 +21,7 @@ export function IndustriesSectionComponent({
   if (items.length === 0) return null
 
   return (
-    <section className="w-full py-4 lg:py-8">
+    <Motion tag="section" className="w-full py-4 lg:py-8">
       {(heading || description) && (
         <Motion
           tag="div"
@@ -70,9 +40,11 @@ export function IndustriesSectionComponent({
         </Motion>
       )}
 
-      <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((item, index) => {
-          const Icon = iconFor(item.title, index)
+          const thumb = item.thumbnail as Media | undefined
+          const cover = thumb?.url
+          const alt = thumb?.alt || `${item.title} — industry`
           return (
             <Motion
               key={item.id ?? index}
@@ -80,22 +52,54 @@ export function IndustriesSectionComponent({
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-              className="group flex flex-col"
+              transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.36) }}
             >
-              <span className="flex size-12 items-center justify-center rounded-full border border-white/10 bg-main text-cream/80 shadow-inner transition-colors duration-300 group-hover:border-white/20 group-hover:text-cream">
-                <Icon size={22} strokeWidth={1.75} aria-hidden />
-              </span>
+              <LocalizedLink
+                href={`/industries/${item.slug}`}
+                className="group relative block aspect-[4/5] overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page"
+              >
+                <GradientPanel tone={toneFor(undefined, index)} interactive />
 
-              <h3 className="font-display mt-6 max-w-[14rem] text-[19px] font-medium leading-[1.18] tracking-tight text-cream lg:text-xl">
-                {item.title}
-              </h3>
+                {cover && (
+                  <Image
+                    src={cover}
+                    alt={alt}
+                    fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="relative object-cover transition-transform duration-[1200ms] group-hover:scale-105 motion-reduce:group-hover:scale-100"
+                  />
+                )}
 
-              {item.excerpts && <p className="mt-3 max-w-[20rem] text-sm leading-relaxed text-body">{item.excerpts}</p>}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent"
+                />
+
+                <div className="relative flex h-full flex-col justify-end p-5">
+                  <span className="font-display text-xs font-medium tracking-[0.2em] text-cream/60">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+
+                  <h3 className="font-display mt-3 text-[19px] font-medium leading-[1.18] tracking-tight text-cream lg:text-xl">
+                    {item.title}
+                  </h3>
+
+                  {item.excerpts && (
+                    <p className="mt-2 text-sm leading-relaxed text-cream/80">{item.excerpts}</p>
+                  )}
+
+                  <ArrowUpRight
+                    size={20}
+                    strokeWidth={1.75}
+                    aria-hidden
+                    className="absolute right-5 top-5 text-cream/70 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0"
+                  />
+                </div>
+              </LocalizedLink>
             </Motion>
           )
         })}
       </div>
-    </section>
+    </Motion>
   )
 }

@@ -84,7 +84,8 @@ export default async function RootLayout({
   const { isEnabled: isDraftMode } = await draftMode()
 
   return (
-    <html lang={typedLocale}>
+    // scroll-padding-top keeps in-page anchor targets clear of the fixed floating pill.
+    <html lang={typedLocale} style={{ scrollPaddingTop: 'calc(var(--nav-h) + var(--nav-gap) + 12px)' }}>
       <body
         className={`${poppins.variable} ${inter.variable} antialiased py-0 bg-page text-cream w-full overflow-x-hidden`}
       >
@@ -93,7 +94,14 @@ export default async function RootLayout({
         <JsonLd data={website()} />
         {/* Header renders the per-locale language switcher inside the navbar (WEB-445). */}
         <Header headerData={headerData as React.ComponentProps<typeof Header>['headerData']} />
-        <main className="flex flex-col lg:pt-10 pt-4">{children}</main>
+        {/* Top offset clears the fixed floating-pill header (the old hero lg:pt-10/pt-4 is folded
+            into this so spacing isn't doubled). The locale switcher now lives inside the header. */}
+        <main
+          className="flex flex-col"
+          style={{ paddingTop: 'calc(var(--nav-h) + var(--nav-gap) + 12px)' }}
+        >
+          {children}
+        </main>
         <Footer footerData={footerData as React.ComponentProps<typeof Footer>['footerData']} />
         {/* First-party pageview beacon (WEB-447). Leaf client component; posts to /api/track. */}
         <AnalyticsBeacon />

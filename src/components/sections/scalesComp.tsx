@@ -1,7 +1,8 @@
 'use client'
 import Motion from '@/components/animation/motion'
+import { reveal, revealItem } from '@/components/animation/reveal'
+import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
-import { GradientPanel, toneFor } from '@/components/sections/stories/gradient'
 import type { Media, Scale } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
@@ -12,60 +13,49 @@ interface SalesCompProps {
   scales?: Scale[] | null
 }
 
-const motionGridItemProps = {
-  initial: { opacity: 0, scale: 0.985 },
-  whileInView: { opacity: 1, scale: 1 },
-  viewport: { once: false, amount: 0.35 as const },
-  transition: { duration: 0.4, ease: 'easeOut' as const },
-}
-
 export default function SalesComp({ heading, description, scales }: SalesCompProps) {
-  return (
-    <section className="bg-main lg:p-10 lg:m-0 m-4 p-4 rounded-lg">
-      <div className="flex lg:flex-row flex-col lg:justify-between lg:items-start items-center">
-        {/* top header */}
-        <div className="lg:w-2/5">
-          <h2 className="lg:text-3xl text-2xl font-semibold mb-3">{heading}</h2>
-          <p className="lg:text-base text-sm text-[#D5D5D5]">{description}</p>
-        </div>
+  if (!scales || scales.length === 0) return null
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4 gap-3 lg:pt-0 pt-4">
-          {scales?.map((item, index): JSX.Element => {
-            return (
-              <Link href={`/scales`} key={index} className="group block">
-                {/* gradient card */}
-                <Motion
-                  className="relative lg:w-[220px] lg:h-[250px]  rounded-lg overflow-hidden"
-                  {...motionGridItemProps}
-                  transition={{
-                    duration: 0.4,
-                    ease: 'easeOut',
-                    delay: index * 0.05,
-                  }}
-                >
-                  {/* Cover: uploaded thumbnail if present, else the signature colorful noise-gradient. */}
-                  {(item.thumbnail as Media)?.url ? (
+  return (
+    <section className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
+      {/* top header */}
+      <Motion className="lg:w-2/5" {...reveal}>
+        {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}
+        {description ? <p className="mt-4 text-body">{description}</p> : null}
+      </Motion>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:flex-1">
+        {scales.map((item, index): JSX.Element => {
+          const thumb = item.thumbnail as Media | string | null | undefined
+          const mediaUrl = typeof thumb === 'object' && thumb ? thumb.url : null
+
+          return (
+            <Motion key={index} {...revealItem(index)}>
+              <Link href={`/scales`} className="group block">
+                {/* gradient card — the gradient IS the fallback, always rendered */}
+                <div className="relative aspect-[3/4] overflow-hidden rounded-md border border-white/[0.06] bg-ink">
+                  <GradientPanel tone={toneFor(undefined, index)} interactive />
+
+                  {/* optional CMS image layered on top of the gradient */}
+                  {mediaUrl ? (
                     <Image
-                      src={(item.thumbnail as Media).url as string}
-                      alt={item.title || 'cover'}
-                      height={(item.thumbnail as Media)?.height || 250}
-                      width={(item.thumbnail as Media)?.width || 220}
-                      className="object-cover w-full h-full"
+                      src={mediaUrl}
+                      alt={item.title || 'industry'}
+                      fill
+                      className="relative object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                     />
-                  ) : (
-                    <GradientPanel tone={toneFor(undefined, index)} interactive />
-                  )}
+                  ) : null}
 
                   {/* text */}
-                  <div className="absolute bottom-5 left-5 right-5">
-                    <h3 className="lg:text-base text-sm font-semibold">{item.title}</h3>
-                    <p className="lg:text-sm text-xs"> {item.excerpts}</p>
+                  <div className="absolute inset-x-5 bottom-5 z-10">
+                    <h3 className="font-display font-medium text-cream">{item.title}</h3>
+                    {item.excerpts ? <p className="mt-1 text-sm text-body">{item.excerpts}</p> : null}
                   </div>
-                </Motion>
+                </div>
               </Link>
-            )
-          })}
-        </div>
+            </Motion>
+          )
+        })}
       </div>
     </section>
   )

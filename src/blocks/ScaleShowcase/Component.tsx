@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Scale, ScaleShowcaseBlock } from '@/payload-types'
 import { Building2, Landmark, Rocket, ShieldCheck, TrendingUp } from 'lucide-react'
 import type { JSX } from 'react'
@@ -66,7 +67,10 @@ export function ScaleShowcaseComponent(props: ScaleShowcaseBlock): JSX.Element {
               )}
 
               {item.description && (
-                <p className="mt-5 max-w-2xl text-[15px] leading-[1.5] text-body lg:text-[16px]">{item.description}</p>
+                <RichTextComp
+                  content={item.description as RichText}
+                  className="prose-sm mt-5 max-w-2xl text-[15px] leading-[1.5] text-body lg:text-[16px]"
+                />
               )}
 
               {tagsList.length > 0 && (

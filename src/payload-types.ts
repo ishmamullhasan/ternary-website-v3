@@ -541,7 +541,21 @@ export interface Insight {
   /**
    * Opening paragraph shown beside the article body.
    */
-  leadParagraph?: string | null;
+  leadParagraph?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -559,12 +573,40 @@ export interface Insight {
   } | null;
   relatedInsights?: {
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     insights?: (string | Insight)[] | null;
   };
   cta?: {
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     backgroundImage?: (string | null) | Media;
     button_1?: {
       label?: string | null;
@@ -612,7 +654,21 @@ export interface Team {
   slug: string;
   position?: string | null;
   excerpt?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   image?: (string | null) | Media;
   linkedin?: string | null;
   updatedAt: string;
@@ -667,7 +723,21 @@ export interface PressRelease {
   /**
    * Opening paragraphs shown in The release section. Separate paragraphs with a blank line.
    */
-  leadParagraph?: string | null;
+  leadParagraph?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   content?: {
     root: {
       type: string;
@@ -715,7 +785,21 @@ export interface PressRelease {
   };
   pressContact?: {
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     press?: {
       name?: string | null;
       title?: string | null;
@@ -740,7 +824,21 @@ export interface PressRelease {
   };
   relatedPressReleases?: {
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     pressReleases?: (string | PressRelease)[] | null;
   };
   meta?: {
@@ -846,7 +944,7 @@ export interface AboutSectionBlock {
   heading?: string | null;
   description?: string | null;
   /**
-   * Mixed list of records (capabilities, solutions, industries, scales, models, insights, stories or press releases) featured in the About section. Order here is the display order.
+   * Mixed list of records (capabilities, solutions, industries, scales, models, stories, insights or press releases) featured in the About section. Each card shows a content-type label and a Learn more link. Order here is the display order.
    */
   items?:
     | (
@@ -871,12 +969,12 @@ export interface AboutSectionBlock {
             value: string | Model;
           }
         | {
-            relationTo: 'insight';
-            value: string | Insight;
-          }
-        | {
             relationTo: 'story';
             value: string | Story;
+          }
+        | {
+            relationTo: 'insight';
+            value: string | Insight;
           }
         | {
             relationTo: 'pressRelease';
@@ -947,7 +1045,21 @@ export interface Capability {
      */
     sectionLabel?: string | null;
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     items?:
       | {
           title?: string | null;
@@ -959,7 +1071,21 @@ export interface Capability {
   howWeDoIt?: {
     sectionLabel?: string | null;
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     items?:
       | {
           title?: string | null;
@@ -977,7 +1103,21 @@ export interface Capability {
   caseStudies?: {
     sectionLabel?: string | null;
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     items?:
       | {
           /**
@@ -985,9 +1125,51 @@ export interface Capability {
            */
           meta?: string | null;
           title?: string | null;
-          problem?: string | null;
-          approach?: string | null;
-          outcome?: string | null;
+          problem?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          approach?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          outcome?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
           /**
            * e.g. 4h
            */
@@ -1003,7 +1185,21 @@ export interface Capability {
   practiceLead?: {
     sectionLabel?: string | null;
     member?: (string | null) | Team;
-    bio?: string | null;
+    bio?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     credentials?:
       | {
           text?: string | null;
@@ -1127,7 +1323,21 @@ export interface Scale {
   excerpts?: string | null;
   thumbnail?: (string | null) | Media;
   subTitle?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   tags?: string | null;
   image?: (string | null) | Media;
   podSize?:

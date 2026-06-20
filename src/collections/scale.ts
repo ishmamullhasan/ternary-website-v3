@@ -64,7 +64,7 @@ const Scale: CollectionConfig = {
     {
       name: 'description',
       label: 'Description',
-      type: 'textarea',
+      type: 'richText',
       required: false,
       localized: true,
     },

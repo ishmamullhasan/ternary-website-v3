@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
 import { cn } from '@/lib/utils'
@@ -14,6 +15,11 @@ import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { CSSProperties, JSX, ReactNode } from 'react'
+
+// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
+// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
+export const revalidate = 300
+export const dynamicParams = true
 
 const getCapabilityList = unstable_cache(
   async () => {
@@ -135,7 +141,7 @@ function SectionHeader({
   index?: number
   label?: string | null
   heading?: string | null
-  description?: string | null
+  description?: RichText | null
   className?: string
 }): JSX.Element | null {
   if (!heading && !description && !label) return null
@@ -148,7 +154,12 @@ function SectionHeader({
           {heading}
         </h2>
       )}
-      {description && <p className="max-w-3xl text-[15px] leading-relaxed text-body">{description}</p>}
+      {description && (
+        <RichTextComp
+          content={description as RichText}
+          className="prose-sm max-w-3xl text-[15px] leading-relaxed text-body"
+        />
+      )}
     </Motion>
   )
 }
@@ -395,19 +406,28 @@ export default async function Page({
                     {item.problem && (
                       <div className="flex flex-col gap-1">
                         <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Problem</p>
-                        <p className="text-[14px] leading-relaxed text-body">{item.problem}</p>
+                        <RichTextComp
+                          content={item.problem as RichText}
+                          className="prose-sm text-[14px] leading-relaxed text-body"
+                        />
                       </div>
                     )}
                     {item.approach && (
                       <div className="flex flex-col gap-1">
                         <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Approach</p>
-                        <p className="text-[14px] leading-relaxed text-body">{item.approach}</p>
+                        <RichTextComp
+                          content={item.approach as RichText}
+                          className="prose-sm text-[14px] leading-relaxed text-body"
+                        />
                       </div>
                     )}
                     {item.outcome && (
                       <div className="flex flex-col gap-1">
                         <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Outcome</p>
-                        <p className="text-[14px] leading-relaxed text-body">{item.outcome}</p>
+                        <RichTextComp
+                          content={item.outcome as RichText}
+                          className="prose-sm text-[14px] leading-relaxed text-body"
+                        />
                       </div>
                     )}
                   </div>
@@ -464,10 +484,18 @@ export default async function Page({
             </Motion>
 
             <div className="flex flex-1 flex-col gap-5">
-              {(capability.practiceLead?.bio || practiceMember.description) && (
-                <p className="max-w-3xl text-[15px] font-medium leading-relaxed text-cream">
-                  {capability.practiceLead?.bio || practiceMember.description}
-                </p>
+              {capability.practiceLead?.bio ? (
+                <RichTextComp
+                  content={capability.practiceLead.bio as RichText}
+                  className="max-w-3xl text-[15px] font-medium leading-relaxed text-cream"
+                />
+              ) : (
+                practiceMember.description && (
+                  <RichTextComp
+                    content={practiceMember.description as RichText}
+                    className="max-w-3xl text-[15px] font-medium leading-relaxed text-cream"
+                  />
+                )
               )}
 
               <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">

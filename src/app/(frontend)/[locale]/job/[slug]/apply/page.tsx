@@ -11,6 +11,12 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { JSX } from 'react'
 
+// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically. Jobs come
+// from the external recruiting API and change less often, so revalidate hourly. dynamicParams lets
+// slugs not in the prebuilt set render on demand.
+export const revalidate = 3600
+export const dynamicParams = true
+
 // Data comes from `@/lib/jobs-data`: the live public recruiting API + merged Payload CMS copy
 // (getJob, keyed by role `code`). Locale drives the URL prefix on links and is threaded to getJob
 // for forward-compat with CMS localization. ✅ = API · 🟡 = CMS · 🔒 = internal-only.

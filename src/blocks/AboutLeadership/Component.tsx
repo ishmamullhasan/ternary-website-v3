@@ -68,7 +68,7 @@ export function AboutLeadershipComponent({ heading, description, members }: Abou
                 />
                 <span
                   aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-[#0f0e0e] via-[#0f0e0e]/35 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent"
                 />
 
                 <div className="absolute inset-x-5 bottom-5">
@@ -87,7 +87,7 @@ export function AboutLeadershipComponent({ heading, description, members }: Abou
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`LinkedIn — ${member.name ?? 'team member'}`}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-cream transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0e0e]"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-cream transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
                       >
                         <Linkedin aria-hidden className="h-4 w-4" fill="currentColor" />
                       </Link>

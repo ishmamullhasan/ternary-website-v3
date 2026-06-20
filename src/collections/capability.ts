@@ -140,7 +140,7 @@ const Capability: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {
@@ -189,7 +189,7 @@ const Capability: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {
@@ -251,7 +251,7 @@ const Capability: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {
@@ -277,19 +277,19 @@ const Capability: CollectionConfig = {
                     {
                       name: 'problem',
                       label: 'Problem',
-                      type: 'textarea',
+                      type: 'richText',
                       localized: true,
                     },
                     {
                       name: 'approach',
                       label: 'Approach',
-                      type: 'textarea',
+                      type: 'richText',
                       localized: true,
                     },
                     {
                       name: 'outcome',
                       label: 'Outcome',
-                      type: 'textarea',
+                      type: 'richText',
                       localized: true,
                     },
                     {
@@ -339,7 +339,7 @@ const Capability: CollectionConfig = {
                 {
                   name: 'bio',
                   label: 'Bio',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {

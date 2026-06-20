@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import { TONE } from '@/components/layout/GradientPanel'
 import SubscribeForm from '@/components/sections/stories/SubscribeForm'
 import type { Media, SubscribeBlock } from '@/payload-types'
 import type { JSX } from 'react'
@@ -16,29 +17,29 @@ export const SubscribeComponent = (data: SubscribeBlock): JSX.Element | null => 
   return (
     <Motion
       tag="section"
-      className="lg:m-0 m-4 rounded-lg overflow-hidden border border-zinc-800/40 bg-main"
+      className="lg:m-0 m-4 rounded-md overflow-hidden border border-line bg-main"
       {...motionSectionProps}
     >
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr]">
         <div className="p-8 lg:p-10 space-y-8">
           <div className="space-y-4">
-            <h2 className="text-2xl lg:text-4xl font-medium tracking-tight text-white leading-tight max-w-lg">
+            <h2 className="text-2xl lg:text-4xl font-medium tracking-tight text-cream leading-tight max-w-lg">
               {data.heading}
             </h2>
             {data.description && (
-              <p className="text-sm text-[#D5D5D5] leading-relaxed max-w-xl">{data.description}</p>
+              <p className="text-sm text-body leading-relaxed max-w-xl">{data.description}</p>
             )}
           </div>
 
           {data.followOptions && data.followOptions.length > 0 && (
             <div className="space-y-3">
-              {data.followHint && <p className="text-xs text-[#757571]">{data.followHint}</p>}
+              {data.followHint && <p className="text-xs text-subtle">{data.followHint}</p>}
               <div className="flex flex-wrap gap-2">
                 {data.followOptions.map((option, index) => (
                   <button
                     key={option.id ?? `follow-${index}`}
                     type="button"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs border border-zinc-700/60 text-[#D5D5D5] hover:border-zinc-600 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs border border-line text-body hover:border-line-strong transition-colors"
                   >
                     {option.label}
                   </button>
@@ -49,7 +50,7 @@ export const SubscribeComponent = (data: SubscribeBlock): JSX.Element | null => 
 
           <SubscribeForm emailPlaceholder={data.emailPlaceholder} buttonLabel={data.buttonLabel} />
 
-          {data.disclaimer && <p className="text-xs text-[#757571]">{data.disclaimer}</p>}
+          {data.disclaimer && <p className="text-xs text-subtle">{data.disclaimer}</p>}
         </div>
 
         <div
@@ -57,7 +58,7 @@ export const SubscribeComponent = (data: SubscribeBlock): JSX.Element | null => 
           style={{
             background: (data.preview?.backgroundImage as Media)?.url
               ? `url(${(data.preview?.backgroundImage as Media)?.url}) center/cover no-repeat`
-              : 'linear-gradient(135deg, #1e3a5f 0%, #4c1d95 60%, #2e1065 100%)',
+              : TONE.violet,
           }}
         >
           <div className="absolute inset-0 bg-black/40" />

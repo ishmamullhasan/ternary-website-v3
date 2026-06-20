@@ -15,6 +15,11 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
+// SSG + ISR: prebuild known paths (generateStaticParams below) and serve them statically, then
+// revalidate every 5 minutes. dynamicParams lets paths not in the prebuilt set render on demand.
+export const revalidate = 300
+export const dynamicParams = true
+
 const fetchPageByPath = async (segments: string[], draft: boolean, locale: TypedLocale): Promise<PageDoc | null> => {
   const payload = await getPayload({ config })
   const path = `/${segments.join('/')}`

@@ -1,5 +1,5 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
-import { asTypedLocale } from '@/lib/i18n/locales'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
 import config from '@payload-config'
 import type { Metadata } from 'next'
@@ -9,6 +9,14 @@ import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
+
+// SSG + ISR: prebuild one static index page per locale (generateStaticParams below) and serve them
+// statically, then revalidate every 5 minutes.
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }))
+}
 
 // The home page is a blocks-driven Page (slug `home`) rendered by <RenderBlocks>, the same path as
 // every other [...slug] page. The signature hero is now the CMS `heroFeatured` block at the top of

@@ -72,6 +72,51 @@ body {
   .font-body {
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   }
+
+  /* Navbar geometry/material tokens. Centralized so the glass pill and its layout can be
+     tuned in one place (blur strength, saturation boost, bar height, inner gutter). */
+  :root {
+    --nav-blur: 20px;
+    --nav-saturate: 150%;
+    --nav-h: 58px;
+    --nav-gap: 18px;
+  }
+
+  /* Frosted-glass material for the floating navbar pill: a translucent page-tinted base,
+     a saturated blur, a hairline cream border, and a layered shadow (top sheen + bottom
+     edge + soft drop). Falls back to a more opaque base where backdrop-filter is unsupported. */
+  .glass {
+    background-color: color-mix(in oklab, var(--color-page) 55%, transparent);
+    -webkit-backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-saturate));
+    backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-saturate));
+    border: 1px solid color-mix(in oklab, var(--color-cream) 12%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in oklab, var(--color-cream) 18%, transparent),
+      inset 0 -1px 0 0 color-mix(in oklab, #000 35%, transparent),
+      0 20px 50px -24px rgba(0, 0, 0, 0.85);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass {
+      background-color: color-mix(in oklab, var(--color-page) 88%, transparent);
+    }
+  }
+
+  /* Opt-in responsive type scale. Additive utilities only — these don't touch the global
+     h1,h2 element rules. Use on display headlines / section headings where the fluid clamp
+     and tracking are wanted. */
+  .text-display {
+    font-size: clamp(2rem, 4.5vw, 2.875rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    font-weight: 500;
+  }
+  .text-section {
+    font-size: clamp(1.5rem, 3vw, 1.875rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+  }
 }
 
 /* Legacy shadcn HSL tokens, reconciled to the brand palette. Several were actively wrong:

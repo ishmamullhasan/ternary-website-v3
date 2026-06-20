@@ -51,7 +51,7 @@ const Team: CollectionConfig = {
     {
       name: 'description',
       label: 'Description',
-      type: 'textarea',
+      type: 'richText',
       localized: true,
     },
     {

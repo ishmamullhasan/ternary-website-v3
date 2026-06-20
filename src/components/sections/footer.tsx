@@ -1,3 +1,5 @@
+'use client'
+
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
 import { getMediaUrl } from '@/utilities/getMediaUrl'

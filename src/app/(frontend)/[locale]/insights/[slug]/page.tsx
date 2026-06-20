@@ -22,6 +22,11 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
+// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
+// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
+export const revalidate = 300
+export const dynamicParams = true
+
 const getInsightList = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
@@ -80,7 +85,7 @@ export async function generateMetadata({
   return generateMeta({
     doc: insight,
     fallbackTitle: 'Insight',
-    fallbackDescription: insight.leadParagraph || insight.excerpts,
+    fallbackDescription: insight.excerpts,
     pathname: `/insights/${slug}`,
     locale: typedLocale,
     ogType: 'article',
@@ -197,7 +202,7 @@ export default async function Page({
 
   const articleLd = article({
     headline: insight.title ?? 'Insight',
-    description: insight.leadParagraph || insight.excerpts,
+    description: insight.excerpts,
     image: thumbnail?.url ?? null,
     datePublished: insight.publishedDate,
     dateModified: insight.updatedAt,
@@ -224,7 +229,7 @@ export default async function Page({
       <div className="flex items-center justify-between gap-4 pt-8 lg:pt-12">
         <Link
           href={`/${typedLocale}/stories`}
-          className="group inline-flex items-center gap-2 rounded-[2px] text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
+          className="group inline-flex items-center gap-2 rounded-sm text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
         >
           <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-0.5" />
           All insights
@@ -242,9 +247,10 @@ export default async function Page({
               </h1>
 
               {insight.leadParagraph && (
-                <p className="max-w-xl text-[16px] leading-relaxed tracking-[-0.01em] text-body">
-                  {insight.leadParagraph}
-                </p>
+                <RichTextComp
+                  content={insight.leadParagraph as RichText}
+                  className="max-w-xl [&_p]:text-[16px] [&_p]:leading-relaxed [&_p]:tracking-[-0.01em] [&_p]:text-body"
+                />
               )}
             </div>
 
@@ -309,7 +315,10 @@ export default async function Page({
                       {author.position && <p className="text-[12px] text-subtle">{author.position}</p>}
                     </div>
                     {author.description && (
-                      <p className="text-[16px] leading-relaxed tracking-[-0.01em] text-body">{author.description}</p>
+                      <RichTextComp
+                        content={author.description as RichText}
+                        className="prose-sm max-w-none text-[16px] leading-relaxed tracking-[-0.01em] text-body"
+                      />
                     )}
                     <div className="flex items-center gap-5 pt-1">
                       {author.linkedin && (
@@ -317,7 +326,7 @@ export default async function Page({
                           href={author.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 rounded-[2px] text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
+                          className="inline-flex items-center gap-1.5 rounded-sm text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
                           aria-label={`${author.name} on LinkedIn`}
                         >
                           <Linkedin size={14} />
@@ -326,7 +335,7 @@ export default async function Page({
                       )}
                       <a
                         href={authorEmail}
-                        className="inline-flex items-center gap-1.5 rounded-[2px] text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
+                        className="inline-flex items-center gap-1.5 rounded-sm text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
                         aria-label="Email Ternary"
                       >
                         <Mail size={14} />
@@ -350,7 +359,7 @@ export default async function Page({
             </h2>
             <Link
               href={`/${typedLocale}/stories`}
-              className="group inline-flex shrink-0 items-center gap-1.5 rounded-[2px] text-[16px] text-body transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
+              className="group inline-flex shrink-0 items-center gap-1.5 rounded-sm text-[16px] text-body transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
             >
               All insights
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
@@ -358,9 +367,10 @@ export default async function Page({
           </div>
 
           {insight.relatedInsights?.description && (
-            <p className="mb-8 max-w-3xl text-[16px] leading-relaxed text-body">
-              {insight.relatedInsights.description}
-            </p>
+            <RichTextComp
+              content={insight.relatedInsights.description as RichText}
+              className="mb-8 max-w-3xl [&_p]:text-[16px] [&_p]:leading-relaxed [&_p]:text-body"
+            />
           )}
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -397,9 +407,10 @@ export default async function Page({
                 {insight.cta.heading}
               </h2>
               {insight.cta.description && (
-                <p className="max-w-lg text-[14px] leading-relaxed text-body/85 md:text-[15px]">
-                  {insight.cta.description}
-                </p>
+                <RichTextComp
+                  content={insight.cta.description as RichText}
+                  className="max-w-lg [&_p]:text-[14px] [&_p]:leading-relaxed [&_p]:text-body/85 md:[&_p]:text-[15px]"
+                />
               )}
             </div>
 

@@ -1,7 +1,7 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import { asTypedLocale } from '@/lib/i18n/locales'
+import { asTypedLocale, DEFAULT_LOCALE, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
 import type { Legal } from '@/payload-types'
 import config from '@/payload.config'
@@ -13,6 +13,11 @@ import { notFound } from 'next/navigation'
 import type { PaginatedDocs, TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
+
+// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
+// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
+export const revalidate = 300
+export const dynamicParams = true
 
 // Shared reveal easing/curve, matching the signature hero (heroFeatured.tsx).
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -125,6 +130,13 @@ async function getLegalBySlug(slug: string, locale: TypedLocale): Promise<Pagina
   return unstable_cache(() => fetchLegalBySlug(slug, locale), [`legal_${slug}_${locale}`], {
     tags: [`legal_${slug}`, 'legal'],
   })()
+}
+
+export async function generateStaticParams() {
+  // Use the uncached list fetch (no draftMode()) so this is safe at build time. Slugs are shared
+  // across locales, so cross-product the default-locale list against every routing locale.
+  const { docs } = await fetchLegalList(DEFAULT_LOCALE as TypedLocale)
+  return LOCALES.flatMap((locale) => docs.map((doc) => ({ locale, slug: doc.slug })))
 }
 
 export async function generateMetadata({

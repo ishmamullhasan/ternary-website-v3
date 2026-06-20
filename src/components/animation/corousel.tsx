@@ -93,7 +93,7 @@ export default function Corousel({ items, variant = 'team', navVariant = 'arrows
 
               return (
                 <SwiperSlide key={i}>
-                  <div className="relative aspect-square rounded-lg overflow-hidden border border-white/5 bg-main p-6">
+                  <div className="relative aspect-square rounded-md overflow-hidden border border-white/5 bg-main p-6">
                     {card.imageBg ? (
                       <>
                         <img
@@ -125,7 +125,7 @@ export default function Corousel({ items, variant = 'team', navVariant = 'arrows
 
             return (
               <SwiperSlide key={i}>
-                <div className="relative h-[480px] rounded-xl lg:rounded-lg overflow-hidden">
+                <div className="relative h-[480px] rounded-md overflow-hidden">
                   {hasImage ? (
                     <>
                       <img

@@ -14,6 +14,12 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { JSX, ReactNode } from 'react'
 
+// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically. Jobs come
+// from the external recruiting API and change less often, so revalidate hourly. dynamicParams lets
+// slugs not in the prebuilt set render on demand.
+export const revalidate = 3600
+export const dynamicParams = true
+
 /**
  * Section eyebrow — the small uppercase label preceded by a short rule (design's "— The Mission"
  * device). Inter caption (12px), 0.14em tracking, muted; the rule is a faint hairline so it reads
@@ -160,7 +166,7 @@ export default async function Page({
             <Motion className="flex items-center justify-between mb-10" {...motionBlockProps}>
               <Link
                 href={`/${typedLocale}/careers`}
-                className={`group inline-flex items-center gap-2 text-sm ${careersText.muted} hover:text-cream transition-colors rounded-sm focus-visible:outline-none`}
+                className={`group inline-flex items-center gap-2 text-sm ${careersText.muted} hover:text-cream transition-colors rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream`}
               >
                 <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                 Careers Hub
@@ -176,7 +182,7 @@ export default async function Page({
                 {/* Apply button → in-app form (POST /applications/{slug}). applyButton.* is 🟡 CMS override. */}
                 <Link
                   href={jobData.applyButton?.link || `/${typedLocale}/job/${jobData.slug}/apply`}
-                  className={`group/apply inline-flex items-center gap-2 ${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-sm px-5 py-2.5 rounded-md transition-[background-color,box-shadow] duration-200 hover:shadow-[0_8px_24px_-12px_rgba(244,243,236,0.5)] focus-visible:outline-none`}
+                  className={`group/apply inline-flex items-center gap-2 ${careersBg.button} ${careersBg.buttonHover} ${careersText.onLight} font-medium text-sm px-5 py-2.5 rounded-md transition-[background-color,box-shadow] duration-200 hover:shadow-[0_8px_24px_-12px_rgba(244,243,236,0.5)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream`}
                 >
                   {jobData.applyButton?.label || 'Apply Now'}
                   <ArrowRight
@@ -464,7 +470,7 @@ export default async function Page({
                 <div className="flex justify-center">
                   <Link
                     href={jobData.cta.button.link}
-                    className="group/cta inline-flex items-center gap-2 rounded-md bg-cream px-7 py-3 text-sm font-medium text-ink transition-[background-color,box-shadow] duration-200 hover:bg-cream-hover hover:shadow-[0_10px_30px_-12px_rgba(244,243,236,0.55)] focus-visible:outline-none"
+                    className="group/cta inline-flex items-center gap-2 rounded-md bg-cream px-7 py-3 text-sm font-medium text-ink transition-[background-color,box-shadow] duration-200 hover:bg-cream-hover hover:shadow-[0_10px_30px_-12px_rgba(244,243,236,0.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
                   >
                     {jobData.cta.button.label}
                     <ArrowRight
