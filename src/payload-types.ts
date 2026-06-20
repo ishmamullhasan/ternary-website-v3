@@ -848,7 +848,7 @@ export interface AboutSectionBlock {
   heading?: string | null;
   description?: string | null;
   /**
-   * Mixed list of records (capabilities, solutions, industries, scales or models) featured in the About section. Order here is the display order.
+   * Mixed list of records (capabilities, solutions, industries, scales, models, insights, stories or press releases) featured in the About section. Order here is the display order.
    */
   items?:
     | (
@@ -871,6 +871,18 @@ export interface AboutSectionBlock {
         | {
             relationTo: 'model';
             value: string | Model;
+          }
+        | {
+            relationTo: 'insight';
+            value: string | Insight;
+          }
+        | {
+            relationTo: 'story';
+            value: string | Story;
+          }
+        | {
+            relationTo: 'pressRelease';
+            value: string | PressRelease;
           }
       )[]
     | null;

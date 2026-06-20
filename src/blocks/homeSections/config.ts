@@ -17,11 +17,11 @@ export const AboutSection: Block = {
       name: 'items',
       label: 'Highlighted Items',
       type: 'relationship',
-      relationTo: ['capability', 'solution', 'industry', 'scale', 'model'],
+      relationTo: ['capability', 'solution', 'industry', 'scale', 'model', 'insight', 'story', 'pressRelease'],
       hasMany: true,
       admin: {
         description:
-          'Mixed list of records (capabilities, solutions, industries, scales or models) featured in the About section. Order here is the display order.',
+          'Mixed list of records (capabilities, solutions, industries, scales, models, insights, stories or press releases) featured in the About section. Order here is the display order.',
       },
     },
     {

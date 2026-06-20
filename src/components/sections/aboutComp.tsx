@@ -1,7 +1,7 @@
 'use client'
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
-import type { Capability, Industry, Media, Model, Scale, Solution } from '@/payload-types'
+import type { Capability, Industry, Insight, Media, Model, PressRelease, Scale, Solution, Story } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
@@ -11,6 +11,9 @@ type MultiRelation =
   | { relationTo: 'industry'; value: Industry }
   | { relationTo: 'scale'; value: Scale }
   | { relationTo: 'model'; value: Model }
+  | { relationTo: 'insight'; value: Insight }
+  | { relationTo: 'story'; value: Story }
+  | { relationTo: 'pressRelease'; value: PressRelease }
 
 interface AboutProps {
   heading?: string | null
@@ -50,6 +53,12 @@ function getItemHref(item: MultiRelation): string {
       return '/scales'
     case 'model':
       return '/solutions'
+    case 'insight':
+      return `/insights/${item.value.slug}`
+    case 'story':
+      return `/stories/${item.value.slug}`
+    case 'pressRelease':
+      return `/press-release/${item.value.slug}`
     default:
       return '#'
   }
