@@ -78,7 +78,6 @@ export interface Config {
     industry: Industry;
     scale: Scale;
     model: Model;
-    job: Job;
     team: Team;
     legal: Legal;
     analytics: Analytics;
@@ -109,7 +108,6 @@ export interface Config {
     industry: IndustrySelect<false> | IndustrySelect<true>;
     scale: ScaleSelect<false> | ScaleSelect<true>;
     model: ModelSelect<false> | ModelSelect<true>;
-    job: JobSelect<false> | JobSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     legal: LegalSelect<false> | LegalSelect<true>;
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
@@ -2502,144 +2500,6 @@ export interface User {
   collection: 'users';
 }
 /**
- * Open job postings and their detail content.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "job".
- */
-export interface Job {
-  id: string;
-  code: string;
-  /**
-   * When enabled, the slug will auto-generate from the title field on save and autosave.
-   */
-  generateSlug?: boolean | null;
-  slug: string;
-  title?: string | null;
-  button?: {
-    label?: string | null;
-    link?: string | null;
-  };
-  team?: string | null;
-  department?: string | null;
-  type?: string | null;
-  location?: string | null;
-  salary?: string | null;
-  excerpts?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  level?: ('Junior' | 'Mid' | 'Senior' | 'Lead' | 'C-Suite') | null;
-  opened: string;
-  closed?: string | null;
-  image?: (string | null) | Media;
-  active?: boolean | null;
-  details?: {
-    item1?: {
-      title?: string | null;
-      description?: string | null;
-    };
-    item2?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    item3?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    item4?: {
-      title?: string | null;
-      points?:
-        | {
-            point?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-  };
-  teamBox?: {
-    reportingToName?: string | null;
-    reportingToRole?: string | null;
-    podSize?: string | null;
-    crossFunctional?: string | null;
-  };
-  compensationBox?: {
-    base?: string | null;
-    equity?: string | null;
-    note?: string | null;
-  };
-  interviewProcess?: {
-    heading?: string | null;
-    steps?:
-      | {
-          title?: string | null;
-          excerpt?: string | null;
-          /**
-           * e.g. 30m, 1h
-           */
-          duration?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  openRoles?: {
-    heading?: string | null;
-    description?: string | null;
-    jobs?: (string | Job)[] | null;
-  };
-  cta?: {
-    subheading?: string | null;
-    heading?: string | null;
-    description?: string | null;
-    backgroundImage?: (string | null) | Media;
-    button?: {
-      label?: string | null;
-      link?: string | null;
-    };
-  };
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | Media;
-    /**
-     * Override canonical URL. Leave blank to use the page's own URL.
-     */
-    canonical?: string | null;
-    /**
-     * Exclude this entry from the XML sitemap.
-     */
-    hideFromSitemap?: boolean | null;
-    twitterCard?: ('summary' | 'summary_large_image') | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Legal documents shown in the Legal Center.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2944,10 +2804,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'model';
         value: string | Model;
-      } | null)
-    | ({
-        relationTo: 'job';
-        value: string | Job;
       } | null)
     | ({
         relationTo: 'team';
@@ -4509,138 +4365,6 @@ export interface ModelSelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
-  meta?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        image?: T;
-        canonical?: T;
-        hideFromSitemap?: T;
-        twitterCard?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "job_select".
- */
-export interface JobSelect<T extends boolean = true> {
-  code?: T;
-  generateSlug?: T;
-  slug?: T;
-  title?: T;
-  button?:
-    | T
-    | {
-        label?: T;
-        link?: T;
-      };
-  team?: T;
-  department?: T;
-  type?: T;
-  location?: T;
-  salary?: T;
-  excerpts?: T;
-  description?: T;
-  level?: T;
-  opened?: T;
-  closed?: T;
-  image?: T;
-  active?: T;
-  details?:
-    | T
-    | {
-        item1?:
-          | T
-          | {
-              title?: T;
-              description?: T;
-            };
-        item2?:
-          | T
-          | {
-              title?: T;
-              points?:
-                | T
-                | {
-                    point?: T;
-                    id?: T;
-                  };
-            };
-        item3?:
-          | T
-          | {
-              title?: T;
-              points?:
-                | T
-                | {
-                    point?: T;
-                    id?: T;
-                  };
-            };
-        item4?:
-          | T
-          | {
-              title?: T;
-              points?:
-                | T
-                | {
-                    point?: T;
-                    id?: T;
-                  };
-            };
-      };
-  teamBox?:
-    | T
-    | {
-        reportingToName?: T;
-        reportingToRole?: T;
-        podSize?: T;
-        crossFunctional?: T;
-      };
-  compensationBox?:
-    | T
-    | {
-        base?: T;
-        equity?: T;
-        note?: T;
-      };
-  interviewProcess?:
-    | T
-    | {
-        heading?: T;
-        steps?:
-          | T
-          | {
-              title?: T;
-              excerpt?: T;
-              duration?: T;
-              id?: T;
-            };
-      };
-  openRoles?:
-    | T
-    | {
-        heading?: T;
-        description?: T;
-        jobs?: T;
-      };
-  cta?:
-    | T
-    | {
-        subheading?: T;
-        heading?: T;
-        description?: T;
-        backgroundImage?: T;
-        button?:
-          | T
-          | {
-              label?: T;
-              link?: T;
-            };
-      };
   meta?:
     | T
     | {

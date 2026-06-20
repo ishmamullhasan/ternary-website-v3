@@ -3,8 +3,8 @@
  * ---------------------------------------------------------------------------
  * Owns its OWN types — intentionally NOT coupled to Payload. The job list,
  * detail, apply form, and careers board all read from here. The getters fetch
- * the public recruiting API (RECRUIT_API_BASE) and merge Payload CMS copy on
- * top for the detail view.
+ * the public recruiting API (RECRUIT_API_BASE), which is the single source of
+ * truth for job listings.
  *
  *  ✅ API (PublicJobSummary on /jobs, + the rest on /jobs/{slug}):
  *     slug, title, location, excerpt, employment_type, department, team,
@@ -12,17 +12,16 @@
  *     published_at, body_markdown, responsibilities[], requirements[], nice_to_haves[]
  *     (all facets NULLABLE → optional in the UI).
  *
- *  🟡 CMS (Payload `job` collection) — marketing / structure copy, NOT on the API:
- *     applyButton, details (section titles), teamBox, interviewProcess, openRoles, cta.
- *     Merged in by getJob() via mergeJobCms() — see the keying note on that helper.
- *
  *  🔒 internal-only (never on an unauthenticated endpoint), shown only because the
  *     design renders them: code, band, internalLevel, roleType.
+ *
+ *  NOTE: the Payload `job` collection (a marketing-copy overlay) was removed; the
+ *  recruiting API is now the sole source. The marketing-only fields below
+ *  (applyButton/details/teamBox/interviewProcess/openRoles/cta) remain on the type
+ *  and render only when the API supplies them.
  * ------------------------------------------------------------------------- */
 
-import type { Job, Media } from '@/payload-types'
-import config from '@payload-config'
-import { getPayload, type TypedLocale, type Where } from 'payload'
+import type { TypedLocale } from 'payload'
 
 export interface JobInterviewStep {
   id?: string
@@ -112,93 +111,15 @@ export async function fetchJob(slug: string): Promise<JobListing | null> {
   return (await res.json()) as JobListing
 }
 
-/* ---------------------------------------------------------------------------
- * 🟡 CMS marketing merge
- * ---------------------------------------------------------------------------
- * KEYING ASSUMPTION: the recruiting API's `code` (an opaque role code, e.g.
- * "SSA-L6") is the join key to the Payload `job` collection. The Payload slug is
- * derived FROM `code` (`slugField({ fieldToUse: 'code' })`), whereas the API's
- * `slug` is an opaque UUID — so the two `slug` fields do NOT line up and must not
- * be matched on. We therefore match on `code` (and fall back to `slug` only if an
- * API role ever ships without a code). If a CMS doc is found, its marketing-only
- * fields (applyButton/details/teamBox/interviewProcess/openRoles/cta) are layered
- * onto the API result; the API stays authoritative for every API-backed key, so a
- * stale/duplicate CMS title or location can never override live data.
- * ------------------------------------------------------------------------- */
-
-/** Resolve a Payload media `url` whether the relationship is populated (depth>0) or an id string. */
-function mediaUrl(value: (string | null) | Media | undefined): string | null {
-  if (value && typeof value === 'object') return value.url ?? null
-  return null
-}
-
-/** Map Payload interview steps (id is nullable) onto JobListing's step shape. */
-function mapSteps(steps: NonNullable<Job['interviewProcess']>['steps']): JobInterviewStep[] | null {
-  if (!steps) return null
-  return steps.map((step) => ({
-    id: step.id ?? undefined,
-    title: step.title,
-    excerpt: step.excerpt,
-    duration: step.duration,
-  }))
-}
-
-/**
- * Layer the Payload `job` doc's marketing fields onto an API-backed JobListing.
- * API fields win for every API-backed key; the CMS only supplies the marketing
- * keys the API does not expose. Optional `locale` is threaded to payload.find for
- * forward-compat with localization (job copy is identical across locales today).
- */
-export async function mergeJobCms(api: JobListing, locale?: TypedLocale): Promise<JobListing> {
-  const payload = await getPayload({ config })
-  const where: Where = api.code
-    ? { code: { equals: api.code } } // primary join key (see KEYING ASSUMPTION above)
-    : { slug: { equals: api.slug } } // fallback only when the API role has no code
-  const result = await payload.find({
-    collection: 'job',
-    where,
-    limit: 1,
-    depth: 1, // populate cta.backgroundImage so we can read its url
-    ...(locale ? { locale } : {}),
-  })
-  const cms = result.docs[0]
-  if (!cms) return api
-
-  // CMS provides only the marketing keys; API stays authoritative for its own fields.
-  return {
-    ...api,
-    applyButton: cms.button ?? api.applyButton,
-    details: cms.details ?? api.details,
-    teamBox: cms.teamBox ?? api.teamBox,
-    interviewProcess: cms.interviewProcess
-      ? { heading: cms.interviewProcess.heading, steps: mapSteps(cms.interviewProcess.steps) }
-      : api.interviewProcess,
-    openRoles: cms.openRoles
-      ? { heading: cms.openRoles.heading, description: cms.openRoles.description }
-      : api.openRoles,
-    cta: cms.cta
-      ? {
-          subheading: cms.cta.subheading,
-          heading: cms.cta.heading,
-          description: cms.cta.description,
-          backgroundImage: mediaUrl(cms.cta.backgroundImage),
-          button: cms.cta.button,
-        }
-      : api.cta,
-  }
-}
-
 /** ✅ `GET /jobs` — list of open roles, newest first. */
 export async function getJobs(): Promise<JobListing[]> {
   const data = await fetchJobs()
   return [...data].sort((a, b) => (b.published_at ?? '').localeCompare(a.published_at ?? ''))
 }
 
-/** ✅ `GET /jobs/{slug}` — single role (null when not found / not open), with CMS copy merged in. */
-export async function getJob(slug: string, locale?: TypedLocale): Promise<JobListing | null> {
-  const api = await fetchJob(slug)
-  if (!api) return null
-  return mergeJobCms(api, locale)
+/** ✅ `GET /jobs/{slug}` — single role (null when not found / not open). */
+export async function getJob(slug: string, _locale?: TypedLocale): Promise<JobListing | null> {
+  return fetchJob(slug)
 }
 
 /** Other open roles — API has no curated relationship, so derive from the list. */

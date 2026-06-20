@@ -3,7 +3,6 @@ import Analytics from '@/collections/analytics'
 import Capability from '@/collections/capability'
 import Industry from '@/collections/industry'
 import Insight from '@/collections/insight'
-import Job from '@/collections/job'
 import Legal from '@/collections/legal'
 import Media from '@/collections/media'
 import Model from '@/collections/model'
@@ -127,7 +126,6 @@ export default buildConfig({
     Industry,
     Scale,
     Model,
-    Job,
     Team,
     Legal,
     // System group — keep last so it sorts to the bottom of the admin nav.
