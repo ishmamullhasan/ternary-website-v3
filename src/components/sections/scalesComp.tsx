@@ -1,6 +1,7 @@
 'use client'
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import { GradientPanel, toneFor } from '@/components/sections/stories/gradient'
 import type { Media, Scale } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
@@ -31,7 +32,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4 gap-3 lg:pt-0 pt-4">
           {scales?.map((item, index): JSX.Element => {
             return (
-              <Link href={`/scales`} key={index}>
+              <Link href={`/scales`} key={index} className="group block">
                 {/* gradient card */}
                 <Motion
                   className="relative lg:w-[220px] lg:h-[250px]  rounded-lg overflow-hidden"
@@ -42,17 +43,17 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
                     delay: index * 0.05,
                   }}
                 >
-                  {/* background image OR gradient */}
-                  {item.thumbnail ? (
+                  {/* Cover: uploaded thumbnail if present, else the signature colorful noise-gradient. */}
+                  {(item.thumbnail as Media)?.url ? (
                     <Image
-                      src={(item.thumbnail as Media)?.url || 'https://dummyimage.com/280x300/37624F/FFF2'}
-                      alt={item.title || 'industry'}
+                      src={(item.thumbnail as Media).url as string}
+                      alt={item.title || 'cover'}
                       height={(item.thumbnail as Media)?.height || 250}
                       width={(item.thumbnail as Media)?.width || 220}
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-linear-to-br from-pink-500 via-purple-500 to-blue-500" />
+                    <GradientPanel tone={toneFor(undefined, index)} interactive />
                   )}
 
                   {/* text */}

@@ -1,6 +1,7 @@
 'use client'
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import { GradientPanel, toneFor } from '@/components/sections/stories/gradient'
 import type { Capability, Industry, Insight, Media, Model, PressRelease, Scale, Solution, Story } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
@@ -77,7 +78,7 @@ export default function AboutComp({ heading, description, items, organizations, 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:mt-10 mt-4">
           {(items as MultiRelation[])?.map((item, index: number): JSX.Element => {
             return (
-              <Link href={getItemHref(item)} key={index}>
+              <Link href={getItemHref(item)} key={index} className="group block">
                 {/* gradient card */}
                 <Motion
                   className="relative lg:w-[300px] lg:h-[480px] w-[280px]  rounded-lg overflow-hidden"
@@ -88,17 +89,18 @@ export default function AboutComp({ heading, description, items, organizations, 
                     delay: index * 0.05,
                   }}
                 >
-                  {/* background image OR gradient */}
-                  {item.value.thumbnail ? (
+                  {/* Cover: the uploaded thumbnail if present, else the signature colorful
+                      noise-gradient (content-type tone, falling across the palette by index). */}
+                  {(item.value.thumbnail as Media)?.url ? (
                     <Image
-                      src={(item.value.thumbnail as Media)?.url || 'https://dummyimage.com/350x590/37624F/FFF2'}
-                      alt={item.value.title || 'story'}
+                      src={(item.value.thumbnail as Media).url as string}
+                      alt={item.value.title || 'cover'}
                       height={(item.value.thumbnail as Media)?.height || 480}
                       width={(item.value.thumbnail as Media)?.width || 300}
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-linear-to-br from-pink-500 via-purple-500 to-blue-500" />
+                    <GradientPanel tone={toneFor(item.relationTo, index)} interactive />
                   )}
 
                   {/* text */}
