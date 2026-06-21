@@ -266,7 +266,7 @@ export default async function Page({
           <div className="flex flex-col gap-6">
             <div className="flex flex-wrap items-center gap-3">
               {pressRelease.badge && (
-                <span className="inline-flex items-center rounded-full bg-badge px-4 py-1.5 text-[14px] text-cream">
+                <span className="inline-flex items-center rounded-full border border-subtle bg-main px-4 py-1.5 text-[14px] text-cream">
                   {pressRelease.badge}
                 </span>
               )}
@@ -343,57 +343,62 @@ export default async function Page({
         pressRelease.content ||
         (pressRelease.quotes && pressRelease.quotes.length > 0)) && (
         <Motion tag="section" {...reveal}>
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-x-12 lg:gap-y-10">
-            <div className="lg:col-span-2">
-              <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">The release</p>
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr_260px] lg:gap-x-8 lg:gap-y-10">
+            <div>
+              <p className="font-display text-3xl font-medium leading-[1.15] tracking-[-0.04em] text-cream/90">
+                The release
+              </p>
             </div>
 
-            <div className="flex flex-col gap-6 lg:col-span-7">
+            <div className="flex flex-col gap-8">
               {pressRelease.leadParagraph && (
                 <RichTextComp
                   content={pressRelease.leadParagraph as RichText}
-                  className="flex flex-col gap-4 [&_p]:m-0 [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:tracking-[-0.01em] [&_p]:text-body [&>:first-child]:text-[18px] [&>:first-child]:text-cream"
+                  className="flex flex-col gap-4 [&_p]:m-0 [&_p]:text-[16px] [&_p]:leading-[1.8] [&_p]:tracking-[-0.01em] [&_p]:text-body"
                 />
               )}
 
               {pressRelease.content && (
                 <RichTextComp
                   content={pressRelease.content as RichText}
-                  className="flex flex-col gap-6 [&_h2]:mt-4 [&_h2]:mb-0 [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-medium [&_h2]:tracking-[-0.02em] [&_h2]:text-cream [&_h2]:lg:text-2xl [&_h3]:mt-4 [&_h3]:mb-0 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-medium [&_h3]:tracking-[-0.02em] [&_h3]:text-cream [&_li]:text-body [&_p]:m-0 [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:tracking-[-0.01em] [&_p]:text-body [&_ul]:mt-2 [&_ul]:space-y-2"
+                  className="flex flex-col gap-8 [&_h2]:mt-2 [&_h2]:mb-0 [&_h2]:text-[20px] [&_h2]:font-semibold [&_h2]:leading-[1.15] [&_h2]:tracking-[-0.05em] [&_h2]:text-cream [&_h3]:mt-2 [&_h3]:mb-0 [&_h3]:text-[20px] [&_h3]:font-semibold [&_h3]:leading-[1.15] [&_h3]:tracking-[-0.05em] [&_h3]:text-cream [&_li]:text-body [&_p]:m-0 [&_p]:text-[16px] [&_p]:leading-[1.8] [&_p]:tracking-[-0.01em] [&_p]:text-body [&_ul]:mt-2 [&_ul]:space-y-2"
                 />
               )}
 
               {pressRelease.quotes && pressRelease.quotes.length > 0 && (
-                <div className="grid grid-cols-1 gap-4 pt-4 md:grid-cols-2">
-                  {pressRelease.quotes.map((item, index) => (
-                    <Motion
-                      key={item.id ?? `quote-${index}`}
-                      tag="figure"
-                      className="flex flex-col gap-4 rounded-md bg-main p-6"
-                      initial={{ opacity: 0, y: 24 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-60px' }}
-                      transition={{ duration: 0.6, ease: EASE, delay: Math.min(index * 0.06, 0.3) }}
-                    >
-                      <Quote size={20} className="text-subtle" aria-hidden />
-                      {item.quote && (
-                        <blockquote className="text-[16px] leading-relaxed tracking-[-0.01em] text-body">
-                          {item.quote}
-                        </blockquote>
-                      )}
-                      <figcaption className="mt-auto border-t border-subtle/50 pt-4">
-                        {item.name && <p className="text-[16px] font-medium text-cream">{item.name}</p>}
-                        {item.role && <p className="mt-1 text-[12px] text-subtle">{item.role}</p>}
-                      </figcaption>
-                    </Motion>
-                  ))}
+                <div className="flex flex-col gap-8 pt-4">
+                  <p className="text-[12px] leading-[1.15] tracking-[-0.05em] text-subtle">Quotes</p>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    {pressRelease.quotes.map((item, index) => (
+                      <Motion
+                        key={item.id ?? `quote-${index}`}
+                        tag="figure"
+                        className="flex flex-col gap-4 rounded-lg bg-main p-6"
+                        initial={{ opacity: 0, y: 24 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: '-60px' }}
+                        transition={{ duration: 0.6, ease: EASE, delay: Math.min(index * 0.06, 0.3) }}
+                      >
+                        <Quote size={20} className="text-subtle" aria-hidden />
+                        {item.quote && (
+                          <blockquote className="text-[16px] leading-relaxed tracking-[-0.01em] text-cream">
+                            {item.quote}
+                          </blockquote>
+                        )}
+                        <figcaption className="mt-auto border-t border-subtle pt-4">
+                          {item.name && <p className="text-[16px] font-medium text-cream">{item.name}</p>}
+                          {item.role && <p className="mt-1 text-[12px] text-subtle">{item.role}</p>}
+                        </figcaption>
+                      </Motion>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
-            <aside className="flex flex-col gap-8 lg:col-span-3">
+            <aside className="flex flex-col gap-8 self-start lg:sticky lg:top-24">
               <div className="flex flex-col gap-3">
-                <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Share</p>
+                <p className="text-[12px] leading-[1.15] tracking-[-0.05em] text-subtle">Share</p>
                 <div className="flex flex-col gap-2">
                   <a
                     href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareTitle}`}
@@ -422,10 +427,13 @@ export default async function Page({
 
               {tagNames && tagNames.length > 0 && (
                 <div className="flex flex-col gap-3">
-                  <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Tags</p>
+                  <p className="text-[12px] leading-[1.15] tracking-[-0.05em] text-subtle">Tags</p>
                   <div className="flex flex-wrap gap-2">
                     {tagNames.map((tag, index) => (
-                      <span key={`tag-${index}`} className="rounded-full bg-badge px-4 py-1.5 text-[12px] text-cream">
+                      <span
+                        key={`tag-${index}`}
+                        className="rounded-full border border-subtle bg-main px-4 py-1.5 text-[12px] text-subtle"
+                      >
                         {tag}
                       </span>
                     ))}

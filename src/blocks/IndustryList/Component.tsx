@@ -48,7 +48,23 @@ export function IndustryListComponent(props: IndustryListBlock): JSX.Element | n
 
   return (
     <section className="w-full py-4 lg:py-8">
-      <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+      {(props.heading || props.description) && (
+        <Motion
+          tag="div"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="mb-10 max-w-3xl space-y-3 lg:mb-12"
+        >
+          {props.heading && (
+            <h2 className="font-display text-3xl font-medium leading-[1.15] text-cream">{props.heading}</h2>
+          )}
+          {props.description && <p className="text-base leading-[1.15] text-body">{props.description}</p>}
+        </Motion>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {industries.map((item, index) => {
           const Icon = iconFor(item.title, index)
           return (
@@ -59,17 +75,16 @@ export function IndustryListComponent(props: IndustryListBlock): JSX.Element | n
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-              className="group flex flex-col"
+              className="flex min-h-[254px] flex-col justify-end gap-4 rounded-md bg-main p-6"
             >
-              <span className="flex size-12 items-center justify-center rounded-full border border-white/10 bg-main text-cream/80 shadow-inner transition-colors duration-300 group-hover:border-white/20 group-hover:text-cream">
-                <Icon size={22} strokeWidth={1.75} aria-hidden />
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-page text-cream">
+                <Icon size={20} strokeWidth={1.75} aria-hidden />
               </span>
 
-              <h3 className="font-display mt-6 max-w-[14rem] text-[19px] font-medium leading-[1.18] tracking-tight text-cream lg:text-xl">
-                {item.title}
-              </h3>
-
-              {item.excerpts && <p className="mt-3 max-w-[20rem] text-sm leading-relaxed text-body">{item.excerpts}</p>}
+              <div>
+                <h3 className="font-display text-2xl font-medium leading-[1.15] text-cream opacity-90">{item.title}</h3>
+                {item.excerpts && <p className="mt-2 text-base leading-[1.15] text-body opacity-75">{item.excerpts}</p>}
+              </div>
             </Motion>
           )
         })}

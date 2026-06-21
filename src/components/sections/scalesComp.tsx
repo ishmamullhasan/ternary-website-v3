@@ -17,11 +17,11 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
   if (!scales || scales.length === 0) return null
 
   return (
-    <section className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
-      {/* top header */}
+    <section className="flex flex-col gap-10 rounded-lg bg-main p-6 lg:flex-row lg:items-start lg:justify-between lg:gap-12 lg:px-9 lg:py-12">
+      {/* top header — description sits above the heading, matching Figma 339:8125 */}
       <Motion className="lg:w-2/5" {...reveal}>
-        {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}
-        {description ? <p className="mt-4 text-body">{description}</p> : null}
+        {description ? <p className="text-body">{description}</p> : null}
+        {heading ? <h2 className="mt-4 text-section font-display font-medium text-cream">{heading}</h2> : null}
       </Motion>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:flex-1">
@@ -33,7 +33,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
             <Motion key={index} {...revealItem(index)}>
               <Link href={`/scales`} className="group block">
                 {/* gradient card — the gradient IS the fallback, always rendered */}
-                <div className="relative aspect-[3/4] overflow-hidden rounded-md border border-white/[0.06] bg-ink">
+                <div className="relative aspect-[268/296] overflow-hidden rounded-md border border-line bg-ink">
                   <GradientPanel tone={toneFor(undefined, index)} interactive />
 
                   {/* optional CMS image layered on top of the gradient */}
@@ -46,10 +46,13 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
                     />
                   ) : null}
 
+                  {/* bottom-to-transparent scrim keeps the card text legible over imagery */}
+                  <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-black/70" />
+
                   {/* text */}
-                  <div className="absolute inset-x-5 bottom-5 z-10">
-                    <h3 className="font-display font-medium text-cream">{item.title}</h3>
-                    {item.excerpts ? <p className="mt-1 text-sm text-body">{item.excerpts}</p> : null}
+                  <div className="absolute inset-x-4 bottom-4 z-10">
+                    <h3 className="font-medium text-cream">{item.title}</h3>
+                    {item.excerpts ? <p className="mt-2 text-sm text-cream">{item.excerpts}</p> : null}
                   </div>
                 </div>
               </Link>

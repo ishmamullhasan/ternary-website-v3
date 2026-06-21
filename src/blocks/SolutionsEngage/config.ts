@@ -28,6 +28,15 @@ export const SolutionsEngage: Block = {
           admin: { width: '50%', description: 'Rendered word-per-line in a mono font.' },
         },
         { name: 'description', label: 'Description', type: 'textarea', localized: true },
+        {
+          name: 'idealFor',
+          label: 'Ideal for',
+          type: 'textarea',
+          localized: true,
+          admin: {
+            description: 'The right-side "Ideal for" paragraph — distinct from the description intro line.',
+          },
+        },
       ],
     },
   ],

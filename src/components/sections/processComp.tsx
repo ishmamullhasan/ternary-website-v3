@@ -11,6 +11,7 @@ interface ProcessCompProps {
   description?: string | null
   process?:
     | {
+        number?: string | null
         title?: string | null
         description?: RichText | null
       }[]
@@ -23,36 +24,33 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
   if (!process || process.length === 0) return null
 
   return (
-    <section className="rounded-md border border-white/[0.06] bg-ink p-6 lg:p-12">
-      <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
-        {/* Header — pinned to the left, mirroring the capability "How we do it" rhythm. */}
-        <Motion className="flex shrink-0 flex-col gap-4 lg:w-[32%]" {...reveal}>
-          <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">Process</p>
-          {heading && (
-            <h2 className="font-display text-section text-cream">{heading}</h2>
-          )}
-          {description && <p className="max-w-md text-[15px] leading-relaxed text-body">{description}</p>}
-        </Motion>
+    <section className="flex flex-col gap-8">
+      {/* Header — left-aligned, description above the heading (Figma 1255:3360). */}
+      <Motion className="flex flex-col gap-1" {...reveal}>
+        {description && <p className="max-w-xl text-[14px] leading-relaxed text-body">{description}</p>}
+        {heading && <h2 className="text-2xl font-display font-medium text-cream">{heading}</h2>}
+      </Motion>
 
-        {/* Numbered steps — the capability ordered-list pattern: tabular index, hairline divider. */}
-        <ol className="flex flex-1 flex-col">
+      {/* Steps — a 2-up card grid offset under a left gutter; the final/odd step spans full width. */}
+      <div className="lg:pl-[20%]">
+        <ol className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {process.map((item, index): JSX.Element => {
+            const isLast = index === process.length - 1
+            const spansFull = isLast && process.length % 2 === 1
             return (
               <Motion
                 tag="li"
                 key={index}
-                className="flex items-start gap-6 border-t border-white/[0.06] py-6 first:border-t-0 first:pt-0"
+                className={`flex flex-col gap-6${spansFull ? ' lg:col-span-2' : ''}`}
                 {...revealItem(index)}
               >
-                <span className="shrink-0 pt-1 text-[12px] font-medium tabular-nums tracking-[0.06em] text-subtle">
-                  {String(index + 1).padStart(2, '0')}
+                <span className="text-[14px] tabular-nums text-cream">
+                  {item.number ?? String(index + 1).padStart(2, '0')}
                 </span>
-                <div className="flex flex-col gap-2">
-                  {item.title && (
-                    <h3 className="text-[16px] font-medium leading-snug text-cream">{item.title}</h3>
-                  )}
+                <div className="flex flex-col gap-4">
+                  {item.title && <h3 className="text-[16px] font-medium leading-snug text-cream">{item.title}</h3>}
                   {item.description && (
-                    <div className="max-w-2xl text-[14px] leading-relaxed text-body">
+                    <div className="max-w-2xl text-[14px] leading-relaxed text-cream">
                       <RichTextComp content={item.description as RichText} className="prose-sm" />
                     </div>
                   )}

@@ -8,8 +8,8 @@ interface InsightShareProps {
 }
 
 /**
- * Article share card. Surface/Card (#1b1a17) at radius 4px, p-16; links are 16px #757571
- * (Inter, the global default) in the design's order: Copy link / Post on X / Share to LinkedIn.
+ * Article share card. Surface/Card (#1b1a17) at radius 4px (rounded-sm), p-16; links are
+ * 16px #757571 (Inter) in the design's order: Copy link / Post on X / Share to LinkedIn.
  * Copy-link gives inline "Link copied" feedback; every control carries a focus-visible ring.
  */
 export default function InsightShare({ url, title }: InsightShareProps) {
@@ -27,11 +27,11 @@ export default function InsightShare({ url, title }: InsightShareProps) {
   }
 
   const linkClass =
-    'rounded-[2px] text-left text-[16px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70'
+    'rounded-sm text-left text-[16px] leading-[1.15] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70'
 
   return (
-    <div className="flex flex-col gap-3 rounded-[4px] bg-main p-4">
-      <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Share</p>
+    <div className="flex flex-col gap-4 rounded-sm bg-main p-4">
+      <p className="text-[12px] text-subtle">Share</p>
       <div className="flex flex-col gap-2">
         <button type="button" onClick={handleCopyLink} className={linkClass} aria-live="polite">
           {copied ? 'Link copied' : 'Copy link'}

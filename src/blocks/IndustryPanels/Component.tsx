@@ -1,6 +1,6 @@
 import Motion from '@/components/animation/motion'
 import type { Industry, IndustryPanelsBlock, Media } from '@/payload-types'
-import { Building2, Check } from 'lucide-react'
+import { CircleCheck, Network } from 'lucide-react'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
@@ -33,7 +33,7 @@ function GradientField({
   priority: boolean
 }): JSX.Element {
   return (
-    <div className="group relative aspect-[676/464] w-full overflow-hidden rounded-md ring-1 ring-white/5 lg:h-full">
+    <div className="group relative aspect-[676/464] w-full overflow-hidden rounded-sm lg:h-full">
       {/* Gradient field — always rendered so it doubles as the media skeleton/fallback. */}
       <span
         aria-hidden
@@ -66,7 +66,7 @@ export function IndustryPanelsComponent(props: IndustryPanelsBlock): JSX.Element
   if (panels.length === 0) return null
 
   return (
-    <div className="flex w-full flex-col gap-20 lg:gap-24">
+    <div className="flex w-full flex-col gap-12 lg:gap-[72px]">
       {panels.map((panel, panelIndex) => {
         const linkedIndustry = panel.industry as Industry | undefined
         const panelTitle = panel.title || linkedIndustry?.title
@@ -85,34 +85,30 @@ export function IndustryPanelsComponent(props: IndustryPanelsBlock): JSX.Element
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.65, ease: EASE }}
-            className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[700fr_676fr] lg:gap-12"
+            className="grid grid-cols-1 items-center gap-8 rounded-md bg-main px-6 py-10 sm:px-9 lg:grid-cols-[700fr_676fr] lg:py-12"
           >
             <div className="flex flex-col">
-              <div className="mb-5 flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
-                <Building2 size={14} strokeWidth={1.75} aria-hidden className="shrink-0" />
+              <div className="mb-6 flex items-center gap-2 text-[12px] text-subtle">
+                <Network size={16} strokeWidth={1.75} aria-hidden className="shrink-0" />
                 <span>
                   Industry {String(panelIndex + 1).padStart(2, '0')}
                   {linkedIndustry?.title ? ` / ${linkedIndustry.title}` : ''}
                 </span>
               </div>
 
-              <h2 className="font-display max-w-md text-3xl font-medium leading-tight tracking-tight text-cream lg:text-4xl">
-                {panelTitle}
-              </h2>
+              <h2 className="font-display max-w-md text-3xl font-medium leading-[1.15] text-cream">{panelTitle}</h2>
 
               {panelDescription && (
-                <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-body lg:text-base">{panelDescription}</p>
+                <p className="mt-4 max-w-xl text-base leading-[1.15] text-body">{panelDescription}</p>
               )}
 
               {tags.length > 0 && (
-                <div className="mt-8 rounded-md border border-white/10 bg-white/[0.02] p-6 lg:p-7">
-                  <h3 className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">What we build</h3>
-                  <ul className="mt-4 space-y-3">
+                <div className="mt-8 rounded-sm bg-page p-6">
+                  <h3 className="text-[12px] text-subtle">What we build</h3>
+                  <ul className="mt-4 space-y-2 pt-1">
                     {tags.map((tag, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed text-body">
-                        <span className="mt-0.5 flex size-[18px] shrink-0 items-center justify-center rounded-full border border-white/10 text-cream/70">
-                          <Check size={11} strokeWidth={2.5} aria-hidden />
-                        </span>
+                      <li key={idx} className="flex items-center gap-2 text-sm leading-[1.15] text-subtle">
+                        <CircleCheck size={14} strokeWidth={2} aria-hidden className="shrink-0" />
                         <span>{tag}</span>
                       </li>
                     ))}

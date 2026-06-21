@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import type { AboutFundingStoryBlock, Media } from '@/payload-types'
+import Link from 'next/link'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -14,9 +15,14 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 export function AboutFundingStoryComponent({
   heading,
   description,
+  eyebrow,
+  links,
   backgroundImage,
 }: AboutFundingStoryBlock): JSX.Element | null {
   const bgUrl = (backgroundImage as Media | undefined)?.url ?? undefined
+
+  // Up to two CTA buttons, only those with both a label and a destination.
+  const ctas = (links ?? []).filter((link) => link?.label && link?.url).slice(0, 2)
 
   if (!heading && !description) return null
 
@@ -27,7 +33,7 @@ export function AboutFundingStoryComponent({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.6, ease: EASE }}
-      className="relative isolate flex min-h-[300px] items-center justify-center overflow-hidden rounded-md lg:min-h-[340px]"
+      className="relative isolate flex min-h-[300px] items-center justify-center overflow-hidden rounded-lg lg:min-h-[340px]"
     >
       {/* Optional CMS photo, desaturated, beneath the gradient. */}
       {bgUrl ? (
@@ -48,14 +54,37 @@ export function AboutFundingStoryComponent({
       />
       <span aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-b from-black/15 via-transparent to-black/45" />
 
-      <div className="mx-auto flex w-full max-w-2xl flex-col items-center px-6 py-16 text-center lg:py-20">
+      <div className="mx-auto flex w-full max-w-[818px] flex-col items-center px-6 py-12 text-center lg:py-[72px]">
+        {eyebrow ? (
+          <span className="mb-4 font-display text-xs font-medium uppercase tracking-[0.18em] text-cream/60">
+            {eyebrow}
+          </span>
+        ) : null}
         {heading ? (
-          <h2 className="font-display text-[clamp(1.75rem,4vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream text-balance">
+          <h2 className="font-display text-[clamp(1.75rem,4vw,40px)] font-medium leading-[1.15] tracking-[-0.05em] text-cream text-balance">
             {heading}
           </h2>
         ) : null}
-        {description ? (
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-cream/80 lg:text-base">{description}</p>
+        {description ? <p className="mt-6 text-base leading-relaxed text-cream/80">{description}</p> : null}
+        {ctas.length ? (
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            {ctas.map((link, i) => {
+              const isSecondary = link?.style === 'secondary'
+              return (
+                <Link
+                  key={link?.id ?? i}
+                  href={link?.url ?? '#'}
+                  className={
+                    isSecondary
+                      ? 'inline-flex items-center justify-center rounded-md border border-line bg-button-dark px-5 py-2.5 text-sm font-medium text-cream transition-colors duration-200 hover:bg-button-dark/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink'
+                      : 'inline-flex items-center justify-center rounded-md bg-cream px-5 py-2.5 text-sm font-medium text-ink transition-colors duration-200 hover:bg-cream/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink'
+                  }
+                >
+                  {link?.label}
+                </Link>
+              )
+            })}
+          </div>
         ) : null}
       </div>
     </Motion>

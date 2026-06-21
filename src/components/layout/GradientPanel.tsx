@@ -55,6 +55,12 @@ interface GradientPanelProps {
   className?: string
   /** Animate the field brighter/larger on parent group hover. */
   interactive?: boolean
+  /**
+   * Legibility scrim direction. 'bottom' (default) darkens the lower edge for bottom-anchored
+   * text; 'top' darkens the upper edge for top-anchored text (the new Figma tile layout);
+   * 'none' disables the built-in scrim so a caller can supply its own.
+   */
+  scrim?: 'bottom' | 'top' | 'none'
   children?: ReactNode
 }
 
@@ -68,6 +74,7 @@ export function GradientPanel({
   featured = false,
   className,
   interactive = false,
+  scrim = 'bottom',
   children,
 }: GradientPanelProps): JSX.Element {
   return (
@@ -85,7 +92,17 @@ export function GradientPanel({
         aria-hidden
         className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay"
       />
-      <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/55" />
+      {scrim !== 'none' && (
+        <span
+          aria-hidden
+          className={cn(
+            'absolute inset-0',
+            scrim === 'top'
+              ? 'bg-gradient-to-b from-black/60 to-transparent to-50%'
+              : 'bg-gradient-to-b from-black/5 via-transparent to-black/55',
+          )}
+        />
+      )}
       {children}
     </div>
   )

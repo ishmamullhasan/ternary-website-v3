@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { cardsArray } from '@/fields/arrays'
+import { benefitIcons } from '@/fields/iconSets'
 import { sectionHeader } from '@/fields/sectionHeader'
 
 /**
@@ -12,10 +13,7 @@ export const CareersGridOne: Block = {
   slug: 'careersGridOne',
   interfaceName: 'CareersGridOneBlock',
   labels: { singular: 'Careers Grid One', plural: 'Careers Grid One' },
-  fields: [
-    ...sectionHeader(),
-    cardsArray({ name: 'items', label: 'Cards', media: true }),
-  ],
+  fields: [...sectionHeader(), cardsArray({ name: 'items', label: 'Cards', media: true, icons: [...benefitIcons] })],
 }
 
 export default CareersGridOne

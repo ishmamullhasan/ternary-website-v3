@@ -122,7 +122,7 @@ function NoiseGradient({ tone, className }: { tone: string; className?: string }
 function Eyebrow({ index, label }: { index?: number; label?: string | null }): JSX.Element | null {
   if (!label) return null
   return (
-    <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
+    <p className="text-[12px] text-subtle">
       {typeof index === 'number' && (
         <span className="text-cream/70">{`Section ${String(index).padStart(2, '0')} / `}</span>
       )}
@@ -150,7 +150,7 @@ function SectionHeader({
     <Motion className={cn('flex flex-col gap-4', className)} {...reveal}>
       <Eyebrow index={index} label={label} />
       {heading && (
-        <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream whitespace-pre-line">
+        <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.05em] text-cream whitespace-pre-line">
           {heading}
         </h2>
       )}
@@ -168,7 +168,7 @@ function SectionHeader({
 // hover affordance keeps the static pills consistent with the rest of the system).
 function Pill({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <span className="inline-flex items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream">
+    <span className="inline-flex items-center rounded-full border border-subtle bg-main px-4 py-1 text-[12px] text-cream transition-colors duration-300 hover:border-cream/60">
       {children}
     </span>
   )
@@ -184,8 +184,9 @@ function StackTags({ tags }: { tags?: { name?: string | null; id?: string | null
   )
 }
 
-// Reusable section shell: near-black bordered panel with generous editorial padding.
-const SECTION_SHELL = 'rounded-md border border-white/[0.06] bg-ink p-6 lg:p-12'
+// Reusable section shell: spacing-only wrapper. In Figma the sections sit directly on the page
+// (no outer panel) — the section inner padding is 48px top / 36px side within the 1480 container.
+const SECTION_SHELL = 'pt-12 lg:px-9'
 
 export default async function Page({
   params,
@@ -231,23 +232,20 @@ export default async function Page({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
           >
+            {/* Intro pill (design node 1835:7100): Poppins 18px sentence-case in a rounded-full
+                pill with bg-main + subtle border. */}
             {hero?.badge && (
-              <span className="inline-flex items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] font-medium uppercase tracking-[0.12em] text-cream">
+              <span className="inline-flex items-center rounded-full border border-subtle bg-main px-4 py-2 font-display text-[18px] leading-tight text-cream">
                 {hero.badge}
               </span>
             )}
 
-            {/* Small ID / discipline row above the headline (design node 1835:7100). */}
-            <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">
-              {capability.title ? `Capability — ${capability.title}` : 'Capability'}
-            </p>
-
-            <h1 className="font-display text-[clamp(2rem,4.5vw,2.875rem)] font-medium leading-[1.08] tracking-[-0.03em] text-cream">
+            <h1 className="font-display text-[clamp(2rem,4.5vw,2.5rem)] font-medium leading-[1.08] tracking-[-0.05em] text-cream opacity-90">
               {hero?.heading || capability.title}
             </h1>
 
             {(hero?.description || capability.excerpts) && (
-              <p className="max-w-xl text-[15px] leading-relaxed text-body lg:text-[16px]">
+              <p className="max-w-2xl text-[16px] font-medium leading-relaxed text-body opacity-90">
                 {hero?.description || capability.excerpts}
               </p>
             )}
@@ -301,12 +299,12 @@ export default async function Page({
               className="shrink-0 lg:w-[28%]"
             />
 
-            <ol className="flex flex-1 flex-col">
+            <ol className="flex flex-1 flex-col gap-8">
               {capability.whatThisMeansToUs.items?.map((item, index) => (
                 <Motion
                   tag="li"
                   key={item.id ?? `means-${index}`}
-                  className="flex items-start gap-6 border-t border-white/[0.06] py-6 first:border-t-0 first:pt-0"
+                  className="flex items-start gap-6"
                   {...revealItem(index)}
                 >
                   <span className="shrink-0 pt-1 text-[12px] font-medium tabular-nums tracking-[0.06em] text-subtle">
@@ -343,7 +341,7 @@ export default async function Page({
                 <Motion
                   key={item.id ?? `practice-${index}`}
                   className={cn(
-                    'group flex min-h-[280px] flex-col justify-between rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.14]',
+                    'group flex min-h-[280px] flex-col justify-between rounded-sm bg-ink p-6 transition-colors duration-300',
                     isWide ? 'lg:col-span-2' : 'lg:col-span-1',
                   )}
                   {...revealItem(index)}
@@ -354,18 +352,18 @@ export default async function Page({
                         <span className="text-[12px] font-medium tabular-nums text-subtle">
                           {String(index + 1).padStart(2, '0')}
                         </span>
-                        <h3 className="text-[20px] font-medium leading-tight tracking-[-0.01em] text-cream lg:text-[22px]">
+                        <h3 className="font-display text-[24px] font-medium leading-tight tracking-[-0.05em] text-cream">
                           {item.title}
                         </h3>
                       </div>
                       <span className="mt-2 size-1.5 shrink-0 rounded-full bg-cream/60 transition-colors duration-300 group-hover:bg-cream" />
                     </div>
-                    <p className="max-w-xl text-[14px] leading-relaxed text-body">{item.excerpt}</p>
+                    <p className="max-w-xl text-[16px] leading-relaxed text-body">{item.excerpt}</p>
                   </div>
 
                   {item.stack && item.stack.length > 0 && (
                     <div className="mt-8 flex flex-col gap-3">
-                      <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Stack</span>
+                      <span className="text-[12px] text-subtle">Stack</span>
                       <StackTags tags={item.stack} />
                     </div>
                   )}
@@ -391,21 +389,19 @@ export default async function Page({
             {capability.caseStudies.items?.map((item, index) => (
               <Motion
                 key={item.id ?? `case-${index}`}
-                className="group flex min-h-[400px] flex-col justify-between rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.14]"
+                className="group flex min-h-[400px] flex-col justify-between rounded-lg bg-ink p-6 transition-colors duration-300"
                 {...revealItem(index)}
               >
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col gap-2">
-                    {item.meta && (
-                      <span className="text-[12px] uppercase tracking-[0.12em] text-subtle">{item.meta}</span>
-                    )}
-                    <h3 className="text-[18px] font-medium leading-snug tracking-[-0.01em] text-cream">{item.title}</h3>
+                    {item.meta && <span className="text-[12px] text-subtle">{item.meta}</span>}
+                    <h3 className="text-[16px] font-medium leading-snug tracking-[-0.05em] text-cream">{item.title}</h3>
                   </div>
 
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-3">
                     {item.problem && (
                       <div className="flex flex-col gap-1">
-                        <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Problem</p>
+                        <p className="text-[12px] text-subtle">Problem</p>
                         <RichTextComp
                           content={item.problem as RichText}
                           className="prose-sm text-[14px] leading-relaxed text-body"
@@ -414,7 +410,7 @@ export default async function Page({
                     )}
                     {item.approach && (
                       <div className="flex flex-col gap-1">
-                        <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Approach</p>
+                        <p className="text-[12px] text-subtle">Approach</p>
                         <RichTextComp
                           content={item.approach as RichText}
                           className="prose-sm text-[14px] leading-relaxed text-body"
@@ -423,7 +419,7 @@ export default async function Page({
                     )}
                     {item.outcome && (
                       <div className="flex flex-col gap-1">
-                        <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">Outcome</p>
+                        <p className="text-[12px] text-subtle">Outcome</p>
                         <RichTextComp
                           content={item.outcome as RichText}
                           className="prose-sm text-[14px] leading-relaxed text-body"
@@ -434,9 +430,9 @@ export default async function Page({
                 </div>
 
                 {(item.metricValue || item.metricLabel) && (
-                  <div className="mt-8 flex items-baseline gap-2 border-t border-white/[0.06] pt-5">
+                  <div className="mt-8 flex items-baseline gap-1">
                     {item.metricValue && (
-                      <span className="font-display text-[30px] font-medium leading-none tracking-[-0.02em] text-cream">
+                      <span className="font-display text-[30px] font-medium leading-none tracking-[-0.05em] text-cream">
                         {item.metricValue}
                       </span>
                     )}
@@ -476,7 +472,7 @@ export default async function Page({
               <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-6">
                 <h3 className="text-[22px] font-medium leading-tight text-cream">{practiceMember.name}</h3>
                 {practiceMember.position && (
-                  <span className="inline-flex w-fit items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] text-cream">
+                  <span className="inline-flex w-fit items-center rounded-full border border-subtle bg-main px-4 py-1 text-[12px] text-cream">
                     {practiceMember.position}
                   </span>
                 )}
@@ -487,24 +483,24 @@ export default async function Page({
               {capability.practiceLead?.bio ? (
                 <RichTextComp
                   content={capability.practiceLead.bio as RichText}
-                  className="max-w-3xl text-[15px] font-medium leading-relaxed text-cream"
+                  className="max-w-3xl text-[16px] font-medium leading-relaxed text-body"
                 />
               ) : (
                 practiceMember.description && (
                   <RichTextComp
                     content={practiceMember.description as RichText}
-                    className="max-w-3xl text-[15px] font-medium leading-relaxed text-cream"
+                    className="max-w-3xl text-[16px] font-medium leading-relaxed text-body"
                   />
                 )
               )}
 
               <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
                 {capability.practiceLead?.credentials && capability.practiceLead.credentials.length > 0 && (
-                  <div className="flex flex-col gap-4 rounded-md border border-white/[0.07] bg-white/[0.015] p-5">
-                    <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Credentials</span>
+                  <div className="flex flex-col gap-4 rounded-sm bg-ink p-4">
+                    <span className="text-[12px] text-subtle">Credentials</span>
                     <ul className="flex flex-col gap-3">
                       {capability.practiceLead.credentials.map((item, index) => (
-                        <li key={item.id ?? `cred-${index}`} className="flex gap-3 text-[14px]">
+                        <li key={item.id ?? `cred-${index}`} className="flex gap-2 text-[12px]">
                           <span className="shrink-0 tabular-nums text-subtle">
                             {String(index + 1).padStart(2, '0')}
                           </span>
@@ -516,10 +512,8 @@ export default async function Page({
                 )}
 
                 {capability.practiceLead?.writings && capability.practiceLead.writings.length > 0 && (
-                  <div className="flex flex-col gap-4 rounded-md border border-white/[0.07] bg-white/[0.015] p-5">
-                    <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">
-                      Recent writing &amp; talks
-                    </span>
+                  <div className="flex flex-col gap-4 rounded-sm bg-ink p-4">
+                    <span className="text-[12px] text-subtle">Recent writing &amp; talks</span>
                     <ul className="flex flex-col gap-4">
                       {capability.practiceLead.writings.map((item, index) => (
                         <li key={item.id ?? `writing-${index}`} className="flex flex-col gap-1">
@@ -527,14 +521,14 @@ export default async function Page({
                             <Link
                               href={item.link}
                               className={cn(
-                                'w-fit rounded-sm text-[15px] text-cream transition-colors duration-200 hover:text-cream/70',
+                                'w-fit rounded-sm text-[16px] text-cream transition-colors duration-200 hover:text-cream/70',
                                 focusRing,
                               )}
                             >
                               {item.title}
                             </Link>
                           ) : (
-                            <span className="text-[15px] text-cream">{item.title}</span>
+                            <span className="text-[16px] text-cream">{item.title}</span>
                           )}
                           {item.category && <span className="text-[12px] text-subtle">{item.category}</span>}
                         </li>
@@ -609,7 +603,7 @@ export default async function Page({
                 <Link
                   href={`/${typedLocale}/capabilities/${item.slug}`}
                   className={cn(
-                    'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-white/[0.03]',
+                    'group flex h-full flex-col gap-2 rounded-sm bg-ink p-6 transition-colors duration-300 hover:bg-white/[0.03]',
                     focusRing,
                   )}
                 >
@@ -622,7 +616,7 @@ export default async function Page({
                       className="shrink-0 text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream"
                     />
                   </div>
-                  {item.excerpts && <p className="text-[13px] leading-relaxed text-subtle">{item.excerpts}</p>}
+                  {item.excerpts && <p className="text-[12px] leading-relaxed text-subtle">{item.excerpts}</p>}
                 </Link>
               </Motion>
             ))}

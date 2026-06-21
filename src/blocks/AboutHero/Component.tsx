@@ -20,14 +20,14 @@ export function AboutHeroComponent({ heading, description }: AboutHeroBlock): JS
     .filter(Boolean)
 
   return (
-    <section className="lg:pb-16 pb-8 lg:pt-8">
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-4 text-center lg:px-0">
+    <section className="py-16 lg:py-[72px]">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-4 text-center lg:px-0">
         <Motion
           tag="h1"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: EASE }}
-          className="font-display text-[clamp(1.9rem,4.5vw,2.75rem)] font-medium leading-[1.08] tracking-[-0.02em] text-cream text-balance"
+          className="font-display text-[clamp(1.75rem,4vw,40px)] font-medium leading-[1.15] tracking-[-0.05em] text-cream text-balance"
         >
           {lines.length > 1
             ? lines.map((line, i) => (
@@ -44,7 +44,7 @@ export function AboutHeroComponent({ heading, description }: AboutHeroBlock): JS
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
-            className="mt-4 max-w-xl text-[15px] leading-relaxed text-body lg:text-base"
+            className="mt-6 max-w-2xl text-base font-medium leading-relaxed text-body/90"
           >
             {description}
           </Motion>

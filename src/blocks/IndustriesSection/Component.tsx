@@ -1,17 +1,49 @@
 import Motion from '@/components/animation/motion'
-import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
-import LocalizedLink from '@/components/LocalizedLink'
-import type { IndustriesSectionBlock, Industry, Media } from '@/payload-types'
-import { ArrowUpRight } from 'lucide-react'
-import Image from 'next/image'
+import type { IndustriesSectionBlock, Industry } from '@/payload-types'
+import {
+  Banknote,
+  Factory,
+  HeartPulse,
+  Landmark,
+  Plane,
+  ShieldCheck,
+  ShoppingBag,
+  Trophy,
+  Workflow,
+  type LucideIcon,
+} from 'lucide-react'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-// Renders the Industries section as a uniform 8-up grid of equal rich cards. Each card layers the
-// signature GradientPanel device (always-on) under an optional cover image, with a foreground text
-// stack (numbered eyebrow, title, excerpt) and an ArrowUpRight affordance — keeping the surface
-// cohesive whether or not CMS thumbnails are present.
+// Deterministic per-industry glyph so each card reads as its own topic rather than a repeated
+// placeholder. Matched on keywords in the title; falls back to a neutral workflow glyph and finally
+// cycles a small set so adjacent tiles never share the same icon.
+const KEYWORD_ICONS: ReadonlyArray<readonly [RegExp, LucideIcon]> = [
+  [/bank|capital|financ|invest/i, Banknote],
+  [/insur|risk/i, ShieldCheck],
+  [/manufactur|industrial|supply/i, Factory],
+  [/health|life science|care|medic/i, HeartPulse],
+  [/sport|entertain|media|leisure|hospitality|travel/i, Trophy],
+  [/consumer|retail|goods|commerce/i, ShoppingBag],
+  [/software|platform|tech|saas|cloud/i, Workflow],
+  [/public|govern|sector|civic/i, Landmark],
+]
+
+const FALLBACK_CYCLE: readonly LucideIcon[] = [Workflow, Factory, ShoppingBag, Plane]
+
+function iconFor(title: string | null | undefined, index: number): LucideIcon {
+  if (title) {
+    for (const [pattern, Icon] of KEYWORD_ICONS) {
+      if (pattern.test(title)) return Icon
+    }
+  }
+  return FALLBACK_CYCLE[index % FALLBACK_CYCLE.length]
+}
+
+// Renders the Industries benefit grid: a 4-up (2-row) grid of flat Surface/Card tiles. Each tile is
+// a darker page-tone icon chip over a bottom-anchored text stack (title + paragraph), matching the
+// Figma Benefit block (no image cover, no arrow affordance).
 export function IndustriesSectionComponent({
   heading,
   description,
@@ -31,20 +63,14 @@ export function IndustriesSectionComponent({
           transition={{ duration: 0.6, ease: EASE }}
           className="mb-10 max-w-2xl space-y-3 lg:mb-14"
         >
-          {heading && (
-            <h2 className="font-display text-2xl font-medium leading-tight tracking-tight text-cream lg:text-3xl">
-              {heading}
-            </h2>
-          )}
-          {description && <p className="text-sm leading-relaxed text-body lg:text-base">{description}</p>}
+          {heading && <h2 className="font-display text-3xl font-medium leading-[1.15] text-cream">{heading}</h2>}
+          {description && <p className="text-base leading-[1.15] text-body">{description}</p>}
         </Motion>
       )}
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((item, index) => {
-          const thumb = item.thumbnail as Media | undefined
-          const cover = thumb?.url
-          const alt = thumb?.alt || `${item.title} — industry`
+          const Icon = iconFor(item.title, index)
           return (
             <Motion
               key={item.id ?? index}
@@ -53,49 +79,16 @@ export function IndustriesSectionComponent({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.36) }}
+              className="flex min-h-[360px] flex-col justify-end gap-8 rounded-md bg-main p-6"
             >
-              <LocalizedLink
-                href={`/industries/${item.slug}`}
-                className="group relative block aspect-[4/5] overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page"
-              >
-                <GradientPanel tone={toneFor(undefined, index)} interactive />
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-page text-cream">
+                <Icon size={24} strokeWidth={1.75} aria-hidden />
+              </span>
 
-                {cover && (
-                  <Image
-                    src={cover}
-                    alt={alt}
-                    fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="relative object-cover transition-transform duration-[1200ms] group-hover:scale-105 motion-reduce:group-hover:scale-100"
-                  />
-                )}
-
-                <span
-                  aria-hidden
-                  className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent"
-                />
-
-                <div className="relative flex h-full flex-col justify-end p-5">
-                  <span className="font-display text-xs font-medium tracking-[0.2em] text-cream/60">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-
-                  <h3 className="font-display mt-3 text-[19px] font-medium leading-[1.18] tracking-tight text-cream lg:text-xl">
-                    {item.title}
-                  </h3>
-
-                  {item.excerpts && (
-                    <p className="mt-2 text-sm leading-relaxed text-cream/80">{item.excerpts}</p>
-                  )}
-
-                  <ArrowUpRight
-                    size={20}
-                    strokeWidth={1.75}
-                    aria-hidden
-                    className="absolute right-5 top-5 text-cream/70 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0"
-                  />
-                </div>
-              </LocalizedLink>
+              <div>
+                <h3 className="font-display text-2xl font-medium leading-[1.15] text-cream opacity-90">{item.title}</h3>
+                {item.excerpts && <p className="mt-2 text-base leading-[1.15] text-body opacity-75">{item.excerpts}</p>}
+              </div>
             </Motion>
           )
         })}

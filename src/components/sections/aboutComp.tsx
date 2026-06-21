@@ -92,9 +92,7 @@ export default function AboutComp({ heading, description, items, organizations, 
         {/* heading */}
         {(heading || description) && (
           <div className="flex max-w-2xl flex-col items-center text-center">
-            {heading && (
-              <h1 className="text-section font-display font-medium text-cream">{heading}</h1>
-            )}
+            {heading && <h1 className="text-section font-display font-medium text-cream">{heading}</h1>}
             {description && <p className="mt-3 text-body">{description}</p>}
           </div>
         )}
@@ -158,12 +156,10 @@ export default function AboutComp({ heading, description, items, organizations, 
 
         {/* organizations */}
         {organizations?.heading && (
-          <p className="mt-12 mb-6 text-center text-xs uppercase tracking-[0.14em] text-subtle lg:text-[13px]">
-            {organizations.heading}
-          </p>
+          <p className="mt-12 mb-9 text-center text-base font-medium text-cream">{organizations.heading}</p>
         )}
 
-        <div className="grid grid-cols-2 justify-center gap-4 lg:flex lg:flex-row lg:gap-5">
+        <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
           {organizations?.organization?.map((item, index) => {
             const orgIcon = item.icon as Media | null | undefined
             const orgIconUrl = orgIcon?.url
@@ -177,15 +173,15 @@ export default function AboutComp({ heading, description, items, organizations, 
               >
                 <Link
                   href={item.link || '#'}
-                  className={`flex flex-row items-center rounded-md px-3 py-2 transition-colors hover:bg-white/[0.04] ${focusRing}`}
+                  className={`flex flex-row items-center justify-center rounded-md p-4 transition-colors hover:bg-white/[0.04] ${focusRing}`}
                 >
                   {orgIconUrl && (
-                    <span className="h-[30px] lg:h-[35px]">
+                    <span className="h-[50px]">
                       <Image
                         src={orgIconUrl}
                         alt={orgIcon?.alt || 'org'}
-                        width={orgIcon?.width || 40}
-                        height={orgIcon?.height || 35}
+                        width={orgIcon?.width || 150}
+                        height={orgIcon?.height || 50}
                         className="h-full w-full object-contain grayscale transition group-hover:grayscale-0 hover:grayscale-0"
                       />
                     </span>
@@ -199,7 +195,7 @@ export default function AboutComp({ heading, description, items, organizations, 
 
         {/* bottom text */}
         {bottomDescription && (
-          <p className="mt-12 max-w-[900px] text-center text-xs text-body lg:text-sm">{bottomDescription}</p>
+          <p className="mt-12 max-w-[1120px] text-center text-base text-body">{bottomDescription}</p>
         )}
       </div>
     </section>

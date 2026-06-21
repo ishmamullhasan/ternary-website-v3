@@ -1,7 +1,37 @@
 import Motion from '@/components/animation/motion'
 import { cn } from '@/lib/utils'
-import { Zap } from 'lucide-react'
+import {
+  BookOpen,
+  Compass,
+  Globe,
+  Heart,
+  Rocket,
+  Shield,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Trophy,
+  Users,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react'
 import type { JSX, ReactNode } from 'react'
+
+/** Maps the CMS `benefitIcons` option set to its lucide glyph. */
+const benefitIcons = {
+  zap: Zap,
+  users: Users,
+  heart: Heart,
+  globe: Globe,
+  rocket: Rocket,
+  shield: Shield,
+  sparkles: Sparkles,
+  trophy: Trophy,
+  target: Target,
+  'trending-up': TrendingUp,
+  'book-open': BookOpen,
+  compass: Compass,
+} satisfies Record<string, LucideIcon>
 
 type BentoCardProps = {
   title?: string
@@ -12,6 +42,8 @@ type BentoCardProps = {
   imageBg?: string
   isImageOnly?: boolean
   variant?: 'default' | 'splitImageRight'
+  /** Name of the lucide glyph to show in the icon chip. Falls back to Zap when absent/unknown. */
+  icon?: string
   /** When false, renders a static div so a parent can own scroll-driven motion (e.g. grid wrappers). */
   animated?: boolean
 }
@@ -25,8 +57,10 @@ export function BentoCard({
   imageBg,
   isImageOnly = false,
   variant = 'default',
+  icon,
   animated = true,
 }: BentoCardProps): JSX.Element {
+  const Icon = (icon && benefitIcons[icon as keyof typeof benefitIcons]) || Zap
   if (variant === 'splitImageRight') {
     const splitClassName = cn(
       `bg-main border border-white/5 rounded-md relative overflow-hidden flex flex-col group transition-all duration-300 hover:bg-dark`,
@@ -46,8 +80,8 @@ export function BentoCard({
         )}
         <div className="relative z-10 h-full p-8 flex flex-col justify-end max-w-xl">
           {!noIcon && (
-            <div className="p-2 bg-white/5 rounded-full inline-flex backdrop-blur-sm w-fit mb-6">
-              <Zap className="w-4 h-4 text-cream/70" />
+            <div className="mb-6 inline-flex size-12 w-fit items-center justify-center rounded-full bg-ink">
+              <Icon className="size-6 text-cream" />
             </div>
           )}
           {title && <h3 className="font-display max-w-lg text-2xl font-medium text-cream mb-4">{title}</h3>}
@@ -96,15 +130,15 @@ export function BentoCard({
 
       {!isImageOnly && !noIcon && (
         <div className="mb-auto relative z-10">
-          <div className="p-2 bg-white/5 rounded-full inline-flex backdrop-blur-sm">
-            <Zap className="w-4 h-4 text-cream/70" />
+          <div className="inline-flex size-12 items-center justify-center rounded-full bg-ink">
+            <Icon className="size-6 text-cream" />
           </div>
         </div>
       )}
 
       {!isImageOnly && (
         <div className={`mt-auto max-w-lg ${noIcon ? 'h-full flex flex-col justify-end' : ''} relative z-10`}>
-          {title && <h3 className="font-display text-lg lg:text-xl font-medium text-cream mb-2">{title}</h3>}
+          {title && <h3 className="font-display text-2xl font-medium text-cream mb-2">{title}</h3>}
           {desc && <p className="text-body text-sm leading-relaxed">{desc}</p>}
         </div>
       )}

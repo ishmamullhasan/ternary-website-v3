@@ -179,28 +179,26 @@ export default async function Page({
     <div className="min-h-screen antialiased">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-5 pb-16 lg:gap-24 lg:pb-24">
         <Motion tag="section" {...sectionReveal}>
-          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[300px_1fr] lg:gap-24">
+          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[300px_1fr] lg:gap-8">
             {/* LEFT SIDEBAR: Legal Center menu & compliance notice. Sticky on desktop so the
                 navigation + notice stay reachable through long legal documents. */}
             <aside className="flex flex-col gap-16 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:justify-between">
-              <div className="space-y-10">
+              <div className="space-y-8">
                 {/* Header info */}
                 <div>
                   <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-tight text-cream">
                     {legalCenter?.heading || 'Legal Center'}
                   </h2>
-                  <p className="mt-3 text-[15px] leading-relaxed text-body">
+                  <p className="mt-3 text-[16px] leading-relaxed text-body">
                     {legalCenter?.description || 'Institutional-grade transparency. Reviewed by external counsel.'}
                   </p>
                 </div>
 
                 {/* Navigation menu */}
                 {menuItems.length > 0 && (
-                  <nav aria-label="Legal documents" className="flex flex-col gap-1">
+                  <nav aria-label="Legal documents" className="flex flex-col gap-2">
                     {legalCenter?.menuTitle && (
-                      <h3 className="mb-2 px-4 text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
-                        {legalCenter.menuTitle}
-                      </h3>
+                      <h3 className="mb-2 px-4 text-[12px] text-subtle">{legalCenter.menuTitle}</h3>
                     )}
                     {menuItems.map((item) => {
                       const isActive = item.slug === slug
@@ -211,7 +209,7 @@ export default async function Page({
                           key={item.id}
                           href={`/${typedLocale}/legals/${item.slug}`}
                           aria-current={isActive ? 'page' : undefined}
-                          className={`group flex items-center gap-4 rounded-md border-l-2 px-4 py-3 text-[16px] font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream ${
+                          className={`group flex items-center gap-4 rounded-md border-l-2 px-4 py-4 text-[16px] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream ${
                             isActive
                               ? 'border-subtle bg-main text-cream'
                               : 'border-transparent text-body hover:bg-main/40 hover:text-cream'
@@ -251,7 +249,7 @@ export default async function Page({
             {/* RIGHT CONTENT: document view */}
             <main className="flex flex-col gap-12 lg:gap-[72px]">
               {/* Header: code pill + last-updated, title, Download PDF */}
-              <Motion className="flex flex-col gap-6 border-b border-subtle/60 pb-6" {...blockReveal}>
+              <Motion className="flex flex-col gap-6 border-b border-subtle pb-6" {...blockReveal}>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                   {legal.code && (
                     <span className="inline-flex items-center rounded-full border border-subtle bg-main px-4 py-1.5 font-display text-[18px] leading-none text-cream">
@@ -264,7 +262,7 @@ export default async function Page({
                     </span>
                   )}
                 </div>
-                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
                   <h1 className="font-display text-[30px] font-medium leading-[1.15] tracking-tight text-cream">
                     {title}
                   </h1>
@@ -274,7 +272,7 @@ export default async function Page({
                       href={legal.downloadLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex shrink-0 items-center gap-2 rounded-md bg-cream px-8 py-2.5 text-[16px] font-medium text-ink transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-[0.98]"
+                      className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-cream px-8 py-2 text-[16px] font-medium text-ink transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream active:scale-[0.98]"
                     >
                       <Download size={16} strokeWidth={1.75} aria-hidden />
                       Download PDF

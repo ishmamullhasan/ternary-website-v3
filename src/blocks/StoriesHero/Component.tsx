@@ -6,14 +6,14 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 export const StoriesHeroComponent = (data: StoriesHeroBlock): JSX.Element => {
   return (
-    <section className="mx-auto w-full max-w-7xl px-5 pt-12 lg:pt-20">
-      <div className="max-w-3xl">
+    <section className="mx-auto w-full max-w-7xl px-5 py-12 lg:py-[72px]">
+      <div className="mx-auto flex max-w-[1288px] flex-col items-center gap-6 text-center">
         <Motion
           tag="h1"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: EASE }}
-          className="font-display text-[clamp(1.75rem,4vw,2.25rem)] font-medium leading-[1.12] tracking-[-0.045em] text-cream"
+          className="font-display text-[clamp(1.875rem,4vw,2.5rem)] font-medium leading-[1.15] tracking-[-0.05em] text-cream opacity-90"
         >
           {data.heading}
         </Motion>
@@ -23,7 +23,7 @@ export const StoriesHeroComponent = (data: StoriesHeroBlock): JSX.Element => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
-            className="mt-5 max-w-2xl text-[15px] leading-[1.55] tracking-[-0.01em] text-body lg:text-base"
+            className="max-w-2xl text-base font-medium leading-[1.15] tracking-[-0.05em] text-body opacity-90"
           >
             {data.description}
           </Motion>

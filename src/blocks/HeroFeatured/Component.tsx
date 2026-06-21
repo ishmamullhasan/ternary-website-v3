@@ -66,7 +66,7 @@ function Card({ item, index }: { item: FeaturedCard; index: number }): JSX.Eleme
     >
       <Link
         href={item.href}
-        className="group relative block aspect-[3/4] overflow-hidden rounded-md ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1"
+        className="group relative block aspect-[358/585] overflow-hidden rounded-md ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1"
       >
         {/* Gradient field — eases brighter and scales subtly on hover (the "orchestration" beat). */}
         <span
@@ -79,18 +79,13 @@ function Card({ item, index }: { item: FeaturedCard; index: number }): JSX.Eleme
           aria-hidden
           className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay"
         />
-        {/* Legibility scrim so eggshell text holds on the brightest gradients. */}
-        <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/55" />
+        {/* Top-down legibility scrim (Figma: black/60 → transparent by the midpoint) so the
+            top-anchored title/category hold on the brightest gradients. */}
+        <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent to-50%" />
 
-        <div className="relative flex h-full flex-col p-5">
-          <span className="text-[12px] font-medium uppercase tracking-[0.14em] text-cream/75">{item.category}</span>
-          <h3 className="mt-2 max-w-[14rem] text-[17px] font-semibold leading-[1.18] text-cream">{item.title}</h3>
-          <span className="mt-auto inline-flex translate-y-1 items-center gap-1 text-[13px] text-cream/0 transition-all duration-500 group-hover:translate-y-0 group-hover:text-cream/90">
-            Read
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4" aria-hidden>
-              <path d="M7 17 17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
+        <div className="relative flex h-full flex-col items-start gap-2 px-6 py-8">
+          <h3 className="w-full text-base font-semibold leading-[1.15] text-cream">{item.title}</h3>
+          <span className="w-full text-sm font-medium leading-[1.15] text-cream">{item.category}</span>
         </div>
       </Link>
     </Motion>
@@ -103,14 +98,14 @@ export function HeroFeaturedComponent({ thesis, headline, items }: HeroFeaturedB
 
   return (
     <section className="mx-auto w-full max-w-7xl px-5">
-      <div className="flex flex-col items-center gap-6 py-16 text-center lg:py-24">
+      <div className="flex flex-col items-center gap-6 pt-16 pb-4 text-center lg:pt-[72px]">
         {thesis && (
           <Motion
             tag="p"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="max-w-xl text-[15px] font-medium text-body lg:text-[16px]"
+            className="max-w-xl text-base font-medium leading-[1.15] text-body"
           >
             {thesis}
           </Motion>
@@ -121,7 +116,7 @@ export function HeroFeaturedComponent({ thesis, headline, items }: HeroFeaturedB
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
-            className="font-display text-[clamp(2.25rem,5.5vw,3.5rem)] font-medium leading-[1.06] text-cream"
+            className="font-display text-[clamp(2rem,5vw,2.5rem)] font-medium leading-[1.15] text-cream"
           >
             {headlineLines.map((line, i) => (
               <span key={i} className="block">
@@ -133,7 +128,7 @@ export function HeroFeaturedComponent({ thesis, headline, items }: HeroFeaturedB
       </div>
 
       {cards.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:gap-5">
+        <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
           {cards.map((card, i) => (
             <Card key={`${card.href}-${i}`} item={card} index={i} />
           ))}

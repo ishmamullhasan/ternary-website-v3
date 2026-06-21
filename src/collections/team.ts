@@ -65,6 +65,21 @@ const Team: CollectionConfig = {
       label: 'LinkedIn URL',
       type: 'text',
     },
+    {
+      name: 'x',
+      label: 'X / Twitter URL',
+      type: 'text',
+    },
+    {
+      name: 'github',
+      label: 'GitHub URL',
+      type: 'text',
+    },
+    {
+      name: 'website',
+      label: 'Website URL',
+      type: 'text',
+    },
   ],
 }
 

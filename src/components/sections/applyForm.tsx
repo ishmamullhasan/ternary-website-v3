@@ -36,7 +36,7 @@ function Field({
 }): JSX.Element {
   return (
     <div className={className}>
-      <label htmlFor={htmlFor} className={`block mb-2 text-xs ${careersText.muted}`}>
+      <label htmlFor={htmlFor} className="block mb-2.5 font-display text-[15px] text-cream/90">
         {label}
         {required ? <span className="text-body"> *</span> : null}
       </label>
@@ -195,7 +195,7 @@ function SectionHeading({ children }: { children: ReactNode }): JSX.Element {
 }
 
 function SubHeading({ children }: { children: ReactNode }): JSX.Element {
-  return <h3 className="text-lg font-medium text-cream">{children}</h3>
+  return <h3 className="font-display text-[22px] font-semibold leading-[1.15] text-cream/90">{children}</h3>
 }
 
 /* ---------- options ---------- */
@@ -414,9 +414,9 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
       <section className="space-y-8">
         <SectionHeading>Personal Information</SectionHeading>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SubHeading>Legal Name</SubHeading>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-3 gap-5">
             <Field label="First Name" htmlFor="firstName" {...fieldProps('firstName')}>
               <TextInput
                 id="firstName"
@@ -441,7 +441,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SubHeading>Contact Information</SubHeading>
           <Field label="Email" htmlFor="email" {...fieldProps('email')}>
             <TextInput
@@ -453,7 +453,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
               {...inputProps('email')}
             />
           </Field>
-          <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr_120px] gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr_120px] gap-5">
             <Field label="Country Code" htmlFor="countryCode" {...fieldProps('countryCode')}>
               <Select
                 id="countryCode"
@@ -480,9 +480,9 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SubHeading>Location</SubHeading>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-3 gap-5">
             <Field label="Country" htmlFor="country" {...fieldProps('country')}>
               <Select
                 id="country"
@@ -529,9 +529,9 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
           />
         </Field>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SubHeading>Most Recent Employer</SubHeading>
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-5">
             <Field label="Employer Name" htmlFor="employerName" {...fieldProps('employerName')}>
               <TextInput
                 id="employerName"
@@ -589,7 +589,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
           />
         </Field>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <SubHeading>Most Recent Educational Qualification</SubHeading>
           <Field label="Institution Name" htmlFor="institutionName" {...fieldProps('institutionName')}>
             <TextInput
@@ -609,7 +609,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
               {...inputProps('majorAreaOfStudy')}
             />
           </Field>
-          <div className="grid sm:grid-cols-[220px_1fr] gap-4">
+          <div className="grid sm:grid-cols-[220px_1fr] gap-5">
             <Field label="Degree" htmlFor="degree" {...fieldProps('degree')}>
               <Select
                 id="degree"
@@ -638,7 +638,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
       {/* Upload Documents */}
       <section className="space-y-8">
         <SectionHeading>Upload Documents</SectionHeading>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <Field label="Resume" required htmlFor="resume" error={errors.resume}>
             <FileUpload
               id="resume"
@@ -683,8 +683,10 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
 
         {/* Grouped as a fieldset so assistive tech announces these questions as one related set. */}
         <fieldset className="space-y-4 border-0 p-0 m-0">
-          <legend className="text-lg font-medium text-cream mb-4">Diversity, Equity, and Inclusion</legend>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <legend className="font-display text-[22px] font-semibold leading-[1.15] text-cream/90 mb-4">
+            Diversity, Equity, and Inclusion
+          </legend>
+          <div className="grid sm:grid-cols-3 gap-5">
             <Field label="Gender Identity" htmlFor="genderIdentity">
               <Select
                 id="genderIdentity"

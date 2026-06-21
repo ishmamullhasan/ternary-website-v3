@@ -32,7 +32,7 @@ export default function PressActions({ url }: { url: string }) {
   }
 
   const btn =
-    'inline-flex items-center gap-2 rounded-[2px] text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70'
+    'inline-flex items-center gap-2 rounded-full border border-subtle px-3.5 py-1.5 text-[14px] text-subtle transition-colors hover:border-cream/40 hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70'
 
   return (
     <div className="flex items-center gap-5 print:hidden">

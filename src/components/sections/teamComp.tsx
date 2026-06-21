@@ -1,10 +1,9 @@
 'use client'
 import Motion from '@/components/animation/motion'
-import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import { EASE } from '@/components/animation/reveal'
+import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import type { Media, Team } from '@/payload-types'
 import Image from 'next/image'
-import { ArrowUpRight } from 'lucide-react'
 import { useState, type JSX } from 'react'
 
 interface TeamCompProps {
@@ -36,21 +35,21 @@ function MemberCard({ member, index }: { member: Team; index: number }): JSX.Ele
         rel={href ? 'noopener noreferrer' : undefined}
         className="group flex flex-col items-center text-center"
       >
-        <div className="relative mb-4 aspect-square w-16 overflow-hidden rounded-md border border-white/[0.06] lg:w-[72px]">
+        <div className="relative mb-4 aspect-square w-14 overflow-hidden rounded-full border border-white/[0.06]">
           <GradientPanel tone={toneFor(undefined, index)} interactive />
           {media?.url && (
             <Image
               src={media.url}
               alt={member.name || 'team member'}
               fill
-              sizes="72px"
+              sizes="56px"
               className="relative object-cover"
             />
           )}
         </div>
 
-        <p className="text-sm text-cream transition-colors group-hover:text-cream lg:text-base">{member.name}</p>
-        <p className="mt-1 text-xs text-subtle lg:text-sm">{member.position}</p>
+        <p className="text-base font-medium text-cream">{member.name}</p>
+        <p className="mt-1 max-w-[160px] text-sm text-cream">{member.position}</p>
       </a>
     </Motion>
   )
@@ -68,12 +67,10 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
   return (
     <section>
       <div className="flex flex-col lg:flex-row lg:items-start lg:gap-12">
-        {/* Left header */}
+        {/* Left header — description first, heading below (Figma 339:13754). */}
         <div className="lg:w-1/4">
-          {heading && (
-            <h2 className="text-section font-display font-medium text-cream">{heading}</h2>
-          )}
-          {description && <p className="mt-3 text-body">{description}</p>}
+          {description && <p className="max-w-[238px] text-sm text-body">{description}</p>}
+          {heading && <h2 className="mt-3 text-2xl font-display font-medium text-cream">{heading}</h2>}
         </div>
 
         {/* Member grid */}
@@ -104,7 +101,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                         return (
                           <span
                             key={member.id ?? index}
-                            className="relative -ml-4 aspect-square w-16 overflow-hidden rounded-md border border-line first:ml-0 lg:w-[72px]"
+                            className="relative -ml-4 aspect-square w-14 overflow-hidden rounded-full border border-line first:ml-0"
                           >
                             <GradientPanel tone={toneFor(undefined, maxVisible + index)} interactive />
                             {media?.url && (
@@ -112,7 +109,7 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                                 src={media.url}
                                 alt={member.name || 'team member'}
                                 fill
-                                sizes="72px"
+                                sizes="56px"
                                 className="relative object-cover"
                               />
                             )}
@@ -121,11 +118,8 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
                       })}
                     </div>
 
-                    <p className="text-xs text-subtle lg:text-sm">{remaining}+ Orchestrators</p>
-                    <span className="mt-1 inline-flex items-center gap-1 text-sm text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1 lg:text-base">
-                      Meet the Team
-                      <ArrowUpRight size={16} aria-hidden />
-                    </span>
+                    <p className="text-base font-medium text-cream">{remaining}+ Orchestrators</p>
+                    <span className="mt-1 text-sm text-cream">Meet the Team</span>
                   </button>
                 </Motion>
               )}

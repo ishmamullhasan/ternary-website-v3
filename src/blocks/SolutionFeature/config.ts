@@ -25,6 +25,16 @@ export const SolutionFeature: Block = {
     ...sectionHeader(),
     imageField({ name: 'image', label: 'Image' }),
     {
+      name: 'stat',
+      label: 'Stat',
+      type: 'group',
+      admin: { description: 'Large stat shown inside the aside rings, e.g. 10x.' },
+      fields: [
+        { name: 'value', label: 'Value', type: 'text', localized: true, admin: { width: '50%' } },
+        { name: 'caption', label: 'Caption', type: 'text', localized: true, admin: { width: '50%' } },
+      ],
+    },
+    {
       name: 'mainSide',
       label: 'Main column side',
       type: 'select',

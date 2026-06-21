@@ -63,21 +63,21 @@ export function ScalesHeroComponent(props: ScalesHeroBlock): JSX.Element {
         className="flex max-w-4xl flex-col items-start text-left"
       >
         {props?.eyebrow && (
-          <span className="mb-4 text-[12px] uppercase tracking-[0.14em] text-subtle">{props.eyebrow}</span>
+          <span className="mb-3 text-[12px] uppercase tracking-[0.14em] text-subtle">{props.eyebrow}</span>
         )}
         {props?.heading && (
-          <h1 className="font-display max-w-2xl text-[clamp(2rem,5vw,2.5rem)] font-medium leading-[1.12] tracking-[-0.04em] text-cream">
+          <h1 className="font-display max-w-2xl text-[clamp(2rem,5vw,2.5rem)] font-medium leading-[1.15] tracking-[-0.0125em] text-cream">
             {props.heading}
           </h1>
         )}
         {props?.description && (
-          <p className="mt-6 max-w-xl text-[15px] leading-[1.5] text-body lg:text-[16px]">{props.description}</p>
+          <p className="mt-6 max-w-[644px] text-[16px] leading-[1.5] text-body">{props.description}</p>
         )}
       </Motion>
 
       {/* Engagement-shape cards */}
       {items.length > 0 && (
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:mt-12">
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item, index) => {
             const media = item.media as Media | null | undefined
             const tone = TONES[index % TONES.length]
@@ -89,18 +89,18 @@ export function ScalesHeroComponent(props: ScalesHeroBlock): JSX.Element {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: 0.6, ease: EASE, delay: Math.min(index * 0.06, 0.36) }}
-                className="group flex flex-col rounded-md bg-ink p-4 ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)]"
+                className="group flex flex-col rounded-md border border-line bg-main p-4 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)]"
               >
                 {/* Numbered eyebrow + title */}
-                <div className="flex flex-col items-start gap-2 px-1 pb-4 pt-1">
-                  <span className="text-[12px] tracking-[0.14em] text-subtle tabular-nums">
+                <div className="flex flex-col items-start gap-3 pb-4">
+                  <span className="text-[12px] tracking-tight text-subtle tabular-nums">
                     {String(index + 1).padStart(2, '0')}
                   </span>
-                  <h3 className="text-[15px] font-medium leading-[1.2] tracking-[-0.01em] text-cream">{item.title}</h3>
+                  <h3 className="text-[16px] font-medium leading-[1.25] tracking-[-0.01em] text-cream">{item.title}</h3>
                 </div>
 
                 {/* Gradient block — signature noise-gradient, with optional media layered over. */}
-                <div className="relative aspect-[2.6/1] w-full overflow-hidden rounded-md">
+                <div className="relative aspect-[3.2/1] w-full overflow-hidden rounded-md">
                   <span
                     aria-hidden
                     className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"

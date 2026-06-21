@@ -208,6 +208,17 @@ export const ProcessSection: Block = {
         description: 'Ordered list of process steps. Each row is one step with a title and rich-text description.',
       },
       fields: [
+        {
+          name: 'number',
+          label: 'Step Number',
+          type: 'text',
+          localized: true,
+          admin: {
+            width: '20%',
+            description:
+              'Editorial step number shown above the title, e.g. 03 — may repeat/skip; falls back to the row index when empty.',
+          },
+        },
         { name: 'title', label: 'Title', type: 'text', localized: true },
         { name: 'description', label: 'Description', type: 'richText', localized: true },
       ],

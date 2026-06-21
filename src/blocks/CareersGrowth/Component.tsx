@@ -44,23 +44,21 @@ export function CareersGrowthComponent(props: CareersGrowthBlock): JSX.Element {
               />
             </svg>
           </div>
-          <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-2 mt-8 border-t border-white/10 pt-6">
+          <div className="relative z-10 mt-8 grid grid-cols-2 gap-4 border-t border-white/10 pt-6 lg:grid-cols-4">
             {item1?.levels?.map((level, i) => (
               <div
                 key={i}
-                className="flex flex-col items-start justify-center rounded-md border border-line bg-ink p-4 transition-colors duration-300 hover:border-white/15"
+                className="flex flex-col items-start justify-center rounded-lg bg-page px-8 py-4 transition-colors duration-300"
               >
-                <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.14em] text-subtle">
-                  Level {i + 1}
-                </div>
-                <div className="text-sm font-medium text-cream">{level?.name || ''}</div>
+                <div className="font-display text-lg/[1.5] font-medium text-cream opacity-90">{level?.name || ''}</div>
               </div>
             ))}
           </div>
         </BentoCard>
 
         <BentoCard
-          className="aspect-square"
+          className="h-full"
+          icon={item2?.icon ?? undefined}
           title={item2?.title || 'Mentorship & technical development'}
           desc={
             item2?.excerpt ||
@@ -70,6 +68,7 @@ export function CareersGrowthComponent(props: CareersGrowthBlock): JSX.Element {
 
         {/* Bottom Row */}
         <BentoCard
+          icon={item3?.icon ?? undefined}
           title={item3?.title || 'Competitive compensation & benefits'}
           desc={
             item3?.excerpt ||
@@ -77,14 +76,16 @@ export function CareersGrowthComponent(props: CareersGrowthBlock): JSX.Element {
           }
         />
         <BentoCard
+          icon={item4?.icon ?? undefined}
           title={item4?.title || 'Leadership & influence opportunities'}
           desc={
             item4?.excerpt || 'Take on leadership roles and shape the technical direction of our products and teams.'
           }
         />
         <BentoCard
-          className="p-0 border-0 aspect-square"
+          className="h-full"
           noIcon
+          icon={item5?.icon ?? undefined}
           imageBg={(item5?.media as Media)?.url || undefined}
           title={item5?.title || 'Move with velocity'}
           desc={

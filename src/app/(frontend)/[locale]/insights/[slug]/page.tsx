@@ -124,7 +124,7 @@ function MetaPair({ label, value }: { label: string; value?: string | null }) {
 
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-[12px] tracking-[-0.01em] text-subtle">{label}</span>
+      <span className="text-[12px] text-subtle">{label}</span>
       <span className="text-[16px] text-cream">{value}</span>
     </div>
   )
@@ -144,7 +144,7 @@ function RelatedInsightCard({ item, index, locale }: { item: Insight; index: num
         className="group flex h-full flex-col overflow-hidden rounded-md bg-main ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
       >
         {/* Signature gradient-noise media (no photo) — renders identically with or without CMS media. */}
-        <GradientPanel tone="emerald" scrim className="h-[224px] rounded-none">
+        <GradientPanel tone="emerald" scrim radius="rounded-none" className="h-[224px]">
           <div className="flex h-full flex-col p-6">
             <span className="inline-flex w-fit items-center rounded-full bg-black/55 px-3.5 py-1.5 text-[13px] text-cream backdrop-blur-sm">
               {item.code || 'Insight'}
@@ -239,17 +239,17 @@ export default async function Page({
 
       {/* Hero — left text column + signature gradient-noise panel (no photo) */}
       <Motion tag="section" {...reveal}>
-        <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-[576px_1fr] lg:gap-[72px]">
+        <div className="grid grid-cols-1 items-stretch gap-8 overflow-hidden rounded-lg lg:grid-cols-[576px_1fr] lg:gap-[72px] lg:px-6">
           <div className="flex min-h-[392px] flex-col justify-between gap-10">
             <div className="flex flex-col gap-6">
-              <h1 className="font-display text-3xl font-medium leading-[1.15] tracking-[-0.04em] text-cream lg:text-[40px]">
+              <h1 className="font-display text-3xl font-medium leading-[1.15] text-cream opacity-90 lg:text-[40px]">
                 {insight.title}
               </h1>
 
               {insight.leadParagraph && (
                 <RichTextComp
                   content={insight.leadParagraph as RichText}
-                  className="max-w-xl [&_p]:text-[16px] [&_p]:leading-relaxed [&_p]:tracking-[-0.01em] [&_p]:text-body"
+                  className="max-w-xl [&_p]:text-[16px] [&_p]:leading-[1.15] [&_p]:text-body"
                 />
               )}
             </div>
@@ -273,24 +273,24 @@ export default async function Page({
             )}
           </div>
 
-          <GradientPanel tone="emerald" className="h-[280px] w-full lg:h-[392px]" />
+          <GradientPanel tone="emerald" radius="rounded-lg" className="h-[280px] w-full lg:h-[392px]" />
         </div>
       </Motion>
 
       {/* Article body */}
       {(insight.content || tagNames?.length || author) && (
         <Motion tag="section" {...reveal}>
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[278px_1fr] lg:gap-16">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[278px_1fr] lg:gap-8">
             <aside className="flex flex-col gap-8 lg:sticky lg:top-24 lg:self-start">
               {headings.length > 0 && <InsightToc headings={headings} />}
               <InsightShare url={shareUrl} title={insight.title} />
             </aside>
 
-            <div className="flex min-w-0 flex-col gap-10">
+            <div className="flex min-w-0 flex-col gap-8">
               {insight.content && (
                 <RichTextComp
                   content={insight.content as RichText}
-                  className="flex flex-col gap-2 [&_blockquote]:border-l-2 [&_blockquote]:border-cream/40 [&_blockquote]:pl-4 [&_blockquote]:text-body [&_code]:block [&_code]:overflow-x-auto [&_code]:rounded-md [&_code]:border [&_code]:border-line [&_code]:bg-ink [&_code]:p-6 [&_code]:font-mono [&_code]:text-[14px] [&_code]:leading-relaxed [&_code]:text-body [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:scroll-mt-24 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-medium [&_h2]:tracking-[-0.02em] [&_h2]:text-cream [&_h2]:lg:text-[28px] [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:scroll-mt-24 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-medium [&_h3]:tracking-[-0.02em] [&_h3]:text-cream [&_h3]:lg:text-2xl [&_li]:text-body [&_p]:mt-0 [&_p]:text-[16px] [&_p]:leading-[1.7] [&_p]:tracking-[-0.01em] [&_p]:text-body [&_ul]:mt-2 [&_ul]:space-y-2"
+                  className="flex flex-col gap-2 [&_blockquote]:border-l-2 [&_blockquote]:border-cream/40 [&_blockquote]:pl-4 [&_blockquote]:text-body [&_code]:block [&_code]:overflow-x-auto [&_code]:rounded-md [&_code]:border [&_code]:border-line [&_code]:bg-ink [&_code]:p-6 [&_code]:font-mono [&_code]:text-[14px] [&_code]:leading-relaxed [&_code]:text-body [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:scroll-mt-24 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-medium [&_h2]:tracking-[-0.05em] [&_h2]:text-cream [&_h2]:lg:text-[30px] [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:scroll-mt-24 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-medium [&_h3]:tracking-[-0.05em] [&_h3]:text-cream [&_h3]:lg:text-2xl [&_li]:text-body [&_p]:mt-0 [&_p]:text-[16px] [&_p]:leading-[1.8] [&_p]:tracking-normal [&_p]:text-body [&_ul]:mt-2 [&_ul]:space-y-2"
                 />
               )}
 
@@ -306,21 +306,21 @@ export default async function Page({
 
               {/* Author bio */}
               {author?.name && (
-                <div className="flex flex-col gap-5 rounded-md bg-main p-6 sm:flex-row">
+                <div className="flex flex-col gap-4 rounded-2xl bg-main p-6 sm:flex-row">
                   <GradientAvatar image={authorImage} name={author.name} size={58} />
                   <div className="flex min-w-0 flex-col gap-3">
                     <div className="flex flex-col gap-1">
-                      <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Written by</span>
+                      <span className="text-[12px] text-subtle">Written by</span>
                       <p className="text-[16px] text-cream">{author.name}</p>
                       {author.position && <p className="text-[12px] text-subtle">{author.position}</p>}
                     </div>
                     {author.description && (
                       <RichTextComp
                         content={author.description as RichText}
-                        className="prose-sm max-w-none text-[16px] leading-relaxed tracking-[-0.01em] text-body"
+                        className="prose-sm max-w-none text-[16px] leading-[1.8] tracking-normal text-body"
                       />
                     )}
-                    <div className="flex items-center gap-5 pt-1">
+                    <div className="flex items-center gap-2 pt-1">
                       {author.linkedin && (
                         <a
                           href={author.linkedin}

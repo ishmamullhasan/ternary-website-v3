@@ -23,22 +23,22 @@ export function AboutIntroComponent({ heading, description, content }: AboutIntr
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.6, ease: EASE }}
-      className="rounded-md bg-main p-6 lg:p-12"
+      className="rounded-md bg-main p-9 lg:p-12"
     >
       <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
-        <div className="lg:w-1/5 lg:shrink-0">
+        <div className="lg:w-[17%] lg:shrink-0">
           {heading ? (
-            <h2 className="font-display text-[22px] font-medium leading-[1.15] tracking-[-0.01em] text-cream lg:text-2xl">
+            <h2 className="font-display text-[22px] font-medium leading-[1.15] tracking-[-0.05em] text-cream lg:text-2xl">
               {heading}
             </h2>
           ) : null}
-          {description ? <p className="mt-4 text-[13px] leading-relaxed text-subtle">{description}</p> : null}
+          {description ? <p className="mt-4 text-sm leading-relaxed text-body">{description}</p> : null}
         </div>
 
-        <div className="lg:w-4/5">
+        <div className="lg:w-[80%]">
           <RichTextComp
             content={content as RichText}
-            className="prose-p:text-[17px] prose-p:leading-[1.6] prose-p:text-body prose-p:tracking-[-0.01em] lg:prose-p:text-[20px] lg:prose-p:leading-[1.6]"
+            className="prose-p:mb-12 prose-p:text-[17px] prose-p:leading-[1.4] prose-p:text-body prose-p:tracking-[-0.01em] lg:prose-p:text-[26px] lg:prose-p:leading-[1.4]"
           />
         </div>
       </div>

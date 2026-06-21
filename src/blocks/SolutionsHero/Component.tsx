@@ -150,15 +150,15 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
 
   return (
     <section className="mx-auto w-full max-w-7xl px-5">
-      {/* Intro block — centered institutional statement. */}
-      <div className="flex flex-col items-center gap-5 py-16 text-center lg:py-24">
+      {/* Intro block — centered institutional statement (Figma: ~72px top pad, 24px headline→desc gap). */}
+      <div className="flex flex-col items-center gap-6 py-[72px] text-center">
         {props?.heading ? (
           <Motion
             tag="h1"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE }}
-            className="font-display text-[clamp(2rem,4.5vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream"
+            className="font-display text-3xl font-medium leading-[1.15] tracking-[-0.05em] text-cream"
           >
             {props.heading}
           </Motion>
@@ -169,21 +169,21 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.08 }}
-            className="max-w-2xl text-[15px] leading-relaxed text-body lg:text-base"
+            className="max-w-3xl text-base leading-[1.5] text-body"
           >
             {props.description}
           </Motion>
         ) : null}
       </div>
 
-      {/* Signature header image — degrades to a brand gradient + grain when media is absent. */}
+      {/* Signature header image with the four offering cards overlaid on the bottom (Figma 1480×843). */}
       <Motion
         tag="div"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.7, ease: EASE }}
-        className="relative aspect-[16/9] w-full overflow-hidden rounded-md ring-1 ring-white/5 sm:aspect-[1480/720]"
+        className="relative aspect-[16/10] w-full overflow-hidden rounded-md ring-1 ring-line sm:aspect-[1480/843]"
       >
         {/* Always-present gradient + grain so the frame never reads as an empty/broken box. */}
         <span
@@ -204,32 +204,34 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
         ) : null}
-        {/* Bottom scrim keeps the band beneath cohesive with the photo. */}
-        <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60" />
-      </Motion>
+        {/* Bottom scrim keeps the overlaid cards legible against the photo. */}
+        <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/75" />
 
-      {/* Offering row — four disciplines on a flat band, divided by hairlines (no card fills). */}
-      {cells.length > 0 ? (
-        <div className="mt-px grid grid-cols-1 divide-y divide-white/5 overflow-hidden rounded-md bg-ink sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
-          {cells.map(({ shape, card }, index) => (
-            <Motion
-              tag="div"
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.07, 0.42) }}
-              className="group flex flex-col items-center px-6 py-8 text-center sm:border-r sm:border-white/5 sm:last:border-r-0 lg:px-7 lg:py-9"
-            >
-              <div className="transition-transform duration-500 ease-out group-hover:-translate-y-1">
-                <IconShapes cubes={shape.cubes} cy={shape.cy} />
-              </div>
-              <h3 className="font-display mt-5 text-[18px] font-medium leading-snug text-cream">{card?.title}</h3>
-              {card?.excerpt ? <p className="mt-1.5 text-[13px] leading-relaxed text-subtle">{card.excerpt}</p> : null}
-            </Motion>
-          ))}
-        </div>
-      ) : null}
+        {/* Offering row — four disciplines overlaid as translucent glass cards, divided by hairlines. */}
+        {cells.length > 0 ? (
+          <div className="absolute inset-x-0 bottom-0 grid grid-cols-2 divide-line bg-black/40 backdrop-blur-sm lg:grid-cols-4 lg:divide-x">
+            {cells.map(({ shape, card }, index) => (
+              <Motion
+                tag="div"
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.07, 0.42) }}
+                className="group flex flex-col items-center border-t border-line px-6 py-7 text-center lg:border-t-0 lg:px-7 lg:py-8"
+              >
+                <div className="transition-transform duration-500 ease-out group-hover:-translate-y-1">
+                  <IconShapes cubes={shape.cubes} cy={shape.cy} />
+                </div>
+                <h3 className="font-display mt-4 text-[18px] font-medium leading-snug text-cream">{card?.title}</h3>
+                {card?.excerpt ? (
+                  <p className="mt-1.5 text-[12px] leading-relaxed text-subtle">{card.excerpt}</p>
+                ) : null}
+              </Motion>
+            ))}
+          </div>
+        ) : null}
+      </Motion>
     </section>
   )
 }

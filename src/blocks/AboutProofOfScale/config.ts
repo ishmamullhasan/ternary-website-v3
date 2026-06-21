@@ -31,6 +31,7 @@ export const AboutProofOfScale: Block = {
               localized: true,
               admin: { description: 'Short supporting copy.' },
             },
+            { name: 'logo', label: 'Logo', type: 'upload', relationTo: 'media' },
             tagsArray({ name: 'stack', label: 'Stack' }),
           ],
         },

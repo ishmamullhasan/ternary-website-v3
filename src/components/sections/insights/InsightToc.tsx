@@ -57,8 +57,8 @@ export default function InsightToc({ headings }: { headings: Heading[] }) {
 
   return (
     <nav aria-label="On this page">
-      <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">On this page</p>
-      <ul className="mt-4 flex flex-col border-l border-line">
+      <p className="text-[12px] leading-[1.15] text-subtle">On this page</p>
+      <ul className="mt-2 flex flex-col gap-2 border-l border-line">
         {headings.map((heading) => {
           const active = heading.id === activeId
           return (
@@ -67,7 +67,7 @@ export default function InsightToc({ headings }: { headings: Heading[] }) {
                 href={`#${heading.id}`}
                 onClick={(event) => handleClick(event, heading.id)}
                 aria-current={active ? 'true' : undefined}
-                className={`-ml-px block border-l-2 py-1.5 pl-4 text-[16px] leading-snug transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 ${
+                className={`-ml-px block border-l-2 pl-4 text-[16px] leading-[1.15] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 ${
                   active ? 'border-cream font-medium text-cream' : 'border-transparent text-subtle hover:text-body'
                 }`}
               >

@@ -115,7 +115,7 @@ export default function Header({ headerData }: HeaderProps) {
   }
 
   const DesktopNav = (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-0">
       {menuItems.map((item, i) => {
         const hasSubmenu = item.subItems && item.subItems.length > 0
         const itemId = `item-${i}`
@@ -125,12 +125,14 @@ export default function Header({ headerData }: HeaderProps) {
         const itemActive =
           (item.link && path === item.link) || item.subItems?.some((s) => s.link && path === s.link) || false
 
-        // Nav item type per design (UI/Nav Item): Inter Medium 14px, tracking 0 (reset from the
-        // body's −0.05em), in the cream text token. Item box = px16/py8, radius/md.
+        // Nav item type per design (navigation-menu-item label I339:8022;2:116): Inter SemiBold
+        // 14px, leading 1.15, tracking 0 (reset from the body's −0.05em), full Text/Primary
+        // (#f4f3ec = text-cream — all six items render at full cream, no resting dim). Item box =
+        // px16/py8 (px-4/py-2), radius/md (rounded-md), label→chevron gap-4 (gap-1).
         const itemClass = cn(
-          'flex items-center gap-1 rounded-md px-4 py-2 text-[14px] font-medium leading-[1.15] tracking-normal text-cream',
+          'flex items-center gap-1 rounded-md px-4 py-2 text-[14px] font-semibold leading-[1.15] tracking-normal text-cream',
           'transition-colors duration-200 hover:bg-white/[0.06]',
-          itemActive || isDropdownActive ? 'bg-white/[0.06]' : 'text-cream/85 hover:text-cream',
+          (itemActive || isDropdownActive) && 'bg-white/[0.06]',
         )
 
         if (hasSubmenu) {
@@ -217,13 +219,18 @@ export default function Header({ headerData }: HeaderProps) {
     </div>
   )
 
-  // CTA per design: Surface/Card fill, radius/md, px16 py8, Inter SemiBold 14px, cream text, NO
-  // border. Hover lifts the fill a touch rather than inverting.
+  // CTA per design (button label I339:8020;2:334): Surface/Card fill (#1b1a17 = bg-main),
+  // radius/md (rounded-md), px16 py8 (px-4/py-2), Inter Medium 14px, leading 1.15, tracking 0,
+  // cream text, NO border. Hover lifts the fill a touch rather than inverting.
   const ctaClass =
-    'inline-flex items-center justify-center rounded-md bg-main px-4 py-2 text-[14px] font-semibold leading-[1.15] tracking-normal text-cream transition-colors duration-200 hover:bg-[#26241f]'
+    'inline-flex items-center justify-center rounded-md bg-main px-4 py-2 text-[14px] font-medium leading-[1.15] tracking-normal text-cream transition-colors duration-200 hover:bg-[#26241f]'
 
   const Logo = (
-    <Link href={localizedHref(locale, '/')} className="flex shrink-0 items-center gap-2.5" aria-label={headerData?.siteName || 'Ternary'}>
+    <Link
+      href={localizedHref(locale, '/')}
+      className="flex shrink-0 items-center gap-2.5"
+      aria-label={headerData?.siteName || 'Ternary'}
+    >
       {logoUrl ? (
         <Image
           src={logoUrl}
@@ -237,7 +244,10 @@ export default function Header({ headerData }: HeaderProps) {
       ) : (
         // Inline brand mark fallback — CMS logo media (S3) degrades to a broken box, the mark does not.
         <TernaryMark
-          className={cn('w-auto text-cream transition-[height] duration-200', reduce && compact ? 'h-[26px]' : 'h-[30px]')}
+          className={cn(
+            'w-auto text-cream transition-[height] duration-200',
+            reduce && compact ? 'h-[26px]' : 'h-[30px]',
+          )}
         />
       )}
     </Link>
@@ -293,7 +303,10 @@ export default function Header({ headerData }: HeaderProps) {
           {/* Mobile: CTA + menu toggle - right */}
           <div className="flex items-center gap-2 md:hidden">
             {headerData?.button?.label && (
-              <Link href={localizedHref(locale, headerData.button.link)} className={cn(ctaClass, 'hidden sm:inline-flex')}>
+              <Link
+                href={localizedHref(locale, headerData.button.link)}
+                className={cn(ctaClass, 'hidden sm:inline-flex')}
+              >
                 {headerData.button.label}
               </Link>
             )}

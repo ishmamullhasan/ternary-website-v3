@@ -99,17 +99,19 @@ function FooterMenuColumn({
       transition={{ duration: 0.6, ease: EASE, delay: Math.min(index * 0.06, 0.3) }}
       className="flex flex-col gap-2 p-2"
     >
-      {/* Heading: Inter Medium 16px, tracking −0.8px (= body's −0.05em at 16px), cream */}
-      {heading && <span className="text-[16px] font-medium tracking-[-0.05em] text-cream">{heading}</span>}
+      {/* Heading: Inter Medium 16px, tracking −0.8px (= body's −0.05em at 16px), line-height 1.15, cream */}
+      {heading && (
+        <span className="text-[16px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">{heading}</span>
+      )}
 
       <div className="flex flex-col gap-2">
         {menuItems.map((item, idx) => (
           <Link
             href={item.link ?? '#'}
             key={`${prefix}-link-${idx}`}
-            // Links: Inter Regular 14px, tracking −0.7px, cream — muted at rest, lifting to full
-            // cream on hover/focus.
-            className="w-fit text-[14px] font-normal tracking-[-0.05em] text-cream/70 transition-colors duration-150 hover:text-cream focus-visible:text-cream"
+            // Links: Inter Regular 14px, tracking −0.7px, line-height 1.15, full Text/Primary cream
+            // at rest (matches Figma), with a subtle dim on hover/focus that never starts muted.
+            className="w-fit text-[14px] font-normal leading-[1.15] tracking-[-0.05em] text-cream transition-colors duration-150 hover:text-cream/80 focus-visible:text-cream/80"
           >
             {item.label}
           </Link>
@@ -123,13 +125,14 @@ export default function Footer({ footerData }: FooterProps) {
   const logoUrl = getLogoUrl(footerData?.menu_1?.logo)
   const siteName = footerData?.menu_1?.siteName?.trim() || 'Ternary'
   const description = footerData?.menu_1?.description?.trim()
-  // Only surface a copyright line when the CMS has a real legal string — never the literal
-  // "Copyright" placeholder that some seed rows carry.
+  // Use the CMS legal string when it's a real value — never the literal "Copyright" placeholder
+  // that some seed rows carry — and fall back to the designed line so the row always renders.
   const rawCopyright = footerData?.menu_1?.copyright?.trim()
   const copyright =
     rawCopyright && rawCopyright.toLowerCase() !== 'copyright' && rawCopyright.toLowerCase() !== 'copyright text'
       ? rawCopyright
       : null
+  const legal = copyright || '© Ternary Solutions, Inc. and its subsidiaries. All Rights Reserved.'
 
   return (
     <footer className="mx-auto w-full max-w-7xl px-5 py-16">
@@ -154,9 +157,10 @@ export default function Footer({ footerData }: FooterProps) {
             <span className="text-[24px] font-medium leading-none tracking-[-0.04em] text-cream">{siteName}</span>
           </Link>
 
-          {/* Tagline: two lines, Inter Regular 16px, tracking −0.8px. whitespace-pre-line honors the
-              CMS line break; falls back to the designed two-line copy if the field is empty. */}
-          <span className="max-w-[16rem] whitespace-pre-line text-[16px] font-normal leading-[1.3] tracking-[-0.05em] text-cream">
+          {/* Tagline: two lines, Inter Regular 16px, tracking −0.8px, line-height 1.15 (Body/Regular).
+              whitespace-pre-line honors the CMS line break; falls back to the designed two-line copy
+              if the field is empty. Width matches the ~151px Figma tagline column. */}
+          <span className="max-w-[10rem] whitespace-pre-line text-[16px] font-normal leading-[1.15] tracking-[-0.05em] text-cream">
             {description || 'Agentic Engineering.\nHuman Orchestration.'}
           </span>
         </Motion>
@@ -204,12 +208,11 @@ export default function Footer({ footerData }: FooterProps) {
         <FooterMenuColumn heading="Company" index={4} items={footerData?.menu_4?.menu ?? null} prefix="company" />
       </div>
 
-      {/* Bottom full-width row — legal line, only when present */}
-      {copyright && (
-        <div className="mt-16 border-t border-white/[0.08] pt-6">
-          <span className="text-[14px] font-normal tracking-[-0.05em] text-cream/70">{copyright}</span>
-        </div>
-      )}
+      {/* Bottom full-width row — legal line. 16px gap above (no divider per Figma), full Text/Primary
+          cream, Inter Regular 14px, tracking −0.7px, line-height 1.15. */}
+      <div className="mt-4">
+        <span className="text-[14px] font-normal leading-[1.15] tracking-[-0.05em] text-cream">{legal}</span>
+      </div>
     </footer>
   )
 }

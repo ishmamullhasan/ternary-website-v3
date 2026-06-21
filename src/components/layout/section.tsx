@@ -29,7 +29,7 @@ export default function Section({ title = '', desc = '', children, className = '
           transition={{ duration: 0.3, ease: 'easeOut' }}
         >
           {title?.trim() ? (
-            <h2 className="font-display max-w-none lg:max-w-md lg:text-3xl text-2xl font-medium text-cream mb-2">
+            <h2 className="font-display max-w-none lg:max-w-3xl lg:text-3xl text-2xl font-medium text-cream mb-2">
               {title}
             </h2>
           ) : null}

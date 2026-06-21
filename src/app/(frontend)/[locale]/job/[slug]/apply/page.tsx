@@ -5,7 +5,7 @@ import Jobs from '@/components/sections/job'
 import { careersBg, careersBorder, careersText } from '@/lib/careers-colors'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { formatComp, getJob, getJobs, getRelatedJobs } from '@/lib/jobs-data'
-import { ArrowLeft, Banknote, Briefcase, Layers, MapPin, TrendingUp, User, Users } from 'lucide-react'
+import { Activity, ArrowLeft, Banknote, Briefcase, Layers, MapPin, TrendingUp, User, Users } from 'lucide-react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -80,12 +80,16 @@ export default async function Page({
   }
   const payRange = formatComp(jobData.comp_band_min, jobData.comp_band_max, jobData.comp_currency)
 
-  // Hero pills: location & team are ✅ API; band is 🔒 internal (CMS).
+  // Hero pills: location & team are ✅ API; band is 🔒 internal (CMS). Each pill carries a
+  // leading icon (design 1295:6083) — MapPin (location), Briefcase (team), Activity (band).
   const pills = [
-    jobData.location,
-    jobData.team || jobData.department,
-    (jobData.band || jobData.seniority_level) && `Band: ${jobData.band || jobData.seniority_level}`,
-  ].filter((v): v is string => Boolean(v))
+    { icon: MapPin, label: jobData.location },
+    { icon: Briefcase, label: jobData.team || jobData.department },
+    {
+      icon: Activity,
+      label: (jobData.band || jobData.seniority_level) && `Band: ${jobData.band || jobData.seniority_level}`,
+    },
+  ].filter((p): p is { icon: typeof MapPin; label: string } => Boolean(p.label))
 
   // Sidebar facts. ✅ = API · 🟡 = CMS · 🔒 = internal-only (shown per design).
   const sidebarItems = [
@@ -117,12 +121,13 @@ export default async function Page({
             </h1>
             {pills.length > 0 && (
               <ul className="flex flex-wrap items-center gap-3 list-none">
-                {pills.map((pill) => (
+                {pills.map(({ icon: Icon, label }) => (
                   <li
-                    key={pill}
-                    className={`${careersBg.card} border ${careersBorder.subtle} ${careersText.body} text-sm px-4 py-2 rounded-full`}
+                    key={label}
+                    className={`inline-flex items-center gap-2 ${careersBg.card} border ${careersBorder.muted} ${careersText.body} font-display text-base px-4 py-1.5 rounded-full`}
                   >
-                    {pill}
+                    <Icon size={14} className="text-subtle shrink-0" aria-hidden />
+                    {label}
                   </li>
                 ))}
               </ul>
@@ -146,9 +151,9 @@ export default async function Page({
                 >
                   {sidebarItems.map(({ icon: Icon, label, value }) => (
                     <div key={label} className="flex items-start gap-3">
-                      <Icon size={18} className="text-subtle mt-0.5 shrink-0" aria-hidden />
+                      <Icon size={20} className="text-subtle mt-0.5 shrink-0" aria-hidden />
                       <div>
-                        <span className="block text-base font-medium text-cream">{label}</span>
+                        <span className="block font-display text-base font-semibold text-cream">{label}</span>
                         <span className="block text-base text-subtle">{value}</span>
                       </div>
                     </div>

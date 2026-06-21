@@ -25,7 +25,7 @@ export function ContactStatsComponent(props: ContactStatsBlock): JSX.Element | n
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, ease: EASE }}
-      className={`grid grid-cols-1 gap-4 ${cols}`}
+      className={`grid grid-cols-1 gap-8 ${cols}`}
     >
       {stats.map((stat, i) => (
         <Motion
@@ -34,15 +34,21 @@ export function ContactStatsComponent(props: ContactStatsBlock): JSX.Element | n
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.5, ease: EASE, delay: Math.min(i * 0.07, 0.28) }}
-          className="group space-y-2 rounded-md border border-line bg-main p-8 transition-colors duration-300 hover:border-line-strong"
+          className="group flex flex-col items-center justify-center gap-4 rounded-lg border border-line bg-main px-4 py-6 text-center transition-colors duration-300 hover:border-line-strong"
         >
           {stat.value && (
-            <p className="font-display text-[clamp(1.75rem,3vw,2.125rem)] font-medium leading-none tracking-[-0.03em] text-cream">
+            <p className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
               {stat.value}
             </p>
           )}
-          {stat.label && <p className="text-[15px] font-medium text-body">{stat.label}</p>}
-          {stat.detail && <p className="text-[13px] leading-relaxed text-subtle">{stat.detail}</p>}
+          <div className="flex flex-col items-center gap-2">
+            {stat.label && (
+              <p className="font-display text-[24px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+                {stat.label}
+              </p>
+            )}
+            {stat.detail && <p className="text-[16px] leading-[1.15] text-body">{stat.detail}</p>}
+          </div>
         </Motion>
       ))}
     </Motion>

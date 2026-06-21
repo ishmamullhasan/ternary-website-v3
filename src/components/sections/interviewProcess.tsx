@@ -89,21 +89,17 @@ export default function InterviewProcess({ interviewProcess }: InterviewProcessP
                 <div className="space-y-1.5 pr-4">
                   <div className="flex items-baseline justify-between gap-2">
                     <h3
-                      className={`text-base font-semibold tracking-tight transition-colors duration-300
+                      className={`text-base font-normal transition-colors duration-300
                       ${isStepPassed ? 'text-white' : 'text-body'}`}
                     >
                       {step.title || 'Initial Screen'}
                     </h3>
 
-                    {step.duration && (
-                      <span className="text-sm text-subtle font-mono font-medium whitespace-nowrap">
-                        {step.duration}
-                      </span>
-                    )}
+                    {step.duration && <span className="text-xs text-subtle whitespace-nowrap">{step.duration}</span>}
                   </div>
 
                   {step.excerpt && (
-                    <p className="text-base text-subtle leading-relaxed max-w-[220px]">{step.excerpt}</p>
+                    <p className="text-base text-subtle leading-relaxed max-w-[225px]">{step.excerpt}</p>
                   )}
                 </div>
               </div>

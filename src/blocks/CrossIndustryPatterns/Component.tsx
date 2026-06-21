@@ -1,5 +1,4 @@
 import Motion from '@/components/animation/motion'
-import { cn } from '@/lib/utils'
 import type { CrossIndustryPatternsBlock, Media } from '@/payload-types'
 import { GitBranch, Layers, Network, Workflow, type LucideIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -7,17 +6,51 @@ import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-// Distinct per-tile glyphs so the grid reads as different patterns rather than the repeated bolt.
-const TILE_ICONS: readonly LucideIcon[] = [Layers, Network, GitBranch, Workflow]
+// Distinct per-feature glyphs so each leverage point reads as its own pattern rather than a
+// repeated bolt.
+const FEATURE_ICONS: readonly LucideIcon[] = [Layers, Network, GitBranch, Workflow]
 
+// A single icon + title + paragraph feature block, shared by the right-column quotes and the
+// bottom benefits row.
+function FeatureBlock({
+  Icon,
+  title,
+  excerpt,
+}: {
+  Icon: LucideIcon
+  title?: string | null
+  excerpt?: string | null
+}): JSX.Element {
+  return (
+    <div className="flex flex-col gap-4">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-page text-cream">
+        <Icon size={24} strokeWidth={1.75} aria-hidden />
+      </span>
+      <div className="space-y-2">
+        {title && <h3 className="font-display text-xl font-medium leading-[1.15] text-cream">{title}</h3>}
+        {excerpt && <p className="text-base leading-[1.15] text-body">{excerpt}</p>}
+      </div>
+    </div>
+  )
+}
+
+// Structural Leverage section: a Surface/Card with a heading block, then a content row (large image
+// left + two stacked feature blocks right), then a full-width benefits row. Layout role is derived
+// from item index — item 0 fills the image feature, items 1-2 the right column, item 3 the bottom
+// benefits row.
 export function CrossIndustryPatternsComponent(props: CrossIndustryPatternsBlock): JSX.Element | null {
   if (!props?.heading) return null
 
   const items = props.items ?? []
+  const imageItem = items[0]
+  const columnItems = items.slice(1, 3)
+  const benefitItem = items[3]
+
+  const imageUrl = imageItem?.media ? ((imageItem.media as Media)?.url ?? undefined) : undefined
 
   return (
-    <section className="w-full rounded-md bg-ink p-6 lg:p-10">
-      <div className="space-y-8 lg:space-y-12">
+    <section className="w-full rounded-md bg-main px-6 py-10 sm:px-9 lg:py-12">
+      <div className="space-y-12">
         <Motion
           tag="div"
           initial={{ opacity: 0, y: 16 }}
@@ -26,82 +59,83 @@ export function CrossIndustryPatternsComponent(props: CrossIndustryPatternsBlock
           transition={{ duration: 0.6, ease: EASE }}
           className="max-w-3xl space-y-3"
         >
-          <h2 className="font-display text-2xl font-medium leading-tight tracking-tight text-cream lg:text-3xl">
-            {props.heading}
-          </h2>
-          {props.description && <p className="text-sm leading-relaxed text-body">{props.description}</p>}
+          <h2 className="font-display text-3xl font-medium leading-[1.15] text-cream">{props.heading}</h2>
+          {props.description && <p className="text-base leading-[1.15] text-body">{props.description}</p>}
         </Motion>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {items.map((item, index) => {
-            const imageUrl = item.media ? ((item.media as Media)?.url ?? undefined) : undefined
-            const isFirst = index === 0
-            const isLast = index === items.length - 1 && index > 0
-            const Icon = TILE_ICONS[index % TILE_ICONS.length]
-
-            return (
-              <Motion
-                key={item.id ?? `pattern-${index}`}
-                tag="div"
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.4) }}
-                className={cn(
-                  'group relative flex flex-col overflow-hidden rounded-md bg-main p-6 ring-1 ring-white/5 transition-colors duration-300 hover:ring-white/10 lg:p-8',
-                  isFirst && 'justify-end lg:col-span-2 lg:row-span-2 lg:min-h-[480px]',
-                  !isFirst && !isLast && 'justify-between lg:col-start-3 lg:min-h-[232px]',
-                  index === 1 && 'lg:row-start-1',
-                  index === 2 && 'lg:row-start-2',
-                  isLast && 'justify-between lg:col-span-3 lg:col-start-1 lg:row-start-3 lg:min-h-[160px]',
-                )}
-              >
-                {/* Feature tile: image when present, otherwise the signature noise-gradient field. */}
-                {isFirst && (
-                  <div aria-hidden className="absolute inset-0">
-                    {imageUrl ? (
-                      <Image
-                        src={imageUrl}
-                        alt=""
-                        fill
-                        priority
-                        sizes="(max-width: 1024px) 100vw, 66vw"
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <>
-                        <span
-                          className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-                          style={{
-                            backgroundImage:
-                              'radial-gradient(130% 130% at 20% 14%, #4f6bed 0%, #25307e 46%, #0c1030 100%)',
-                          }}
-                        />
-                        <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
-                      </>
-                    )}
-                    <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+        {(imageItem || columnItems.length > 0) && (
+          <Motion
+            tag="div"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="grid grid-cols-1 gap-8 lg:grid-cols-[933fr_459fr]"
+          >
+            <div className="relative aspect-[933/600] w-full overflow-hidden rounded-md">
+              {imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt=""
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 63vw"
+                  className="object-cover"
+                />
+              ) : (
+                <>
+                  <span
+                    aria-hidden
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage: 'radial-gradient(130% 130% at 20% 14%, #4f6bed 0%, #25307e 46%, #0c1030 100%)',
+                    }}
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay"
+                  />
+                </>
+              )}
+              {imageItem?.title && (
+                <>
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 p-6">
+                    <FeatureBlock Icon={FEATURE_ICONS[0]} title={imageItem.title} excerpt={imageItem.excerpt} />
                   </div>
-                )}
+                </>
+              )}
+            </div>
 
-                {!isFirst && (
-                  <span className="relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-cream/75 transition-colors duration-300 group-hover:text-cream">
-                    <Icon size={16} strokeWidth={1.75} aria-hidden />
-                  </span>
-                )}
+            {columnItems.length > 0 && (
+              <div className="flex flex-col justify-between gap-8">
+                {columnItems.map((item, idx) => (
+                  <FeatureBlock
+                    key={item.id ?? `column-${idx}`}
+                    Icon={FEATURE_ICONS[(idx + 1) % FEATURE_ICONS.length]}
+                    title={item.title}
+                    excerpt={item.excerpt}
+                  />
+                ))}
+              </div>
+            )}
+          </Motion>
+        )}
 
-                <div className={cn('relative z-10 mt-auto space-y-2', isFirst ? 'max-w-xl' : 'max-w-md')}>
-                  {item.title && (
-                    <h3 className="font-display text-lg font-medium leading-tight tracking-tight text-cream lg:text-xl">
-                      {item.title}
-                    </h3>
-                  )}
-                  {item.excerpt && <p className="text-sm leading-relaxed text-body">{item.excerpt}</p>}
-                </div>
-              </Motion>
-            )
-          })}
-        </div>
+        {benefitItem && (
+          <Motion
+            tag="div"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.55, ease: EASE }}
+          >
+            <FeatureBlock Icon={FEATURE_ICONS[3]} title={benefitItem.title} excerpt={benefitItem.excerpt} />
+          </Motion>
+        )}
       </div>
     </section>
   )

@@ -333,6 +333,62 @@ export interface Story {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Numbered case-study sections (01 The Challenge, 02 The Approach, …). Leave empty to use the flat content field.
+   */
+  bodySections?:
+    | {
+        /**
+         * e.g. 01 The Challenge
+         */
+        label?: string | null;
+        heading?: string | null;
+        lede?: string | null;
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Headline metrics. Use real figures only.
+   */
+  outcomeStats?:
+    | {
+        value: string;
+        label: string;
+        detail?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pull-quote / testimonial.
+   */
+  quote?: {
+    text?: string | null;
+    name?: string | null;
+    role?: string | null;
+  };
+  /**
+   * Reading time in minutes.
+   */
+  readTime?: number | null;
+  /**
+   * Case-study code, e.g. CS-014.
+   */
+  code?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -671,6 +727,9 @@ export interface Team {
   } | null;
   image?: (string | null) | Media;
   linkedin?: string | null;
+  x?: string | null;
+  github?: string | null;
+  website?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1347,6 +1406,84 @@ export interface Scale {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Which bespoke data panel this tier renders.
+   */
+  panelType?: ('generic' | 'sprint' | 'roadmap' | 'procurement') | null;
+  sprintMeta?: {
+    /**
+     * e.g. Live sprint day 23
+     */
+    statusLabel?: string | null;
+    /**
+     * e.g. cycle 1.8d lead 6h
+     */
+    cadenceLabel?: string | null;
+  };
+  /**
+   * How we show up numbered list
+   */
+  showUp?:
+    | {
+        number?: string | null;
+        title?: string | null;
+        subtext?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  sprintLog?:
+    | {
+        /**
+         * e.g. D23
+         */
+        day?: string | null;
+        label?: string | null;
+        status?: ('shipped' | 'in-review' | 'in-build' | 'queued') | null;
+        id?: string | null;
+      }[]
+    | null;
+  roadmapMeta?: {
+    /**
+     * e.g. Program roadmap
+     */
+    label?: string | null;
+    /**
+     * e.g. 4 quarters FY2026
+     */
+    span?: string | null;
+  };
+  roadmap?:
+    | {
+        phase?: string | null;
+        startQuarter?: ('Q1' | 'Q2' | 'Q3' | 'Q4') | null;
+        endQuarter?: ('Q1' | 'Q2' | 'Q3' | 'Q4') | null;
+        progress?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  footnotes?:
+    | {
+        number?: string | null;
+        title?: string | null;
+        subtext?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  capability?:
+    | {
+        term?: string | null;
+        value?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  procurementPath?:
+    | {
+        number?: string | null;
+        title?: string | null;
+        subtext?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -1520,6 +1657,10 @@ export interface ProcessSectionBlock {
    */
   process?:
     | {
+        /**
+         * Editorial step number shown above the title, e.g. 03 — may repeat/skip; falls back to the row index when empty.
+         */
+        number?: string | null;
         title?: string | null;
         description?: {
           root: {
@@ -2276,6 +2417,13 @@ export interface SolutionFeatureBlock {
   description?: string | null;
   image?: (string | null) | Media;
   /**
+   * Large stat shown inside the aside rings, e.g. 10x.
+   */
+  stat?: {
+    value?: string | null;
+    caption?: string | null;
+  };
+  /**
    * Which side the text column sits on at large breakpoints (image takes the other).
    */
   mainSide?: ('left' | 'right') | null;
@@ -2356,6 +2504,10 @@ export interface SolutionsEngageBlock {
          */
         subtitle?: string | null;
         description?: string | null;
+        /**
+         * The right-side "Ideal for" paragraph — distinct from the description intro line.
+         */
+        idealFor?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -2381,6 +2533,21 @@ export interface AboutHeroBlock {
 export interface AboutFundingStoryBlock {
   heading?: string | null;
   description?: string | null;
+  /**
+   * Small label above the headline, e.g. What's Next.
+   */
+  eyebrow?: string | null;
+  /**
+   * Up to two CTA buttons.
+   */
+  links?:
+    | {
+        label?: string | null;
+        url?: string | null;
+        style?: ('primary' | 'secondary') | null;
+        id?: string | null;
+      }[]
+    | null;
   backgroundImage?: (string | null) | Media;
   id?: string | null;
   blockName?: string | null;
@@ -2509,6 +2676,7 @@ export interface AboutProofOfScaleBlock {
            * Short supporting copy.
            */
           excerpt?: string | null;
+          logo?: (string | null) | Media;
           stack?:
             | {
                 name: string;
@@ -2575,6 +2743,25 @@ export interface CareersGridOneBlock {
     | {
         title: string;
         /**
+         * Icon shown on this item.
+         */
+        icon?:
+          | (
+              | 'zap'
+              | 'users'
+              | 'heart'
+              | 'globe'
+              | 'rocket'
+              | 'shield'
+              | 'sparkles'
+              | 'trophy'
+              | 'target'
+              | 'trending-up'
+              | 'book-open'
+              | 'compass'
+            )
+          | null;
+        /**
          * Short supporting copy.
          */
         excerpt?: string | null;
@@ -2596,6 +2783,25 @@ export interface CareersGridTwoBlock {
   items?:
     | {
         title: string;
+        /**
+         * Icon shown on this item.
+         */
+        icon?:
+          | (
+              | 'zap'
+              | 'users'
+              | 'heart'
+              | 'globe'
+              | 'rocket'
+              | 'shield'
+              | 'sparkles'
+              | 'trophy'
+              | 'target'
+              | 'trending-up'
+              | 'book-open'
+              | 'compass'
+            )
+          | null;
         /**
          * Short supporting copy.
          */
@@ -2634,6 +2840,25 @@ export interface CareersGrowthBlock {
   items?:
     | {
         title: string;
+        /**
+         * Icon shown on this item.
+         */
+        icon?:
+          | (
+              | 'zap'
+              | 'users'
+              | 'heart'
+              | 'globe'
+              | 'rocket'
+              | 'shield'
+              | 'sparkles'
+              | 'trophy'
+              | 'target'
+              | 'trending-up'
+              | 'book-open'
+              | 'compass'
+            )
+          | null;
         /**
          * Short supporting copy.
          */
@@ -3296,6 +3521,7 @@ export interface ProcessSectionBlockSelect<T extends boolean = true> {
   process?:
     | T
     | {
+        number?: T;
         title?: T;
         description?: T;
         id?: T;
@@ -3696,6 +3922,12 @@ export interface SolutionFeatureBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
   image?: T;
+  stat?:
+    | T
+    | {
+        value?: T;
+        caption?: T;
+      };
   mainSide?: T;
   widget?: T;
   trajectory?:
@@ -3759,6 +3991,7 @@ export interface SolutionsEngageBlockSelect<T extends boolean = true> {
         title?: T;
         subtitle?: T;
         description?: T;
+        idealFor?: T;
         id?: T;
       };
   id?: T;
@@ -3781,6 +4014,15 @@ export interface AboutHeroBlockSelect<T extends boolean = true> {
 export interface AboutFundingStoryBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
+  eyebrow?: T;
+  links?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        style?: T;
+        id?: T;
+      };
   backgroundImage?: T;
   id?: T;
   blockName?: T;
@@ -3875,6 +4117,7 @@ export interface AboutProofOfScaleBlockSelect<T extends boolean = true> {
           | {
               name?: T;
               excerpt?: T;
+              logo?: T;
               stack?:
                 | T
                 | {
@@ -3928,6 +4171,7 @@ export interface CareersGridOneBlockSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        icon?: T;
         excerpt?: T;
         media?: T;
         id?: T;
@@ -3946,6 +4190,7 @@ export interface CareersGridTwoBlockSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        icon?: T;
         excerpt?: T;
         media?: T;
         id?: T;
@@ -3976,6 +4221,7 @@ export interface CareersGrowthBlockSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        icon?: T;
         excerpt?: T;
         media?: T;
         id?: T;
@@ -4174,6 +4420,32 @@ export interface StorySelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  bodySections?:
+    | T
+    | {
+        label?: T;
+        heading?: T;
+        lede?: T;
+        body?: T;
+        id?: T;
+      };
+  outcomeStats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
+        detail?: T;
+        id?: T;
+      };
+  quote?:
+    | T
+    | {
+        text?: T;
+        name?: T;
+        role?: T;
+      };
+  readTime?: T;
+  code?: T;
   meta?:
     | T
     | {
@@ -4551,6 +4823,67 @@ export interface ScaleSelect<T extends boolean = true> {
         value?: T;
         id?: T;
       };
+  panelType?: T;
+  sprintMeta?:
+    | T
+    | {
+        statusLabel?: T;
+        cadenceLabel?: T;
+      };
+  showUp?:
+    | T
+    | {
+        number?: T;
+        title?: T;
+        subtext?: T;
+        id?: T;
+      };
+  sprintLog?:
+    | T
+    | {
+        day?: T;
+        label?: T;
+        status?: T;
+        id?: T;
+      };
+  roadmapMeta?:
+    | T
+    | {
+        label?: T;
+        span?: T;
+      };
+  roadmap?:
+    | T
+    | {
+        phase?: T;
+        startQuarter?: T;
+        endQuarter?: T;
+        progress?: T;
+        id?: T;
+      };
+  footnotes?:
+    | T
+    | {
+        number?: T;
+        title?: T;
+        subtext?: T;
+        id?: T;
+      };
+  capability?:
+    | T
+    | {
+        term?: T;
+        value?: T;
+        id?: T;
+      };
+  procurementPath?:
+    | T
+    | {
+        number?: T;
+        title?: T;
+        subtext?: T;
+        id?: T;
+      };
   meta?:
     | T
     | {
@@ -4601,6 +4934,9 @@ export interface TeamSelect<T extends boolean = true> {
   description?: T;
   image?: T;
   linkedin?: T;
+  x?: T;
+  github?: T;
+  website?: T;
   updatedAt?: T;
   createdAt?: T;
 }

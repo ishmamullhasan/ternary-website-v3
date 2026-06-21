@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { cardsArray, tagsArray } from '@/fields/arrays'
+import { benefitIcons } from '@/fields/iconSets'
 import { sectionHeader } from '@/fields/sectionHeader'
 
 /**
@@ -31,7 +32,7 @@ export const CareersGrowth: Block = {
         { ...tagsArray({ name: 'levels', label: 'Levels' }), maxRows: 4 },
       ],
     },
-    cardsArray({ name: 'items', label: 'Supporting cards', media: true }),
+    cardsArray({ name: 'items', label: 'Supporting cards', media: true, icons: [...benefitIcons] }),
   ],
 }
 

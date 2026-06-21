@@ -18,15 +18,15 @@ export function ContactHeroComponent(props: ContactHeroBlock): JSX.Element {
   const button_2 = props?.buttons?.[1]
 
   return (
-    <section className="space-y-7">
-      <div className="max-w-2xl space-y-5">
+    <section className="space-y-8">
+      <div className="max-w-[644px] space-y-6">
         {/* Above-the-fold display copy uses animate (not whileInView) so it never starts hidden. */}
         <Motion
           tag="h1"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: EASE }}
-          className="font-display text-[clamp(2rem,5vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.045em] text-cream"
+          className="font-display text-[clamp(2rem,5vw,2.5rem)] font-medium leading-[1.15] tracking-[-0.05em] text-cream"
         >
           {heading}
         </Motion>
@@ -45,16 +45,16 @@ export function ContactHeroComponent(props: ContactHeroBlock): JSX.Element {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: EASE, delay: 0.16 }}
-        className="flex flex-wrap items-center gap-3"
+        className="flex flex-wrap items-center gap-4"
       >
         {button_1?.label && (
           <Link
             href={button_1.url || '#routes'}
-            className={`group inline-flex items-center gap-2 rounded-full bg-cream px-5 py-2.5 text-[14px] font-medium text-ink transition-colors hover:bg-cream-hover ${focusRing}`}
+            className={`group inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-cream px-8 py-2 text-[16px] font-medium leading-[1.15] text-ink transition-colors hover:bg-cream-hover ${focusRing}`}
           >
             {button_1.label}
             <ArrowUpRight
-              size={15}
+              size={16}
               strokeWidth={2.5}
               aria-hidden
               className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -64,7 +64,7 @@ export function ContactHeroComponent(props: ContactHeroBlock): JSX.Element {
         {button_2?.label && (
           <Link
             href={button_2.url || '#offices'}
-            className={`inline-flex items-center rounded-full border border-line-strong bg-main px-5 py-2.5 text-[14px] font-medium text-body transition-colors hover:border-subtle hover:text-cream ${focusRing}`}
+            className={`inline-flex h-10 items-center justify-center rounded-lg bg-button-dark px-8 py-2 text-[16px] font-medium leading-[1.15] text-cream transition-colors hover:bg-button-dark/80 ${focusRing}`}
           >
             {button_2.label}
           </Link>

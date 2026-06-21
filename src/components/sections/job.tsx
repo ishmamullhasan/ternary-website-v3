@@ -43,7 +43,7 @@ function formatComp(min?: number | null, max?: number | null, currency?: string 
 /** A single label:value pair in the structured job-info grid (design 1018:4423). */
 function InfoItem({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }): JSX.Element {
   return (
-    <p className="text-[14px] leading-[1.5] text-subtle">
+    <p className="text-[16px] leading-[1.5] text-subtle">
       {label}: <span className={`font-medium ${emphasis ? 'text-cream' : 'text-body'}`}>{value}</span>
     </p>
   )
@@ -64,23 +64,21 @@ function JobCard({ job, localePrefix }: { job: JobListing; localePrefix: string 
 
   return (
     <motion.div
-      className="group relative flex flex-col rounded-md border border-line bg-main p-6 transition-colors duration-300 hover:border-white/15 focus-within:border-cream/40"
+      className="group relative flex flex-col rounded-lg border border-line bg-main p-6 transition-colors duration-300 hover:border-white/15 focus-within:border-cream/40"
       initial={fadeUp.initial}
       whileInView={fadeUp.animate}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.5, ease: EASE }}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
-        <h3 className="font-display text-[22px] font-medium leading-[1.15] text-cream">{job.title}</h3>
+        <h3 className="font-display text-[24px] font-medium leading-[1.15] text-cream/90">{job.title}</h3>
         {job.code && (
-          <span className="shrink-0 rounded-full bg-ink px-4 py-1 text-[13px] font-medium tracking-tight text-cream">
-            {job.code}
-          </span>
+          <span className="shrink-0 rounded-full bg-ink px-4 py-1 font-display text-[16px] text-cream">{job.code}</span>
         )}
       </div>
 
       {info.length > 0 && (
-        <div className="mb-6 flex flex-col gap-2">
+        <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2">
           {info.map((row) => (
             <InfoItem key={row.label} label={row.label} value={row.value} emphasis={row.emphasis} />
           ))}
@@ -90,7 +88,7 @@ function JobCard({ job, localePrefix }: { job: JobListing; localePrefix: string 
       <div className="mt-auto flex justify-end">
         <Link
           href={`${localePrefix}/job/${job.slug}`}
-          className="inline-flex h-10 items-center gap-2 rounded-md border border-cream/80 bg-ink px-4 text-[14px] font-medium text-cream transition-colors duration-200 hover:bg-cream hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-main"
+          className="inline-flex h-10 items-center gap-2 rounded-lg border border-cream bg-ink px-4 font-display text-base text-cream transition-colors duration-200 hover:bg-cream hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-main"
         >
           Learn More
           <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden />
@@ -169,7 +167,7 @@ export default function Jobs({ jobs, heading, description, localePrefix = '' }: 
   }
 
   const selectClass =
-    'appearance-none cursor-pointer rounded-md border border-line-strong bg-transparent py-2 pl-4 pr-10 text-sm text-body transition-colors hover:border-subtle focus:outline-none focus-visible:border-cream/60 focus-visible:ring-2 focus-visible:ring-cream/30'
+    'appearance-none cursor-pointer rounded-lg border border-line-strong bg-main py-2 pl-4 pr-10 text-sm text-body transition-colors hover:border-subtle focus:outline-none focus-visible:border-cream/60 focus-visible:ring-2 focus-visible:ring-cream/30'
 
   return (
     <Section

@@ -46,7 +46,7 @@ export function CareersHeroComponent(props: CareersHeroBlock): JSX.Element {
               </span>
             ))}
           </h1>
-          <p className="max-w-[34rem] text-[15px] font-medium leading-[1.5] text-body lg:text-[16px]">
+          <p className="max-w-[34rem] text-base font-medium leading-[1.5] text-body">
             {props.description ||
               'Build production systems you own end to end. We hire engineers who want technical depth, operational accountability, and real influence over what ships.'}
           </p>
@@ -54,7 +54,7 @@ export function CareersHeroComponent(props: CareersHeroBlock): JSX.Element {
         <div>
           <a
             href={button?.url || '#open-roles'}
-            className="inline-flex h-10 items-center justify-center rounded-md bg-cream px-4 text-[14px] font-semibold tracking-tight text-ink transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page"
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-cream px-4 text-[14px] font-semibold tracking-tight text-ink transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page"
           >
             {button?.label || 'View Opportunities'}
           </a>
@@ -63,7 +63,7 @@ export function CareersHeroComponent(props: CareersHeroBlock): JSX.Element {
 
       <Motion
         tag="div"
-        className="relative aspect-[4/3] w-full overflow-hidden rounded-md ring-1 ring-white/5 lg:aspect-auto lg:h-[500px]"
+        className="relative aspect-[4/3] w-full overflow-hidden rounded-md lg:aspect-auto lg:h-[500px]"
         initial={{ opacity: 0, scale: 0.985 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: '-60px' }}

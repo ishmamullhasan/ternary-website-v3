@@ -5,7 +5,17 @@ import Link from '@/components/LocalizedLink'
 import { GradientPanel, toneFor, type Tone } from '@/components/sections/stories/gradient'
 import { cn } from '@/lib/utils'
 import type { Insight, PressRelease, Story } from '@/payload-types'
-import { ArrowUpRight, BookOpen, Clock, FileText, FlaskConical, Newspaper, Search, X } from 'lucide-react'
+import {
+  ArrowUpRight,
+  BookOpen,
+  Clock,
+  FileText,
+  FlaskConical,
+  Newspaper,
+  Search,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react'
 import { useMemo, useState, type JSX } from 'react'
 
 export type StoryGridItem = { relationTo: 'story'; value: Story } | { relationTo: 'insight'; value: Insight }
@@ -82,19 +92,14 @@ function GradientTileCard({ item, index }: { item: NormalizedItem; index: number
     >
       <Link
         href={item.href}
-        className="group relative block aspect-[3/4] overflow-hidden rounded-md ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+        className="group relative block aspect-[16/11] overflow-hidden rounded-md ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream motion-reduce:transition-none motion-reduce:hover:translate-y-0"
       >
-        <GradientPanel tone={item.tone} interactive />
-        <div className="relative flex h-full flex-col p-5">
-          <h3 className="max-w-[15rem] text-[17px] font-medium leading-[1.18] tracking-[-0.02em] text-cream">
-            {item.title}
-          </h3>
-          <span className="mt-2 text-[12px] font-medium uppercase tracking-[0.14em] text-cream/75">
+        {/* Single top-down scrim (text is top-anchored in the new Figma tile). */}
+        <GradientPanel tone={item.tone} interactive scrim="top" />
+        <div className="relative flex h-full flex-col gap-2 px-6 py-8">
+          <h3 className="text-[16px] font-semibold leading-[1.15] tracking-[-0.05em] text-cream">{item.title}</h3>
+          <span className="text-[14px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
             {item.categoryLabel}
-          </span>
-          <span className="mt-auto inline-flex translate-y-1 items-center gap-1 text-[13px] text-cream/0 transition-all duration-500 group-hover:translate-y-0 group-hover:text-cream/90 motion-reduce:translate-y-0 motion-reduce:transition-none">
-            Read
-            <ArrowUpRight size={16} aria-hidden />
           </span>
         </div>
       </Link>
@@ -116,28 +121,28 @@ function TextCard({ item, index }: { item: NormalizedItem; index: number }): JSX
     >
       <Link
         href={item.href}
-        className="group flex h-full min-h-[300px] flex-col rounded-md border border-white/5 bg-main p-6 transition-colors duration-300 hover:border-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+        className="group flex h-full min-h-[300px] flex-col gap-3 rounded-lg border border-line bg-main p-6 transition-colors duration-300 hover:border-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
       >
-        <span className="mb-4 inline-flex w-fit items-center rounded-md border border-line bg-badge px-3 py-1.5 text-[12px] tracking-[-0.02em] text-body">
+        <span className="inline-flex w-fit items-center rounded-full border border-subtle bg-main px-4 py-2 font-display text-lg leading-none tracking-[-0.05em] text-cream">
           {item.categoryLabel}
         </span>
 
-        <h3 className="mb-3 line-clamp-3 font-display text-xl font-medium leading-[1.18] tracking-[-0.03em] text-cream">
+        <h3 className="line-clamp-3 font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
           {item.title}
         </h3>
 
         {item.excerpt && (
-          <p className="mb-5 line-clamp-3 text-[15px] leading-[1.5] tracking-[-0.01em] text-body">{item.excerpt}</p>
+          <p className="line-clamp-3 text-base leading-[1.15] tracking-[-0.05em] text-body">{item.excerpt}</p>
         )}
 
         {(item.code || item.date) && (
-          <div className="mt-auto flex items-center justify-between text-[12px] tracking-[-0.02em] text-subtle">
+          <div className="mt-auto flex items-center justify-between text-[12px] tracking-[-0.05em] text-body">
             <span>{item.code ?? ''}</span>
             <span>{formatDate(item.date)}</span>
           </div>
         )}
 
-        <div className="mt-4 flex items-center justify-between border-t border-subtle/60 pt-4 text-[12px] tracking-[-0.02em] text-body">
+        <div className="flex items-center justify-between border-t border-subtle pt-4 text-[12px] tracking-[-0.05em] text-body">
           <span className="flex min-w-0 items-center gap-2">
             <Clock size={12} className="shrink-0" aria-hidden />
             <span className="truncate">
@@ -145,7 +150,7 @@ function TextCard({ item, index }: { item: NormalizedItem; index: number }): JSX
               {item.categoryLabel ? ` · ${item.categoryLabel}` : ''}
             </span>
           </span>
-          <span className="flex shrink-0 items-center gap-1 text-sm text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1">
+          <span className="flex shrink-0 items-center gap-1 text-base text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1">
             Read <ArrowUpRight size={14} aria-hidden />
           </span>
         </div>
@@ -188,7 +193,7 @@ export default function AllStoriesGrid({
           excerpt: doc.excerpts,
           code: 'code' in doc ? doc.code : null,
           date: 'publishedDate' in doc ? doc.publishedDate : null,
-          readTime: 'readTime' in doc ? doc.readTime : null,
+          readTime: 'readTime' in doc && typeof doc.readTime === 'number' ? `${doc.readTime} min` : null,
           categoryLabel: CATEGORY_LABELS[type],
           tone: toneFor(type, index),
         }
@@ -246,21 +251,28 @@ export default function AllStoriesGrid({
   return (
     <section className="mx-auto w-full max-w-7xl px-5">
       {(heading || description) && (
-        <div className="mb-6 max-w-3xl space-y-3">
+        <div className="mb-6 flex max-w-[724px] flex-col gap-4">
           {heading && (
-            <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.04em] text-cream">
+            <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.05em] text-cream opacity-90">
               {heading}
             </h2>
           )}
           {description && (
-            <p className="text-[15px] leading-[1.55] tracking-[-0.01em] text-body lg:text-base">{description}</p>
+            <p className="text-base font-normal leading-[1.15] tracking-[-0.05em] text-body opacity-90">
+              {description}
+            </p>
           )}
         </div>
       )}
 
       {/* Filter bar */}
-      <div className="mb-8 flex flex-col gap-4 rounded-md border border-white/5 bg-ink/60 p-4 lg:flex-row lg:items-center">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="mb-8 flex items-center gap-4 rounded-sm bg-main p-4">
+        <span className="flex shrink-0 items-center gap-2 text-subtle">
+          <SlidersHorizontal size={16} aria-hidden />
+          <span className="text-[12px] tracking-[-0.05em]">Filter</span>
+        </span>
+
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           <FilterPill
             label="All"
             count={counts.all}
@@ -279,7 +291,7 @@ export default function AllStoriesGrid({
           ))}
         </div>
 
-        <div className="relative w-full lg:ml-auto lg:w-72">
+        <div className="relative w-72 shrink-0">
           <Search
             size={14}
             className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtle"
@@ -291,7 +303,7 @@ export default function AllStoriesGrid({
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search titles, tags…"
             aria-label="Search stories"
-            className="h-9 w-full rounded-md border border-line bg-page pl-10 pr-4 text-sm tracking-[-0.01em] text-cream placeholder:text-subtle focus-visible:border-subtle focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-cream"
+            className="h-9 w-full rounded-full border border-subtle bg-page pl-10 pr-4 text-sm tracking-[-0.01em] text-cream placeholder:text-body focus-visible:border-subtle focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-cream"
           />
         </div>
       </div>
@@ -315,7 +327,7 @@ export default function AllStoriesGrid({
           )}
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-4 rounded-md border border-white/5 bg-ink/40 py-16 text-center">
+        <div className="flex flex-col items-center gap-4 rounded-md border border-line bg-main py-16 text-center">
           <p className="text-base tracking-[-0.01em] text-cream">
             {hasSearch ? `No results for “${searchQuery.trim()}”.` : 'Nothing here yet.'}
           </p>
@@ -331,7 +343,7 @@ export default function AllStoriesGrid({
                 setSearchQuery('')
                 setActiveFilter('all')
               }}
-              className="inline-flex items-center gap-2 rounded-md border border-line bg-badge px-4 py-2 text-sm tracking-[-0.01em] text-cream transition-colors hover:border-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+              className="inline-flex items-center gap-2 rounded-full border border-subtle bg-page px-4 py-2 text-sm tracking-[-0.05em] text-cream transition-colors hover:border-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
             >
               <X size={14} aria-hidden />
               Clear filters
@@ -362,13 +374,13 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'inline-flex items-center gap-2 rounded-md border px-4 py-2 text-[12px] tracking-[-0.02em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream',
-        active ? 'border-cream bg-cream text-ink' : 'border-line bg-badge text-body hover:border-subtle',
+        'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[12px] tracking-[-0.05em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream',
+        active ? 'border-cream bg-cream text-ink' : 'border-subtle bg-page text-body hover:border-cream',
       )}
     >
       {Icon && <Icon size={12} aria-hidden />}
       <span>{label}</span>
-      <span className={cn(active ? 'text-ink/60' : 'text-subtle')}>{count}</span>
+      <span className={cn(active ? 'text-ink/60' : 'text-body')}>{count}</span>
     </button>
   )
 }

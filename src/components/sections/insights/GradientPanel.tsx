@@ -25,17 +25,23 @@ const TONE: Record<PanelTone, string> = {
 export default function GradientPanel({
   tone = 'emerald',
   className = '',
+  radius = 'rounded-md',
   scrim = false,
   children,
 }: {
   tone?: PanelTone
   className?: string
+  /**
+   * Corner radius utility for the panel. Defaults to the site card radius (rounded-md, 5px);
+   * the insight hero panel passes rounded-lg (8px) to match Figma's Space/8 corner.
+   */
+  radius?: string
   /** Add a bottom-to-top scrim — use when light text overlays the panel. */
   scrim?: boolean
   children?: ReactNode
 }): JSX.Element {
   return (
-    <div className={`relative overflow-hidden rounded-md ${className}`}>
+    <div className={`relative overflow-hidden ${radius} ${className}`}>
       <span aria-hidden className="absolute inset-0" style={{ backgroundImage: TONE[tone] }} />
       <span
         aria-hidden

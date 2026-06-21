@@ -16,7 +16,7 @@ type QualityBarIconKey = keyof typeof QUALITY_BAR_ICONS
 
 function QualityBarIcon({ icon }: { icon: string | null | undefined }) {
   const Icon = icon && icon in QUALITY_BAR_ICONS ? QUALITY_BAR_ICONS[icon as QualityBarIconKey] : Activity
-  return <Icon size={20} strokeWidth={1.75} aria-hidden className="shrink-0 text-cream/80" />
+  return <Icon size={22} strokeWidth={1.75} aria-hidden className="shrink-0 text-cream/80" />
 }
 
 export function QualityBarComponent(props: QualityBarBlock): JSX.Element | null {
@@ -30,16 +30,16 @@ export function QualityBarComponent(props: QualityBarBlock): JSX.Element | null 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.6, ease: EASE }}
-      className="w-full rounded-md bg-ink p-6 lg:p-10"
+      className="w-full rounded-md border border-line bg-ink px-9 py-12"
     >
-      <div className="flex w-full flex-col gap-8 lg:flex-row lg:gap-12">
-        <div className="lg:w-1/4 lg:shrink-0">
+      <div className="flex w-full flex-col gap-8 lg:flex-row lg:gap-6">
+        <div className="lg:w-[27%] lg:shrink-0">
           {props?.heading && (
-            <h2 className="font-display text-2xl font-medium leading-tight tracking-tight text-cream lg:text-3xl">
+            <h2 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.02em] text-cream">
               {props.heading}
             </h2>
           )}
-          {props?.description && <p className="mt-3 max-w-md text-sm leading-relaxed text-body">{props.description}</p>}
+          {props?.description && <p className="mt-4 max-w-md text-sm leading-relaxed text-body">{props.description}</p>}
         </div>
 
         <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -51,16 +51,16 @@ export function QualityBarComponent(props: QualityBarBlock): JSX.Element | null 
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-              className="group flex min-h-[260px] flex-col rounded-md bg-main p-8 ring-1 ring-white/5 transition-colors duration-300 hover:ring-white/10"
+              className="group flex min-h-[282px] flex-col rounded-md border border-line p-6 transition-colors duration-300 hover:border-line-strong"
             >
-              <span className="mb-6 flex size-12 items-center justify-center rounded-full border border-white/10 bg-ink transition-colors duration-300 group-hover:border-white/20">
+              <span className="mb-8 flex size-12 items-center justify-center rounded-full bg-button-dark">
                 <QualityBarIcon icon={item.icon} />
               </span>
 
-              <h3 className="font-display text-base font-medium leading-tight tracking-tight text-cream lg:text-lg">
+              <h3 className="font-display text-[20px] font-medium leading-[1.2] tracking-[-0.02em] text-cream">
                 {item.title}
               </h3>
-              {item.excerpt && <p className="mt-2 text-sm leading-relaxed text-body">{item.excerpt}</p>}
+              {item.excerpt && <p className="mt-3 text-sm leading-snug text-body">{item.excerpt}</p>}
             </Motion>
           ))}
         </div>

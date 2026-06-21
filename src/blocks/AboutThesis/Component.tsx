@@ -1,11 +1,33 @@
 import Motion from '@/components/animation/motion'
-import { BentoCard } from '@/components/layout/bentoCard'
 import Section from '@/components/layout/section'
 import { cn } from '@/lib/utils'
 import type { AboutThesisBlock, Media } from '@/payload-types'
+import { Zap } from 'lucide-react'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+/**
+ * Transparent icon + title + desc unit (design "Benefit block"). A 48px round `bg-page` icon badge
+ * (24px lucide glyph), a 32px gap to the text group, then an 8px gap title→description. Title is
+ * Poppins Medium 24 (Display/Subsection); description Inter 16 at 90% opacity. No card surface — the
+ * cell sits directly on the section panel, matching the comp.
+ */
+function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.Element {
+  return (
+    <div className="flex h-full flex-col justify-end gap-8">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
+        <Zap aria-hidden className="h-6 w-6 text-cream" />
+      </div>
+      <div className="flex flex-col gap-2">
+        {title ? (
+          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">{title}</h3>
+        ) : null}
+        {desc ? <p className="text-base leading-snug text-body/90">{desc}</p> : null}
+      </div>
+    </div>
+  )
+}
 
 /**
  * Signature media layer for a featured bento cell (design node 1255:2829). A grayscale photo under
@@ -50,7 +72,7 @@ export function AboutThesisComponent({ heading, description, items }: AboutThesi
   return (
     <div>
       <Section title={heading ?? ''} desc={description ?? ''}>
-        <div className="grid auto-rows-[240px] grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid auto-rows-[360px] grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {items.map((item, index) => {
             const imageUrl = item.media ? ((item.media as Media)?.url ?? undefined) : undefined
             const isFirst = index === 0
@@ -66,31 +88,48 @@ export function AboutThesisComponent({ heading, description, items }: AboutThesi
                 {...motionGridItemProps}
                 transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
               >
-                <BentoCard
-                  animated={false}
-                  className="h-full min-h-[240px]"
-                  title={item.title ?? undefined}
-                  desc={item.excerpt ?? undefined}
-                >
-                  {isFirst ? <BentoMedia url={imageUrl} alt={item.title ?? undefined} /> : null}
-                  {isSixth ? (
-                    <div
-                      aria-hidden
-                      className="absolute right-8 top-1/2 z-10 hidden h-32 w-32 -translate-y-1/2 lg:block"
-                    >
-                      <div className="absolute inset-0 animate-[spin_20s_linear_infinite] rounded-full border border-dashed border-white/10"></div>
-                      <div className="absolute inset-4 animate-[spin_12s_linear_infinite_reverse] rounded-full border border-white/20"></div>
-                      <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/25"></div>
-                      <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/20 [animation-delay:0.8s]"></div>
-                      <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/15 [animation-delay:1.6s]"></div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-                          <div className="h-2 w-2 animate-[ping_2s_ease-in-out_infinite] rounded-full bg-white shadow-[0_0_10px_white]"></div>
-                        </div>
+                {isFirst ? (
+                  // Featured media cell: grain photo surface with the benefit overlaid bottom-left.
+                  <div className="group relative h-full min-h-[360px] overflow-hidden rounded-md">
+                    <BentoMedia url={imageUrl} alt={item.title ?? undefined} />
+                    <div className="relative z-10 flex h-full flex-col justify-end gap-8 p-6 lg:p-8">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
+                        <Zap aria-hidden className="h-6 w-6 text-cream" />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {item.title ? (
+                          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+                            {item.title}
+                          </h3>
+                        ) : null}
+                        {item.excerpt ? (
+                          <p className="max-w-sm text-base leading-snug text-body/90">{item.excerpt}</p>
+                        ) : null}
                       </div>
                     </div>
-                  ) : null}
-                </BentoCard>
+                  </div>
+                ) : (
+                  <div className="relative h-full min-h-[360px] px-6 lg:px-8">
+                    <BenefitBlock title={item.title ?? undefined} desc={item.excerpt ?? undefined} />
+                    {isSixth ? (
+                      <div
+                        aria-hidden
+                        className="absolute right-8 top-1/3 z-0 hidden h-32 w-32 -translate-y-1/2 lg:block"
+                      >
+                        <div className="absolute inset-0 animate-[spin_20s_linear_infinite] rounded-full border border-dashed border-white/10"></div>
+                        <div className="absolute inset-4 animate-[spin_12s_linear_infinite_reverse] rounded-full border border-white/20"></div>
+                        <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/25"></div>
+                        <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/20 [animation-delay:0.8s]"></div>
+                        <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/15 [animation-delay:1.6s]"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
+                            <div className="h-2 w-2 animate-[ping_2s_ease-in-out_infinite] rounded-full bg-white shadow-[0_0_10px_white]"></div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
               </Motion>
             )
           })}

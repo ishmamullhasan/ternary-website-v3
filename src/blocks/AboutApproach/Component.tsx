@@ -1,11 +1,31 @@
 import Motion from '@/components/animation/motion'
-import { BentoCard } from '@/components/layout/bentoCard'
 import Section from '@/components/layout/section'
 import { cn } from '@/lib/utils'
 import type { AboutApproachBlock, Media } from '@/payload-types'
+import { Zap } from 'lucide-react'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+/**
+ * Transparent icon + title + desc unit (design "Benefit block"): 48px round `bg-page` icon badge,
+ * 32px gap to the text group, 8px title→desc. Title Poppins Medium 24, desc Inter 16 at 90%.
+ */
+function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.Element {
+  return (
+    <div className="flex h-full flex-col justify-end gap-8">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
+        <Zap aria-hidden className="h-6 w-6 text-cream" />
+      </div>
+      <div className="flex flex-col gap-2">
+        {title ? (
+          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">{title}</h3>
+        ) : null}
+        {desc ? <p className="text-base leading-snug text-body/90">{desc}</p> : null}
+      </div>
+    </div>
+  )
+}
 
 /**
  * "The Ternary Way" (design node 1259:12848): an image-led composition where a tall grayscale
@@ -46,34 +66,68 @@ export function AboutApproachComponent({ heading, description, items }: AboutApp
 
   if (!heading || !items?.length) return null
 
+  const [featured, ...rest] = items
+  const rightColumn = rest.slice(0, 2) // stacked beside the featured media
+  const bottomRow = rest.slice(2) // remaining benefits in the lower band
+  const featuredImageUrl = featured?.media ? ((featured.media as Media)?.url ?? undefined) : undefined
+
   return (
     <div>
       <Section title={heading ?? ''} desc={description ?? ''}>
-        <div className="grid auto-rows-[240px] grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((item, index) => {
-            const imageUrl = item.media ? ((item.media as Media)?.url ?? undefined) : undefined
-            const isFirst = index === 0
-            const cardClass = isFirst ? 'md:col-span-2 md:row-span-2' : ''
+        {/* Top region: featured media (2/3) + a stacked pair of benefits (1/3). */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <Motion className="lg:col-span-2" {...motionGridItemProps} transition={{ duration: 0.5, ease: EASE }}>
+            <div className="group relative h-[460px] overflow-hidden rounded-md lg:h-[600px]">
+              <BentoMedia url={featuredImageUrl} alt={featured?.title ?? undefined} />
+              <div className="relative z-10 flex h-full flex-col justify-end gap-8 p-6 lg:p-8">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
+                  <Zap aria-hidden className="h-6 w-6 text-cream" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  {featured?.title ? (
+                    <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+                      {featured.title}
+                    </h3>
+                  ) : null}
+                  {featured?.excerpt ? (
+                    <p className="max-w-sm text-base leading-snug text-body/90">{featured.excerpt}</p>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </Motion>
 
-            return (
-              <Motion
-                key={item.id ?? `approach-${index}`}
-                className={cn('h-full min-h-0', cardClass)}
-                {...motionGridItemProps}
-                transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-              >
-                <BentoCard
-                  animated={false}
-                  className="h-full min-h-[240px]"
-                  title={item.title ?? undefined}
-                  desc={item.excerpt ?? undefined}
+          {rightColumn.length ? (
+            <div className="flex flex-col gap-4 lg:col-span-1">
+              {rightColumn.map((item, index) => (
+                <Motion
+                  key={item.id ?? `approach-right-${index}`}
+                  className="min-h-[220px] flex-1"
+                  {...motionGridItemProps}
+                  transition={{ duration: 0.5, ease: EASE, delay: Math.min((index + 1) * 0.05, 0.4) }}
                 >
-                  {isFirst ? <BentoMedia url={imageUrl} alt={item.title ?? undefined} /> : null}
-                </BentoCard>
-              </Motion>
-            )
-          })}
+                  <BenefitBlock title={item.title ?? undefined} desc={item.excerpt ?? undefined} />
+                </Motion>
+              ))}
+            </div>
+          ) : null}
         </div>
+
+        {/* Lower band: remaining benefits. */}
+        {bottomRow.length ? (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {bottomRow.map((item, index) => (
+              <Motion
+                key={item.id ?? `approach-bottom-${index}`}
+                className={cn('min-h-[360px]', index === bottomRow.length - 1 ? 'lg:col-span-2' : '')}
+                {...motionGridItemProps}
+                transition={{ duration: 0.5, ease: EASE, delay: Math.min((index + 3) * 0.05, 0.4) }}
+              >
+                <BenefitBlock title={item.title ?? undefined} desc={item.excerpt ?? undefined} />
+              </Motion>
+            ))}
+          </div>
+        ) : null}
       </Section>
     </div>
   )

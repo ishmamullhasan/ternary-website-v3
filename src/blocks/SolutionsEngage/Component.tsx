@@ -24,64 +24,111 @@ function toLabels(subtitle?: string | null): string[] {
     .filter(Boolean)
 }
 
+// Signature noise-gradient panel — the one bold moment per card. Rendered inline so each
+// card can place it at a different vertical position (Figma: Frame bottom, Flow middle, Orchestra top).
+function GradientPanel({ tone }: { tone: string }): JSX.Element {
+  return (
+    <div className="relative h-[120px] w-full shrink-0 overflow-hidden rounded-md">
+      <span
+        aria-hidden
+        className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+        style={{ backgroundImage: tone }}
+      />
+      <span
+        aria-hidden
+        className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:200px] opacity-[0.16] mix-blend-overlay"
+      />
+      <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45" />
+    </div>
+  )
+}
+
 export function SolutionsEngageComponent(props: SolutionsEngageBlock): JSX.Element {
   const engageCards = (props?.cards ?? []).filter((c) => Boolean(c?.title))
 
   return (
-    <Section title={props?.heading || undefined} desc={props?.description || undefined}>
-      {engageCards.length > 0 ? (
-        <div className="grid gap-5 md:grid-cols-3 lg:gap-6">
-          {engageCards.map((card, i) => {
-            const labels = toLabels(card?.subtitle)
-            return (
-              <Motion
-                tag="article"
-                key={card?.id ?? i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.6, ease: EASE, delay: Math.min(i * 0.08, 0.32) }}
-                className="group flex h-full flex-col overflow-hidden rounded-md bg-main ring-1 ring-white/5 transition-[transform,box-shadow,outline-color] duration-500 ease-out outline outline-1 outline-transparent hover:-translate-y-1 hover:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.8)] hover:outline-white/10"
-              >
-                <div className="flex flex-1 flex-col p-7 lg:p-8">
-                  <h3 className="font-display text-2xl font-medium leading-tight text-cream">{card?.title}</h3>
+    <Section className="!space-y-0">
+      {/* Single elevated panel holding the header + three engagement columns (Figma px-36 py-48). */}
+      <div className="rounded-md bg-main px-6 py-10 sm:px-8 lg:px-9 lg:py-12">
+        <div className="flex flex-col gap-8">
+          {/* Header — left-aligned 'How We Engage' + supporting line, inside the panel like Figma. */}
+          {(props?.heading || props?.description) && (
+            <div className="flex flex-col gap-4">
+              {props?.heading ? (
+                <h2 className="font-display text-3xl font-medium leading-[1.15] text-cream">{props.heading}</h2>
+              ) : null}
+              {props?.description ? (
+                <p className="max-w-2xl text-base leading-[1.4] text-body">{props.description}</p>
+              ) : null}
+            </div>
+          )}
 
-                  {labels.length > 0 ? (
-                    <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5">
-                      {labels.map((label, j) => (
-                        <span key={j} className="text-[12px] uppercase tracking-[0.12em] text-subtle">
-                          {label}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
+          {engageCards.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-3">
+              {engageCards.map((card, i) => {
+                const labels = toLabels(card?.subtitle)
+                // Vary the gradient panel position per column to mirror Figma's staggered composition.
+                const panelPosition = i === 1 ? 'middle' : i === 2 ? 'top' : 'bottom'
+                const tone = engageGradients[i % engageGradients.length]
 
-                  {card?.description ? (
-                    <p className="mt-4 text-[14px] leading-relaxed text-body">{card.description}</p>
-                  ) : null}
-                </div>
+                const titleBlock = (
+                  <div className="flex flex-col gap-2">
+                    <h3 className="font-display text-[40px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+                      {card?.title}
+                    </h3>
+                    {labels.length > 0 ? (
+                      <div className="flex w-full justify-between text-[14px] font-medium text-body">
+                        {labels.map((label, j) => (
+                          <span
+                            key={j}
+                            className={j === 0 ? 'text-left' : j === labels.length - 1 ? 'text-right' : 'text-center'}
+                          >
+                            {label}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                    {/* Short intro line under the labels (Figma 1275:4491). */}
+                    {card?.description ? (
+                      <p className="mt-1 text-base leading-[1.4] text-body">{card.description}</p>
+                    ) : null}
+                  </div>
+                )
 
-                {/* Signature noise-gradient panel — always renders (the one bold moment per card). */}
-                <div className="relative mx-7 mb-7 h-32 overflow-hidden rounded-md lg:mx-8 lg:mb-8">
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-                    style={{ backgroundImage: engageGradients[i % engageGradients.length] }}
-                  />
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:200px] opacity-[0.16] mix-blend-overlay"
-                  />
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45"
-                  />
-                </div>
-              </Motion>
-            )
-          })}
+                // Figma splits each card into a title block and a right-aligned "Ideal for" block
+                // (1275:4492). The dedicated `idealFor` field backs the right-aligned paragraph; it is
+                // distinct from the `description` intro line above, so each is rendered independently.
+                // Legacy cards that carry only `description` show it as the intro line and simply leave
+                // the Ideal-for block empty (graceful degradation — no duplicated copy).
+                const idealForBlock = card?.idealFor ? (
+                  <div className="flex flex-col items-end gap-3 text-right">
+                    <span className="text-base font-medium text-cream">Ideal for</span>
+                    <p className="text-base leading-[1.4] text-body">{card.idealFor}</p>
+                  </div>
+                ) : null
+
+                return (
+                  <Motion
+                    tag="article"
+                    key={card?.id ?? i}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.6, ease: EASE, delay: Math.min(i * 0.08, 0.32) }}
+                    className="group flex h-full flex-col gap-6 rounded-md bg-ink p-6"
+                  >
+                    {panelPosition === 'top' && <GradientPanel tone={tone} />}
+                    {titleBlock}
+                    {panelPosition === 'middle' && <GradientPanel tone={tone} />}
+                    {idealForBlock}
+                    {panelPosition === 'bottom' && <GradientPanel tone={tone} />}
+                  </Motion>
+                )
+              })}
+            </div>
+          ) : null}
         </div>
-      ) : null}
+      </div>
     </Section>
   )
 }
