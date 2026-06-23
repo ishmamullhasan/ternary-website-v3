@@ -23,14 +23,12 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
   if (!process || process.length === 0) return null
 
   return (
-    <section className="rounded-md border border-white/[0.06] bg-ink p-6 lg:p-12">
+    <section className="section-card">
       <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
         {/* Header — pinned to the left, mirroring the capability "How we do it" rhythm. */}
         <Motion className="flex shrink-0 flex-col gap-4 lg:w-[32%]" {...reveal}>
           <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">Process</p>
-          {heading && (
-            <h2 className="font-display text-section text-cream">{heading}</h2>
-          )}
+          {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
           {description && <p className="max-w-md text-[15px] leading-relaxed text-body">{description}</p>}
         </Motion>
 
@@ -48,9 +46,7 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 <div className="flex flex-col gap-2">
-                  {item.title && (
-                    <h3 className="text-[16px] font-medium leading-snug text-cream">{item.title}</h3>
-                  )}
+                  {item.title && <h3 className="text-[16px] font-medium leading-snug text-cream">{item.title}</h3>}
                   {item.description && (
                     <div className="max-w-2xl text-[14px] leading-relaxed text-body">
                       <RichTextComp content={item.description as RichText} className="prose-sm" />

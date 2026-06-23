@@ -102,6 +102,19 @@ body {
     }
   }
 
+  /* Signature section surface (Figma `--surface/card`): each home/marketing content section sits on
+     a raised near-black card, one step lighter than the page, with an 8px radius and no border —
+     matching the design where the sections are cards rather than transparent pass-throughs. Padding
+     scales from comfortable mobile insets up to the design's 36×48px desktop gutters. Apply to a
+     section root; the RenderBlocks container still owns the outer max-width, gutter, and the gap
+     between cards. */
+  .section-card {
+    background-color: var(--color-card);
+    border-radius: 8px;
+    overflow: clip;
+    padding: clamp(1.5rem, 3.5vw, 3rem) clamp(1.25rem, 3vw, 2.25rem);
+  }
+
   /* Opt-in responsive type scale. Additive utilities only — these don't touch the global
      h1,h2 element rules. Use on display headlines / section headings where the fluid clamp
      and tracking are wanted. */
@@ -167,6 +180,9 @@ body {
   /* Brand palette — semantic tokens replacing scattered hex literals (WEB-410). */
   --color-page: #050505;
   --color-ink: #0f0e0e;
+  /* Figma `--surface/card` (#1b1a17): the raised section surface — one step lighter than the
+     page — every home/marketing content section sits on. Generates the `bg-card` utility. */
+  --color-card: #1b1a17;
   --color-cream: #f4f3ec;
   --color-cream-hover: #e8e7df;
   --color-body: #d5d5d5;

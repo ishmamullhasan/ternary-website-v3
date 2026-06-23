@@ -65,7 +65,7 @@ function getListPath(collection: ContentCollection): string {
 function getDetailPath(collection: ContentCollection, slug: string): string {
   switch (collection) {
     case 'story':
-      return `/stories/${slug}`
+      return `/case-studies/${slug}`
     case 'insight':
       return `/insights/${slug}`
     case 'pressRelease':

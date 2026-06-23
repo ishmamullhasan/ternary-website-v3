@@ -333,6 +333,83 @@ export interface Story {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Short chips shown in the hero (e.g. “Event-driven architecture”).
+   */
+  tags?:
+    | {
+        name?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  caseMeta?: {
+    industry?: string | null;
+    engagement?: string | null;
+    duration?: string | null;
+    team?: string | null;
+    year?: string | null;
+  };
+  challenge?: {
+    heading?: string | null;
+    subtitle?: string | null;
+    paragraphs?:
+      | {
+          text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  approach?: {
+    heading?: string | null;
+    subtitle?: string | null;
+    /**
+     * Auto-numbered 01, 02, 03 … in the layout.
+     */
+    cards?:
+      | {
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  solution?: {
+    heading?: string | null;
+    paragraphs?:
+      | {
+          text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  outcome?: {
+    heading?: string | null;
+    intro?: string | null;
+    metrics?:
+      | {
+          value?: string | null;
+          label?: string | null;
+          sublabel?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    quote?: {
+      text?: string | null;
+      authorName?: string | null;
+      authorRole?: string | null;
+    };
+  };
+  lessons?: {
+    heading?: string | null;
+    subtitle?: string | null;
+    cards?:
+      | {
+          title?: string | null;
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  whyItMatters?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -378,6 +455,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  prefix?: string | null;
   folder?: (string | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -4024,6 +4102,7 @@ export interface CtaBlockSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  prefix?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -4174,6 +4253,91 @@ export interface StorySelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  tags?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  caseMeta?:
+    | T
+    | {
+        industry?: T;
+        engagement?: T;
+        duration?: T;
+        team?: T;
+        year?: T;
+      };
+  challenge?:
+    | T
+    | {
+        heading?: T;
+        subtitle?: T;
+        paragraphs?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  approach?:
+    | T
+    | {
+        heading?: T;
+        subtitle?: T;
+        cards?:
+          | T
+          | {
+              body?: T;
+              id?: T;
+            };
+      };
+  solution?:
+    | T
+    | {
+        heading?: T;
+        paragraphs?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  outcome?:
+    | T
+    | {
+        heading?: T;
+        intro?: T;
+        metrics?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              sublabel?: T;
+              id?: T;
+            };
+        quote?:
+          | T
+          | {
+              text?: T;
+              authorName?: T;
+              authorRole?: T;
+            };
+      };
+  lessons?:
+    | T
+    | {
+        heading?: T;
+        subtitle?: T;
+        cards?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+      };
+  whyItMatters?: T;
   meta?:
     | T
     | {

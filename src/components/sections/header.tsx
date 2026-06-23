@@ -1,6 +1,5 @@
 'use client'
 
-import LocaleSwitcher from '@/components/LocaleSwitcher'
 import { localeFromPath, localizedHref } from '@/lib/i18n/locales'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
@@ -52,8 +51,8 @@ function TernaryMark({ className }: { className?: string }) {
 
 export default function Header({ headerData }: HeaderProps) {
   const path = usePathname()
-  // CMS menu links are stored locale-LESS (WEB-445); prefix them with the active locale so nav
-  // clicks don't 301 back to /en. Derived from the URL — the layout already routes per [locale].
+  // CMS menu links are stored locale-LESS; resolve them for the active locale so nav stays in the
+  // current language (en → unprefixed, bn → /bn). Derived from the URL via localeFromPath.
   const locale = localeFromPath(path)
   const [open, setOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -217,13 +216,12 @@ export default function Header({ headerData }: HeaderProps) {
     </div>
   )
 
-  // CTA per design: Surface/Card fill, radius/md, px16 py8, Inter SemiBold 14px, cream text, NO
-  // border. Hover lifts the fill a touch rather than inverting.
-  const ctaClass =
-    'inline-flex items-center justify-center rounded-md bg-main px-4 py-2 text-[14px] font-semibold leading-[1.15] tracking-normal text-cream transition-colors duration-200 hover:bg-[#26241f]'
-
   const Logo = (
-    <Link href={localizedHref(locale, '/')} className="flex shrink-0 items-center gap-2.5" aria-label={headerData?.siteName || 'Ternary'}>
+    <Link
+      href={localizedHref(locale, '/')}
+      className="flex shrink-0 items-center gap-2.5"
+      aria-label={headerData?.siteName || 'Ternary'}
+    >
       {logoUrl ? (
         <Image
           src={logoUrl}
@@ -237,7 +235,10 @@ export default function Header({ headerData }: HeaderProps) {
       ) : (
         // Inline brand mark fallback — CMS logo media (S3) degrades to a broken box, the mark does not.
         <TernaryMark
-          className={cn('w-auto text-cream transition-[height] duration-200', reduce && compact ? 'h-[26px]' : 'h-[30px]')}
+          className={cn(
+            'w-auto text-cream transition-[height] duration-200',
+            reduce && compact ? 'h-[26px]' : 'h-[30px]',
+          )}
         />
       )}
     </Link>
@@ -251,7 +252,7 @@ export default function Header({ headerData }: HeaderProps) {
           reduced motion the spring is dropped and padding is applied via conditional classes. */}
       <motion.header
         className={cn(
-          'pointer-events-auto w-full max-w-3xl rounded-2xl px-5 glass',
+          'pointer-events-auto w-full max-w-7xl rounded-2xl px-5 glass',
           // Reduced-motion fallback for the padding shrink (the spring `animate` is undefined below).
           reduce && (compact ? 'py-2' : 'py-3.5'),
         )}
@@ -277,26 +278,11 @@ export default function Header({ headerData }: HeaderProps) {
           {/* Logo — combination mark only (design shows no wordmark beside it in the bar) */}
           {Logo}
 
-          {/* Desktop Navigation - center */}
-          <div className="hidden md:flex flex-1 justify-center">{DesktopNav}</div>
+          {/* Desktop Navigation — pushed to the opposite (right) end via justify-between */}
+          <div className="hidden md:flex">{DesktopNav}</div>
 
-          {/* Desktop right cluster: locale switcher + CTA (fixed min width keeps the menu optically centered) */}
-          <div className="hidden md:flex shrink-0 items-center justify-end gap-2">
-            <LocaleSwitcher currentLocale={locale} className="text-cream" />
-            {headerData?.button?.label && (
-              <Link href={localizedHref(locale, headerData.button.link)} className={ctaClass}>
-                {headerData.button.label}
-              </Link>
-            )}
-          </div>
-
-          {/* Mobile: CTA + menu toggle - right */}
+          {/* Mobile: menu toggle - right */}
           <div className="flex items-center gap-2 md:hidden">
-            {headerData?.button?.label && (
-              <Link href={localizedHref(locale, headerData.button.link)} className={cn(ctaClass, 'hidden sm:inline-flex')}>
-                {headerData.button.label}
-              </Link>
-            )}
             <button
               type="button"
               aria-label={open ? 'Close menu' : 'Open menu'}
@@ -393,20 +379,6 @@ export default function Header({ headerData }: HeaderProps) {
               )
             }
           })}
-
-          {/* Locale switcher above the CTA inside the mobile sheet */}
-          <LocaleSwitcher currentLocale={locale} className="mt-3 px-3 text-cream" />
-
-          {/* CTA inside the mobile sheet so "Get in Touch" is always reachable below md */}
-          {headerData?.button?.label && (
-            <Link
-              href={localizedHref(locale, headerData.button.link)}
-              onClick={() => setOpen(false)}
-              className={cn(ctaClass, 'mt-3 w-full')}
-            >
-              {headerData.button.label}
-            </Link>
-          )}
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
+import CaseStudyDetail, { type RelatedStoryCardData } from '@/components/sections/stories/CaseStudyDetail'
 import { toneFor } from '@/components/sections/stories/gradient'
-import StoryDetail, { type RelatedStoryCardData } from '@/components/sections/stories/StoryDetail'
 import { asTypedLocale, localizedPath } from '@/lib/i18n/locales'
 import type { Story } from '@/payload-types'
 import config from '@/payload.config'
@@ -15,7 +15,7 @@ import type { JSX } from 'react'
 export const revalidate = 300
 export const dynamicParams = true
 
-// Reuse the shared metadata + static-params generators; the page body is bespoke for stories.
+// Reuse the shared metadata + static-params generators; the page body is bespoke for case studies.
 const { generateMetadata, generateStaticParams } = createContentDetailPage('story')
 
 function formatDate(date?: string | null): string {
@@ -71,7 +71,7 @@ async function Page({ params }: { params: Promise<{ locale: string; slug: string
 
   const relatedDocs = await getRelatedStories(slug, typedLocale)()
   const related: RelatedStoryCardData[] = relatedDocs.map((doc, index) => ({
-    href: localizedPath(typedLocale, `/stories/${doc.slug}`),
+    href: localizedPath(typedLocale, `/case-studies/${doc.slug}`),
     title: doc.title ?? 'Untitled',
     excerpt: doc.excerpts,
     code: (doc as { code?: string | null }).code ?? null,
@@ -81,7 +81,7 @@ async function Page({ params }: { params: Promise<{ locale: string; slug: string
     tone: toneFor('story', index),
   }))
 
-  return <StoryDetail story={story} backHref={localizedPath(typedLocale, '/stories')} related={related} />
+  return <CaseStudyDetail story={story} backHref={localizedPath(typedLocale, '/stories')} related={related} />
 }
 
 export { generateMetadata, generateStaticParams }

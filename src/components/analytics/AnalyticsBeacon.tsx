@@ -1,6 +1,6 @@
 'use client'
 
-import { LOCALES } from '@/lib/i18n/locales'
+import { localeFromPath } from '@/lib/i18n/locales'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 
@@ -8,14 +8,8 @@ import { useEffect, useRef } from 'react'
 // client-side navigation (pathname change). Rendered once from the [locale] layout, which stays a
 // server component — only this leaf is 'use client'.
 //
-// Locale parsing: the site is always-prefixed (/en/…, /bn/…) per WEB-445, so the locale is just the
-// first path segment when it's one of the known LOCALES. If the first segment isn't a known locale
-// (shouldn't happen behind the middleware) we send undefined rather than guessing.
-
-const localeFromPath = (pathname: string): string | undefined => {
-  const first = pathname.split('/').filter(Boolean)[0]
-  return first && (LOCALES as readonly string[]).includes(first) ? first : undefined
-}
+// Locale parsing: the default locale (en) is served unprefixed at the root and bn lives under /bn,
+// so the shared `localeFromPath` reads the leading segment and falls back to the default locale.
 
 const send = (pathname: string): void => {
   const payload = JSON.stringify({

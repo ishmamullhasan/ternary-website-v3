@@ -30,12 +30,10 @@ export default function SolutionsComp({ heading, description, image, items }: So
   const hero = image as Media | null | undefined
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col px-5">
+    <section className="section-card flex w-full flex-col">
       <div className="flex justify-start">
         <div className="flex flex-col lg:w-[500px]">
-          {heading && (
-            <h2 className="text-section font-display font-medium text-cream">{heading}</h2>
-          )}
+          {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
           {description && <p className="mt-3 text-body lg:text-base">{description}</p>}
         </div>
       </div>
@@ -50,14 +48,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
         className="group relative my-8 aspect-[16/7] w-full overflow-hidden rounded-md border border-white/[0.06] lg:my-10"
       >
         <GradientPanel tone={toneFor(undefined, 0)} interactive />
-        {hero?.url && (
-          <Image
-            src={hero.url}
-            alt={hero.alt || ''}
-            fill
-            className="relative object-cover"
-          />
-        )}
+        {hero?.url && <Image src={hero.url} alt={hero.alt || ''} fill className="relative object-cover" />}
       </Motion>
 
       <div className="w-full">
@@ -67,20 +58,19 @@ export default function SolutionsComp({ heading, description, image, items }: So
               <Motion
                 key={item.id ?? index}
                 {...motionGridItemProps}
-                className="flex h-full flex-col rounded-md border border-white/[0.06] bg-ink p-5"
+                className="flex h-full flex-col"
                 transition={{
                   duration: 0.4,
                   ease: 'easeOut',
                   delay: index * 0.05,
                 }}
               >
-                {item.excerpts && (
-                  <p className="mb-2 text-xs uppercase tracking-[0.14em] text-subtle">{item.excerpts}</p>
-                )}
-                <hr className="mb-3 border-line" />
-                <h3 className="font-display text-base font-medium text-cream">{item.title}</h3>
+                {item.excerpts && <p className="text-sm leading-relaxed text-body">{item.excerpts}</p>}
+                {/* Divider + title + link pinned to the bottom so titles align across columns. */}
+                <hr className="mt-auto border-line" />
+                <h3 className="mt-3 font-display text-base font-medium text-cream">{item.title}</h3>
 
-                <Button asChild variant="link" size="clear" className="mt-4 text-body hover:text-cream">
+                <Button asChild variant="link" size="clear" className="mt-2 text-body hover:text-cream">
                   <Link href="/solutions" className="group/link inline-flex items-center gap-1">
                     Learn More
                     <ArrowUpRight
@@ -95,6 +85,6 @@ export default function SolutionsComp({ heading, description, image, items }: So
           })}
         </div>
       </div>
-    </div>
+    </section>
   )
 }

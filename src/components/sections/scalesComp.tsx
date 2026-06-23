@@ -17,7 +17,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
   if (!scales || scales.length === 0) return null
 
   return (
-    <section className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
+    <section className="section-card flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
       {/* top header */}
       <Motion className="lg:w-2/5" {...reveal}>
         {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}

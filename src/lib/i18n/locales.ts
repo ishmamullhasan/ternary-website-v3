@@ -1,8 +1,9 @@
-// Single source of truth for the URL-routing locale set (WEB-445 always-prefixed [locale] routing).
-// Keep this list in sync with `localization.locales` in src/payload.config.ts.
+// Single source of truth for the URL-routing locale set. Keep this list in sync with
+// `localization.locales` in src/payload.config.ts.
 //
-// Every public page lives under a /[locale] segment (/en/…, /bn/…) — `en` is NOT special-cased in
-// the URL, it is always prefixed. The middleware 301-redirects unprefixed/legacy URLs to /en/….
+// The default locale (en) is served UNPREFIXED at the root; every other locale (bn) keeps a
+// /<locale> prefix (/bn/…). Pages still live under the /[locale] App Router segment — the middleware
+// rewrites unprefixed URLs onto /en internally and 301-redirects legacy /en/… to the bare path.
 
 import type { TypedLocale } from 'payload'
 
@@ -28,14 +29,17 @@ export function asTypedLocale(value: string | undefined): TypedLocale | null {
 }
 
 /**
- * Prefix a locale-LESS, root-relative path with the locale segment.
- * `localizedPath('en', '/insights/foo')` → `/en/insights/foo`; `localizedPath('bn', '/')` → `/bn`.
- * Both the routes, the canonical/hreflang helper, and the sitemap derive prefixed paths from this
- * so they can never diverge.
+ * Map a locale-LESS, root-relative path to its routed URL. The default locale is served UNPREFIXED
+ * at the root; every other locale gets a `/<locale>` prefix:
+ *   localizedPath('en', '/insights/foo') → `/insights/foo`    localizedPath('en', '/') → `/`
+ *   localizedPath('bn', '/insights/foo') → `/bn/insights/foo`  localizedPath('bn', '/') → `/bn`
+ * The routes, the canonical/hreflang helper, and the sitemap all derive paths from this so they can
+ * never diverge.
  */
 export function localizedPath(locale: string, path: string): string {
-  if (!path || path === '/') return `/${locale}`
-  return `/${locale}${path.startsWith('/') ? path : `/${path}`}`
+  const rest = !path || path === '/' ? '' : path.startsWith('/') ? path : `/${path}`
+  if (locale === DEFAULT_LOCALE) return rest || '/'
+  return `/${locale}${rest}`
 }
 
 /** Matches a leading `/en` or `/bn` segment (anchored, segment-boundary aware). */
@@ -52,15 +56,17 @@ export function localeFromPath(pathname: string | null | undefined): Locale {
 }
 
 /**
- * Prefix an internal CMS href with the active locale so in-site navigation stays in the current
- * language (WEB-445 — CMS links are stored locale-LESS, e.g. `/insights`). Pass-through, untouched:
+ * Prefix an internal CMS href for the active locale so in-site navigation stays in the current
+ * language (CMS links are stored locale-LESS, e.g. `/insights`). The default locale is unprefixed,
+ * so for it this is effectively a normalising pass-through; bn links get a `/bn` prefix.
+ * Pass-through, untouched:
  *   - external URLs (`http(s)://…`, protocol-relative `//…`), `mailto:`/`tel:`, hash anchors (`#…`)
- *   - already locale-prefixed paths (`/en/…`, `/bn`) — never double-prefix.
- * Empty/missing hrefs collapse to the locale home (`/en`). Non-rooted values are treated as
- * root-relative. Without this, clicking a locale-less link 301s back to the default locale.
+ *   - already locale-prefixed paths (`/bn/…`) — never double-prefix.
+ * Empty/missing hrefs collapse to the locale home (`/` for en, `/bn` for bn). Non-rooted values are
+ * treated as root-relative.
  */
 export function localizedHref(locale: string, href: string | null | undefined): string {
-  if (!href) return `/${locale}`
+  if (!href) return localizedPath(locale, '/')
   if (/^(https?:)?\/\//i.test(href) || /^(mailto:|tel:|#)/i.test(href)) return href
   if (LOCALE_PREFIX_RE.test(href)) return href
   return localizedPath(locale, href)

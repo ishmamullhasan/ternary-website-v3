@@ -1,11 +1,9 @@
 'use client'
 import Motion from '@/components/animation/motion'
 import { EASE, reveal, revealItem } from '@/components/animation/reveal'
-import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
 import type { Capability, Media } from '@/payload-types'
 import Image from 'next/image'
-import { ArrowUpRight } from 'lucide-react'
 import type { JSX } from 'react'
 
 interface CapabilitiesCompProps {
@@ -33,69 +31,61 @@ export default function CapabilitiesComp({
   if (!capability || capability.length === 0) return null
 
   return (
-    <section className="w-full">
-      {/* top header */}
-      <Motion className="max-w-2xl" {...reveal}>
-        <p className="mb-3 text-[12px] uppercase tracking-[0.14em] text-subtle">Capabilities</p>
-        <h2 className="text-section font-display font-medium text-cream">{heading}</h2>
-        {description && <p className="mt-3 max-w-xl text-body">{description}</p>}
+    <section className="section-card flex w-full flex-col gap-8">
+      {/* Header — lead sentence ABOVE the display heading (Figma 339:8092), left-aligned. */}
+      <Motion className="flex max-w-[544px] flex-col gap-4" {...reveal}>
+        {description && <p className="text-base leading-[1.15] text-body">{description}</p>}
+        {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
       </Motion>
 
-      {/* capabilities grid */}
-      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:mt-14">
+      {/* Disciplines grid: on lg a 5-column grid whose first column is left empty (the design's
+          indent), so the 8 cards occupy columns 2–5 across two 192px rows. Below lg it collapses
+          to a 1/2-column stack with no gutter. */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:auto-rows-[192px]">
+        {/* Empty left gutter (desktop only), spanning both rows. */}
+        <div aria-hidden className="hidden lg:block lg:row-span-2" />
         {capability.map((item, index): JSX.Element => {
           return (
-            <Motion
-              key={item.id ?? index}
-              tag="div"
-              className="group flex flex-col rounded-md border border-white/[0.06] bg-ink p-5 transition-colors duration-300 hover:border-line-strong"
-              {...revealItem(index)}
-            >
-              <h3 className="font-display font-medium text-cream">{item.title}</h3>
-              {item.excerpts && <p className="mt-2 flex-1 text-sm text-body">{item.excerpts}</p>}
+            <Motion key={item.id ?? index} tag="div" className="h-full" {...revealItem(index)}>
               <Link
                 href={`/capabilities/${item.slug}`}
-                className={`mt-6 inline-flex items-center gap-1.5 rounded-sm text-sm font-semibold text-cream transition-colors hover:text-subtle ${focusRing}`}
+                className={`group flex h-full min-h-[160px] flex-col justify-between rounded-[5px] bg-button-dark p-4 transition-colors duration-300 hover:bg-[#1a1810] ${focusRing}`}
               >
-                Explore
-                <ArrowUpRight
-                  size={15}
-                  strokeWidth={2}
-                  className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0"
-                  aria-hidden
-                />
+                <div>
+                  <h3 className="text-[16px] font-medium leading-[1.15] text-cream">{item.title}</h3>
+                  {item.excerpts && <p className="mt-2 text-[14px] leading-[1.3] text-cream/80">{item.excerpts}</p>}
+                </div>
+                <span className="mt-6 text-[14px] font-medium whitespace-nowrap text-cream">Explore</span>
               </Link>
             </Motion>
           )
         })}
       </div>
 
-      {/* leadership section */}
+      {/* "Led by operators" block: left text column (lead above heading), right cream image panel
+          spanning the remaining columns. */}
       {(heading_2 || description_2 || image?.url) && (
-        <div className="mt-16 grid grid-cols-1 gap-8 lg:mt-24 lg:grid-cols-3 lg:items-start lg:gap-12">
-          <div className="lg:col-span-1">
-            {heading_2 && (
-              <h3 className="font-display font-medium text-cream text-2xl">{heading_2}</h3>
-            )}
-            {description_2 && <p className="mt-3 text-body">{description_2}</p>}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5 lg:gap-4">
+          <div className="flex flex-col gap-2 lg:col-span-1 lg:self-start">
+            {description_2 && <p className="text-[14px] leading-[1.3] text-body">{description_2}</p>}
+            {heading_2 && <h3 className="font-display text-2xl font-medium text-cream">{heading_2}</h3>}
           </div>
 
-          {/* Always-rendered gradient base; the optional CMS image layers on top when present. */}
+          {/* Cream panel — the image layers on top when present; the cream fill is the fallback. */}
           <Motion
-            className="group relative aspect-[1100/600] w-full overflow-hidden rounded-md ring-1 ring-white/[0.06] lg:col-span-2"
+            className="relative aspect-[16/10] w-full overflow-hidden rounded-[5px] bg-cream lg:col-span-4 lg:aspect-[11/6]"
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
           >
-            <GradientPanel tone={toneFor(undefined, 1)} interactive />
             {image?.url && (
               <Image
                 src={image.url}
-                alt={image.alt || 'leadership'}
+                alt={image.alt || heading_2 || 'leadership'}
                 fill
-                className="object-cover relative"
-                sizes="(max-width: 1024px) 100vw, 66vw"
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 80vw"
               />
             )}
           </Motion>

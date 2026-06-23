@@ -16,7 +16,7 @@ export default function EngagementComp({ heading, description, model }: Engageme
   if (!model?.length) return null
 
   return (
-    <section>
+    <section className="section-card">
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
         {/* top header */}
         <Motion className="lg:w-2/5" {...reveal}>
@@ -40,12 +40,7 @@ export default function EngagementComp({ heading, description, model }: Engageme
 
                 {/* optional CMS media layered on top */}
                 {url && (
-                  <Image
-                    src={url}
-                    alt={item.title || 'engagement model'}
-                    fill
-                    className="relative object-cover"
-                  />
+                  <Image src={url} alt={item.title || 'engagement model'} fill className="relative object-cover" />
                 )}
 
                 {/* text */}

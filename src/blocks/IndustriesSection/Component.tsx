@@ -21,7 +21,7 @@ export function IndustriesSectionComponent({
   if (items.length === 0) return null
 
   return (
-    <Motion tag="section" className="w-full py-4 lg:py-8">
+    <Motion tag="section" className="section-card w-full">
       {(heading || description) && (
         <Motion
           tag="div"
@@ -40,7 +40,10 @@ export function IndustriesSectionComponent({
         </Motion>
       )}
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+        {/* Empty left gutter (desktop) so the 8 cards sit in columns 2–5 — matching the Capabilities
+            section and the Figma design. */}
+        <div aria-hidden className="hidden lg:block lg:row-span-2" />
         {items.map((item, index) => {
           const thumb = item.thumbnail as Media | undefined
           const cover = thumb?.url
@@ -84,9 +87,7 @@ export function IndustriesSectionComponent({
                     {item.title}
                   </h3>
 
-                  {item.excerpts && (
-                    <p className="mt-2 text-sm leading-relaxed text-cream/80">{item.excerpts}</p>
-                  )}
+                  {item.excerpts && <p className="mt-2 text-sm leading-relaxed text-cream/80">{item.excerpts}</p>}
 
                   <ArrowUpRight
                     size={20}

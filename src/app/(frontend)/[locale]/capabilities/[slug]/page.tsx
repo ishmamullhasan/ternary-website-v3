@@ -185,7 +185,7 @@ function StackTags({ tags }: { tags?: { name?: string | null; id?: string | null
 }
 
 // Reusable section shell: near-black bordered panel with generous editorial padding.
-const SECTION_SHELL = 'rounded-md border border-white/[0.06] bg-ink p-6 lg:p-12'
+const SECTION_SHELL = 'rounded-md border border-white/[0.06] bg-card p-6 lg:p-12'
 
 export default async function Page({
   params,
@@ -231,18 +231,14 @@ export default async function Page({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
           >
-            {hero?.badge && (
-              <span className="inline-flex items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] font-medium uppercase tracking-[0.12em] text-cream">
-                {hero.badge}
+            {/* Single rounded-full badge pill above the headline (design node 1835:7100). */}
+            {(hero?.badge || capability.title) && (
+              <span className="inline-flex items-center rounded-full border border-subtle bg-card px-4 py-2 text-[15px] text-cream">
+                {hero?.badge || capability.title}
               </span>
             )}
 
-            {/* Small ID / discipline row above the headline (design node 1835:7100). */}
-            <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">
-              {capability.title ? `Capability — ${capability.title}` : 'Capability'}
-            </p>
-
-            <h1 className="font-display text-[clamp(2rem,4.5vw,2.875rem)] font-medium leading-[1.08] tracking-[-0.03em] text-cream">
+            <h1 className="font-display text-[clamp(2rem,4.5vw,2.875rem)] font-medium leading-[1.12] tracking-[-0.04em] text-cream">
               {hero?.heading || capability.title}
             </h1>
 
@@ -256,12 +252,11 @@ export default async function Page({
               <Link
                 href={heroButton.link || '#'}
                 className={cn(
-                  'mt-1 inline-flex items-center gap-2 rounded-md border border-line-strong bg-transparent px-5 py-2.5 text-[14px] font-medium text-cream transition-colors duration-300 hover:border-subtle hover:bg-white/[0.04]',
+                  'mt-1 inline-flex items-center justify-center rounded-md bg-cream px-5 py-2.5 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-cream-hover',
                   focusRing,
                 )}
               >
                 {heroButton.label}
-                <ArrowUpRight size={15} strokeWidth={2} aria-hidden />
               </Link>
             )}
           </Motion>
@@ -343,7 +338,7 @@ export default async function Page({
                 <Motion
                   key={item.id ?? `practice-${index}`}
                   className={cn(
-                    'group flex min-h-[280px] flex-col justify-between rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.14]',
+                    'group flex min-h-[280px] flex-col justify-between rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.14]',
                     isWide ? 'lg:col-span-2' : 'lg:col-span-1',
                   )}
                   {...revealItem(index)}
@@ -391,7 +386,7 @@ export default async function Page({
             {capability.caseStudies.items?.map((item, index) => (
               <Motion
                 key={item.id ?? `case-${index}`}
-                className="group flex min-h-[400px] flex-col justify-between rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.14]"
+                className="group flex min-h-[400px] flex-col justify-between rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.14]"
                 {...revealItem(index)}
               >
                 <div className="flex flex-col gap-6">
@@ -476,7 +471,7 @@ export default async function Page({
               <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-6">
                 <h3 className="text-[22px] font-medium leading-tight text-cream">{practiceMember.name}</h3>
                 {practiceMember.position && (
-                  <span className="inline-flex w-fit items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] text-cream">
+                  <span className="inline-flex w-fit items-center rounded-full border border-line-strong/80 px-3 py-1 text-[12px] text-cream">
                     {practiceMember.position}
                   </span>
                 )}
@@ -500,7 +495,7 @@ export default async function Page({
 
               <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
                 {capability.practiceLead?.credentials && capability.practiceLead.credentials.length > 0 && (
-                  <div className="flex flex-col gap-4 rounded-md border border-white/[0.07] bg-white/[0.015] p-5">
+                  <div className="flex flex-col gap-4 rounded-md border border-white/[0.07] bg-ink p-5">
                     <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Credentials</span>
                     <ul className="flex flex-col gap-3">
                       {capability.practiceLead.credentials.map((item, index) => (
@@ -516,7 +511,7 @@ export default async function Page({
                 )}
 
                 {capability.practiceLead?.writings && capability.practiceLead.writings.length > 0 && (
-                  <div className="flex flex-col gap-4 rounded-md border border-white/[0.07] bg-white/[0.015] p-5">
+                  <div className="flex flex-col gap-4 rounded-md border border-white/[0.07] bg-ink p-5">
                     <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">
                       Recent writing &amp; talks
                     </span>
@@ -550,7 +545,7 @@ export default async function Page({
                     <Link
                       href={`mailto:${capability.practiceLead.email}`}
                       className={cn(
-                        'inline-flex items-center gap-2 rounded-md border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
+                        'inline-flex items-center bg-ink gap-2 rounded-full border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
                         focusRing,
                       )}
                     >
@@ -564,7 +559,7 @@ export default async function Page({
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
-                        'inline-flex items-center gap-2 rounded-md border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
+                        'inline-flex items-center bg-ink gap-2 rounded-full border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
                         focusRing,
                       )}
                     >
@@ -578,7 +573,7 @@ export default async function Page({
                       target="_blank"
                       rel="noopener noreferrer"
                       className={cn(
-                        'inline-flex items-center gap-2 rounded-md border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
+                        'inline-flex items-center bg-ink gap-2 rounded-full border border-line-strong/80 px-4 py-2 text-[13px] text-body transition-colors duration-300 hover:border-subtle hover:text-cream',
                         focusRing,
                       )}
                     >
@@ -609,7 +604,7 @@ export default async function Page({
                 <Link
                   href={`/${typedLocale}/capabilities/${item.slug}`}
                   className={cn(
-                    'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-white/[0.03]',
+                    'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.16]',
                     focusRing,
                   )}
                 >
