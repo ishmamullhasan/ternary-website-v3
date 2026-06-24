@@ -37,7 +37,14 @@ const eslintConfig = [
   },
   {
     // Generated files — not linted (kept in their generator's native format).
-    ignores: ['.next/', 'node_modules/', '.vercel/', 'src/payload-types.ts', 'src/app/(payload)/admin/importMap.js'],
+    ignores: [
+      '.next/',
+      'node_modules/',
+      '.vercel/',
+      '.claude/',
+      'src/payload-types.ts',
+      'src/app/(payload)/admin/importMap.js',
+    ],
   },
 ]
 

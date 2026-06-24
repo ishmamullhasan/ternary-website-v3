@@ -20,7 +20,13 @@ const CLEAN = [
 
 const run = async () => {
   const payload = await getPayload({ config })
-  const res = await payload.find({ collection: 'industry' as never, locale: 'en', depth: 0, limit: 200, pagination: false })
+  const res = await payload.find({
+    collection: 'industry' as never,
+    locale: 'en',
+    depth: 0,
+    limit: 200,
+    pagination: false,
+  })
   const bySlug = new Map((res.docs as { id: string; slug?: string; title?: string }[]).map((d) => [d.slug, d]))
 
   const ids: string[] = []
@@ -35,7 +41,10 @@ const run = async () => {
     }
   }
 
-  const footer = (await payload.findGlobal({ slug: 'footer' as never, locale: 'en', depth: 0 })) as Record<string, unknown>
+  const footer = (await payload.findGlobal({ slug: 'footer' as never, locale: 'en', depth: 0 })) as Record<
+    string,
+    unknown
+  >
   const current = (footer.industries as { toString(): string }[] | undefined)?.map((x) => String(x)) ?? []
   console.log(`\ncurrent footer.industries ids: ${current.map((x) => x.slice(-6)).join(', ') || '(none)'}`)
   console.log(`new     footer.industries ids: ${ids.map((x) => x.slice(-6)).join(', ')}`)

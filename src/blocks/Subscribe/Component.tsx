@@ -26,9 +26,7 @@ export const SubscribeComponent = (data: SubscribeBlock): JSX.Element | null => 
             <h2 className="text-2xl lg:text-4xl font-medium tracking-tight text-cream leading-tight max-w-lg">
               {data.heading}
             </h2>
-            {data.description && (
-              <p className="text-sm text-body leading-relaxed max-w-xl">{data.description}</p>
-            )}
+            {data.description && <p className="text-sm text-body leading-relaxed max-w-xl">{data.description}</p>}
           </div>
 
           {data.followOptions && data.followOptions.length > 0 && (

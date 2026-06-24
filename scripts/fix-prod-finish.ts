@@ -20,17 +20,33 @@ const run = async () => {
   const payload = await getPayload({ config })
 
   // (1) header CTA button
-  const header = (await payload.findGlobal({ slug: 'header' as never, locale: 'en', depth: 0 })) as Record<string, unknown>
+  const header = (await payload.findGlobal({ slug: 'header' as never, locale: 'en', depth: 0 })) as Record<
+    string,
+    unknown
+  >
   const btn = (header.button ?? {}) as { label?: string; link?: string }
   console.log('current button:', JSON.stringify(btn))
   if (!btn.label) {
     const { id: _i, globalType: _g, createdAt: _c, updatedAt: _u, ...data } = header
     console.log('→ set button = { label: "Get in Touch", link: "/contact" }')
-    if (!DRY) await save(() => payload.updateGlobal({ slug: 'header' as never, locale: 'en', data: { ...data, button: { label: 'Get in Touch', link: '/contact' } } as never }))
+    if (!DRY)
+      await save(() =>
+        payload.updateGlobal({
+          slug: 'header' as never,
+          locale: 'en',
+          data: { ...data, button: { label: 'Get in Touch', link: '/contact' } } as never,
+        }),
+      )
   }
 
   // (2) remove aboutSection from the home layout
-  const homeRes = await payload.find({ collection: 'pages' as never, where: { slug: { equals: 'home' } } as never, locale: 'en', depth: 0, limit: 1 })
+  const homeRes = await payload.find({
+    collection: 'pages' as never,
+    where: { slug: { equals: 'home' } } as never,
+    locale: 'en',
+    depth: 0,
+    limit: 1,
+  })
   const home = homeRes.docs?.[0] as { id: string; layout?: { blockType?: string }[] } | undefined
   if (home) {
     const before = (home.layout ?? []).map((b) => b.blockType)
@@ -39,7 +55,15 @@ const run = async () => {
     console.log('home layout after :', layout.map((b) => b.blockType).join(', '))
     if (layout.length !== before.length) {
       console.log(`→ removing ${before.length - layout.length} aboutSection block(s)`)
-      if (!DRY) await save(() => payload.update({ collection: 'pages' as never, id: home.id as never, locale: 'en', data: { layout } as never }))
+      if (!DRY)
+        await save(() =>
+          payload.update({
+            collection: 'pages' as never,
+            id: home.id as never,
+            locale: 'en',
+            data: { layout } as never,
+          }),
+        )
     } else {
       console.log('(no aboutSection block to remove)')
     }

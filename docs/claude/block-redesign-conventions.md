@@ -6,6 +6,7 @@ design-faithful, admin-friendly section blocks. **Read the proven reference slic
 and the factories `src/fields/{sectionHeader,arrays,iconSelect,buttons,image,ctaGroup,link,rowLabel}.ts`.
 
 ## Rules
+
 1. **One block per visual section** in the monolith Component (each top-level `<Motion tag="section">` or
    equivalent). Name blocks descriptively, PascalCase dir + slug camelCase (e.g. `AboutThesis` → slug `aboutThesis`).
 2. **Component = verbatim extraction.** Copy that section's JSX EXACTLY — identical className strings, Motion
@@ -34,6 +35,7 @@ and the factories `src/fields/{sectionHeader,arrays,iconSelect,buttons,image,cta
    so there should be none).
 
 ## Required report back
+
 - The ordered list of new blocks: `slug` + dir.
 - For EACH block: its exact config field shape (names + types).
 - The **section → block mapping** with OLD field path → NEW field path for every field (this is the migration

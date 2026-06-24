@@ -7,11 +7,23 @@ import { getPayload } from 'payload'
 
 const DRY = process.env.CONTENT_DRY !== '0'
 const BENIGN = (e: unknown) => String((e as Error)?.message || e).includes('static generation store missing')
-const slugify = (s: string) => s.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70)
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 70)
 
 const run = async () => {
   const payload = await getPayload({ config })
-  const res = await payload.find({ collection: 'pressRelease' as never, locale: 'en', depth: 0, limit: 200, pagination: false })
+  const res = await payload.find({
+    collection: 'pressRelease' as never,
+    locale: 'en',
+    depth: 0,
+    limit: 200,
+    pagination: false,
+  })
   const used = new Set<string>()
   console.log(`\n=== pressRelease slug regen (${res.totalDocs} docs) ===`)
   for (const d of res.docs as { id: string; title?: string; slug?: string }[]) {
@@ -28,7 +40,12 @@ const run = async () => {
       console.log(`  • ${d.slug}  →  ${next}   ("${title.slice(0, 50)}")`)
       if (!DRY) {
         try {
-          await payload.update({ collection: 'pressRelease' as never, id: d.id as never, locale: 'en', data: { slug: next } as never })
+          await payload.update({
+            collection: 'pressRelease' as never,
+            id: d.id as never,
+            locale: 'en',
+            data: { slug: next } as never,
+          })
         } catch (e) {
           if (!BENIGN(e)) throw e
         }

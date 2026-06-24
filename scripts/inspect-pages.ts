@@ -6,7 +6,11 @@ import { getPayload } from 'payload'
 const relSlugs = (v: unknown): string => {
   const arr = Array.isArray(v) ? v : v ? [v] : []
   return arr
-    .map((x) => (x && typeof x === 'object' ? ((x as { slug?: string; title?: string }).slug ?? (x as { title?: string }).title ?? '?') : String(x)))
+    .map((x) =>
+      x && typeof x === 'object'
+        ? ((x as { slug?: string; title?: string }).slug ?? (x as { title?: string }).title ?? '?')
+        : String(x),
+    )
     .join(', ')
 }
 
@@ -14,13 +18,22 @@ const run = async () => {
   const payload = await getPayload({ config })
 
   for (const slug of ['home', 'stories'] as const) {
-    const res = await payload.find({ collection: 'pages' as never, where: { slug: { equals: slug } } as never, locale: 'en', depth: 1, limit: 1 })
+    const res = await payload.find({
+      collection: 'pages' as never,
+      where: { slug: { equals: slug } } as never,
+      locale: 'en',
+      depth: 1,
+      limit: 1,
+    })
     const page = res.docs?.[0] as { layout?: Record<string, unknown>[] } | undefined
     console.log(`\n=== page: ${slug} ===`)
     for (const b of page?.layout ?? []) {
       const relFields = Object.entries(b).filter(([k, v]) => {
         const arr = Array.isArray(v) ? v : [v]
-        return k !== 'id' && arr.some((x) => x && typeof x === 'object' && ('slug' in (x as object) || 'relationTo' in (x as object)))
+        return (
+          k !== 'id' &&
+          arr.some((x) => x && typeof x === 'object' && ('slug' in (x as object) || 'relationTo' in (x as object)))
+        )
       })
       console.log(`  • ${b.blockType}${relFields.length ? '' : '  (no rel fields)'}`)
       for (const [k, v] of relFields) console.log(`      ${k}: ${relSlugs(v)}`)

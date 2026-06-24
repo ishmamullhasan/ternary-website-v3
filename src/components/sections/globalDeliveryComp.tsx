@@ -18,24 +18,25 @@ export default function GlobalDeliveryComp({ heading, description, image, title,
   if (!heading && !description && !title && !excerpt && !image?.url) return null
 
   return (
-    <section className="flex flex-col gap-12 lg:gap-16">
-      {/* Header — single left-aligned column: description first, heading below (Figma 339:8145). */}
-      <Motion {...reveal} className="flex max-w-xl flex-col">
-        {description && <p className="text-body">{description}</p>}
-        {heading && <h2 className="mt-4 text-section font-display font-medium text-cream">{heading}</h2>}
-      </Motion>
+    <section className="section-card flex flex-col gap-12 lg:gap-16">
+      <Motion {...reveal} className="flex flex-col gap-10 lg:flex-row lg:justify-between lg:gap-16">
+        <div className="flex flex-col lg:w-2/5">
+          {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
+          {description && <p className="mt-4 text-body">{description}</p>}
+        </div>
 
-      {/* World map — full-bleed dotted map on the page surface (no card border / gradient backdrop),
-          with the talent-refinery label stacked above it (Figma 339:8149/8153). */}
-      <Motion {...reveal} transition={{ duration: 0.7, ease: EASE, delay: 0.1 }} className="flex flex-col gap-8">
         {(excerpt || title) && (
-          <div className="flex max-w-[238px] flex-col gap-2">
-            {excerpt && <p className="text-sm text-body">{excerpt}</p>}
-            {title && <p className="text-2xl font-display font-medium text-cream">{title}</p>}
+          <div className="flex flex-col lg:w-1/4 lg:self-end">
+            {excerpt && <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">{excerpt}</p>}
+            {title && <h3 className="mt-3 font-display text-xl font-medium text-cream lg:text-2xl">{title}</h3>}
           </div>
         )}
+      </Motion>
 
-        <div className="relative aspect-[16/9] w-full overflow-hidden">
+      {/* Globe on a transparent backdrop — no gradient/grain panel behind it. The optional CMS image
+          (if present) and the static globe svg sit directly on the section surface. */}
+      <Motion {...reveal} transition={{ duration: 0.7, ease: EASE, delay: 0.1 }} className="relative w-full">
+        <div className="relative aspect-[11/6] w-full">
           {image?.url && (
             <Image
               src={image.url}

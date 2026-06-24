@@ -218,7 +218,9 @@ const run = async () => {
   if (skipped.size === 0) console.log('  (none)')
   for (const [c, n] of [...skipped.entries()].sort()) console.log(`  ${c}: ${n}`)
 
-  console.log(`\n${DRY ? 'DRY RUN — no writes.' : 'APPLIED.'} Total values ${DRY ? 'to change' : 'changed'}: ${changes.length}`)
+  console.log(
+    `\n${DRY ? 'DRY RUN — no writes.' : 'APPLIED.'} Total values ${DRY ? 'to change' : 'changed'}: ${changes.length}`,
+  )
   await new Promise((r) => setTimeout(r, 500))
   process.exit(0)
 }

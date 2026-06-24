@@ -72,7 +72,7 @@ function getItemHref(item: MultiRelation): string {
     case 'model':
       return '/solutions'
     case 'story':
-      return `/stories/${item.value.slug}`
+      return `/case-studies/${item.value.slug}`
     case 'insight':
       return `/insights/${item.value.slug}`
     case 'pressRelease':
@@ -112,7 +112,7 @@ export default function AboutComp({ heading, description, items, organizations, 
               >
                 <Link
                   href={getItemHref(item)}
-                  className={`group relative block aspect-[3/4] overflow-hidden rounded-md border border-white/[0.06] bg-ink transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${focusRing}`}
+                  className={`group relative block aspect-[358/585] overflow-hidden rounded-md border border-white/[0.06] bg-ink transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${focusRing}`}
                 >
                   {/* gradient field IS the fallback; optional CMS image layers on top */}
                   <GradientPanel tone={toneFor(undefined, index)} interactive />

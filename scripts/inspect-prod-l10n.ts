@@ -16,7 +16,10 @@ const run = async () => {
     }
   }
 
-  const footer = (await payload.findGlobal({ slug: 'footer' as never, locale: 'en', depth: 1 })) as Record<string, unknown>
+  const footer = (await payload.findGlobal({ slug: 'footer' as never, locale: 'en', depth: 1 })) as Record<
+    string,
+    unknown
+  >
   const rel = (k: string) => {
     const arr = (footer[k] as { slug?: string; title?: string }[] | undefined) ?? []
     return arr.map((x) => (typeof x === 'object' ? `${x.title ?? '∅'}(${x.slug ?? '?'})` : String(x))).join(', ')
@@ -24,11 +27,22 @@ const run = async () => {
   console.log('\n=== footer dropdown relationships ===')
   for (const k of ['capabilities', 'solutions', 'industries']) console.log(`  ${k}: ${rel(k)}`)
 
-  const header = (await payload.findGlobal({ slug: 'header' as never, locale: 'en', depth: 1 })) as { logo?: { url?: string; filename?: string; id?: string } }
+  const header = (await payload.findGlobal({ slug: 'header' as never, locale: 'en', depth: 1 })) as {
+    logo?: { url?: string; filename?: string; id?: string }
+  }
   console.log('\n=== header.logo media ===')
-  console.log('  ', JSON.stringify(header.logo ? { id: header.logo.id, filename: header.logo.filename, url: header.logo.url } : null))
+  console.log(
+    '  ',
+    JSON.stringify(header.logo ? { id: header.logo.id, filename: header.logo.filename, url: header.logo.url } : null),
+  )
 
   await new Promise((r) => setTimeout(r, 400))
   process.exit(0)
 }
-try { await run() } catch (e) { console.error('L10N-INSPECT ERROR:', e); await new Promise((r) => setTimeout(r, 400)); process.exit(1) }
+try {
+  await run()
+} catch (e) {
+  console.error('L10N-INSPECT ERROR:', e)
+  await new Promise((r) => setTimeout(r, 400))
+  process.exit(1)
+}

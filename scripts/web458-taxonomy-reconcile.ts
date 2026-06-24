@@ -16,8 +16,8 @@
 //
 //   DATABASE_URI='mongodb://…prod…' pnpm exec tsx scripts/web458-taxonomy-reconcile.ts        # DRY (default)
 //   DRY=0 DATABASE_URI='mongodb://…prod…' pnpm exec tsx scripts/web458-taxonomy-reconcile.ts  # APPLY
-import { writeFileSync } from 'node:fs'
 import mongoose from 'mongoose'
+import { writeFileSync } from 'node:fs'
 
 const { ObjectId } = mongoose.Types
 const uri = process.env.DATABASE_URI
@@ -36,17 +36,42 @@ const SOLUTIONS = ['Product Development', 'Engineering Augmentation', 'Enterpris
 const NEW_SOLUTIONS: Record<string, { slug: string; excerpt: string }> = {
   'Managed Systems': {
     slug: 'managed-systems',
-    excerpt: 'We run and evolve the systems we build — ongoing reliability, security, and governance long after launch.',
+    excerpt:
+      'We run and evolve the systems we build — ongoing reliability, security, and governance long after launch.',
   },
 }
 // Canonical capabilities in display order, all created fresh with starter copy.
 const CAPABILITIES: { title: string; slug: string; excerpt: string }[] = [
-  { title: 'Digital Experiences', slug: 'digital-experiences', excerpt: 'Web, mobile, and product interfaces engineered for clarity, speed, and trust.' },
-  { title: 'Artificial Intelligence', slug: 'artificial-intelligence', excerpt: 'Agentic systems, LLM applications, and ML pipelines built for production accountability.' },
-  { title: 'Data & Analytics', slug: 'data-analytics', excerpt: 'Pipelines, warehouses, and decision-grade analytics on a single source of truth.' },
-  { title: 'Cloud Transformation', slug: 'cloud-transformation', excerpt: 'Cloud-native architecture, migration, and platform operations governed for regulated environments.' },
-  { title: 'Internet of Things', slug: 'internet-of-things', excerpt: 'Connected devices, edge, and telemetry platforms — from firmware to dashboard.' },
-  { title: 'Platformization', slug: 'platformization', excerpt: 'Turning bespoke builds into reusable internal platforms that compound delivery speed.' },
+  {
+    title: 'Digital Experiences',
+    slug: 'digital-experiences',
+    excerpt: 'Web, mobile, and product interfaces engineered for clarity, speed, and trust.',
+  },
+  {
+    title: 'Artificial Intelligence',
+    slug: 'artificial-intelligence',
+    excerpt: 'Agentic systems, LLM applications, and ML pipelines built for production accountability.',
+  },
+  {
+    title: 'Data & Analytics',
+    slug: 'data-analytics',
+    excerpt: 'Pipelines, warehouses, and decision-grade analytics on a single source of truth.',
+  },
+  {
+    title: 'Cloud Transformation',
+    slug: 'cloud-transformation',
+    excerpt: 'Cloud-native architecture, migration, and platform operations governed for regulated environments.',
+  },
+  {
+    title: 'Internet of Things',
+    slug: 'internet-of-things',
+    excerpt: 'Connected devices, edge, and telemetry platforms — from firmware to dashboard.',
+  },
+  {
+    title: 'Platformization',
+    slug: 'platformization',
+    excerpt: 'Turning bespoke builds into reusable internal platforms that compound delivery speed.',
+  },
 ]
 
 const SOL_SET = new Set(SOLUTIONS.map((s) => s.toLowerCase()))
@@ -71,7 +96,12 @@ const run = async () => {
   const doomed = new Set<string>()
   for (const d of curSol) if (!SOL_SET.has(norm(d.title))) doomed.add(String(d._id))
   for (const d of curCap) if (!CAP_SET.has(norm(d.title))) doomed.add(String(d._id))
-  log(`\nDoomed docs (${doomed.size}): ${[...curSol, ...curCap].filter((d) => doomed.has(String(d._id))).map((d) => `${txt(d.title)}`).join(', ')}`)
+  log(
+    `\nDoomed docs (${doomed.size}): ${[...curSol, ...curCap]
+      .filter((d) => doomed.has(String(d._id)))
+      .map((d) => `${txt(d.title)}`)
+      .join(', ')}`,
+  )
 
   // ---- backup before any writes ----
   if (!DRY) {
@@ -80,7 +110,12 @@ const run = async () => {
     writeFileSync(
       path,
       JSON.stringify(
-        { solutions: curSol, capabilities: curCap, pages: await Pages.find({}).toArray(), globals: await Globals.find({}).toArray() },
+        {
+          solutions: curSol,
+          capabilities: curCap,
+          pages: await Pages.find({}).toArray(),
+          globals: await Globals.find({}).toArray(),
+        },
         null,
         2,
       ),
@@ -116,7 +151,8 @@ const run = async () => {
   for (const title of SOLUTIONS) {
     const keep = curSol.find((d) => norm(d.title) === title.toLowerCase() && !doomed.has(String(d._id)))
     if (keep) solIdByTitle.set(title, keep._id as InstanceType<typeof ObjectId>)
-    else if (NEW_SOLUTIONS[title]) solIdByTitle.set(title, await ensure(Sol, title, NEW_SOLUTIONS[title].slug, NEW_SOLUTIONS[title].excerpt, false))
+    else if (NEW_SOLUTIONS[title])
+      solIdByTitle.set(title, await ensure(Sol, title, NEW_SOLUTIONS[title].slug, NEW_SOLUTIONS[title].excerpt, false))
   }
   const solIds = SOLUTIONS.map((t) => solIdByTitle.get(t)!).filter(Boolean)
   log(`  canonical solution ids: ${solIds.length}/4   capability ids: ${capIds.length}/6`)
@@ -142,17 +178,26 @@ const run = async () => {
   // ---- 3. strip remaining doomed refs from all pages + globals ----
   const strip = (node: unknown): { v: unknown; changed: boolean } => {
     if (node == null) return { v: node, changed: false }
-    if (node instanceof ObjectId || (typeof node === 'object' && (node as { _bsontype?: string })._bsontype === 'ObjectId')) {
+    if (
+      node instanceof ObjectId ||
+      (typeof node === 'object' && (node as { _bsontype?: string })._bsontype === 'ObjectId')
+    ) {
       return doomed.has(String(node)) ? { v: null, changed: true } : { v: node, changed: false }
     }
     // Leaf for any non-plain object (Date, Buffer, other BSON types) — never rebuild these.
-    if (typeof node === 'object' && !Array.isArray(node) && node.constructor !== Object) return { v: node, changed: false }
+    if (typeof node === 'object' && !Array.isArray(node) && node.constructor !== Object)
+      return { v: node, changed: false }
     if (Array.isArray(node)) {
       let changed = false
       const out: unknown[] = []
       for (const el of node) {
         // polymorphic {relationTo, value}
-        if (el && typeof el === 'object' && 'value' in (el as object) && doomed.has(String((el as { value: unknown }).value))) {
+        if (
+          el &&
+          typeof el === 'object' &&
+          'value' in (el as object) &&
+          doomed.has(String((el as { value: unknown }).value))
+        ) {
           changed = true
           continue
         }
@@ -180,7 +225,10 @@ const run = async () => {
   }
 
   log(`\n=== 3. strip doomed refs from pages + globals ===`)
-  for (const [coll, label] of [[Pages, 'pages'], [Globals, 'globals']] as const) {
+  for (const [coll, label] of [
+    [Pages, 'pages'],
+    [Globals, 'globals'],
+  ] as const) {
     for (const doc of await coll.find({}).toArray()) {
       const r = strip(doc)
       if (r.changed) {
@@ -197,7 +245,10 @@ const run = async () => {
 
   // ---- 4. hard-delete doomed docs ----
   log(`\n=== 4. delete doomed docs ===`)
-  for (const [coll, cur] of [[Sol, curSol], [Cap, curCap]] as const) {
+  for (const [coll, cur] of [
+    [Sol, curSol],
+    [Cap, curCap],
+  ] as const) {
     for (const d of cur)
       if (doomed.has(String(d._id))) {
         log(`  - delete ${coll.collectionName} "${txt(d.title)}" (${String(d._id)})`)

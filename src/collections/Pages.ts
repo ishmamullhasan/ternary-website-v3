@@ -43,7 +43,7 @@ import { SolutionsHero } from '@/blocks/SolutionsHero/config'
 import { StoriesArchive } from '@/blocks/StoriesArchive/config'
 import { StoriesHero } from '@/blocks/StoriesHero/config'
 import { Subscribe } from '@/blocks/Subscribe/config'
-import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { DEFAULT_LOCALE, localizedPath } from '@/lib/i18n/locales'
 import { getServerSideURL } from '@/utilities/getURL'
 
 type Breadcrumb = { url?: string | null }
@@ -62,23 +62,23 @@ const RESERVED_LOCALE_SLUGS = new Set(['en', 'bn'])
  * draft mode is enabled before the editor is redirected to the page — without that, the iframe
  * renders the published version and the live-preview listener never receives draft updates.
  *
- * The redirect target (`path`) is always locale-prefixed with the default locale:
- *   - the home page (slug 'home') → `/en`
- *   - any other page → `/en/<slug>` (or `/en<breadcrumb>` when nested-docs breadcrumbs exist)
+ * The redirect target (`path`) is the default-locale route (en is unprefixed at the root):
+ *   - the home page (slug 'home') → `/`
+ *   - any other page → `/<slug>` (or the last breadcrumb url when nested-docs breadcrumbs exist)
  */
 const pageUrl = (data?: { slug?: unknown; breadcrumbs?: unknown }): string => {
   const slug = typeof data?.slug === 'string' ? data.slug : ''
   const crumbs = Array.isArray(data?.breadcrumbs) ? (data.breadcrumbs as Breadcrumb[]) : []
   const fromCrumbs = crumbs.length ? crumbs[crumbs.length - 1]?.url : null
 
-  // Locale-prefixed, root-relative path the previewer should land on after draft mode is enabled.
-  // `home` is the site root, so it maps to just the locale prefix.
+  // Routed, root-relative path the previewer should land on after draft mode is enabled.
+  // `home` is the site root, so it maps to the locale home (`/` for the default locale).
   const localePath =
     slug === 'home' || !slug
-      ? `/${DEFAULT_LOCALE}`
+      ? localizedPath(DEFAULT_LOCALE, '/')
       : fromCrumbs
-        ? `/${DEFAULT_LOCALE}${fromCrumbs}`
-        : `/${DEFAULT_LOCALE}/${slug}`
+        ? localizedPath(DEFAULT_LOCALE, fromCrumbs)
+        : localizedPath(DEFAULT_LOCALE, `/${slug}`)
 
   return `${getServerSideURL()}/next/preview?path=${encodeURIComponent(localePath)}&collection=pages&slug=${slug}&previewSecret=${process.env.PREVIEW_SECRET}`
 }

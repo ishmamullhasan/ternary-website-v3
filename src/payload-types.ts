@@ -334,61 +334,82 @@ export interface Story {
     [k: string]: unknown;
   } | null;
   /**
-   * Numbered case-study sections (01 The Challenge, 02 The Approach, …). Leave empty to use the flat content field.
+   * Short chips shown in the hero (e.g. “Event-driven architecture”).
    */
-  bodySections?:
+  tags?:
     | {
-        /**
-         * e.g. 01 The Challenge
-         */
-        label?: string | null;
-        heading?: string | null;
-        lede?: string | null;
-        body?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
+        name?: string | null;
         id?: string | null;
       }[]
     | null;
-  /**
-   * Headline metrics. Use real figures only.
-   */
-  outcomeStats?:
-    | {
-        value: string;
-        label: string;
-        detail?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Pull-quote / testimonial.
-   */
-  quote?: {
-    text?: string | null;
-    name?: string | null;
-    role?: string | null;
+  caseMeta?: {
+    industry?: string | null;
+    engagement?: string | null;
+    duration?: string | null;
+    team?: string | null;
+    year?: string | null;
   };
-  /**
-   * Reading time in minutes.
-   */
-  readTime?: number | null;
-  /**
-   * Case-study code, e.g. CS-014.
-   */
-  code?: string | null;
+  challenge?: {
+    heading?: string | null;
+    subtitle?: string | null;
+    paragraphs?:
+      | {
+          text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  approach?: {
+    heading?: string | null;
+    subtitle?: string | null;
+    /**
+     * Auto-numbered 01, 02, 03 … in the layout.
+     */
+    cards?:
+      | {
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  solution?: {
+    heading?: string | null;
+    paragraphs?:
+      | {
+          text?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  outcome?: {
+    heading?: string | null;
+    intro?: string | null;
+    metrics?:
+      | {
+          value?: string | null;
+          label?: string | null;
+          sublabel?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    quote?: {
+      text?: string | null;
+      authorName?: string | null;
+      authorRole?: string | null;
+    };
+  };
+  lessons?: {
+    heading?: string | null;
+    subtitle?: string | null;
+    cards?:
+      | {
+          title?: string | null;
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  whyItMatters?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -434,6 +455,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  prefix?: string | null;
   folder?: (string | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -940,6 +962,10 @@ export interface IndustriesSectionBlock {
   heading?: string | null;
   description?: string | null;
   industries?: (string | Industry)[] | null;
+  /**
+   * Off (default): cards sit in columns 2–5 with an empty left gutter (home/capabilities treatment). On: a flush 4-column grid (industry-detail benefit grid).
+   */
+  fullWidth?: boolean | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'industriesSection';
@@ -975,6 +1001,17 @@ export interface Industry {
     };
     [k: string]: unknown;
   } | null;
+  layout?:
+    | (
+        | IndustriesHeroBlock
+        | IndustriesSectionBlock
+        | IndustriesDetailsBlock
+        | IndustryPanelsBlock
+        | CrossIndustryPatternsBlock
+        | RegulatoryPostureBlock
+        | CtaBlock
+      )[]
+    | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -994,6 +1031,142 @@ export interface Industry {
   };
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesHeroBlock".
+ */
+export interface IndustriesHeroBlock {
+  heading?: string | null;
+  description?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industriesHero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesDetailsBlock".
+ */
+export interface IndustriesDetailsBlock {
+  heading?: string | null;
+  description?: string | null;
+  /**
+   * Rich text body rendered beside the heading/description.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industriesDetails';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustryPanelsBlock".
+ */
+export interface IndustryPanelsBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        /**
+         * Linked industry; its title/excerpt/thumbnail fill any fields left blank below.
+         */
+        industry?: (string | null) | Industry;
+        title?: string | null;
+        description?: string | null;
+        image?: (string | null) | Media;
+        tags?:
+          | {
+              name: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industryPanels';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CrossIndustryPatternsBlock".
+ */
+export interface CrossIndustryPatternsBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        media?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'crossIndustryPatterns';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RegulatoryPostureBlock".
+ */
+export interface RegulatoryPostureBlock {
+  heading?: string | null;
+  description?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Icon shown on this item.
+         */
+        icon?: ('lock' | 'activity' | 'check') | null;
+        /**
+         * Short supporting copy.
+         */
+        excerpt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'regulatoryPosture';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaBlock".
+ */
+export interface CtaBlock {
+  heading?: string | null;
+  description?: string | null;
+  backgroundImage?: (string | null) | Media;
+  button_1?: {
+    label?: string | null;
+    link?: string | null;
+  };
+  button_2?: {
+    label?: string | null;
+    link?: string | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ctaBlock';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2253,17 +2426,6 @@ export interface SubscribeBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IndustriesHeroBlock".
- */
-export interface IndustriesHeroBlock {
-  heading?: string | null;
-  description?: string | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'industriesHero';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "IndustryListBlock".
  */
 export interface IndustryListBlock {
@@ -2276,111 +2438,6 @@ export interface IndustryListBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'industryList';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IndustriesDetailsBlock".
- */
-export interface IndustriesDetailsBlock {
-  heading?: string | null;
-  description?: string | null;
-  /**
-   * Rich text body rendered beside the heading/description.
-   */
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'industriesDetails';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IndustryPanelsBlock".
- */
-export interface IndustryPanelsBlock {
-  heading?: string | null;
-  description?: string | null;
-  items?:
-    | {
-        /**
-         * Linked industry; its title/excerpt/thumbnail fill any fields left blank below.
-         */
-        industry?: (string | null) | Industry;
-        title?: string | null;
-        description?: string | null;
-        image?: (string | null) | Media;
-        tags?:
-          | {
-              name: string;
-              id?: string | null;
-            }[]
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'industryPanels';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CrossIndustryPatternsBlock".
- */
-export interface CrossIndustryPatternsBlock {
-  heading?: string | null;
-  description?: string | null;
-  items?:
-    | {
-        title: string;
-        /**
-         * Short supporting copy.
-         */
-        excerpt?: string | null;
-        media?: (string | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'crossIndustryPatterns';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "RegulatoryPostureBlock".
- */
-export interface RegulatoryPostureBlock {
-  heading?: string | null;
-  description?: string | null;
-  items?:
-    | {
-        title: string;
-        /**
-         * Icon shown on this item.
-         */
-        icon?: ('lock' | 'activity' | 'check') | null;
-        /**
-         * Short supporting copy.
-         */
-        excerpt?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'regulatoryPosture';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2885,26 +2942,6 @@ export interface CareersTeamBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'careersTeam';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CtaBlock".
- */
-export interface CtaBlock {
-  heading?: string | null;
-  description?: string | null;
-  backgroundImage?: (string | null) | Media;
-  button_1?: {
-    label?: string | null;
-    link?: string | null;
-  };
-  button_2?: {
-    label?: string | null;
-    link?: string | null;
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'ctaBlock';
 }
 /**
  * Admin accounts that can sign in and manage content.
@@ -3422,6 +3459,7 @@ export interface IndustriesSectionBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
   industries?: T;
+  fullWidth?: T;
   id?: T;
   blockName?: T;
 }
@@ -4270,6 +4308,7 @@ export interface CtaBlockSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  prefix?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -4420,32 +4459,91 @@ export interface StorySelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
-  bodySections?:
+  tags?:
     | T
     | {
-        label?: T;
-        heading?: T;
-        lede?: T;
-        body?: T;
-        id?: T;
-      };
-  outcomeStats?:
-    | T
-    | {
-        value?: T;
-        label?: T;
-        detail?: T;
-        id?: T;
-      };
-  quote?:
-    | T
-    | {
-        text?: T;
         name?: T;
-        role?: T;
+        id?: T;
       };
-  readTime?: T;
-  code?: T;
+  caseMeta?:
+    | T
+    | {
+        industry?: T;
+        engagement?: T;
+        duration?: T;
+        team?: T;
+        year?: T;
+      };
+  challenge?:
+    | T
+    | {
+        heading?: T;
+        subtitle?: T;
+        paragraphs?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  approach?:
+    | T
+    | {
+        heading?: T;
+        subtitle?: T;
+        cards?:
+          | T
+          | {
+              body?: T;
+              id?: T;
+            };
+      };
+  solution?:
+    | T
+    | {
+        heading?: T;
+        paragraphs?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+      };
+  outcome?:
+    | T
+    | {
+        heading?: T;
+        intro?: T;
+        metrics?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              sublabel?: T;
+              id?: T;
+            };
+        quote?:
+          | T
+          | {
+              text?: T;
+              authorName?: T;
+              authorRole?: T;
+            };
+      };
+  lessons?:
+    | T
+    | {
+        heading?: T;
+        subtitle?: T;
+        cards?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+      };
+  whyItMatters?: T;
   meta?:
     | T
     | {
@@ -4789,6 +4887,17 @@ export interface IndustrySelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  layout?:
+    | T
+    | {
+        industriesHero?: T | IndustriesHeroBlockSelect<T>;
+        industriesSection?: T | IndustriesSectionBlockSelect<T>;
+        industriesDetails?: T | IndustriesDetailsBlockSelect<T>;
+        industryPanels?: T | IndustryPanelsBlockSelect<T>;
+        crossIndustryPatterns?: T | CrossIndustryPatternsBlockSelect<T>;
+        regulatoryPosture?: T | RegulatoryPostureBlockSelect<T>;
+        ctaBlock?: T | CtaBlockSelect<T>;
+      };
   meta?:
     | T
     | {

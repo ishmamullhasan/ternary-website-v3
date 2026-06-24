@@ -20,52 +20,52 @@ const focusRing =
 export default function OpportunitiesComp({ heading, description, opportunity }: OpportunitiesCompProps) {
   const roles = opportunity ?? []
   return (
-    <section>
-      {/* Header — description first, heading below (Figma 339:13767). Anchors the empty
-          left gutter column above the card grid. */}
-      <Motion {...reveal} className="lg:mb-14 mb-8 max-w-xl">
-        {description && <p className="text-body text-base">{description}</p>}
-        <h2 className="mt-4 text-section font-display font-medium text-cream">{heading}</h2>
+    <section className="section-card">
+      {/* Header — lead sentence ABOVE the heading (Figma 339:13766), left-aligned. */}
+      <Motion {...reveal} className="mb-8 flex max-w-2xl flex-col gap-4 lg:mb-14">
+        {description && <p className="text-base leading-[1.15] text-body">{description}</p>}
+        {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
       </Motion>
 
       {/* opportunities grid — cards occupy the right 4 columns; the first lg column is the empty
           gutter beneath the header (Figma 339:13770). */}
       {roles.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Empty gutter aligned under the header (desktop only). */}
-          <div className="hidden lg:block" aria-hidden />
-          {roles.map((item: JobListing, index: number): JSX.Element => {
-            // The recruiting API exposes no separate `code` — its public `slug` IS the role code
-            // (e.g. "BACS31") and is also the detail-page key, so /job/{slug} resolves to the live JD.
-            const meta = [item.team, item.department, item.location].filter((value): value is string => Boolean(value))
-            return (
-              <Motion key={item.slug} {...revealItem(index)}>
-                <Link
-                  href={`/job/${item.slug}`}
-                  className={`group flex h-full flex-col justify-between rounded-md border border-white/[0.06] bg-ink p-4 transition-colors hover:border-line-strong ${focusRing}`}
-                >
-                  <div className="flex flex-col">
-                    {/* Title (Inter Medium 16px) with the role code as a caption top-right. */}
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-base font-medium text-cream">{item.title}</h3>
-                      <span className="shrink-0 text-xs text-cream">{item.slug}</span>
+        // On lg: an empty left gutter column (col 1) + a 4-column card grid spanning cols 2–5, so the
+        // cards line up with the Capabilities / Industries sections. Below lg it's a 1/2-col stack.
+        <div className="lg:grid lg:grid-cols-5">
+          <div aria-hidden className="hidden lg:block" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-4">
+            {roles.map((item: JobListing, index: number): JSX.Element => {
+              // The recruiting API exposes no separate `code` — its public `slug` IS the role code
+              // (e.g. "BACS31") and is also the detail-page key, so /job/{slug} resolves to the live JD.
+              const meta = [item.team, item.department, item.location].filter((value): value is string =>
+                Boolean(value),
+              )
+              return (
+                <Motion key={item.slug} {...revealItem(index)} className="h-full">
+                  <Link
+                    href={`/job/${item.slug}`}
+                    className={`group flex h-full min-h-[160px] flex-col rounded-md bg-ink p-5 transition-colors hover:bg-button-dark ${focusRing}`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-display text-base font-medium text-cream">{item.title}</h3>
+                      <span className="shrink-0 font-display text-xs text-subtle">{item.slug}</span>
                     </div>
+
                     {meta.length > 0 && (
-                      <div className="mt-1 flex flex-col gap-1">
+                      <div className="mt-3 flex flex-col gap-0.5 text-sm text-body">
                         {meta.map((line) => (
-                          <span key={line} className="text-sm text-cream">
-                            {line}
-                          </span>
+                          <span key={line}>{line}</span>
                         ))}
                       </div>
                     )}
-                  </div>
 
-                  <span className="mt-auto pt-4 text-sm font-medium text-cream">Explore Role</span>
-                </Link>
-              </Motion>
-            )
-          })}
+                    <span className="mt-auto pt-6 text-sm font-medium text-cream">Explore Role</span>
+                  </Link>
+                </Motion>
+              )
+            })}
+          </div>
         </div>
       ) : (
         <Motion
@@ -74,7 +74,7 @@ export default function OpportunitiesComp({ heading, description, opportunity }:
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.5, ease: EASE }}
-          className="rounded-md border border-white/[0.06] bg-ink p-6"
+          className="rounded-md bg-ink p-6"
         >
           <p className="text-body lg:text-base text-sm">No open roles right now — check back soon.</p>
         </Motion>

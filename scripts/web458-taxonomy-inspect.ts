@@ -17,7 +17,9 @@ if (!uri) throw new Error('Set DATABASE_URI inline (do not commit it).')
 
 // Localized fields are stored as { en, bn }; collapse to the en value for display/matching.
 const txt = (v: unknown): string =>
-  v && typeof v === 'object' ? String((v as Record<string, unknown>).en ?? (v as Record<string, unknown>).bn ?? '') : String(v ?? '')
+  v && typeof v === 'object'
+    ? String((v as Record<string, unknown>).en ?? (v as Record<string, unknown>).bn ?? '')
+    : String(v ?? '')
 
 const norm = (s: unknown) => txt(s).trim().toLowerCase()
 
@@ -61,7 +63,9 @@ const run = async () => {
   }
 
   // Reference scan: for each doomed _id, find every doc (any collection) whose JSON contains the hex.
-  console.log(`\n=== reference scan for ${doomed.length} deletion candidates across ${collNames.length} collections ===`)
+  console.log(
+    `\n=== reference scan for ${doomed.length} deletion candidates across ${collNames.length} collections ===`,
+  )
   for (const { coll, doc } of doomed) {
     const hex = String(doc._id)
     const refs: string[] = []
@@ -73,7 +77,9 @@ const run = async () => {
       }
     }
     console.log(`\n  🗑  ${coll} "${txt(doc.title)}" (${hex})`)
-    console.log(refs.length ? refs.map((r) => `       ↳ ref by ${r}`).join('\n') : '       (no references — safe to delete)')
+    console.log(
+      refs.length ? refs.map((r) => `       ↳ ref by ${r}`).join('\n') : '       (no references — safe to delete)',
+    )
   }
 
   await conn.close()

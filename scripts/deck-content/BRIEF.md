@@ -5,12 +5,13 @@ verbatim deck text is in `scripts/deck-content/_deck-source.json` (a JSON array;
 number and its text). Read it for source material.
 
 ## Voice & rules
+
 - Ternary is an **engineering institution** — New York HQ, Dhaka delivery hub. Tone: calm, precise,
   senior, declarative. Themes: **ownership/stewardship, transparency/low-noise execution, proximity to
   users/impact, production responsibility across the lifecycle**.
 - **Polish & tighten** the deck copy. FIX the source's errors: slide 12 has a spliced/corrupted sentence;
   slide 26's Turfly blurb is mislabeled "Flex5"; the paragraph "From early-stage startups building MVPs…"
-  is repeated as filler on ~10 slides (it is the *Scales* tagline — use it only for scales, not as filler).
+  is repeated as filler on ~10 slides (it is the _Scales_ tagline — use it only for scales, not as filler).
   Remove duplicated sentences. Convert deck fragments into clean web sentences.
 - **Do NOT fabricate metrics or facts.** Only Turfly has explicit numbers in the deck (60% faster booking,
   95%+ policy compliance, 85% mobile adoption in 30 days) — those may be used. For every other case study
@@ -19,17 +20,22 @@ number and its text). Read it for source material.
 - Replace placeholder copy entirely; write real, final marketing copy. Concise > verbose. Web reading.
 
 ## richText convention
+
 Any field that is richText must be provided as an array of "blocks":
+
 ```
 "contentBlocks": [ { "heading": "Optional H3 heading or omit", "paras": ["paragraph 1", "paragraph 2"] } ]
 ```
+
 The seed script converts this to Lexical. For plain text/textarea fields, just give a string.
 
 ## Output
+
 Write ONE JSON file to the path your task names, valid JSON (UTF-8, no comments, no trailing commas).
 Match the requested schema's field names EXACTLY. Return only a one-line confirmation (path + record count).
 
 ## Fixed slug registry (use these slugs verbatim for cross-references)
+
 - **story** (8): `counterfoil-continuum`, `turfly`, `alley-analytix`, `flex5`, `farogl-odoo-erp`,
   `doyouwork`, `hissho-sushiops360`, `lankabangla-securities`
 - **solution** (3): `product-development`, `enterprise-modernization`, `engineering-augmentation`
@@ -48,4 +54,5 @@ Match the requested schema's field names EXACTLY. Return only a one-line confirm
   Ishmam Ull Hasan (Product Designer)
 
 ## Contact facts (from deck slide 49)
+
 hello@ternary.solutions · ternary.solutions · +1 (800) 123-4567 · New York | Dhaka

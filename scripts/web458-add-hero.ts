@@ -23,7 +23,9 @@ const HEADLINE = { en: 'Agentic Engineering.\nHuman Orchestration.', bn: 'এজ
 const PLACEHOLDER = /^(title|untitled)(\s*\d+)?$/i
 
 const run = async () => {
-  console.log(`\n${DRY ? '🟡 DRY-RUN (no writes)' : '🔴 APPLY (writing)'}   host: ${uri.replace(/\/\/[^@]*@/, '//***@')}`)
+  console.log(
+    `\n${DRY ? '🟡 DRY-RUN (no writes)' : '🔴 APPLY (writing)'}   host: ${uri.replace(/\/\/[^@]*@/, '//***@')}`,
+  )
   const conn = await mongoose.createConnection(uri).asPromise()
   const db = conn.db!
 

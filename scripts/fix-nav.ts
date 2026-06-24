@@ -20,8 +20,14 @@ const subsFrom = (docs: unknown, prefix: string): Sub[] =>
 
 const run = async () => {
   const payload = await getPayload({ config })
-  const header = (await payload.findGlobal({ slug: 'header' as never, locale: 'en', depth: 1 })) as Record<string, unknown>
-  const footer = (await payload.findGlobal({ slug: 'footer' as never, locale: 'en', depth: 2 })) as Record<string, unknown>
+  const header = (await payload.findGlobal({ slug: 'header' as never, locale: 'en', depth: 1 })) as Record<
+    string,
+    unknown
+  >
+  const footer = (await payload.findGlobal({ slug: 'footer' as never, locale: 'en', depth: 2 })) as Record<
+    string,
+    unknown
+  >
 
   const curMenu = (header.menu as Item[] | undefined) ?? []
   const find = (re: RegExp) => curMenu.find((m) => re.test(m.label ?? ''))

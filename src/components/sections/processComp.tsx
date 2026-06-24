@@ -24,41 +24,44 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
   if (!process || process.length === 0) return null
 
   return (
-    <section className="flex flex-col gap-8">
-      {/* Header — left-aligned, description above the heading (Figma 1255:3360). */}
-      <Motion className="flex flex-col gap-1" {...reveal}>
-        {description && <p className="max-w-xl text-[14px] leading-relaxed text-body">{description}</p>}
-        {heading && <h2 className="text-2xl font-display font-medium text-cream">{heading}</h2>}
-      </Motion>
+    <section className="section-card">
+      <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
+        {/* Header — pinned to the left, mirroring the capability "How we do it" rhythm. */}
+        <Motion className="flex shrink-0 flex-col gap-4 lg:w-[32%]" {...reveal}>
+          <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">Process</p>
+          {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
+          {description && <p className="max-w-md text-[15px] leading-relaxed text-body">{description}</p>}
+        </Motion>
 
-      {/* Steps — a 2-up card grid offset under a left gutter; the final/odd step spans full width. */}
-      <div className="lg:pl-[20%]">
-        <ol className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {process.map((item, index): JSX.Element => {
-            const isLast = index === process.length - 1
-            const spansFull = isLast && process.length % 2 === 1
-            return (
-              <Motion
-                tag="li"
-                key={index}
-                className={`flex flex-col gap-6${spansFull ? ' lg:col-span-2' : ''}`}
-                {...revealItem(index)}
-              >
-                <span className="text-[14px] tabular-nums text-cream">
-                  {item.number ?? String(index + 1).padStart(2, '0')}
-                </span>
-                <div className="flex flex-col gap-4">
-                  {item.title && <h3 className="text-[16px] font-medium leading-snug text-cream">{item.title}</h3>}
-                  {item.description && (
-                    <div className="max-w-2xl text-[14px] leading-relaxed text-cream">
-                      <RichTextComp content={item.description as RichText} className="prose-sm" />
-                    </div>
-                  )}
-                </div>
-              </Motion>
-            )
-          })}
-        </ol>
+        {/* Steps — a 2-up card grid offset under a left gutter; the final/odd step spans full width. */}
+        <div className="lg:pl-[20%]">
+          <ol className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            {process.map((item, index): JSX.Element => {
+              const isLast = index === process.length - 1
+              const spansFull = isLast && process.length % 2 === 1
+              return (
+                <Motion
+                  tag="li"
+                  key={index}
+                  className={`flex flex-col gap-6${spansFull ? ' lg:col-span-2' : ''}`}
+                  {...revealItem(index)}
+                >
+                  <span className="text-[14px] tabular-nums text-cream">
+                    {item.number ?? String(index + 1).padStart(2, '0')}
+                  </span>
+                  <div className="flex flex-col gap-2">
+                    {item.title && <h3 className="text-[16px] font-medium leading-snug text-cream">{item.title}</h3>}
+                    {item.description && (
+                      <div className="max-w-2xl text-[14px] leading-relaxed text-cream">
+                        <RichTextComp content={item.description as RichText} className="prose-sm" />
+                      </div>
+                    )}
+                  </div>
+                </Motion>
+              )
+            })}
+          </ol>
+        </div>
       </div>
     </section>
   )

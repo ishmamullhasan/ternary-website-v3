@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE } from '@/lib/i18n/locales'
+import { DEFAULT_LOCALE, localizedPath } from '@/lib/i18n/locales'
 import { getServerSideURL } from '@/utilities/getURL'
 
 /**
@@ -6,7 +6,8 @@ import { getServerSideURL } from '@/utilities/getURL'
  * (src/app/(frontend)/next/preview/route.ts) so draft mode is enabled before the editor lands on
  * the page. Used by both the admin live-preview iframe and the "Preview" button (WEB-449).
  *
- * `localePath` must be a locale-prefixed, root-relative path (e.g. `/en/insights/foo`); the route
+ * `localePath` must be a routed, root-relative path (e.g. `/insights/foo` for en, `/bn/insights/foo`
+ * for bn — see `localizedPath`); the route
  * validates that it starts with `/` and redirects to it once draft mode + auth pass. `previewSecret`
  * is read from `PREVIEW_SECRET` (set in Vercel) and checked by the route before authorizing.
  */
@@ -24,11 +25,11 @@ export const buildPreviewURL = ({
 /** Build the live-preview URL for a content collection whose detail route is `/<locale>/<segment>/<slug>`. */
 export const detailPreviewURL = (collection: string, segment: string, data?: { slug?: unknown }): string => {
   const slug = typeof data?.slug === 'string' ? data.slug : ''
-  return buildPreviewURL({ localePath: `/${DEFAULT_LOCALE}/${segment}/${slug}`, collection, slug })
+  return buildPreviewURL({ localePath: localizedPath(DEFAULT_LOCALE, `/${segment}/${slug}`), collection, slug })
 }
 
 /** Build the live-preview URL for a content collection that renders on a single landing page (no per-slug route). */
 export const landingPreviewURL = (collection: string, landingPath: string, data?: { slug?: unknown }): string => {
   const slug = typeof data?.slug === 'string' ? data.slug : ''
-  return buildPreviewURL({ localePath: `/${DEFAULT_LOCALE}${landingPath}`, collection, slug })
+  return buildPreviewURL({ localePath: localizedPath(DEFAULT_LOCALE, landingPath), collection, slug })
 }

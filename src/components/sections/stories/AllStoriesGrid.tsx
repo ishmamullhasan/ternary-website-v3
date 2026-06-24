@@ -64,7 +64,7 @@ function detailHref(type: ContentType, slug: string): string {
   switch (type) {
     case 'story':
     case 'research':
-      return `/stories/${slug}`
+      return `/case-studies/${slug}`
     case 'insight':
       return `/insights/${slug}`
     case 'pressRelease':

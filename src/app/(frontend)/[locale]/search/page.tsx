@@ -153,9 +153,7 @@ export default async function SearchPage({
                             </span>
                           )}
                         </div>
-                        <h2 className="text-lg font-medium tracking-tight text-cream">
-                          {result.title || 'Untitled'}
-                        </h2>
+                        <h2 className="text-lg font-medium tracking-tight text-cream">{result.title || 'Untitled'}</h2>
                         {result.excerpt && (
                           <p className="line-clamp-2 text-sm leading-relaxed text-body">{result.excerpt}</p>
                         )}
@@ -177,9 +175,7 @@ export default async function SearchPage({
                             className="mt-1 shrink-0 text-subtle transition-colors group-hover:text-cream"
                           />
                         </div>
-                        <h2 className="text-lg font-medium tracking-tight text-cream">
-                          {result.title || 'Untitled'}
-                        </h2>
+                        <h2 className="text-lg font-medium tracking-tight text-cream">{result.title || 'Untitled'}</h2>
                         {result.excerpt && (
                           <p className="line-clamp-2 text-sm leading-relaxed text-body">{result.excerpt}</p>
                         )}

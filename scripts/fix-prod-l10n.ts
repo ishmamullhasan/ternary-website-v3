@@ -15,7 +15,12 @@ const save = async (fn: () => Promise<unknown>) => {
   }
 }
 // slug → Title Case, e.g. technology-platforms → "Technology Platforms"
-const titleFromSlug = (slug: string) => slug.split('-').filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ')
+const titleFromSlug = (slug: string) =>
+  slug
+    .split('-')
+    .filter(Boolean)
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join(' ')
 const PLACEHOLDER_SLUG = /(^|-)title($|-)|^title-?\d*$/i
 
 // The Capabilities dropdown order (real capability docs that carry en titles).
@@ -32,23 +37,43 @@ const run = async () => {
       if (d.title || !slug || PLACEHOLDER_SLUG.test(slug)) continue
       const title = titleFromSlug(slug)
       console.log(`  [${coll}] ${slug}  →  title="${title}"`)
-      if (!DRY) await save(() => payload.update({ collection: coll as never, id: d.id as never, locale: 'en', data: { title } as never }))
+      if (!DRY)
+        await save(() =>
+          payload.update({ collection: coll as never, id: d.id as never, locale: 'en', data: { title } as never }),
+        )
     }
   }
 
   // (2) repoint footer.capabilities to the real capability docs
-  const caps = await payload.find({ collection: 'capability' as never, locale: 'en', depth: 0, limit: 100, pagination: false })
+  const caps = await payload.find({
+    collection: 'capability' as never,
+    locale: 'en',
+    depth: 0,
+    limit: 100,
+    pagination: false,
+  })
   const bySlug = new Map((caps.docs as { id: string; slug?: string }[]).map((c) => [c.slug, c.id]))
   const ids = CAP_ORDER.map((s) => bySlug.get(s)).filter(Boolean) as string[]
   console.log(`\nfooter.capabilities → ${CAP_ORDER.filter((s) => bySlug.get(s)).join(', ')} (${ids.length} docs)`)
-  const footer = (await payload.findGlobal({ slug: 'footer' as never, locale: 'en', depth: 0 })) as Record<string, unknown>
+  const footer = (await payload.findGlobal({ slug: 'footer' as never, locale: 'en', depth: 0 })) as Record<
+    string,
+    unknown
+  >
   if (!DRY && ids.length) {
     const { id: _i, globalType: _g, createdAt: _c, updatedAt: _u, ...data } = footer
-    await save(() => payload.updateGlobal({ slug: 'footer' as never, locale: 'en', data: { ...data, capabilities: ids } as never }))
+    await save(() =>
+      payload.updateGlobal({ slug: 'footer' as never, locale: 'en', data: { ...data, capabilities: ids } as never }),
+    )
   }
 
   console.log(`\n${DRY ? 'DRY RUN — no writes.' : 'APPLIED.'}`)
   await new Promise((r) => setTimeout(r, 400))
   process.exit(0)
 }
-try { await run() } catch (e) { console.error('L10N-FIX ERROR:', e); await new Promise((r) => setTimeout(r, 400)); process.exit(1) }
+try {
+  await run()
+} catch (e) {
+  console.error('L10N-FIX ERROR:', e)
+  await new Promise((r) => setTimeout(r, 400))
+  process.exit(1)
+}

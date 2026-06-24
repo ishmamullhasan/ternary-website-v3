@@ -40,13 +40,17 @@ const run = async () => {
   const hits: { path: string; hex: string }[] = []
   const walk = (node: unknown, path: string) => {
     if (node == null) return
-    if (node instanceof mongoose.Types.ObjectId || (typeof node === 'object' && (node as { _bsontype?: string })._bsontype === 'ObjectId')) {
+    if (
+      node instanceof mongoose.Types.ObjectId ||
+      (typeof node === 'object' && (node as { _bsontype?: string })._bsontype === 'ObjectId')
+    ) {
       const hex = String(node)
       if (meta.has(hex)) hits.push({ path, hex })
       return
     }
     if (Array.isArray(node)) return node.forEach((v, i) => walk(v, `${path}[${i}]`))
-    if (typeof node === 'object') for (const [k, v] of Object.entries(node as object)) walk(v, path ? `${path}.${k}` : k)
+    if (typeof node === 'object')
+      for (const [k, v] of Object.entries(node as object)) walk(v, path ? `${path}.${k}` : k)
   }
 
   const report = (label: string) => {

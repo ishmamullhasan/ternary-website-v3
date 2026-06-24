@@ -48,12 +48,17 @@ export function IndustriesSectionComponent({
   heading,
   description,
   industries,
+  fullWidth,
 }: IndustriesSectionBlock): JSX.Element | null {
   const items = (industries ?? []).filter((i): i is Industry => typeof i === 'object' && i !== null)
   if (items.length === 0) return null
 
   return (
-    <Motion tag="section" className="w-full py-4 lg:py-8">
+    // Default: the cards sit inside a raised `section-card` panel (home/capabilities treatment).
+    // Full-width mode drops that panel — otherwise the section surface and the cards are the same
+    // `#1b1a17` token, so the cards vanish. With no panel, the `bg-card` cards read against the
+    // darker page, matching the industry-detail benefit grid (Figma 1283-2668).
+    <Motion tag="section" className={fullWidth ? 'w-full' : 'section-card w-full'}>
       {(heading || description) && (
         <Motion
           tag="div"
@@ -68,7 +73,17 @@ export function IndustriesSectionComponent({
         </Motion>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        className={
+          fullWidth
+            ? 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4'
+            : 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5'
+        }
+      >
+        {/* Default: empty left gutter (desktop) so the 8 cards sit in columns 2–5 — matching the
+            Capabilities section. Full-width mode drops the gutter for the flush 4-column benefit grid
+            on the industry-detail page (Figma 1283-2668). */}
+        {!fullWidth && <div aria-hidden className="hidden lg:block lg:row-span-2" />}
         {items.map((item, index) => {
           const Icon = iconFor(item.title, index)
           return (
@@ -85,10 +100,11 @@ export function IndustriesSectionComponent({
                 <Icon size={24} strokeWidth={1.75} aria-hidden />
               </span>
 
-              <div>
-                <h3 className="font-display text-2xl font-medium leading-[1.15] text-cream opacity-90">{item.title}</h3>
-                {item.excerpts && <p className="mt-2 text-base leading-[1.15] text-body opacity-75">{item.excerpts}</p>}
-              </div>
+              <h3 className="font-display mt-3 text-[19px] font-medium leading-[1.18] tracking-tight text-cream lg:text-xl">
+                {item.title}
+              </h3>
+
+              {item.excerpts && <p className="mt-2 text-sm leading-relaxed text-cream/80">{item.excerpts}</p>}
             </Motion>
           )
         })}

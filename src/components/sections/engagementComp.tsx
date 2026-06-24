@@ -16,9 +16,9 @@ export default function EngagementComp({ heading, description, model }: Engageme
   if (!model?.length) return null
 
   return (
-    <section>
-      <div className="flex flex-col gap-8 rounded-lg bg-main p-6 lg:flex-row lg:items-start lg:justify-between lg:gap-12 lg:px-9 lg:py-12">
-        {/* top header — description sits above the heading, matching Figma 339:8141 */}
+    <section className="section-card">
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
+        {/* top header */}
         <Motion className="lg:w-2/5" {...reveal}>
           <p className="text-body">{description}</p>
           <h2 className="mt-3 text-section font-display font-medium text-cream">{heading}</h2>
@@ -42,9 +42,6 @@ export default function EngagementComp({ heading, description, model }: Engageme
                 {url && (
                   <Image src={url} alt={item.title || 'engagement model'} fill className="relative object-cover" />
                 )}
-
-                {/* bottom-darkening scrim keeps the card text legible over imagery */}
-                <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-t from-black/[0.56] to-transparent" />
 
                 {/* text */}
                 <div className="absolute inset-x-4 bottom-4 z-10">

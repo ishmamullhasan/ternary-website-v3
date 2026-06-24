@@ -15,8 +15,17 @@ const RULES: { find: string; replace: string; whole?: boolean; note: string }[] 
   { find: 'Comsumer', replace: 'Consumer', note: 'typo' },
   { find: 'Mordern', replace: 'Modern', note: 'typo' },
   { find: 'Career & Opportunities', replace: 'Careers & Opportunities', note: 'label' },
-  { find: 'Agentic Engineering Human Orchestration', replace: 'Agentic Engineering.\nHuman Orchestration.', note: 'tagline' },
-  { find: 'Copyright', whole: true, replace: '© Ternary Solutions, Inc. All Rights Reserved.', note: 'copyright placeholder' },
+  {
+    find: 'Agentic Engineering Human Orchestration',
+    replace: 'Agentic Engineering.\nHuman Orchestration.',
+    note: 'tagline',
+  },
+  {
+    find: 'Copyright',
+    whole: true,
+    replace: '© Ternary Solutions, Inc. All Rights Reserved.',
+    note: 'copyright placeholder',
+  },
   { find: 'Solution', whole: true, replace: 'Solutions', note: 'nav label singular→plural' },
 ]
 
@@ -40,7 +49,8 @@ function walk(node: unknown, path: string, where: string): unknown {
   if (Array.isArray(node)) return node.map((v, i) => walk(v, `${path}[${i}]`, where))
   if (node && typeof node === 'object') {
     const out: Record<string, unknown> = {}
-    for (const [k, v] of Object.entries(node as Record<string, unknown>)) out[k] = walk(v, path ? `${path}.${k}` : k, where)
+    for (const [k, v] of Object.entries(node as Record<string, unknown>))
+      out[k] = walk(v, path ? `${path}.${k}` : k, where)
     return out
   }
   return node
@@ -89,8 +99,16 @@ const run = async () => {
     Partnerships: 'partnerships@ternary.solutions',
     Careers: 'careers@ternary.solutions',
   }
-  const cp = await payload.find({ collection: 'pages' as never, where: { slug: { equals: 'contact' } } as never, locale: 'en', depth: 0, limit: 1 })
-  const cdoc = cp.docs?.[0] as { id?: unknown; layout?: Record<string, unknown>[]; createdAt?: unknown; updatedAt?: unknown } | undefined
+  const cp = await payload.find({
+    collection: 'pages' as never,
+    where: { slug: { equals: 'contact' } } as never,
+    locale: 'en',
+    depth: 0,
+    limit: 1,
+  })
+  const cdoc = cp.docs?.[0] as
+    | { id?: unknown; layout?: Record<string, unknown>[]; createdAt?: unknown; updatedAt?: unknown }
+    | undefined
   if (cdoc?.layout) {
     let changed = false
     for (const block of cdoc.layout) {
@@ -98,7 +116,13 @@ const run = async () => {
         for (const it of block.items as { title?: string; email?: string }[]) {
           const want = it.title ? EMAIL_MAP[it.title] : undefined
           if (want && it.email !== want) {
-            changes.push({ where: 'pages:contact', path: `contactRoutes["${it.title}"].email`, before: it.email ?? '', after: want, note: 'route email' })
+            changes.push({
+              where: 'pages:contact',
+              path: `contactRoutes["${it.title}"].email`,
+              before: it.email ?? '',
+              after: want,
+              note: 'route email',
+            })
             it.email = want
             changed = true
           }
@@ -120,7 +144,8 @@ const run = async () => {
   for (const c of changes) byWhere.set(c.where, [...(byWhere.get(c.where) ?? []), c])
   for (const [where, cs] of byWhere) {
     console.log(`\n=== ${where} — ${cs.length} change(s) ===`)
-    for (const c of cs) console.log(`  • [${c.note}] ${c.path}\n      - ${JSON.stringify(c.before)}\n      + ${JSON.stringify(c.after)}`)
+    for (const c of cs)
+      console.log(`  • [${c.note}] ${c.path}\n      - ${JSON.stringify(c.before)}\n      + ${JSON.stringify(c.after)}`)
   }
   console.log(`\n${DRY ? 'DRY RUN — no writes.' : 'APPLIED.'} Total changes: ${changes.length}`)
   await new Promise((r) => setTimeout(r, 500))

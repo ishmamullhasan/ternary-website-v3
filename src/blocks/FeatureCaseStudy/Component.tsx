@@ -16,7 +16,7 @@ export const FeatureCaseStudyComponent = (data: FeatureCaseStudyBlock): JSX.Elem
 
   const stats = data.stats ?? []
   const highlights = data.highlights ?? []
-  const href = featuredStory.slug ? `/stories/${featuredStory.slug}` : '#'
+  const href = featuredStory.slug ? `/case-studies/${featuredStory.slug}` : '#'
 
   return (
     <section className="mx-auto w-full max-w-7xl px-5">

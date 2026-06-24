@@ -1,10 +1,11 @@
+import { RenderBlocks } from '@/blocks/RenderBlocks'
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
 import { cn } from '@/lib/utils'
-import type { Industry, Media } from '@/payload-types'
+import type { Industry, Media, Page as PageDoc } from '@/payload-types'
 import config from '@/payload.config'
 import { ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -42,7 +43,10 @@ async function fetchIndustryBySlug(slug: string, locale: TypedLocale): Promise<I
     where: { slug: { equals: slug } },
     locale,
     limit: 1,
-    depth: 2,
+    // depth 3 + overrideAccess so the `layout` blocks' relationships (related industries,
+    // panel thumbnails, nested media) populate for RenderBlocks (mirrors the home-page fetch).
+    depth: 3,
+    overrideAccess: true,
   })
   return (result.docs[0] as Industry | undefined) ?? null
 }
@@ -244,6 +248,17 @@ export default async function Page({
 
   if (!industry) {
     notFound()
+  }
+
+  // Redesigned, block-driven detail page (matches the industry Figma). Rows that have a populated
+  // `layout` render through the shared RenderBlocks pipeline; rows without one (every legacy row)
+  // fall through to the bespoke presentation below, so no existing page regresses.
+  if (industry.layout?.length) {
+    return (
+      <main>
+        <RenderBlocks blocks={industry.layout as PageDoc['layout']} />
+      </main>
+    )
   }
 
   const heroImage = industry.thumbnail as Media | undefined

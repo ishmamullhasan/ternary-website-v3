@@ -56,12 +56,18 @@ export function CtaBlockComponent({
 
         <div className="flex sm:flex-row flex-col gap-3 items-center shrink-0 lg:ml-auto">
           {button_1?.label && (
-            <Button asChild className="w-full sm:w-auto px-5 py-2.5 h-auto bg-button-dark text-cream text-base hover:bg-button-dark/90">
+            <Button
+              asChild
+              className="w-full sm:w-auto px-5 py-2.5 h-auto bg-button-dark text-cream text-base hover:bg-button-dark/90"
+            >
               <Link href={button_1?.link as string}>{button_1.label}</Link>
             </Button>
           )}
           {button_2?.label && (
-            <Button asChild className="w-full sm:w-auto px-5 py-2.5 h-auto bg-cream text-ink text-base hover:bg-cream-hover">
+            <Button
+              asChild
+              className="w-full sm:w-auto px-5 py-2.5 h-auto bg-cream text-ink text-base hover:bg-cream-hover"
+            >
               <Link href={button_2?.link as string}>{button_2.label}</Link>
             </Button>
           )}

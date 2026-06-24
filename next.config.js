@@ -23,6 +23,17 @@ const nextConfig = {
     includePaths: [path.resolve(process.cwd(), 'node_modules')],
   },
 
+  // Case-study detail moved /stories/<slug> → /case-studies/<slug> (the /stories index is
+  // unchanged). next.config redirects run before the locale middleware, so match the unprefixed
+  // (en) and /bn forms explicitly. `:slug` requires exactly one segment, so the bare /stories
+  // index is never matched.
+  async redirects() {
+    return [
+      { source: '/stories/:slug', destination: '/case-studies/:slug', permanent: true },
+      { source: '/bn/stories/:slug', destination: '/bn/case-studies/:slug', permanent: true },
+    ]
+  },
+
   // Baseline security headers. A tuned Content-Security-Policy is a deliberate follow-up
   // (needs per-app allowlisting for the Payload admin + Next runtime).
   async headers() {
