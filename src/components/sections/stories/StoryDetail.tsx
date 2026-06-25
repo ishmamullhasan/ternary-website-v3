@@ -54,9 +54,39 @@ function MetaCell({ icon: Icon, label, value }: { icon: typeof Building2; label:
   )
 }
 
-type BodySection = NonNullable<NonNullable<Story['bodySections']>[number]>
-type OutcomeStat = NonNullable<NonNullable<Story['outcomeStats']>[number]>
-type StoryQuote = NonNullable<Story['quote']>
+/**
+ * Optional structured case-study fields. These are not (yet) part of the
+ * generated `Story` type, so we describe their shapes locally and read them
+ * defensively via {@link StoryExtra}; when absent the component falls back to
+ * the flat `content` rendering below.
+ */
+interface BodySection {
+  label?: string | null
+  heading?: string | null
+  lede?: string | null
+  body?: RichText | null
+  id?: string | null
+}
+interface OutcomeStat {
+  value?: string | null
+  label?: string | null
+  detail?: string | null
+  id?: string | null
+}
+interface StoryQuote {
+  text?: string | null
+  name?: string | null
+  role?: string | null
+}
+
+type StoryExtra = Story & {
+  bodySections?: (BodySection | null)[] | null
+  outcomeStats?: (OutcomeStat | null)[] | null
+  quote?: StoryQuote | null
+  code?: string | null
+  readTime?: number | null
+  tags?: { name?: string | null }[] | null
+}
 
 /**
  * One numbered case-study section (Figma 1556:7370): a left rail carrying the
@@ -137,12 +167,13 @@ function QuoteBlock({ quote }: { quote: StoryQuote }): JSX.Element {
 }
 
 export default function StoryDetail({ story, backHref, related = [] }: StoryDetailProps): JSX.Element {
-  const tags = (story as { tags?: { name?: string | null }[] | null }).tags?.filter((t) => t?.name) ?? []
+  const s = story as StoryExtra
+  const tags = s.tags?.filter((t) => t?.name) ?? []
   const heroTone = toneFor('story', 0)
 
   // Derive the 5-cell meta strip from whatever the doc carries; only render cells with values.
   const metaCells: { icon: typeof Building2; label: string; value: string }[] = []
-  const meta = (story as { caseMeta?: Record<string, string | null | undefined> }).caseMeta
+  const meta = s.caseMeta
   if (meta?.industry) metaCells.push({ icon: Building2, label: 'Industry', value: meta.industry })
   if (meta?.engagement) metaCells.push({ icon: Briefcase, label: 'Engagement', value: meta.engagement })
   if (meta?.duration) metaCells.push({ icon: Clock, label: 'Duration', value: meta.duration })
@@ -154,19 +185,21 @@ export default function StoryDetail({ story, backHref, related = [] }: StoryDeta
   // New optional structured fields (regenerated types). Render the numbered
   // multi-section layout only when bodySections carries usable entries; otherwise
   // fall back to the flat content rendering below, unchanged.
-  const bodySections = (story.bodySections ?? []).filter((s): s is BodySection =>
-    Boolean(s && (s.heading || s.lede || s.body || s.label)),
+  const bodySections = (s.bodySections ?? []).filter((sec): sec is BodySection =>
+    Boolean(sec && (sec.heading || sec.lede || sec.body || sec.label)),
   )
   const hasBodySections = bodySections.length > 0
-  const outcomeStats = (story.outcomeStats ?? []).filter((s): s is OutcomeStat => Boolean(s && (s.value || s.label)))
-  const quote = story.quote
+  const outcomeStats = (s.outcomeStats ?? []).filter((stat): stat is OutcomeStat =>
+    Boolean(stat && (stat.value || stat.label)),
+  )
+  const quote = s.quote
   const hasQuote = Boolean(quote && (quote.text || quote.name || quote.role))
 
   // Story-level meta for the hero (only render when authored).
   const heroMeta: string[] = []
-  if (story.code) heroMeta.push(story.code)
-  if (typeof story.readTime === 'number' && story.readTime > 0) {
-    heroMeta.push(`${story.readTime} min read`)
+  if (s.code) heroMeta.push(s.code)
+  if (typeof s.readTime === 'number' && s.readTime > 0) {
+    heroMeta.push(`${s.readTime} min read`)
   }
 
   return (
