@@ -8,5 +8,6 @@ export const Cta: Block = {
   slug: 'ctaBlock',
   interfaceName: 'CtaBlock',
   labels: { singular: 'CTA', plural: 'CTAs' },
-  fields: ctaGroup().fields,
+  // requiredLink: every button URL is mandatory; a blank value is stored as `#`.
+  fields: ctaGroup({ requiredLink: true }).fields,
 }

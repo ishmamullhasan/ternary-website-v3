@@ -2,7 +2,7 @@
 
 import Motion from '@/components/animation/motion'
 import type { ContactOfficesBlock } from '@/payload-types'
-import { ChevronLeft, ChevronRight, Clock, Mail, MapPin, Phone } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
 import type { JSX, KeyboardEvent } from 'react'
 import { useState } from 'react'
 
@@ -10,33 +10,54 @@ type OfficesData = ContactOfficesBlock
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-// Per-office gradient so each studio reads as a distinct surface (azure/violet alternating). The
-// signature grain sits on top — no external map asset, degrades to the gradient gracefully.
+// Per-office gradient so each studio reads as a distinct map surface (azure/violet alternating).
+// The signature grain sits on top — no external map asset, degrades to the gradient gracefully.
 const TONE: string[] = [
   'radial-gradient(120% 120% at 30% 20%, #2f93da 0%, #134a78 46%, #08233c 100%)',
   'radial-gradient(120% 120% at 70% 25%, #7c3aed 0%, #3a1c8c 46%, #140f2c 100%)',
 ]
 
 const focusRing =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/80 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/80 focus-visible:ring-offset-2 focus-visible:ring-offset-card'
 
+// One labelled detail column (icon + caption label, then the value(s)). `accent` lifts the value to
+// cream for the contact channels (email/phone), matching the comp's text/primary on those fields.
 function Detail({
   icon: Icon,
   label,
+  accent,
   children,
 }: {
-  icon: typeof MapPin
+  icon: LucideIcon
   label: string
+  accent?: boolean
   children: JSX.Element | string | JSX.Element[]
 }): JSX.Element {
   return (
-    <div className="space-y-1">
-      <div className="flex items-center gap-1.5 text-[12px] text-subtle">
-        <Icon size={13} aria-hidden />
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-1.5 text-[12px] tracking-[-0.05em] text-subtle">
+        <Icon size={12} aria-hidden />
         {label}
       </div>
-      <div className="text-[14px] text-body">{children}</div>
+      <div className={`text-[16px] leading-snug tracking-[-0.05em] ${accent ? 'text-cream' : 'text-body'}`}>
+        {children}
+      </div>
     </div>
+  )
+}
+
+// Small eggshell square nav button (Figma 1528:6628 / 1516:5482).
+function NavButton({ dir, onClick, label }: { dir: 'prev' | 'next'; onClick: () => void; label: string }): JSX.Element {
+  const Icon = dir === 'prev' ? ChevronLeft : ChevronRight
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className={`flex size-8 shrink-0 items-center justify-center self-end rounded-sm bg-cream text-ink transition-colors hover:bg-cream-hover ${focusRing}`}
+    >
+      <Icon size={16} aria-hidden />
+    </button>
   )
 }
 
@@ -51,6 +72,7 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
   const tone = TONE[index % TONE.length]
   const go = (dir: 1 | -1) => setIndex((i) => (i + dir + offices.length) % offices.length)
   const phoneHref = (office.phone ?? '').replace(/[^\d+]/g, '')
+  const addressLines = (office.address ?? []).filter((a) => a.line?.trim())
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (!multiple) return
@@ -73,26 +95,26 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, ease: EASE }}
     >
-      <div className="max-w-2xl space-y-3">
-        <h2 className="font-display text-[30px] font-medium leading-tight tracking-[-0.04em] text-cream">
+      <div className="max-w-2xl space-y-4">
+        <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
           {data?.heading}
         </h2>
-        <p className="text-[15px] leading-relaxed text-body md:text-[16px]">{data?.description}</p>
+        <p className="text-[15px] leading-snug tracking-[-0.05em] text-body md:text-[16px]">{data?.description}</p>
       </div>
 
+      {/* Map surface — signature gradient + grain (graceful fallback for the map asset) with the
+          office card floating at the bottom, matching Figma 1516:5470. */}
       <div
-        className="relative flex flex-col overflow-hidden rounded-md border border-line"
+        className="relative flex h-[460px] items-end justify-center overflow-hidden rounded-md p-4 sm:h-[560px] lg:h-[660px] lg:p-8"
         role={multiple ? 'group' : undefined}
         aria-roledescription={multiple ? 'carousel' : undefined}
         aria-label={multiple ? 'Office locations' : undefined}
         tabIndex={multiple ? 0 : undefined}
         onKeyDown={onKeyDown}
       >
-        {/* Studio surface — signature gradient + grain. No external map dependency; this is the
-            graceful fallback when a map/photo asset is unavailable. Full-bleed framing. */}
         <Motion
           key={`surface-${index}`}
-          className="relative h-[380px] md:h-[520px] lg:h-[480px]"
+          className="absolute inset-0"
           initial={{ opacity: 0.4 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, ease: EASE }}
@@ -102,102 +124,77 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
             aria-hidden
             className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:260px] opacity-[0.14] mix-blend-overlay"
           />
-          <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="inline-flex size-12 items-center justify-center rounded-full bg-cream/95 shadow-[0_12px_32px_-8px_rgba(0,0,0,0.6)]">
-              <MapPin size={22} className="text-ink" aria-hidden />
-            </span>
-          </div>
+          <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+          <span className="absolute left-1/2 top-1/2 inline-flex size-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-cream/95 shadow-[0_12px_32px_-8px_rgba(0,0,0,0.6)]">
+            <MapPin size={22} className="text-ink" aria-hidden />
+          </span>
         </Motion>
 
-        {/* Office detail bar — full-width, flush to the bottom edge, square top corners, top border only. */}
+        {/* Floating office card */}
         <Motion
           key={office.city ?? index}
-          className="relative flex items-stretch border-t border-line bg-ink"
+          className="relative flex w-full items-stretch gap-3 rounded-md bg-card p-4 lg:gap-6 lg:p-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: EASE }}
           aria-live="polite"
         >
-          {/* Far-left previous arrow */}
-          {multiple && (
-            <button
-              type="button"
-              onClick={() => go(-1)}
-              aria-label="Previous office"
-              className={`flex shrink-0 items-center justify-center self-stretch border-r border-line px-4 text-body transition-colors hover:bg-main hover:text-cream ${focusRing}`}
-            >
-              <ChevronLeft size={18} aria-hidden />
-            </button>
-          )}
+          {multiple && <NavButton dir="prev" onClick={() => go(-1)} label="Previous office" />}
 
-          <div className="flex-1 p-6 md:p-8">
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-2">
-                {office.tag && <p className="text-[12px] text-subtle">{office.tag}</p>}
-                <div className="flex items-center gap-3">
-                  <h3 className="font-display text-[24px] font-medium leading-tight text-cream">{office.city}</h3>
-                  {office.timezone && <span className="text-[12px] text-subtle">{office.timezone}</span>}
-                </div>
+          <div className="flex flex-1 flex-col gap-4 px-1 lg:px-4">
+            {/* Heading group */}
+            <div className="flex flex-col gap-2">
+              {office.tag && <p className="text-[16px] tracking-[-0.05em] text-subtle">{office.tag}</p>}
+              <div className="flex flex-wrap items-end gap-x-2 gap-y-1">
+                <h3 className="font-display text-[24px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+                  {office.city}
+                </h3>
+                {office.timezone && (
+                  <span className="pb-1 text-[12px] tracking-[-0.05em] text-subtle">{office.timezone}</span>
+                )}
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-6 lg:grid-cols-4">
-              <Detail icon={MapPin} label="Address">
-                {(office.address ?? []).map((entry, i) => (
-                  <span key={entry.id ?? i} className="block">
-                    {entry.line}
-                  </span>
-                ))}
-              </Detail>
-              <Detail icon={Clock} label="Hours">
-                {office.hours ?? ''}
-              </Detail>
-              <Detail icon={Mail} label="Email">
-                <a
-                  href={`mailto:${office.email ?? ''}`}
-                  className={`break-all transition-colors hover:text-cream ${focusRing} rounded-sm`}
-                >
-                  {office.email}
-                </a>
-              </Detail>
-              <Detail icon={Phone} label="Phone">
-                <a href={`tel:${phoneHref}`} className={`transition-colors hover:text-cream ${focusRing} rounded-sm`}>
-                  {office.phone}
-                </a>
-              </Detail>
+            {/* Detail columns */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4">
+              {addressLines.length > 0 && (
+                <Detail icon={MapPin} label="Address">
+                  {addressLines.map((entry, i) => (
+                    <span key={entry.id ?? i} className="block">
+                      {entry.line}
+                    </span>
+                  ))}
+                </Detail>
+              )}
+              {office.hours && (
+                <Detail icon={Clock} label="Hours">
+                  {office.hours}
+                </Detail>
+              )}
+              {office.email && (
+                <Detail icon={Mail} label="Email" accent>
+                  <a
+                    href={`mailto:${office.email}`}
+                    className={`break-all transition-colors hover:text-cream-hover ${focusRing} rounded-sm`}
+                  >
+                    {office.email}
+                  </a>
+                </Detail>
+              )}
+              {office.phone && (
+                <Detail icon={Phone} label="Phone" accent>
+                  <a
+                    href={`tel:${phoneHref}`}
+                    className={`transition-colors hover:text-cream-hover ${focusRing} rounded-sm`}
+                  >
+                    {office.phone}
+                  </a>
+                </Detail>
+              )}
             </div>
-
-            {/* Slide indicators */}
-            {multiple && (
-              <div className="mt-6 flex items-center gap-2">
-                {offices.map((o, i) => (
-                  <button
-                    key={o.id ?? i}
-                    type="button"
-                    onClick={() => setIndex(i)}
-                    aria-label={`Show ${o.city ?? `office ${i + 1}`}`}
-                    aria-current={i === index ? 'true' : undefined}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${focusRing} ${
-                      i === index ? 'w-6 bg-cream' : 'w-1.5 bg-line-strong hover:bg-subtle'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* Far-right next arrow */}
-          {multiple && (
-            <button
-              type="button"
-              onClick={() => go(1)}
-              aria-label="Next office"
-              className={`flex shrink-0 items-center justify-center self-stretch border-l border-line px-4 text-body transition-colors hover:bg-main hover:text-cream ${focusRing}`}
-            >
-              <ChevronRight size={18} aria-hidden />
-            </button>
-          )}
+          {multiple && <NavButton dir="next" onClick={() => go(1)} label="Next office" />}
         </Motion>
       </div>
     </Motion>

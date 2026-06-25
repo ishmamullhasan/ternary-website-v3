@@ -16,10 +16,28 @@ export const CareersTeam: Block = {
     {
       name: 'members',
       label: 'Members',
-      type: 'relationship',
-      relationTo: 'team',
-      hasMany: true,
-      admin: { description: 'Team members shown in the carousel, in order.' },
+      type: 'array',
+      admin: {
+        description:
+          'Team members shown in the carousel, in order. "Wide" cards keep the full size; uncheck it to make a card two-thirds width.',
+      },
+      fields: [
+        {
+          name: 'member',
+          label: 'Member',
+          type: 'relationship',
+          relationTo: 'team',
+          required: true,
+          admin: { width: '70%' },
+        },
+        {
+          name: 'wide',
+          label: 'Wide',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: { width: '30%', description: 'On = full size · Off = two-thirds width' },
+        },
+      ],
     },
   ],
 }

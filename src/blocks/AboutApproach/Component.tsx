@@ -8,30 +8,39 @@ import type { JSX } from 'react'
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 /**
- * Transparent icon + title + desc unit (design "Benefit block"): 48px round `bg-page` icon badge,
- * 32px gap to the text group, 8px title→desc. Title Poppins Medium 24, desc Inter 16 at 90%.
+ * Icon + title + desc unit (design "Benefit block"): a 48px round `bg-main` icon badge, a 32px gap
+ * to the text group, then 8px title→desc. Title Poppins Medium 24 at 90% opacity, desc Inter 16 at
+ * 75% opacity. Sits on a `bg-page` card (the panel is `bg-main`, so the inner cards step darker).
  */
 function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.Element {
   return (
     <div className="flex h-full flex-col justify-end gap-8">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-main">
         <Zap aria-hidden className="h-6 w-6 text-cream" />
       </div>
       <div className="flex flex-col gap-2">
         {title ? (
-          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">{title}</h3>
+          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">{title}</h3>
         ) : null}
-        {desc ? <p className="text-base leading-snug text-body/90">{desc}</p> : null}
+        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body/75">{desc}</p> : null}
       </div>
     </div>
   )
 }
 
+/** A standard benefit on its own `bg-page` card surface. */
+function BenefitCard({ item }: { item: { title?: string | null; excerpt?: string | null } }): JSX.Element {
+  return (
+    <div className="h-full overflow-hidden rounded-md bg-page p-6">
+      <BenefitBlock title={item.title ?? undefined} desc={item.excerpt ?? undefined} />
+    </div>
+  )
+}
+
 /**
- * "The Ternary Way" (design node 1259:12848): an image-led composition where a tall grayscale
- * photo card anchors the left (the headline benefit overlaid bottom-left), with a stack of plain
- * icon+title+desc benefit cells filling the rest of the 3-column grid. The first cell carries the
- * signature grain media; when media is unavailable it degrades to an emerald brand gradient.
+ * Signature media layer for the featured "Ternary Way" cell (design node 1259:12854). A full-bleed
+ * grayscale photo under the brand grain (`/noise.svg`) with a bottom→top scrim so the icon/title
+ * hold legibility over the image. Degrades to an emerald brand gradient when media is unavailable.
  */
 function BentoMedia({ url, alt }: { url?: string; alt?: string }): JSX.Element {
   return (
@@ -52,7 +61,7 @@ function BentoMedia({ url, alt }: { url?: string; alt?: string }): JSX.Element {
         />
       )}
       <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
-      <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/45 to-transparent" />
+      <span className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/35 to-transparent" />
     </div>
   )
 }
@@ -73,61 +82,66 @@ export function AboutApproachComponent({ heading, description, items }: AboutApp
 
   return (
     <div>
-      <Section title={heading ?? ''} desc={description ?? ''}>
-        {/* Top region: featured media (2/3) + a stacked pair of benefits (1/3). */}
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <Motion className="lg:col-span-2" {...motionGridItemProps} transition={{ duration: 0.5, ease: EASE }}>
-            <div className="group relative h-[460px] overflow-hidden rounded-md lg:h-[600px]">
-              <BentoMedia url={featuredImageUrl} alt={featured?.title ?? undefined} />
-              <div className="relative z-10 flex h-full flex-col justify-end gap-8 p-6 lg:p-8">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
-                  <Zap aria-hidden className="h-6 w-6 text-cream" />
-                </div>
-                <div className="flex flex-col gap-2">
-                  {featured?.title ? (
-                    <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
-                      {featured.title}
-                    </h3>
-                  ) : null}
-                  {featured?.excerpt ? (
-                    <p className="max-w-sm text-base leading-snug text-body/90">{featured.excerpt}</p>
-                  ) : null}
+      <Section title={heading ?? ''} desc={description ?? ''} className="rounded-md bg-main px-9 py-12">
+        {/* Body: row A (featured + stacked pair) over row B (narrow + wide), 16px apart. */}
+        <div className="flex flex-col gap-4">
+          {/* Row A: featured media (2/3) + a stacked pair of benefits (1/3). */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <Motion className="lg:col-span-2" {...motionGridItemProps} transition={{ duration: 0.5, ease: EASE }}>
+              <div className="group relative h-[460px] overflow-hidden rounded-md lg:h-[600px]">
+                <BentoMedia url={featuredImageUrl} alt={featured?.title ?? undefined} />
+                <div className="relative z-10 flex h-full flex-col justify-end gap-8 p-6 lg:p-8">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-main">
+                    <Zap aria-hidden className="h-6 w-6 text-cream" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {featured?.title ? (
+                      <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">
+                        {featured.title}
+                      </h3>
+                    ) : null}
+                    {featured?.excerpt ? (
+                      <p className="max-w-md text-base leading-tight tracking-[-0.02em] text-body/75">
+                        {featured.excerpt}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
               </div>
-            </div>
-          </Motion>
+            </Motion>
 
-          {rightColumn.length ? (
-            <div className="flex flex-col gap-4 lg:col-span-1">
-              {rightColumn.map((item, index) => (
+            {rightColumn.length ? (
+              <div className="flex flex-col gap-4 lg:col-span-1">
+                {rightColumn.map((item, index) => (
+                  <Motion
+                    key={item.id ?? `approach-right-${index}`}
+                    className="min-h-[220px] flex-1"
+                    {...motionGridItemProps}
+                    transition={{ duration: 0.5, ease: EASE, delay: Math.min((index + 1) * 0.05, 0.4) }}
+                  >
+                    <BenefitCard item={item} />
+                  </Motion>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          {/* Row B: remaining benefits — last one is the wide (2/3) card. */}
+          {bottomRow.length ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {bottomRow.map((item, index) => (
                 <Motion
-                  key={item.id ?? `approach-right-${index}`}
-                  className="min-h-[220px] flex-1"
+                  key={item.id ?? `approach-bottom-${index}`}
+                  className={cn('min-h-[360px]', index === bottomRow.length - 1 ? 'lg:col-span-2' : '')}
                   {...motionGridItemProps}
-                  transition={{ duration: 0.5, ease: EASE, delay: Math.min((index + 1) * 0.05, 0.4) }}
+                  transition={{ duration: 0.5, ease: EASE, delay: Math.min((index + 3) * 0.05, 0.4) }}
                 >
-                  <BenefitBlock title={item.title ?? undefined} desc={item.excerpt ?? undefined} />
+                  <BenefitCard item={item} />
                 </Motion>
               ))}
             </div>
           ) : null}
         </div>
-
-        {/* Lower band: remaining benefits. */}
-        {bottomRow.length ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {bottomRow.map((item, index) => (
-              <Motion
-                key={item.id ?? `approach-bottom-${index}`}
-                className={cn('min-h-[360px]', index === bottomRow.length - 1 ? 'lg:col-span-2' : '')}
-                {...motionGridItemProps}
-                transition={{ duration: 0.5, ease: EASE, delay: Math.min((index + 3) * 0.05, 0.4) }}
-              >
-                <BenefitBlock title={item.title ?? undefined} desc={item.excerpt ?? undefined} />
-              </Motion>
-            ))}
-          </div>
-        ) : null}
       </Section>
     </div>
   )

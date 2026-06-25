@@ -9,6 +9,17 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/80 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
+// A bare email address in a button url (e.g. "hello@ternary.solutions" or a partial "@ternary…")
+// would otherwise resolve to a broken locale path like "/@ternary.solutions". Normalise any
+// scheme-less value that looks like an email into a proper mailto: link.
+function normalizeHref(url?: string | null, fallback = '#'): string {
+  const value = url?.trim()
+  if (!value) return fallback
+  if (/^(https?:|mailto:|tel:|#|\/)/i.test(value)) return value
+  if (value.includes('@')) return `mailto:${value.replace(/^@/, 'hello@')}`
+  return value
+}
+
 export function ContactHeroComponent(props: ContactHeroBlock): JSX.Element {
   const heading = props?.heading || 'Let’s start a conversation that lands in the right inbox.'
   const description =
@@ -49,7 +60,7 @@ export function ContactHeroComponent(props: ContactHeroBlock): JSX.Element {
       >
         {button_1?.label && (
           <Link
-            href={button_1.url || '#routes'}
+            href={normalizeHref(button_1.url, '#routes')}
             className={`group inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-cream px-8 py-2 text-[16px] font-medium leading-[1.15] text-ink transition-colors hover:bg-cream-hover ${focusRing}`}
           >
             {button_1.label}
@@ -63,7 +74,7 @@ export function ContactHeroComponent(props: ContactHeroBlock): JSX.Element {
         )}
         {button_2?.label && (
           <Link
-            href={button_2.url || '#offices'}
+            href={normalizeHref(button_2.url, '#offices')}
             className={`inline-flex h-10 items-center justify-center rounded-lg bg-button-dark px-8 py-2 text-[16px] font-medium leading-[1.15] text-cream transition-colors hover:bg-button-dark/80 ${focusRing}`}
           >
             {button_2.label}

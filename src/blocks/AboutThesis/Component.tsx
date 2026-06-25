@@ -8,10 +8,10 @@ import type { JSX } from 'react'
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 /**
- * Transparent icon + title + desc unit (design "Benefit block"). A 48px round `bg-page` icon badge
+ * Icon + title + desc unit (design "Benefit block"). A 48px round `bg-page` icon badge
  * (24px lucide glyph), a 32px gap to the text group, then an 8px gap title→description. Title is
- * Poppins Medium 24 (Display/Subsection); description Inter 16 at 90% opacity. No card surface — the
- * cell sits directly on the section panel, matching the comp.
+ * Poppins Medium 24 (Display/Subsection) at 90% opacity; description Inter 16 at 75% opacity. Each
+ * cell sits on its own `bg-main` card (5px radius, 24px padding), matching the comp.
  */
 function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.Element {
   return (
@@ -21,24 +21,48 @@ function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.E
       </div>
       <div className="flex flex-col gap-2">
         {title ? (
-          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">{title}</h3>
+          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">{title}</h3>
         ) : null}
-        {desc ? <p className="text-base leading-snug text-body/90">{desc}</p> : null}
+        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body/75">{desc}</p> : null}
       </div>
     </div>
   )
 }
 
 /**
- * Signature media layer for a featured bento cell (design node 1255:2829). A grayscale photo under
- * the brand grain overlay (`/noise.svg`) and a bottom scrim — the same texture device as the
- * homepage hero cards. Sits at z-0 behind the BentoCard's `relative z-10` text. When no media is
- * available (local S3 unavailable), it degrades to a warm azure gradient + grain instead of an
- * empty box.
+ * Decorative editor chip floated over the featured photo cell (design node 1255:2839). A small
+ * `bg-page` card with the three traffic-light dots and a two-line Consolas snippet at 70% opacity —
+ * purely ornamental, so it's hidden on the narrow single-column layout and marked aria-hidden.
+ */
+function CodeChip(): JSX.Element {
+  return (
+    <div
+      aria-hidden
+      className="absolute right-[5%] top-[54%] z-10 hidden w-[215px] -translate-y-1/2 flex-col gap-2 rounded-xl border-[0.8px] border-cream/50 bg-page px-4 py-4 shadow-[0px_20px_12.5px_rgba(0,0,0,0.1),0px_8px_5px_rgba(0,0,0,0.1)] sm:flex"
+    >
+      <div className="flex gap-2">
+        <span className="h-2 w-2 rounded-full bg-[#fb2c36]" />
+        <span className="h-2 w-2 rounded-full bg-[#f0b100]" />
+        <span className="h-2 w-2 rounded-full bg-[#00c950]" />
+      </div>
+      <pre className="font-mono text-[10px] leading-[15px] text-cream/70">
+        <code>{'const agent = new Orchestrator();\nawait agent.execute(task);'}</code>
+      </pre>
+    </div>
+  )
+}
+
+/**
+ * Signature media layer for the featured bento cell (design node 1255:2837). A grayscale photo
+ * occupies the right portion of the card (≈58% on md+, full-width on mobile) under the brand grain
+ * overlay (`/noise.svg`); a left→right gradient dissolves the photo into the `bg-main` card on its
+ * left edge so the benefit text reads cleanly over solid card colour. Sits at z-0 behind the cell's
+ * `relative z-10` text. When no media is available (local S3 unavailable), it degrades to a warm
+ * azure gradient + grain instead of an empty box.
  */
 function BentoMedia({ url, alt }: { url?: string; alt?: string }): JSX.Element {
   return (
-    <div aria-hidden className="absolute inset-0 z-0 overflow-hidden">
+    <div aria-hidden className="absolute inset-y-0 right-0 z-0 w-full overflow-hidden md:w-[58%]">
       {url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -50,12 +74,13 @@ function BentoMedia({ url, alt }: { url?: string; alt?: string }): JSX.Element {
         <span
           className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
           style={{
-            backgroundImage: 'radial-gradient(135% 135% at 22% 14%, #2f93da 0%, #134a78 44%, #08233c 100%)',
+            backgroundImage: 'radial-gradient(135% 135% at 78% 14%, #2f93da 0%, #134a78 44%, #08233c 100%)',
           }}
         />
       )}
       <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
-      <span className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-transparent" />
+      {/* Photo dissolves into the card on its left edge (Figma 1255:2838 left→right fade). */}
+      <span className="absolute inset-0 bg-gradient-to-r from-main via-main/60 to-transparent" />
     </div>
   )
 }
@@ -90,26 +115,29 @@ export function AboutThesisComponent({ heading, description, items }: AboutThesi
               >
                 {isFirst ? (
                   // Featured media cell: grain photo surface with the benefit overlaid bottom-left.
-                  <div className="group relative h-full min-h-[360px] overflow-hidden rounded-md">
+                  <div className="group relative h-full min-h-[360px] overflow-hidden rounded-md bg-main">
                     <BentoMedia url={imageUrl} alt={item.title ?? undefined} />
+                    <CodeChip />
                     <div className="relative z-10 flex h-full flex-col justify-end gap-8 p-6 lg:p-8">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
                         <Zap aria-hidden className="h-6 w-6 text-cream" />
                       </div>
                       <div className="flex flex-col gap-2">
                         {item.title ? (
-                          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+                          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">
                             {item.title}
                           </h3>
                         ) : null}
                         {item.excerpt ? (
-                          <p className="max-w-sm text-base leading-snug text-body/90">{item.excerpt}</p>
+                          <p className="max-w-sm text-base leading-tight tracking-[-0.02em] text-body/75">
+                            {item.excerpt}
+                          </p>
                         ) : null}
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="relative h-full min-h-[360px] px-6 lg:px-8">
+                  <div className="relative h-full min-h-[360px] overflow-hidden rounded-md bg-main p-6">
                     <BenefitBlock title={item.title ?? undefined} desc={item.excerpt ?? undefined} />
                     {isSixth ? (
                       <div

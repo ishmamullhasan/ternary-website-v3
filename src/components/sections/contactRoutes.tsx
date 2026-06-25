@@ -7,6 +7,7 @@ import {
   Briefcase,
   Handshake,
   Info,
+  Mail,
   MessageCircle,
   Newspaper,
   ShieldCheck,
@@ -41,7 +42,7 @@ const focusRing =
 // A small gradient icon tile carrying the signature grain overlay.
 function IconTile({ icon: Icon, tone }: { icon: LucideIcon; tone: string }): JSX.Element {
   return (
-    <span className="relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md">
+    <span className="relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm">
       <span aria-hidden className="absolute inset-0" style={{ backgroundImage: tone }} />
       <span
         aria-hidden
@@ -76,20 +77,20 @@ function RouteCard({
         type="button"
         onClick={onSelect}
         aria-pressed={selected}
-        className={`group flex h-full w-full flex-col gap-4 rounded-md border bg-ink p-6 text-left transition-colors duration-300 ${focusRing} ${
-          selected ? 'border-cream/70' : 'border-line hover:border-line-strong'
+        className={`group flex h-full w-full flex-col gap-3 rounded-sm bg-ink p-6 text-left transition-[background-color,transform] duration-300 ${focusRing} ${
+          selected ? 'ring-1 ring-inset ring-cream/40' : 'hover:bg-[#151414]'
         }`}
       >
         <IconTile icon={Icon} tone={tone} />
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <h3 className="text-[16px] font-medium text-cream">{route.title}</h3>
+            <h3 className="text-[16px] font-medium tracking-[-0.05em] text-cream">{route.title}</h3>
             {route.info && <Info size={14} className="text-subtle" aria-hidden />}
           </div>
-          <p className="text-[14px] leading-relaxed text-subtle">{route.description}</p>
+          <p className="text-[14px] leading-snug tracking-[-0.05em] text-body">{route.description}</p>
         </div>
-        <div className="mt-auto flex items-center justify-between border-t border-line pt-4">
-          <span className="text-[14px] text-body">{route.email}</span>
+        <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
+          <span className="text-[12px] tracking-[-0.05em] text-cream">{route.email}</span>
           <ArrowUpRight
             size={16}
             className={`transition-all duration-300 ${
@@ -119,17 +120,19 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
     <Motion
       tag="section"
       id="routes"
-      className="space-y-10"
+      className="space-y-8 rounded-md bg-main px-6 py-10 lg:px-9 lg:py-12"
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.12 }}
       transition={{ duration: 0.6, ease: EASE }}
     >
-      <div className="max-w-2xl space-y-3">
-        <h2 className="font-display text-[30px] font-medium leading-tight tracking-[-0.04em] whitespace-pre-line text-cream">
+      <div className="max-w-3xl space-y-4">
+        <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] whitespace-pre-line text-cream">
           {data?.heading}
         </h2>
-        <p className="text-[15px] leading-relaxed text-body md:text-[16px]">{data?.description}</p>
+        <p className="max-w-2xl text-[15px] leading-snug tracking-[-0.05em] text-body md:text-[16px]">
+          {data?.description}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -147,7 +150,7 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
       {/* Selected route summary — updates as you pick a card above. */}
       <Motion
         key={selectedIndex}
-        className="grid grid-cols-1 overflow-hidden rounded-md border border-line bg-ink lg:grid-cols-[412px_1fr]"
+        className="grid grid-cols-1 overflow-hidden rounded-sm bg-ink lg:grid-cols-[412px_1fr]"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: EASE }}
@@ -161,10 +164,14 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
             className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:220px] opacity-[0.16] mix-blend-overlay"
           />
           <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45" />
-          <span className="relative text-[12px] uppercase tracking-[0.14em] text-cream/75">Selected route</span>
+          <span className="relative text-[12px] tracking-[-0.05em] text-cream/75">Selected route</span>
           <div className="relative space-y-2">
-            <p className="font-display text-[24px] font-medium leading-tight text-cream">{selected.title}</p>
-            {selected.replyWindow && <p className="text-[16px] text-cream/80">{selected.replyWindow}</p>}
+            <p className="font-display text-[24px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+              {selected.title}
+            </p>
+            {selected.replyWindow && (
+              <p className="text-[16px] tracking-[-0.05em] text-cream/80">{selected.replyWindow}</p>
+            )}
           </div>
         </div>
 
@@ -172,11 +179,11 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
         <div className="grid grid-cols-1 gap-8 p-8 md:grid-cols-2">
           {/* Best for */}
           <div className="space-y-4">
-            <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Best for</span>
+            <span className="text-[12px] tracking-[-0.05em] text-body">Best for</span>
             <ul className="space-y-2">
               {(selected.bestFor ?? []).map((entry, i) => (
-                <li key={entry.id ?? i} className="flex items-start gap-2 text-[14px] text-body">
-                  <span className="mt-2 size-1 shrink-0 rounded-full bg-subtle" aria-hidden />
+                <li key={entry.id ?? i} className="flex items-start gap-2 text-[16px] tracking-[-0.05em] text-body">
+                  <span className="mt-[7px] size-1 shrink-0 rounded-full bg-body" aria-hidden />
                   {entry.item}
                 </li>
               ))}
@@ -185,15 +192,16 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
 
           {/* Reach the owner */}
           <div className="space-y-4">
-            <span className="text-[12px] uppercase tracking-[0.14em] text-subtle">Reach the owner</span>
-            <div className="space-y-3 rounded-md bg-main p-3">
+            <span className="text-[12px] tracking-[-0.05em] text-body">Reach the owner</span>
+            <div className="space-y-3 rounded-sm bg-card p-3">
               <div className="flex items-center gap-2">
-                <span className="truncate text-[14px] text-cream">{selected.email}</span>
+                <Mail size={14} className="shrink-0 text-cream" aria-hidden />
+                <span className="truncate text-[16px] tracking-[-0.05em] text-cream">{selected.email}</span>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <a
                   href={mailHref}
-                  className={`group inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-cream px-4 py-2 text-[14px] font-medium text-ink transition-colors hover:bg-cream-hover ${focusRing}`}
+                  className={`group inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-cream px-6 text-[15px] text-ink transition-colors hover:bg-cream-hover ${focusRing}`}
                 >
                   {selected.cta || 'Start an engagement'}
                   <ArrowUpRight
@@ -205,7 +213,7 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
                 </a>
                 <a
                   href="#message"
-                  className={`inline-flex items-center rounded-lg bg-button-dark px-4 py-2 text-[14px] font-medium text-body transition-colors hover:text-cream ${focusRing}`}
+                  className={`inline-flex h-10 items-center rounded-lg bg-button-dark px-6 text-[15px] text-cream/90 transition-colors hover:text-cream ${focusRing}`}
                 >
                   Learn more
                 </a>

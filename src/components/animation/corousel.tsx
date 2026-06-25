@@ -25,11 +25,15 @@ type CareerCardItem = {
   imageBg?: string
 }
 
+// A team slide carries the resolved member plus a `wide` flag: wide cards keep the full
+// (current) width, non-wide cards render at two-thirds of it.
+type TeamSlide = { team: Team; wide?: boolean }
+
 type CorouselProps =
   | {
       variant?: 'team'
       navVariant?: 'arrows' | 'dots'
-      items: Team[]
+      items: TeamSlide[]
     }
   | {
       variant: 'careerCards'
@@ -70,7 +74,10 @@ export default function Corousel({ items, variant = 'team', navVariant = 'arrows
           onReachBeginning={syncNavButtons}
           onReachEnd={syncNavButtons}
           onFromEdge={syncNavButtons}
-          slidesPerView={variant === 'careerCards' ? 1.08 : 1.15}
+          // Team slides size themselves (slidesPerView 'auto') from the `--tw` wide-card width set
+          // on the root, so wide vs two-thirds cards can coexist. careerCards keep fixed counts.
+          className={variant === 'team' ? '[--tw:80%] sm:[--tw:56%] lg:[--tw:30%]' : undefined}
+          slidesPerView={variant === 'careerCards' ? 1.08 : 'auto'}
           spaceBetween={16}
           breakpoints={
             variant === 'careerCards'
@@ -78,8 +85,8 @@ export default function Corousel({ items, variant = 'team', navVariant = 'arrows
                   640: { slidesPerView: 1.35, spaceBetween: 20 },
                 }
               : {
-                  640: { slidesPerView: 1.7, spaceBetween: 20 },
-                  1024: { slidesPerView: 3.3, spaceBetween: 24 },
+                  640: { spaceBetween: 20 },
+                  1024: { spaceBetween: 24 },
                 }
           }
           touchRatio={1}
@@ -118,13 +125,22 @@ export default function Corousel({ items, variant = 'team', navVariant = 'arrows
               )
             }
 
-            const teamItem = item as Team
+            const slide = item as TeamSlide
+            const teamItem = slide?.team
+            // Defensive: an unresolved relationship (deleted member, shallow depth, mid-migration
+            // data) would otherwise crash on `teamItem.name`. Skip the slide instead.
+            if (!teamItem) return null
+            const wide = slide.wide !== false
             const imageUrl =
               typeof teamItem.image === 'object' && teamItem.image !== null ? (teamItem.image as Media).url : undefined
             const hasImage = Boolean(imageUrl)
 
             return (
-              <SwiperSlide key={i}>
+              <SwiperSlide
+                key={i}
+                // Wide = the full `--tw` card width; non-wide = two-thirds of it.
+                style={{ width: wide ? 'var(--tw)' : 'calc(var(--tw) * 2 / 3)' }}
+              >
                 <div className="relative h-[480px] rounded-md overflow-hidden">
                   {hasImage ? (
                     <>

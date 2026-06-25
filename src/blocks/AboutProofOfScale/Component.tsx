@@ -6,12 +6,19 @@ import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
+const MOTION_BLOCK = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-60px' as const },
+}
+
 /**
- * Proof-of-scale (design nodes 1255:2920 + 1615:1912). Two stacked moments on the warm `bg-main`
- * panel: a row of four large "120+" display stats with Inter labels, then the "We partner with
- * ambitious brands" enterprise grid — a full-width 4-up grid of bordered `bg-ink` cards (paragraph
- * → tag pills → icon + brand footer). All copy is CMS-driven and arrays are guarded so missing data
- * collapses gracefully rather than rendering empty rows.
+ * Proof of Scale — two separate `bg-main` panels (design nodes 1255:2920 + 1615:1912), spaced with
+ * the page's own block rhythm so they read as distinct sections:
+ *   1. "Proof at Scale" — a row of four large display stats with Poppins labels.
+ *   2. "We partner with ambitious brands" — a 4-up grid of bordered `bg-page` company cards
+ *      (excerpt → uppercase tag pills → icon + brand footer).
+ * All copy is CMS-driven; arrays are guarded so missing data collapses rather than rendering empty.
  */
 export function AboutProofOfScaleComponent({
   heading,
@@ -19,24 +26,23 @@ export function AboutProofOfScaleComponent({
   stats,
   company,
 }: AboutProofOfScaleBlock): JSX.Element | null {
-  const motionBlockProps = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: '-60px' as const },
-  }
+  const hasStats = Boolean(heading || stats?.length)
+  const hasCompany = Boolean(company?.heading || company?.items?.length)
 
-  if (!heading && !stats?.length && !company?.items?.length) return null
+  if (!hasStats && !hasCompany) return null
 
   return (
-    <section className="rounded-md bg-main p-6 lg:p-12">
-      {/* Stats */}
-      {(heading || stats?.length) && (
-        <div className="mb-16 lg:mb-20">
-          <Motion {...motionBlockProps} transition={{ duration: 0.6, ease: EASE }}>
+    <div className="flex flex-col gap-16 lg:gap-[72px]">
+      {/* Panel 1 — Stats */}
+      {hasStats ? (
+        <section className="rounded-md bg-main p-6 lg:px-9 lg:py-12">
+          <Motion {...MOTION_BLOCK} transition={{ duration: 0.6, ease: EASE }}>
             {heading ? (
-              <h2 className="font-display text-2xl font-medium tracking-[-0.05em] text-cream lg:text-3xl">{heading}</h2>
+              <h2 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream lg:text-3xl">
+                {heading}
+              </h2>
             ) : null}
-            {description ? <p className="mt-3 max-w-2xl text-base leading-relaxed text-body">{description}</p> : null}
+            {description ? <p className="mt-4 max-w-2xl text-base leading-relaxed text-body">{description}</p> : null}
           </Motion>
 
           {stats?.length ? (
@@ -45,7 +51,7 @@ export function AboutProofOfScaleComponent({
                 <Motion
                   key={stat.id ?? i}
                   className="text-center"
-                  {...motionBlockProps}
+                  {...MOTION_BLOCK}
                   transition={{ duration: 0.5, ease: EASE, delay: Math.min(i * 0.06, 0.4) }}
                 >
                   <div className="font-display text-[clamp(3.5rem,8vw,96px)] font-semibold leading-[1.15] tracking-[-0.05em] text-cream">
@@ -58,15 +64,15 @@ export function AboutProofOfScaleComponent({
               ))}
             </div>
           ) : null}
-        </div>
-      )}
+        </section>
+      ) : null}
 
-      {/* Enterprise grid */}
-      {(company?.heading || company?.items?.length) && (
-        <div>
-          <Motion {...motionBlockProps} transition={{ duration: 0.6, ease: EASE }}>
+      {/* Panel 2 — Enterprise grid */}
+      {hasCompany ? (
+        <section className="rounded-md bg-main p-6 lg:px-9 lg:py-12">
+          <Motion {...MOTION_BLOCK} transition={{ duration: 0.6, ease: EASE }}>
             {company?.heading ? (
-              <h2 className="max-w-3xl font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream lg:text-3xl">
+              <h2 className="max-w-xl font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream lg:text-3xl">
                 {company.heading}
               </h2>
             ) : null}
@@ -76,25 +82,27 @@ export function AboutProofOfScaleComponent({
           </Motion>
 
           {company?.items?.length ? (
-            <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
+            // Figma right-aligns the 4-up card grid at a fixed 1171px (≈280px cards), leaving the
+            // left edge open under the heading; below lg it relaxes to a full-width 1/2-col stack.
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:ml-auto lg:mt-8 lg:max-w-[1171px] lg:grid-cols-4">
               {company.items.map((item, index) => {
                 const logoUrl = (item.logo as Media | undefined)?.url ?? undefined
                 const logoAlt = (item.logo as Media | undefined)?.alt ?? item.name ?? ''
                 return (
                   <Motion
                     key={item.id ?? index}
-                    className="group flex h-full min-h-[360px] flex-col justify-between rounded-sm border border-white/5 bg-page px-4 pb-4 pt-6 transition-[transform,border-color,background-color] duration-300 ease-out hover:-translate-y-1 hover:border-white/10 hover:bg-[#141312]"
-                    {...motionBlockProps}
+                    className="group flex h-full min-h-[267px] flex-col justify-between rounded-sm bg-ink px-4 pb-4 pt-6 transition-[transform,background-color] duration-300 ease-out hover:-translate-y-1 hover:bg-[#151414]"
+                    {...MOTION_BLOCK}
                     transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
                   >
-                    <div>
-                      {item.excerpt ? <p className="text-base leading-relaxed text-body">{item.excerpt}</p> : null}
+                    <div className="flex flex-col gap-4">
+                      {item.excerpt ? <p className="text-base leading-snug text-body/90">{item.excerpt}</p> : null}
                       {item.stack?.length ? (
-                        <div className="mt-4 flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2">
                           {item.stack.map((tag, tagIndex) => (
                             <span
                               key={tag.id ?? tagIndex}
-                              className="rounded-full border border-[#757571] bg-main px-4 py-1 text-xs font-normal text-cream"
+                              className="rounded-full border border-subtle bg-main px-4 py-1 text-xs font-normal uppercase tracking-[-0.025em] text-cream/90"
                             >
                               {tag.name}
                             </span>
@@ -116,7 +124,7 @@ export function AboutProofOfScaleComponent({
                         ) : (
                           <Box aria-hidden className="h-6 w-6 text-cream/80" />
                         )}
-                        <span className="text-2xl font-bold tracking-[-0.05em]">{item.name}</span>
+                        <span className="text-2xl font-bold tracking-[-0.025em]">{item.name}</span>
                       </div>
                     ) : null}
                   </Motion>
@@ -124,8 +132,8 @@ export function AboutProofOfScaleComponent({
               })}
             </div>
           ) : null}
-        </div>
-      )}
-    </section>
+        </section>
+      ) : null}
+    </div>
   )
 }

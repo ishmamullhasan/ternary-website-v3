@@ -1156,13 +1156,13 @@ export interface CtaBlock {
   heading?: string | null;
   description?: string | null;
   backgroundImage?: (string | null) | Media;
-  button_1?: {
+  button_1: {
     label?: string | null;
-    link?: string | null;
+    link: string;
   };
-  button_2?: {
+  button_2: {
     label?: string | null;
-    link?: string | null;
+    link: string;
   };
   id?: string | null;
   blockName?: string | null;
@@ -2936,9 +2936,18 @@ export interface CareersTeamBlock {
   heading?: string | null;
   description?: string | null;
   /**
-   * Team members shown in the carousel, in order.
+   * Team members shown in the carousel, in order. "Wide" cards keep the full size; uncheck it to make a card two-thirds width.
    */
-  members?: (string | Team)[] | null;
+  members?:
+    | {
+        member: string | Team;
+        /**
+         * On = full size · Off = two-thirds width
+         */
+        wide?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'careersTeam';
@@ -4274,7 +4283,13 @@ export interface CareersGrowthBlockSelect<T extends boolean = true> {
 export interface CareersTeamBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
-  members?: T;
+  members?:
+    | T
+    | {
+        member?: T;
+        wide?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

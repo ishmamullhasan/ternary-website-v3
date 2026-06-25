@@ -7,6 +7,8 @@ type CtaOptions = {
   subheading?: boolean
   /** Single `button` group instead of `button_1` + `button_2`. */
   singleButton?: boolean
+  /** Make every button URL mandatory (blank coerced to `#`). */
+  requiredLink?: boolean
 }
 
 /**
@@ -15,7 +17,11 @@ type CtaOptions = {
  * migration. Default = legal/about/etc. shape (heading, description, backgroundImage,
  * button_1, button_2).
  */
-export const ctaGroup = ({ subheading = false, singleButton = false }: CtaOptions = {}): GroupField => {
+export const ctaGroup = ({
+  subheading = false,
+  singleButton = false,
+  requiredLink = false,
+}: CtaOptions = {}): GroupField => {
   const fields: GroupField['fields'] = []
 
   if (subheading) fields.push({ name: 'subheading', label: 'Subheading', type: 'text', localized: true })
@@ -24,10 +30,10 @@ export const ctaGroup = ({ subheading = false, singleButton = false }: CtaOption
   fields.push({ name: 'backgroundImage', label: 'Background Image', type: 'upload', relationTo: 'media' })
 
   if (singleButton) {
-    fields.push(buttonGroup('button', 'Button'))
+    fields.push(buttonGroup('button', 'Button', { requiredLink }))
   } else {
-    fields.push(buttonGroup('button_1', 'Button 1'))
-    fields.push(buttonGroup('button_2', 'Button 2'))
+    fields.push(buttonGroup('button_1', 'Button 1', { requiredLink }))
+    fields.push(buttonGroup('button_2', 'Button 2', { requiredLink }))
   }
 
   return { name: 'cta', label: 'CTA', type: 'group', fields }
