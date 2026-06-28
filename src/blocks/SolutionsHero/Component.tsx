@@ -207,9 +207,10 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
         {/* Bottom scrim keeps the overlaid cards legible against the photo. */}
         <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/75" />
 
-        {/* Offering row — four disciplines overlaid as translucent glass cards, divided by hairlines. */}
+        {/* Offering row — four disciplines as separate frosted cards inset over the bottom of the
+            photo (Figma: gaps between cards, ~32px outer inset). */}
         {cells.length > 0 ? (
-          <div className="absolute inset-x-0 bottom-0 grid grid-cols-2 divide-line bg-black/40 backdrop-blur-sm lg:grid-cols-4 lg:divide-x">
+          <div className="absolute inset-x-0 bottom-0 grid grid-cols-2 gap-3 p-4 sm:p-6 lg:grid-cols-4 lg:gap-4 lg:p-8">
             {cells.map(({ shape, card }, index) => (
               <Motion
                 tag="div"
@@ -218,15 +219,15 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.07, 0.42) }}
-                className="group flex flex-col items-center border-t border-line px-6 py-7 text-center lg:border-t-0 lg:px-7 lg:py-8"
+                className="group flex flex-col items-center gap-4 rounded-xl border border-white/10 bg-ink/75 px-5 py-6 text-center backdrop-blur-md lg:px-6 lg:py-7"
               >
                 <div className="transition-transform duration-500 ease-out group-hover:-translate-y-1">
                   <IconShapes cubes={shape.cubes} cy={shape.cy} />
                 </div>
-                <h3 className="font-display mt-4 text-[18px] font-medium leading-snug text-cream">{card?.title}</h3>
-                {card?.excerpt ? (
-                  <p className="mt-1.5 text-[12px] leading-relaxed text-subtle">{card.excerpt}</p>
-                ) : null}
+                <div className="flex flex-col gap-1.5">
+                  <h3 className="font-display text-[18px] font-medium leading-[1.2] text-cream">{card?.title}</h3>
+                  {card?.excerpt ? <p className="text-[12px] leading-relaxed text-subtle">{card.excerpt}</p> : null}
+                </div>
               </Motion>
             ))}
           </div>

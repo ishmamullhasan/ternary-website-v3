@@ -39,7 +39,10 @@ function getStory(slug: string, locale: TypedLocale) {
       return (result.docs[0] as Story | undefined) ?? null
     },
     [`story_detail_${slug}_${locale}`],
-    { tags: [`story_${slug}`, 'story'] },
+    // revalidate: time-based safety net so docs written straight to the DB (seed/ops scripts that
+    // skip Payload's afterChange tag-busting) can't stay cached forever — notably a stale `null`
+    // that 404s a since-published story. Matches `revalidate = 300` on the route.
+    { tags: [`story_${slug}`, 'story'], revalidate: 300 },
   )
 }
 
@@ -57,7 +60,7 @@ function getRelatedStories(excludeSlug: string, locale: TypedLocale) {
       return result.docs as Story[]
     },
     [`story_related_${excludeSlug}_${locale}`],
-    { tags: ['story'] },
+    { tags: ['story'], revalidate: 300 },
   )
 }
 

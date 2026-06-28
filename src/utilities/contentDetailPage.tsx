@@ -55,6 +55,10 @@ async function getDocBySlug(
   if (draft) return fetchDocBySlug(collection, slug, locale)
   return unstable_cache(() => fetchDocBySlug(collection, slug, locale), [`${collection}_${slug}_${locale}`], {
     tags: [`${collection}_${slug}`, COLLECTION_CONFIG[collection].tag],
+    // Time-based safety net (matches `revalidate = 300` on the routes): tag busting only fires from
+    // Payload's afterChange hook, so content written straight to the DB (seed/ops scripts) would
+    // otherwise stay cached forever — including a stale `null` that 404s a since-published doc.
+    revalidate: 300,
   })()
 }
 
