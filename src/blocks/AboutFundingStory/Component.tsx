@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutFundingStoryBlock, Media } from '@/payload-types'
 import Link from 'next/link'
 import type { JSX } from 'react'
@@ -65,7 +66,12 @@ export function AboutFundingStoryComponent({
             {heading}
           </h2>
         ) : null}
-        {description ? <p className="mt-6 text-base leading-relaxed text-cream/80">{description}</p> : null}
+        {description ? (
+          <RichTextComp
+            content={description as RichText}
+            className="mt-6 prose-p:mb-0 prose-p:text-base prose-p:leading-relaxed prose-p:text-cream/80"
+          />
+        ) : null}
         {ctas.length ? (
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             {ctas.map((link, i) => {

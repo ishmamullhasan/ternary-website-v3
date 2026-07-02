@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import ColumnSection from '@/components/layout/sectionColumn'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { SolutionFeatureBlock } from '@/payload-types'
 import { Activity, ArrowDown, Check, Database, GitBranch, GitCommitHorizontal, ShieldCheck, Zap } from 'lucide-react'
 import type { JSX, ReactNode } from 'react'
@@ -358,7 +359,12 @@ export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Eleme
             {props.heading}
           </h2>
         ) : null}
-        {props?.description ? <p className="mt-3 text-base leading-[1.4] text-body">{props.description}</p> : null}
+        {props?.description ? (
+          <RichTextComp
+            content={props.description as RichText}
+            className="mt-3 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.4] prose-p:text-body"
+          />
+        ) : null}
       </Motion>
 
       {/* Middle widget: trajectory (Product Engineering) */}

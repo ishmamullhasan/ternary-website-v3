@@ -31,9 +31,9 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
-// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
-export const revalidate = 300
+// SSG: prebuild known slugs (generateStaticParams below) and serve them statically. Freshness is
+// purely tag-driven (no time-based revalidate) — the pressRelease afterChange/afterDelete hooks
+// bust the tags below. dynamicParams lets slugs not in the prebuilt set render on demand.
 export const dynamicParams = true
 
 const getPressReleaseList = unstable_cache(
@@ -150,7 +150,7 @@ function RelatedPressReleaseCard({ item, index, locale }: { item: PressRelease; 
     >
       <Link
         href={`/${locale}/press-release/${item.slug}`}
-        className="group flex h-full min-h-[280px] flex-col rounded-md bg-ink p-6 ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
+        className="group flex h-full min-h-[280px] flex-col rounded-md bg-card p-6 ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
       >
         <span className="mb-4 inline-flex w-fit items-center rounded-full bg-badge px-4 py-1.5 text-[12px] text-cream">
           Press Release

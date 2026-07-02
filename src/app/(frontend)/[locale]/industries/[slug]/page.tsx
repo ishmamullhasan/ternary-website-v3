@@ -18,8 +18,8 @@ import { getPayload } from 'payload'
 import type { JSX, ReactNode } from 'react'
 
 // SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
-// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
-export const revalidate = 300
+// Freshness is purely tag-driven (no time-based revalidate) — the industry afterChange/afterDelete
+// hooks bust the tags below. dynamicParams lets slugs not in the prebuilt set render on demand.
 export const dynamicParams = true
 
 const getIndustryList = unstable_cache(
@@ -200,7 +200,7 @@ function RelatedCard({
       <Link
         href={`/${locale}/industries/${industry.slug}`}
         className={cn(
-          'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-white/[0.03]',
+          'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-ink/80',
           FOCUS_RING,
         )}
       >
@@ -330,7 +330,7 @@ export default async function Page({
 
       {/* Related industries */}
       {relatedIndustries.length > 0 && (
-        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
+        <Motion tag="section" className="rounded-md border border-white/[0.06] bg-card p-6 lg:p-12" {...reveal}>
           <SectionHeader index={2} label="Related industries" heading="Explore more verticals" className="mb-10" />
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

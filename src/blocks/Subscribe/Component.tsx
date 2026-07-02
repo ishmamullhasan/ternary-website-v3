@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import { TONE } from '@/components/layout/GradientPanel'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import SubscribeForm from '@/components/sections/stories/SubscribeForm'
 import type { Media, SubscribeBlock } from '@/payload-types'
 import type { JSX } from 'react'
@@ -26,7 +27,12 @@ export const SubscribeComponent = (data: SubscribeBlock): JSX.Element | null => 
             <h2 className="text-2xl lg:text-4xl font-medium tracking-tight text-cream leading-tight max-w-lg">
               {data.heading}
             </h2>
-            {data.description && <p className="text-sm text-body leading-relaxed max-w-xl">{data.description}</p>}
+            {data.description && (
+              <RichTextComp
+                content={data.description as RichText}
+                className="max-w-xl prose-p:mb-0 prose-p:text-sm prose-p:text-body prose-p:leading-relaxed"
+              />
+            )}
           </div>
 
           {data.followOptions && data.followOptions.length > 0 && (

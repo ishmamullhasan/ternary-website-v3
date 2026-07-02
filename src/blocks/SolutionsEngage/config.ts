@@ -27,7 +27,7 @@ export const SolutionsEngage: Block = {
           localized: true,
           admin: { width: '50%', description: 'Rendered word-per-line in a mono font.' },
         },
-        { name: 'description', label: 'Description', type: 'textarea', localized: true },
+        { name: 'description', label: 'Description', type: 'richText', localized: true },
         {
           name: 'idealFor',
           label: 'Ideal for',

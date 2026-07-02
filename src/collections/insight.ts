@@ -34,6 +34,15 @@ const Insight: CollectionConfig = {
         revalidateTag('insight', 'max')
       },
     ],
+    // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
+    afterDelete: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`insight_${doc.slug}`, 'max')
+        }
+        revalidateTag('insight', 'max')
+      },
+    ],
   },
   admin: {
     group: 'Newsroom',

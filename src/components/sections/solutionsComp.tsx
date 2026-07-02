@@ -3,6 +3,7 @@
 import Motion from '@/components/animation/motion'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { Button } from '@/components/ui/button'
 import type { Media, Solution } from '@/payload-types'
 import { ArrowUpRight } from 'lucide-react'
@@ -11,7 +12,7 @@ import type { JSX } from 'react'
 
 interface SolutionsCompProps {
   heading?: string | null
-  description?: string | null
+  description?: RichText | string | null
   image?: Media | null
   items?: Solution[] | null
 }
@@ -34,7 +35,12 @@ export default function SolutionsComp({ heading, description, image, items }: So
       <div className="flex justify-start">
         <div className="flex flex-col lg:w-[500px]">
           {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
-          {description && <p className="mt-3 text-body lg:text-base">{description}</p>}
+          {description && (
+            <RichTextComp
+              content={description as RichText}
+              className="mt-3 prose-p:mb-0 prose-p:text-body lg:prose-p:text-base"
+            />
+          )}
         </div>
       </div>
 

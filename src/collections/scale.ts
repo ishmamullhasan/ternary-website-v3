@@ -23,6 +23,15 @@ const Scale: CollectionConfig = {
         revalidateTag('scale', 'max')
       },
     ],
+    // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
+    afterDelete: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`scale_${doc.slug}`, 'max')
+        }
+        revalidateTag('scale', 'max')
+      },
+    ],
   },
   admin: {
     group: 'Content',

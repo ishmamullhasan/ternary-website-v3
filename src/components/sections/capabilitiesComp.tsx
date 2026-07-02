@@ -2,16 +2,18 @@
 import Motion from '@/components/animation/motion'
 import { EASE, reveal, revealItem } from '@/components/animation/reveal'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Capability, Media } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
 interface CapabilitiesCompProps {
   heading?: string | null
-  description?: string | null
+  // richText since the description→Lexical migration; string kept for legacy DB rows.
+  description?: RichText | string | null
   capability?: Capability[] | null
   heading_2?: string | null
-  description_2?: string | null
+  description_2?: RichText | string | null
   image?: Media | null
 }
 
@@ -32,10 +34,15 @@ export default function CapabilitiesComp({
 
   return (
     <section className="section-card flex w-full flex-col gap-8">
-      {/* Header — lead sentence ABOVE the display heading (Figma 339:8092), left-aligned. */}
+      {/* Header — display heading ABOVE the supporting sentence, left-aligned. */}
       <Motion className="flex max-w-[544px] flex-col gap-4" {...reveal}>
-        {description && <p className="text-base leading-[1.15] text-body">{description}</p>}
         {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
+        {description && (
+          <RichTextComp
+            content={description as RichText}
+            className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
+          />
+        )}
       </Motion>
 
       {/* Disciplines grid: on lg a 5-column grid whose first column is left empty (the design's
@@ -62,13 +69,18 @@ export default function CapabilitiesComp({
         })}
       </div>
 
-      {/* "Led by operators" block: left text column (lead above heading), right cream image panel
-          spanning the remaining columns. */}
+      {/* "Led by operators" block: left text column (heading above supporting copy), right cream
+          image panel spanning the remaining columns. */}
       {(heading_2 || description_2 || image?.url) && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5 lg:gap-4">
           <div className="flex flex-col gap-2 lg:col-span-1 lg:self-start">
-            {description_2 && <p className="text-[14px] leading-[1.3] text-body">{description_2}</p>}
             {heading_2 && <h3 className="font-display text-2xl font-medium text-cream">{heading_2}</h3>}
+            {description_2 && (
+              <RichTextComp
+                content={description_2 as RichText}
+                className="prose-p:mb-0 prose-p:text-[14px] prose-p:leading-[1.3] prose-p:text-body"
+              />
+            )}
           </div>
 
           {/* Cream panel — the image layers on top when present; the cream fill is the fallback. */}

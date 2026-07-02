@@ -22,6 +22,15 @@ const Legal: CollectionConfig = {
         revalidateTag('legal', 'max')
       },
     ],
+    // Deletes must bust the same tags, or the legal-center nav keeps serving the removed doc.
+    afterDelete: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`legal_${doc.slug}`, 'max')
+        }
+        revalidateTag('legal', 'max')
+      },
+    ],
   },
   admin: {
     group: 'Legal',

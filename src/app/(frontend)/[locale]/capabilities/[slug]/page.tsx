@@ -6,6 +6,7 @@ import { generateMeta } from '@/lib/seo/generateMeta'
 import { cn } from '@/lib/utils'
 import type { Capability, Media, Team } from '@/payload-types'
 import config from '@/payload.config'
+import { getNodeText } from '@/utilities/headings'
 import { ArrowUpRight, Github, Linkedin, Mail } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
@@ -16,9 +17,9 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { CSSProperties, JSX, ReactNode } from 'react'
 
-// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
-// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
-export const revalidate = 300
+// SSG: prebuild known slugs (generateStaticParams below) and serve them statically. Freshness is
+// purely tag-driven (no time-based revalidate) — the capability afterChange/afterDelete hooks bust
+// the tags below. dynamicParams lets slugs not in the prebuilt set render on demand.
 export const dynamicParams = true
 
 const getCapabilityList = unstable_cache(
@@ -54,7 +55,9 @@ async function getCapabilityBySlug(slug: string, locale: TypedLocale): Promise<C
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchCapabilityBySlug(slug, locale)
   return unstable_cache(() => fetchCapabilityBySlug(slug, locale), [`capability_${slug}_${locale}`], {
-    tags: [`capability_${slug}`, 'capability'],
+    // `team`: the practice-lead section embeds a team doc (depth 2), so editing that team member
+    // must bust this page too.
+    tags: [`capability_${slug}`, 'capability', 'team'],
   })()
 }
 
@@ -76,10 +79,16 @@ export async function generateMetadata({
 
   if (!capability) return {}
 
+  // heroSection.description is Lexical richText now — flatten to plain text for the meta tag.
+  // (Unmigrated DB rows may still hold a plain string; pass those through untouched.)
+  const heroDescription = capability.heroSection?.description as RichText | string | null | undefined
+  const heroDescriptionText =
+    typeof heroDescription === 'string' ? heroDescription : heroDescription ? getNodeText(heroDescription.root) : null
+
   return generateMeta({
     doc: capability,
     fallbackTitle: 'Capability',
-    fallbackDescription: capability.excerpts || capability.heroSection?.description,
+    fallbackDescription: capability.excerpts || heroDescriptionText,
     pathname: `/capabilities/${slug}`,
     locale: typedLocale,
   })
@@ -243,9 +252,10 @@ export default async function Page({
             </h1>
 
             {(hero?.description || capability.excerpts) && (
-              <p className="max-w-2xl text-[16px] font-medium leading-relaxed text-body opacity-90">
-                {hero?.description || capability.excerpts}
-              </p>
+              <RichTextComp
+                content={(hero?.description ?? capability.excerpts) as RichText | string}
+                className="max-w-2xl opacity-90 prose-p:mb-0 prose-p:text-[16px] prose-p:font-medium prose-p:leading-relaxed prose-p:text-body"
+              />
             )}
 
             {heroButton?.label && (
@@ -645,7 +655,10 @@ export default async function Page({
                 {cta.heading}
               </h2>
               {cta.description && (
-                <p className="max-w-lg text-[14px] leading-relaxed text-cream/75">{cta.description}</p>
+                <RichTextComp
+                  content={cta.description as RichText}
+                  className="max-w-lg prose-p:mb-0 prose-p:text-[14px] prose-p:leading-relaxed prose-p:text-cream/75"
+                />
               )}
             </Motion>
 

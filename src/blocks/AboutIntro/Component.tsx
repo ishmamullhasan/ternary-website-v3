@@ -32,7 +32,12 @@ export function AboutIntroComponent({ heading, description, content }: AboutIntr
               {heading}
             </h2>
           ) : null}
-          {description ? <p className="text-sm leading-[1.15] tracking-[-0.05em] text-body">{description}</p> : null}
+          {description ? (
+            <RichTextComp
+              content={description as RichText}
+              className="prose-p:mb-0 prose-p:text-sm prose-p:leading-[1.15] prose-p:tracking-[-0.05em] prose-p:text-body"
+            />
+          ) : null}
         </div>
 
         <div className="lg:flex-1">

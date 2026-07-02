@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel } from '@/components/sections/stories/gradient'
 import type { FeatureCaseStudyBlock, Story } from '@/payload-types'
 import { ArrowRight, Clock } from 'lucide-react'
@@ -19,7 +20,7 @@ export const FeatureCaseStudyComponent = (data: FeatureCaseStudyBlock): JSX.Elem
   const href = featuredStory.slug ? `/case-studies/${featuredStory.slug}` : '#'
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-5">
+    <section className="w-full">
       {(data.heading || data.description) && (
         <Motion
           tag="div"
@@ -35,7 +36,10 @@ export const FeatureCaseStudyComponent = (data: FeatureCaseStudyBlock): JSX.Elem
             </h2>
           )}
           {data.description && (
-            <p className="text-[15px] leading-[1.55] tracking-[-0.01em] text-body lg:text-base">{data.description}</p>
+            <RichTextComp
+              content={data.description as RichText}
+              className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-[1.55] prose-p:tracking-[-0.01em] prose-p:text-body lg:prose-p:text-base"
+            />
           )}
         </Motion>
       )}

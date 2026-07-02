@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Industry, IndustryListBlock } from '@/payload-types'
 import {
   Banknote,
@@ -60,7 +61,12 @@ export function IndustryListComponent(props: IndustryListBlock): JSX.Element | n
           {props.heading && (
             <h2 className="font-display text-3xl font-medium leading-[1.15] text-cream">{props.heading}</h2>
           )}
-          {props.description && <p className="text-base leading-[1.15] text-body">{props.description}</p>}
+          {props.description && (
+            <RichTextComp
+              content={props.description as RichText}
+              className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
+            />
+          )}
         </Motion>
       )}
 

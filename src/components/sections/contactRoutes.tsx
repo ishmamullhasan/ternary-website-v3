@@ -1,6 +1,7 @@
 'use client'
 
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { ContactRoutesBlock } from '@/payload-types'
 import {
   ArrowUpRight,
@@ -87,7 +88,10 @@ function RouteCard({
             <h3 className="text-[16px] font-medium tracking-[-0.05em] text-cream">{route.title}</h3>
             {route.info && <Info size={14} className="text-subtle" aria-hidden />}
           </div>
-          <p className="text-[14px] leading-snug tracking-[-0.05em] text-body">{route.description}</p>
+          <RichTextComp
+            content={route.description as RichText}
+            className="prose-p:mb-0 prose-p:text-[14px] prose-p:leading-snug prose-p:tracking-[-0.05em] prose-p:text-body"
+          />
         </div>
         <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
           <span className="text-[12px] tracking-[-0.05em] text-cream">{route.email}</span>
@@ -130,9 +134,10 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
         <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] whitespace-pre-line text-cream">
           {data?.heading}
         </h2>
-        <p className="max-w-2xl text-[15px] leading-snug tracking-[-0.05em] text-body md:text-[16px]">
-          {data?.description}
-        </p>
+        <RichTextComp
+          content={data?.description as RichText}
+          className="max-w-2xl prose-p:mb-0 prose-p:text-[15px] prose-p:leading-snug prose-p:tracking-[-0.05em] prose-p:text-body md:prose-p:text-[16px]"
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

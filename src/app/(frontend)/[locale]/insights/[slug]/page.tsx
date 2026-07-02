@@ -22,9 +22,9 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
-// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
-export const revalidate = 300
+// SSG: prebuild known slugs (generateStaticParams below) and serve them statically. Freshness is
+// purely tag-driven (no time-based revalidate) — the insight afterChange/afterDelete hooks bust
+// the tags below. dynamicParams lets slugs not in the prebuilt set render on demand.
 export const dynamicParams = true
 
 const getInsightList = unstable_cache(
@@ -60,7 +60,9 @@ async function getInsightBySlug(slug: string, locale: TypedLocale): Promise<Insi
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchInsightBySlug(slug, locale)
   return unstable_cache(() => fetchInsightBySlug(slug, locale), [`insight_${slug}_${locale}`], {
-    tags: [`insight_${slug}`, 'insight'],
+    // `team`: the author byline embeds a team doc (depth 2), so editing that team member must bust
+    // this page too.
+    tags: [`insight_${slug}`, 'insight', 'team'],
   })()
 }
 

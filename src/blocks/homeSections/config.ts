@@ -12,7 +12,7 @@ export const AboutSection: Block = {
   interfaceName: 'AboutSectionBlock',
   labels: { singular: 'About Section', plural: 'About Sections' },
   fields: [
-    ...sectionHeader(),
+    ...sectionHeader({ richHeading: true }),
     {
       name: 'items',
       label: 'Highlighted Items',
@@ -37,9 +37,11 @@ export const AboutSection: Block = {
           name: 'organization',
           label: 'Organizations',
           type: 'array',
+          maxRows: 16,
           admin: {
             ...rowLabelAdmin,
-            description: 'Each entry is one organization logo with its name and an optional outbound link.',
+            description:
+              'Logo wall — only the icon is shown on the site (up to 8 per row, 2 rows). Max 16 entries. Name is used for the admin row label / alt text.',
           },
           fields: [
             imageField({ name: 'icon', label: 'Icon' }),
@@ -60,7 +62,7 @@ export const AboutSection: Block = {
     {
       name: 'bottomDescription',
       label: 'Bottom Description',
-      type: 'textarea',
+      type: 'richText',
       localized: true,
       admin: {
         description: 'Closing copy rendered below the organizations logo wall.',
@@ -117,7 +119,7 @@ export const CapabilitiesSection: Block = {
     {
       name: 'description_2',
       label: 'Secondary Description',
-      type: 'textarea',
+      type: 'richText',
       localized: true,
       admin: {
         description: 'Body copy for the secondary content block.',

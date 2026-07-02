@@ -8,7 +8,7 @@ import type { JSX } from 'react'
 
 interface ProcessCompProps {
   heading?: string | null
-  description?: string | null
+  description?: RichText | string | null
   process?:
     | {
         number?: string | null
@@ -30,7 +30,12 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
         <Motion className="flex shrink-0 flex-col gap-4 lg:w-[32%]" {...reveal}>
           <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">Process</p>
           {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
-          {description && <p className="max-w-md text-[15px] leading-relaxed text-body">{description}</p>}
+          {description && (
+            <RichTextComp
+              content={description as RichText}
+              className="max-w-md prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body"
+            />
+          )}
         </Motion>
 
         {/* Steps — a 2-up card grid offset under a left gutter; the final/odd step spans full width. */}

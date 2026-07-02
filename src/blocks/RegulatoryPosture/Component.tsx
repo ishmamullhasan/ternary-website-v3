@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { RegulatoryPostureBlock } from '@/payload-types'
 import { Activity, Check, Lock, type LucideIcon } from 'lucide-react'
 import type { JSX } from 'react'
@@ -43,9 +44,10 @@ export function RegulatoryPostureComponent(props: RegulatoryPostureBlock): JSX.E
             {props.heading}
           </h2>
           {props.description && (
-            <p className="max-w-3xl text-base leading-[1.15] tracking-[-0.05em] text-body opacity-90">
-              {props.description}
-            </p>
+            <RichTextComp
+              content={props.description as RichText}
+              className="max-w-3xl opacity-90 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:tracking-[-0.05em] prose-p:text-body"
+            />
           )}
         </Motion>
 

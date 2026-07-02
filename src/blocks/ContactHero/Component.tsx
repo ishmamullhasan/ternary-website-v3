@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { ContactHeroBlock } from '@/payload-types'
 import { ArrowUpRight } from 'lucide-react'
 import type { JSX } from 'react'
@@ -23,7 +24,7 @@ function normalizeHref(url?: string | null, fallback = '#'): string {
 export function ContactHeroComponent(props: ContactHeroBlock): JSX.Element {
   const heading = props?.heading || 'Let’s start a conversation that lands in the right inbox.'
   const description =
-    props?.description ||
+    (props?.description as RichText) ||
     'Pick the route that fits. Each one goes to a named owner with a posted response window — no shared mailbox, no triage queue, no “we’ll get back to you.”'
   const button_1 = props?.buttons?.[0]
   const button_2 = props?.buttons?.[1]
@@ -42,13 +43,15 @@ export function ContactHeroComponent(props: ContactHeroBlock): JSX.Element {
           {heading}
         </Motion>
         <Motion
-          tag="p"
+          tag="div"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: EASE, delay: 0.08 }}
-          className="text-[16px] leading-relaxed text-body"
         >
-          {description}
+          <RichTextComp
+            content={description}
+            className="prose-p:mb-0 prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body"
+          />
         </Motion>
       </div>
 

@@ -5,6 +5,7 @@ import { generateMeta } from '@/lib/seo/generateMeta'
 import { breadcrumbList } from '@/lib/seo/jsonLd'
 import { pagePath } from '@/lib/seo/pagePath'
 import type { Page as PageDoc } from '@/payload-types'
+import { PAGES_EMBED_TAGS } from '@/utilities/cacheTags'
 import { getServerSideURL } from '@/utilities/getURL'
 import config from '@payload-config'
 import type { Metadata } from 'next'
@@ -15,9 +16,10 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-// SSG + ISR: prebuild known paths (generateStaticParams below) and serve them statically, then
-// revalidate every 5 minutes. dynamicParams lets paths not in the prebuilt set render on demand.
-export const revalidate = 300
+// SSG: prebuild known paths (generateStaticParams below) and serve them statically. Freshness is
+// purely tag-driven (no time-based revalidate): every Payload afterChange/afterDelete hook busts
+// the tags the cached read below carries. dynamicParams lets paths not in the prebuilt set render
+// on demand.
 export const dynamicParams = true
 
 const fetchPageByPath = async (segments: string[], draft: boolean, locale: TypedLocale): Promise<PageDoc | null> => {
@@ -43,14 +45,16 @@ const fetchPageByPath = async (segments: string[], draft: boolean, locale: Typed
 // Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
 // `revalidateTag('pages')` / `revalidateTag('pages_<slug>')` calls in the Pages afterChange hook.
 // The cache key is the full path (segments disambiguate same-slug pages under different parents);
-// tags are the collection-wide `pages` tag plus the per-slug `pages_<lastSegment>` tag the hook
-// emits. In draft mode (live preview) we bypass the cache so editors always see the freshest draft.
+// tags are the per-slug `pages_<lastSegment>` tag the hook emits plus every collection tag — page
+// layouts embed docs from all content collections at depth 2 (team sections, industry panels,
+// featured case studies, …), so editing any embedded doc must bust the page cache too. In draft
+// mode (live preview) we bypass the cache so editors always see the freshest draft.
 const queryPageByPath = (segments: string[], draft: boolean, locale: TypedLocale): Promise<PageDoc | null> => {
   if (draft) return fetchPageByPath(segments, true, locale)
   const slug = segments[segments.length - 1]
   const path = segments.join('/')
   return unstable_cache(() => fetchPageByPath(segments, false, locale), [`pages_${path}_${locale}`], {
-    tags: ['pages', `pages_${slug}`],
+    tags: [...new Set([`pages_${slug}`, ...PAGES_EMBED_TAGS])],
   })()
 }
 

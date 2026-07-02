@@ -724,12 +724,18 @@ export interface Insight {
  */
 export interface Team {
   id: string;
+  _order?: string | null;
   name?: string | null;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Ternary-internal ID for this member (from our own records).
+   */
+  memberId?: string | null;
+  category: 'leader' | 'general' | 'advisor';
   position?: string | null;
   excerpt?: string | null;
   description?: {
@@ -949,7 +955,21 @@ export interface PressRelease {
  */
 export interface JobsBlockType {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'jobsBlock';
@@ -960,10 +980,40 @@ export interface JobsBlockType {
  */
 export interface IndustriesSectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Home image grid (default mode): pick a media image per tile with an optional link. Up to 8 (4 per row × 2 rows). Falls back to the picked Industries below when empty.
+   */
+  images?:
+    | {
+        image: string | Media;
+        /**
+         * Optional URL the tile links to (e.g. /industries/healthcare).
+         */
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Used for the full-width benefit grid (icon + title + excerpt). In the default image grid these are a fallback when no Image tiles are set — each tile shows the industry thumbnail and links to its page.
+   */
   industries?: (string | Industry)[] | null;
   /**
-   * Off (default): cards sit in columns 2–5 with an empty left gutter (home/capabilities treatment). On: a flush 4-column grid (industry-detail benefit grid).
+   * Off (default): image grid — cards sit in columns 2–5 with an empty left gutter (home treatment). On: a flush 4-column benefit grid from the Industries above (industry-detail treatment).
    */
   fullWidth?: boolean | null;
   id?: string | null;
@@ -1038,7 +1088,21 @@ export interface Industry {
  */
 export interface IndustriesHeroBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'industriesHero';
@@ -1049,7 +1113,21 @@ export interface IndustriesHeroBlock {
  */
 export interface IndustriesDetailsBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Rich text body rendered beside the heading/description.
    */
@@ -1078,7 +1156,21 @@ export interface IndustriesDetailsBlock {
  */
 export interface IndustryPanelsBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         /**
@@ -1086,7 +1178,21 @@ export interface IndustryPanelsBlock {
          */
         industry?: (string | null) | Industry;
         title?: string | null;
-        description?: string | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         image?: (string | null) | Media;
         tags?:
           | {
@@ -1107,7 +1213,21 @@ export interface IndustryPanelsBlock {
  */
 export interface CrossIndustryPatternsBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -1129,7 +1249,21 @@ export interface CrossIndustryPatternsBlock {
  */
 export interface RegulatoryPostureBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -1154,7 +1288,21 @@ export interface RegulatoryPostureBlock {
  */
 export interface CtaBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   backgroundImage?: (string | null) | Media;
   button_1: {
     label?: string | null;
@@ -1173,8 +1321,36 @@ export interface CtaBlock {
  * via the `definition` "AboutSectionBlock".
  */
 export interface AboutSectionBlock {
-  heading?: string | null;
-  description?: string | null;
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Mixed list of records (capabilities, solutions, industries, scales, models, stories, insights or press releases) featured in the About section. Each card shows a content-type label and a Learn more link. Order here is the display order.
    */
@@ -1220,7 +1396,7 @@ export interface AboutSectionBlock {
   organizations?: {
     heading?: string | null;
     /**
-     * Each entry is one organization logo with its name and an optional outbound link.
+     * Logo wall — only the icon is shown on the site (up to 8 per row, 2 rows). Max 16 entries. Name is used for the admin row label / alt text.
      */
     organization?:
       | {
@@ -1237,7 +1413,21 @@ export interface AboutSectionBlock {
   /**
    * Closing copy rendered below the organizations logo wall.
    */
-  bottomDescription?: string | null;
+  bottomDescription?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'aboutSection';
@@ -1264,7 +1454,21 @@ export interface Capability {
      */
     badge?: string | null;
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     heroImage?: (string | null) | Media;
     button?: {
       label?: string | null;
@@ -1456,7 +1660,21 @@ export interface Capability {
   };
   cta?: {
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     backgroundImage?: (string | null) | Media;
     button_1?: {
       label?: string | null;
@@ -1734,7 +1952,21 @@ export interface Model {
  */
 export interface SolutionsSectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   image?: (string | null) | Media;
   /**
    * Solutions to feature in this section, in display order.
@@ -1750,7 +1982,21 @@ export interface SolutionsSectionBlock {
  */
 export interface CapabilitiesSectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Capabilities to feature in this section, in display order.
    */
@@ -1762,7 +2008,21 @@ export interface CapabilitiesSectionBlock {
   /**
    * Body copy for the secondary content block.
    */
-  description_2?: string | null;
+  description_2?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   image?: (string | null) | Media;
   id?: string | null;
   blockName?: string | null;
@@ -1774,7 +2034,21 @@ export interface CapabilitiesSectionBlock {
  */
 export interface ScalesSectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Scale records to feature in this section, in display order.
    */
@@ -1789,7 +2063,21 @@ export interface ScalesSectionBlock {
  */
 export interface EngagementSectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Engagement model records to feature in this section, in display order.
    */
@@ -1804,7 +2092,21 @@ export interface EngagementSectionBlock {
  */
 export interface GlobalDeliverySectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   image?: (string | null) | Media;
   /**
    * Title rendered alongside the image in the global delivery callout.
@@ -1824,7 +2126,21 @@ export interface GlobalDeliverySectionBlock {
  */
 export interface ProcessSectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Ordered list of process steps. Each row is one step with a title and rich-text description.
    */
@@ -1863,7 +2179,21 @@ export interface ProcessSectionBlock {
  */
 export interface TeamSectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Team member records to feature in this section, in display order.
    */
@@ -1878,7 +2208,21 @@ export interface TeamSectionBlock {
  */
 export interface OpportunitiesSectionBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * How many open roles to feature, newest first. Leave blank to show every open role from the recruiting system.
    */
@@ -1897,7 +2241,21 @@ export interface ScalesHeroBlock {
    */
   eyebrow?: string | null;
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -1919,7 +2277,21 @@ export interface ScalesHeroBlock {
  */
 export interface QualityBarBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -1957,7 +2329,21 @@ export interface ScaleShowcaseBlock {
  */
 export interface ContactHeroBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Up to 2 call-to-action buttons.
    */
@@ -2002,7 +2388,21 @@ export interface ContactStatsBlock {
  */
 export interface ContactRoutesBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * The icon and gradient for each route is fixed in code by position.
    */
@@ -2010,7 +2410,21 @@ export interface ContactRoutesBlock {
     | {
         title?: string | null;
         email?: string | null;
-        description?: string | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         replyWindow?: string | null;
         cta?: string | null;
         info?: boolean | null;
@@ -2036,7 +2450,21 @@ export interface ContactRoutesBlock {
  */
 export interface ContactOfficesBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Office cards shown in the map carousel. Use the arrows to switch between them.
    */
@@ -2070,7 +2498,21 @@ export interface ContactOfficesBlock {
  */
 export interface ContactFormBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Pick a form to show a "Send us a message" section. Leave empty to hide the section.
    */
@@ -2286,7 +2728,21 @@ export interface Form {
  */
 export interface StoriesHeroBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'storiesHero';
@@ -2297,7 +2753,21 @@ export interface StoriesHeroBlock {
  */
 export interface FeatureCaseStudyBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   story?: (string | null) | Story;
   /**
    * Headline metrics. Use real figures only.
@@ -2335,7 +2805,21 @@ export interface FeatureCaseStudyBlock {
  */
 export interface StoriesArchiveBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Stories and insights shown in the filterable grid.
    */
@@ -2365,7 +2849,21 @@ export interface StoriesArchiveBlock {
  */
 export interface CategoryLandingBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   categories?:
     | {
         title?: string | null;
@@ -2373,7 +2871,21 @@ export interface CategoryLandingBlock {
          * Lucide icon shown at the top of the category card.
          */
         icon?: ('newspaper' | 'flask-conical' | 'lightbulb' | 'file-text') | null;
-        description?: string | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         image?: (string | null) | Media;
         /**
          * URL the category card links to.
@@ -2396,7 +2908,21 @@ export interface CategoryLandingBlock {
  */
 export interface SubscribeBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   followHint?: string | null;
   followOptions?:
     | {
@@ -2430,7 +2956,21 @@ export interface SubscribeBlock {
  */
 export interface IndustryListBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Industries rendered as the grid of cards.
    */
@@ -2445,7 +2985,21 @@ export interface IndustryListBlock {
  */
 export interface SolutionsHeroBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   backgroundImage?: (string | null) | Media;
   cards?:
     | {
@@ -2471,7 +3025,21 @@ export interface SolutionFeatureBlock {
    */
   eyebrow?: string | null;
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   image?: (string | null) | Media;
   /**
    * Large stat shown inside the aside rings, e.g. 10x.
@@ -2549,7 +3117,21 @@ export interface SolutionFeatureBlock {
  */
 export interface SolutionsEngageBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Three engagement models. Card gradient/bar colors are fixed in code by position.
    */
@@ -2560,7 +3142,21 @@ export interface SolutionsEngageBlock {
          * Rendered word-per-line in a mono font.
          */
         subtitle?: string | null;
-        description?: string | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         /**
          * The right-side "Ideal for" paragraph — distinct from the description intro line.
          */
@@ -2578,7 +3174,21 @@ export interface SolutionsEngageBlock {
  */
 export interface AboutHeroBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'aboutHero';
@@ -2589,7 +3199,21 @@ export interface AboutHeroBlock {
  */
 export interface AboutFundingStoryBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Small label above the headline, e.g. What's Next.
    */
@@ -2616,7 +3240,21 @@ export interface AboutFundingStoryBlock {
  */
 export interface AboutIntroBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Long-form body copy shown beside the heading.
    */
@@ -2645,7 +3283,21 @@ export interface AboutIntroBlock {
  */
 export interface AboutThesisBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -2667,7 +3319,21 @@ export interface AboutThesisBlock {
  */
 export interface AboutBeliefsBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -2689,7 +3355,21 @@ export interface AboutBeliefsBlock {
  */
 export interface AboutApproachBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -2711,7 +3391,21 @@ export interface AboutApproachBlock {
  */
 export interface AboutProofOfScaleBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Headline metrics. Use real figures only.
    */
@@ -2725,7 +3419,21 @@ export interface AboutProofOfScaleBlock {
     | null;
   company?: {
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     items?:
       | {
           name?: string | null;
@@ -2754,7 +3462,21 @@ export interface AboutProofOfScaleBlock {
  */
 export interface AboutLeadershipBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * The leadership team members to feature, in order. Managed in the Team collection.
    */
@@ -2769,7 +3491,21 @@ export interface AboutLeadershipBlock {
  */
 export interface CareersHeroBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   image?: (string | null) | Media;
   /**
    * Up to 1 call-to-action button.
@@ -2795,7 +3531,21 @@ export interface CareersHeroBlock {
  */
 export interface CareersGridOneBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -2836,7 +3586,21 @@ export interface CareersGridOneBlock {
  */
 export interface CareersGridTwoBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   items?:
     | {
         title: string;
@@ -2877,7 +3641,21 @@ export interface CareersGridTwoBlock {
  */
 export interface CareersGrowthBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * The large leveling card with the progression graphic.
    */
@@ -2934,7 +3712,21 @@ export interface CareersGrowthBlock {
  */
 export interface CareersTeamBlock {
   heading?: string | null;
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Team members shown in the carousel, in order. "Wide" cards keep the full size; uncheck it to make a card two-thirds width.
    */
@@ -3026,7 +3818,21 @@ export interface Legal {
   } | null;
   cta?: {
     heading?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     backgroundImage?: (string | null) | Media;
     button_1?: {
       label?: string | null;
@@ -3467,6 +4273,13 @@ export interface JobsBlockTypeSelect<T extends boolean = true> {
 export interface IndustriesSectionBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        link?: T;
+        id?: T;
+      };
   industries?: T;
   fullWidth?: T;
   id?: T;
@@ -5050,9 +5863,12 @@ export interface ModelSelect<T extends boolean = true> {
  * via the `definition` "team_select".
  */
 export interface TeamSelect<T extends boolean = true> {
+  _order?: T;
   name?: T;
   generateSlug?: T;
   slug?: T;
+  memberId?: T;
+  category?: T;
   position?: T;
   excerpt?: T;
   description?: T;
@@ -5447,7 +6263,21 @@ export interface Footer {
   menu_1?: {
     logo?: (string | null) | Media;
     siteName?: string | null;
-    description?: string | null;
+    description?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     copyright?: string | null;
   };
   capabilities?: (string | Capability)[] | null;
@@ -5462,6 +6292,28 @@ export interface Footer {
         }[]
       | null;
   };
+  /**
+   * Fourth free-link column (Stories, Scales, Newsroom, etc.).
+   */
+  resources?: {
+    menu?:
+      | {
+          label?: string | null;
+          link?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Small legal links shown inline in the footer bottom bar (Terms, Privacy, etc.).
+   */
+  legalLinks?:
+    | {
+        label?: string | null;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -5538,6 +6390,24 @@ export interface FooterSelect<T extends boolean = true> {
               link?: T;
               id?: T;
             };
+      };
+  resources?:
+    | T
+    | {
+        menu?:
+          | T
+          | {
+              label?: T;
+              link?: T;
+              id?: T;
+            };
+      };
+  legalLinks?:
+    | T
+    | {
+        label?: T;
+        link?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

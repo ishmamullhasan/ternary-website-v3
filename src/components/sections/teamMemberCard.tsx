@@ -3,6 +3,7 @@ import Motion from '@/components/animation/motion'
 import { EASE } from '@/components/animation/reveal'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import type { Media, Team } from '@/payload-types'
+import { Linkedin } from 'lucide-react'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
@@ -16,8 +17,20 @@ const motionGridItemProps = {
  * A single team member tile: circular avatar (gradient base is the fallback, CMS portrait layers on
  * top), name, and position. Shared by the home Team section and the /team page so both stay in sync.
  * The square box + object-cover keeps the circle perfectly round for any uploaded aspect ratio.
+ *
+ * `showLinkedInIcon` (the /team roster) renders a LinkedIn glyph beside the position. The whole
+ * tile is already the member's LinkedIn link (new tab), so the icon sits inside that anchor as the
+ * visible affordance rather than a nested link.
  */
-export function TeamMemberCard({ member, index }: { member: Team; index: number }): JSX.Element {
+export function TeamMemberCard({
+  member,
+  index,
+  showLinkedInIcon = false,
+}: {
+  member: Team
+  index: number
+  showLinkedInIcon?: boolean
+}): JSX.Element {
   const media = (typeof member.image === 'object' ? member.image : null) as Media | null
   const href = member.linkedin || undefined
 
@@ -31,6 +44,7 @@ export function TeamMemberCard({ member, index }: { member: Team; index: number 
         href={href}
         target={href ? '_blank' : undefined}
         rel={href ? 'noopener noreferrer' : undefined}
+        aria-label={href && member.name ? `${member.name} on LinkedIn` : undefined}
         className="group flex flex-col items-center text-center"
       >
         <div className="relative mb-4 aspect-square w-16 shrink-0 overflow-hidden rounded-full border border-white/[0.06] lg:w-[72px]">
@@ -47,7 +61,14 @@ export function TeamMemberCard({ member, index }: { member: Team; index: number 
         </div>
 
         <p className="text-sm text-cream transition-colors group-hover:text-cream lg:text-base">{member.name}</p>
-        <p className="mt-1 text-xs text-subtle lg:text-sm">{member.position}</p>
+        {showLinkedInIcon && href ? (
+          <span className="mt-1 flex items-center justify-center gap-1.5">
+            {member.position && <span className="text-xs text-subtle lg:text-sm">{member.position}</span>}
+            <Linkedin size={13} aria-hidden className="shrink-0 text-subtle transition-colors group-hover:text-cream" />
+          </span>
+        ) : (
+          <p className="mt-1 text-xs text-subtle lg:text-sm">{member.position}</p>
+        )}
       </a>
     </Motion>
   )

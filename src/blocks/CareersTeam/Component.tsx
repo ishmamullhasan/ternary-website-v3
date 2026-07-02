@@ -1,13 +1,19 @@
 import Corousel from '@/components/animation/corousel'
 import Section from '@/components/layout/section'
 import type { CareersTeamBlock, Team } from '@/payload-types'
+import { sortByTeamOrder } from '@/utilities/teamOrder'
 import type { JSX } from 'react'
 
 export function CareersTeamComponent(props: CareersTeamBlock): JSX.Element {
   // Each row is { member, wide }. Keep only rows whose relationship resolved to a Team doc
   // (depth-populated); `wide` defaults to true so existing/unset rows render at full size.
-  const members = (props.members ?? []).flatMap((row) =>
-    row?.member && typeof row.member === 'object' ? [{ team: row.member as Team, wide: row.wide !== false }] : [],
+  // Rows follow the global manual roster order (each row's `wide` flag travels with its member).
+  const members = sortByTeamOrder(
+    (props.members ?? []).flatMap((row) =>
+      row?.member && typeof row.member === 'object'
+        ? [{ team: row.member as Team, wide: row.wide !== false, _order: (row.member as Team)._order }]
+        : [],
+    ),
   )
 
   return (

@@ -4,12 +4,13 @@ import { EASE, reveal, revealItem } from '@/components/animation/reveal'
 // Type-only import: JobListing's runtime module (jobs-data) pulls in the Payload config, which must
 // never reach the client bundle — see the same pattern in components/sections/job.tsx.
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { JobListing } from '@/lib/jobs-data'
 import type { JSX } from 'react'
 
 interface OpportunitiesCompProps {
   heading?: string | null
-  description?: string | null
+  description?: RichText | string | null
   /** Open roles fetched live from the recruiting system (GET /jobs), newest first. */
   opportunity?: JobListing[] | null
 }
@@ -21,10 +22,15 @@ export default function OpportunitiesComp({ heading, description, opportunity }:
   const roles = opportunity ?? []
   return (
     <section className="section-card">
-      {/* Header — lead sentence ABOVE the heading (Figma 339:13766), left-aligned. */}
+      {/* Header — heading ABOVE the supporting sentence, left-aligned. */}
       <Motion {...reveal} className="mb-8 flex max-w-2xl flex-col gap-4 lg:mb-14">
-        {description && <p className="text-base leading-[1.15] text-body">{description}</p>}
         {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
+        {description && (
+          <RichTextComp
+            content={description as RichText}
+            className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
+          />
+        )}
       </Motion>
 
       {/* opportunities grid — cards occupy the right 4 columns; the first lg column is the empty

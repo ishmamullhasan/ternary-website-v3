@@ -1,6 +1,7 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutLeadershipBlock, Media, Team } from '@/payload-types'
+import { sortByTeamOrder } from '@/utilities/teamOrder'
 import { Github, Globe, Linkedin, Twitter } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -22,7 +23,8 @@ export function AboutLeadershipComponent({ heading, description, members }: Abou
     viewport: { once: true, margin: '-60px' as const },
   }
 
-  const team = (members as Team[] | undefined)?.filter(Boolean) ?? []
+  // Global manual roster order (admin drag-and-drop) wins over the relationship's pick order.
+  const team = sortByTeamOrder((members as Team[] | undefined)?.filter(Boolean) ?? [])
 
   if (!heading && team.length === 0) return null
 
@@ -32,7 +34,12 @@ export function AboutLeadershipComponent({ heading, description, members }: Abou
         {heading ? (
           <h2 className="font-display text-2xl font-medium tracking-[-0.05em] text-cream lg:text-3xl">{heading}</h2>
         ) : null}
-        {description ? <p className="mt-3 text-base leading-relaxed text-body">{description}</p> : null}
+        {description ? (
+          <RichTextComp
+            content={description as RichText}
+            className="mt-3 prose-p:mb-0 prose-p:text-base prose-p:leading-relaxed prose-p:text-body"
+          />
+        ) : null}
       </Motion>
 
       {team.length ? (

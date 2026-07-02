@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Media, SolutionsHeroBlock } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
@@ -149,7 +150,7 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
     .filter((c) => Boolean(c.card?.title))
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-5">
+    <section className="w-full">
       {/* Intro block — centered institutional statement (Figma: ~72px top pad, 24px headline→desc gap). */}
       <div className="flex flex-col items-center gap-6 py-[72px] text-center">
         {props?.heading ? (
@@ -165,13 +166,16 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
         ) : null}
         {props?.description ? (
           <Motion
-            tag="p"
+            tag="div"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.08 }}
-            className="max-w-3xl text-base leading-[1.5] text-body"
+            className="max-w-3xl"
           >
-            {props.description}
+            <RichTextComp
+              content={props.description as RichText}
+              className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.5] prose-p:text-body"
+            />
           </Motion>
         ) : null}
       </div>

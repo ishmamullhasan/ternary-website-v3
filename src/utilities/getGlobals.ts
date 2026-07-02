@@ -30,8 +30,8 @@ async function getGlobal(slug: Global, depth = 0, locale?: TypedLocale) {
  * a Next request (e.g. an admin ops script, whose afterChange `revalidateTag` can't fire and so
  * leaves a stale entry the header/footer then render forever).
  *
- * `revalidate: 300` is a safety net for that same case: even with no tag bust, header/footer
- * self-heal within 5 minutes instead of staying stale indefinitely.
+ * Freshness is purely tag-driven (no time-based revalidate): out-of-request edits must be followed
+ * by GET /next/revalidate or the admin "Revalidate site" button (or a CACHE_VERSION bump).
  */
 const CACHE_VERSION = 'v3'
 
@@ -39,7 +39,7 @@ function cachedGlobal(slug: Global, depth: number, tags: string[], locale?: Type
   return unstable_cache(
     () => getGlobal(slug, depth, locale),
     [`global_${slug}_${depth}_${locale ?? 'default'}_${CACHE_VERSION}`],
-    { tags, revalidate: 300 },
+    { tags },
   )()
 }
 
@@ -57,8 +57,13 @@ export async function getHeader(locale?: TypedLocale) {
  * Fetches footer global. Uses depth: 1 to populate logo media with URL.
  * Pass `locale` to localize; omit to use Payload's defaultLocale.
  * Cached + revalidated by the `footer` tag; bypassed in draft mode.
+ * Also tagged with `capability`/`solution`/`industry`: the footer nav menus are relationships to
+ * those collections (depth-populated titles/slugs), so renaming one of those docs must bust the
+ * footer cache too, not just its own pages.
  */
 export async function getFooter(locale?: TypedLocale) {
   const { isEnabled: draft } = await draftMode()
-  return draft ? getGlobal('footer', 1, locale) : cachedGlobal('footer', 1, ['footer'], locale)
+  return draft
+    ? getGlobal('footer', 1, locale)
+    : cachedGlobal('footer', 1, ['footer', 'capability', 'solution', 'industry'], locale)
 }

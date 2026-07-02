@@ -89,7 +89,10 @@ export async function generateMeta({
 }: GenerateMetaArgs): Promise<Metadata> {
   const meta = doc?.meta ?? null
 
-  const title = meta?.title || fallbackTitle || doc?.title || SITE_NAME
+  // Precedence matches the documented intent: explicit SEO title, then the doc's own title, then
+  // the per-page fallback, then the site name. (Previously fallbackTitle wrongly preceded doc.title,
+  // so pages without a meta group — e.g. jobs, legals — showed the generic fallback as their title.)
+  const title = meta?.title || doc?.title || fallbackTitle || SITE_NAME
   const description = meta?.description || fallbackDescription || SITE_DESCRIPTION
 
   // Prefixed absolute URL for the locale this page renders as.

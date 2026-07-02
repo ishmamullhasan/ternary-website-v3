@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import ContactFormSection from '@/components/sections/contactForm'
 import type { ContactFormBlock, Form } from '@/payload-types'
 import { Mail } from 'lucide-react'
@@ -30,7 +31,7 @@ export function ContactFormComponent(props: ContactFormBlock): JSX.Element {
 
   const heading = props?.heading || 'Start a conversation'
   const description =
-    props?.description ||
+    (props?.description as RichText) ||
     'Tell us a little about your work and what you’re trying to move. An orchestrator reads every submission and replies — not a templated auto-response.'
 
   return (
@@ -39,7 +40,10 @@ export function ContactFormComponent(props: ContactFormBlock): JSX.Element {
         <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.25rem)] font-medium leading-[1.12] tracking-[-0.04em] text-cream">
           {heading}
         </h2>
-        <p className="text-[15px] leading-relaxed text-body md:text-[16px]">{description}</p>
+        <RichTextComp
+          content={description}
+          className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body md:prose-p:text-[16px]"
+        />
         <a
           href="mailto:engagements@ternary.com"
           className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-main px-4 py-2 text-[13px] text-body transition-colors hover:border-subtle hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/80 focus-visible:ring-offset-2 focus-visible:ring-offset-page"

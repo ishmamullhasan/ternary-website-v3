@@ -69,7 +69,7 @@ const Footer: GlobalConfig = {
         {
           name: 'description',
           label: 'Description',
-          type: 'textarea',
+          type: 'richText',
           required: false,
           localized: true,
         },
@@ -133,6 +133,58 @@ const Footer: GlobalConfig = {
               required: false,
             },
           ],
+        },
+      ],
+    },
+    {
+      name: 'resources',
+      label: 'Resources',
+      type: 'group',
+      required: false,
+      admin: { description: 'Fourth free-link column (Stories, Scales, Newsroom, etc.).' },
+      fields: [
+        {
+          name: 'menu',
+          label: 'Menu',
+          type: 'array',
+          required: false,
+          fields: [
+            {
+              name: 'label',
+              label: 'Label',
+              type: 'text',
+              required: false,
+              localized: true,
+            },
+            {
+              name: 'link',
+              label: 'Link',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'legalLinks',
+      label: 'Legal Links',
+      type: 'array',
+      required: false,
+      admin: { description: 'Small legal links shown inline in the footer bottom bar (Terms, Privacy, etc.).' },
+      fields: [
+        {
+          name: 'label',
+          label: 'Label',
+          type: 'text',
+          required: false,
+          localized: true,
+        },
+        {
+          name: 'link',
+          label: 'Link',
+          type: 'text',
+          required: false,
         },
       ],
     },

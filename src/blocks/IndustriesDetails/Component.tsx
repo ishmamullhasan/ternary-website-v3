@@ -26,7 +26,10 @@ export function IndustriesDetailsComponent(props: IndustriesDetailsBlock): JSX.E
             {props.heading}
           </h2>
           {props.description && (
-            <p className="text-sm leading-[1.15] tracking-[-0.05em] text-body">{props.description}</p>
+            <RichTextComp
+              content={props.description as RichText}
+              className="prose-p:mb-0 prose-p:text-sm prose-p:leading-[1.15] prose-p:tracking-[-0.05em] prose-p:text-body"
+            />
           )}
         </Motion>
 

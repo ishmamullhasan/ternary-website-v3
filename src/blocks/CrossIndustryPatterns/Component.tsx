@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { cn } from '@/lib/utils'
 import type { CrossIndustryPatternsBlock, Media } from '@/payload-types'
 import { GitBranch, Layers, Network, Workflow, type LucideIcon } from 'lucide-react'
@@ -85,7 +86,10 @@ export function CrossIndustryPatternsComponent(props: CrossIndustryPatternsBlock
             {props.heading}
           </h2>
           {props.description && (
-            <p className="text-base leading-[1.15] tracking-[-0.05em] text-body opacity-90">{props.description}</p>
+            <RichTextComp
+              content={props.description as RichText}
+              className="opacity-90 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:tracking-[-0.05em] prose-p:text-body"
+            />
           )}
         </Motion>
 

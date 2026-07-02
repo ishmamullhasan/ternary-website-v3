@@ -22,7 +22,29 @@ export const seed = async ({ payload, req: _req }: { payload: Payload; req: Payl
       data: {
         menu_1: {
           siteName: 'Ternary Solutions',
-          description: 'Building products that shape the lives of millions every single day',
+          // description is a richText (Lexical) field — seed a minimal single-paragraph state.
+          description: {
+            root: {
+              type: 'root',
+              format: '' as const,
+              indent: 0,
+              version: 1,
+              direction: 'ltr' as const,
+              children: [
+                {
+                  type: 'paragraph',
+                  version: 1,
+                  children: [
+                    {
+                      type: 'text',
+                      version: 1,
+                      text: 'Building products that shape the lives of millions every single day',
+                    },
+                  ],
+                },
+              ],
+            },
+          },
           copyright: `© ${new Date().getFullYear()} Ternary Solutions`,
         },
       },

@@ -3,15 +3,17 @@ import Motion from '@/components/animation/motion'
 import { EASE } from '@/components/animation/reveal'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import LocalizedLink from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { TeamMemberCard } from '@/components/sections/teamMemberCard'
 import type { Media, Team } from '@/payload-types'
+import { sortByTeamOrder } from '@/utilities/teamOrder'
 import { ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
 interface TeamCompProps {
   heading?: string | null
-  description?: string | null
+  description?: RichText | string | null
   members?: Team[] | null
 }
 
@@ -21,8 +23,11 @@ const motionGridItemProps = {
   viewport: { once: true, margin: '-40px' as const },
 }
 
-export default function TeamComp({ heading, description, members }: TeamCompProps): JSX.Element | null {
-  if (!members || members.length === 0) return null
+export default function TeamComp({ heading, description, members: rawMembers }: TeamCompProps): JSX.Element | null {
+  if (!rawMembers || rawMembers.length === 0) return null
+
+  // Global manual roster order (admin drag-and-drop) wins over the relationship's pick order.
+  const members = sortByTeamOrder(rawMembers)
 
   const maxVisible = 3
   const total = members.length
@@ -34,7 +39,9 @@ export default function TeamComp({ heading, description, members }: TeamCompProp
         {/* Left header — description first, heading below (Figma 339:13754). */}
         <div className="lg:w-1/4">
           {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
-          {description && <p className="mt-3 text-body">{description}</p>}
+          {description && (
+            <RichTextComp content={description as RichText} className="mt-3 prose-p:mb-0 prose-p:text-body" />
+          )}
         </div>
 
         {/* Member grid — a preview of the roster; the overflow tile links to the full /team page. */}

@@ -97,25 +97,14 @@ export function HeroFeaturedComponent({ thesis, headline, items }: HeroFeaturedB
   const headlineLines = (headline ?? '').split('\n').filter(Boolean)
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-5">
+    <section className="w-full">
       <div className="flex flex-col items-center gap-6 pt-16 pb-4 text-center lg:pt-[72px]">
-        {thesis && (
-          <Motion
-            tag="p"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="max-w-xl text-base font-medium leading-[1.15] text-body"
-          >
-            {thesis}
-          </Motion>
-        )}
         {headlineLines.length > 0 && (
           <Motion
             tag="h1"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
+            transition={{ duration: 0.7, ease: EASE }}
             className="font-display text-[clamp(2rem,5vw,2.5rem)] font-medium leading-[1.15] text-cream"
           >
             {headlineLines.map((line, i) => (
@@ -123,6 +112,17 @@ export function HeroFeaturedComponent({ thesis, headline, items }: HeroFeaturedB
                 {line}
               </span>
             ))}
+          </Motion>
+        )}
+        {thesis && (
+          <Motion
+            tag="p"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE, delay: 0.08 }}
+            className="max-w-xl text-base font-medium leading-[1.15] text-body"
+          >
+            {thesis}
           </Motion>
         )}
       </div>

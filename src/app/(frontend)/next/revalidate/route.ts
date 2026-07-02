@@ -1,3 +1,4 @@
+import { ALL_CACHE_TAGS } from '@/utilities/cacheTags'
 import { revalidateTag } from 'next/cache'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -8,19 +9,6 @@ import { NextResponse, type NextRequest } from 'next/server'
 //
 //   GET /next/revalidate?secret=<CRON_SECRET>          → revalidate all content tags
 //   GET /next/revalidate?secret=<CRON_SECRET>&tag=story → revalidate a single tag
-const TAGS = [
-  'story',
-  'insight',
-  'pressRelease',
-  'pages',
-  'capability',
-  'solution',
-  'industry',
-  'scale',
-  'model',
-  'header',
-  'footer',
-] as const
 
 export async function GET(req: NextRequest): Promise<Response> {
   const secret = req.nextUrl.searchParams.get('secret')
@@ -28,7 +16,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, message: 'Unauthorized' }, { status: 401 })
   }
   const single = req.nextUrl.searchParams.get('tag')
-  const tags = single ? [single] : [...TAGS]
+  const tags = single ? [single] : [...ALL_CACHE_TAGS]
   for (const t of tags) revalidateTag(t, 'max')
   return NextResponse.json({ ok: true, revalidated: tags })
 }

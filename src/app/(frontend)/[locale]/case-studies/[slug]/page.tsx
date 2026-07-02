@@ -10,9 +10,9 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
-// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
-export const revalidate = 300
+// SSG: prebuild known slugs (generateStaticParams below) and serve them statically. Freshness is
+// purely tag-driven (no time-based revalidate) — the story afterChange/afterDelete hooks bust the
+// tags below. dynamicParams lets slugs not in the prebuilt set render on demand.
 export const dynamicParams = true
 
 // Reuse the shared metadata + static-params generators; the page body is bespoke for case studies.
@@ -39,10 +39,10 @@ function getStory(slug: string, locale: TypedLocale) {
       return (result.docs[0] as Story | undefined) ?? null
     },
     [`story_detail_${slug}_${locale}`],
-    // revalidate: time-based safety net so docs written straight to the DB (seed/ops scripts that
-    // skip Payload's afterChange tag-busting) can't stay cached forever — notably a stale `null`
-    // that 404s a since-published story. Matches `revalidate = 300` on the route.
-    { tags: [`story_${slug}`, 'story'], revalidate: 300 },
+    // Purely tag-driven: the story afterChange/afterDelete hooks bust these tags. Docs written
+    // straight to the DB (seed/ops scripts) must be followed by GET /next/revalidate or the admin
+    // "Revalidate site" button — there is no time-based fallback anymore.
+    { tags: [`story_${slug}`, 'story'] },
   )
 }
 
@@ -60,7 +60,7 @@ function getRelatedStories(excludeSlug: string, locale: TypedLocale) {
       return result.docs as Story[]
     },
     [`story_related_${excludeSlug}_${locale}`],
-    { tags: ['story'], revalidate: 300 },
+    { tags: ['story'] },
   )
 }
 

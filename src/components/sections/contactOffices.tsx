@@ -1,6 +1,7 @@
 'use client'
 
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { ContactOfficesBlock } from '@/payload-types'
 import { ChevronLeft, ChevronRight, Clock, Mail, MapPin, Phone, type LucideIcon } from 'lucide-react'
 import type { JSX, KeyboardEvent } from 'react'
@@ -99,7 +100,10 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
         <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
           {data?.heading}
         </h2>
-        <p className="text-[15px] leading-snug tracking-[-0.05em] text-body md:text-[16px]">{data?.description}</p>
+        <RichTextComp
+          content={data?.description as RichText}
+          className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-snug prose-p:tracking-[-0.05em] prose-p:text-body md:prose-p:text-[16px]"
+        />
       </div>
 
       {/* Map surface — signature gradient + grain (graceful fallback for the map asset) with the

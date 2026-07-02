@@ -1,16 +1,18 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { cn } from '@/lib/utils'
 import type { JSX, ReactNode } from 'react'
 
 type SectionProps = {
   title?: string
-  desc?: string
+  desc?: RichText | string | null
   children: ReactNode
   className?: string
 }
 
 export default function Section({ title = '', desc = '', children, className = '' }: SectionProps): JSX.Element {
-  const showHeader = Boolean(title?.trim()) || Boolean(desc?.trim())
+  const hasDesc = typeof desc === 'string' ? Boolean(desc.trim()) : Boolean(desc)
+  const showHeader = Boolean(title?.trim()) || hasDesc
 
   return (
     <Motion
@@ -33,7 +35,12 @@ export default function Section({ title = '', desc = '', children, className = '
               {title}
             </h2>
           ) : null}
-          {desc?.trim() ? <p className="max-w-none lg:max-w-2xl text-body lg:text-base text-sm">{desc}</p> : null}
+          {hasDesc ? (
+            <RichTextComp
+              content={desc}
+              className="max-w-none lg:max-w-2xl prose-p:mb-0 prose-p:text-body prose-p:text-sm lg:prose-p:text-base"
+            />
+          ) : null}
         </Motion>
       ) : null}
       {children}

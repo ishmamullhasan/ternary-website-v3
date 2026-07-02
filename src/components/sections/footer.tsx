@@ -2,6 +2,7 @@
 
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import Image from 'next/image'
 
@@ -29,7 +30,8 @@ interface FooterProps {
     menu_1?: {
       logo?: MediaWithUrl | null
       siteName?: string | null
-      description?: string | null
+      // richText since the description→Lexical migration; string kept for legacy DB rows.
+      description?: RichText | string | null
       copyright?: string | null
     } | null
 
@@ -66,6 +68,23 @@ interface FooterProps {
           }[]
         | null
     } | null
+
+    resources?: {
+      heading?: string | null
+      menu?:
+        | {
+            label?: string | null
+            link?: string | null
+          }[]
+        | null
+    } | null
+
+    legalLinks?:
+      | {
+          label?: string | null
+          link?: string | null
+        }[]
+      | null
   } | null
 }
 
@@ -124,7 +143,8 @@ function FooterMenuColumn({
 export default function Footer({ footerData }: FooterProps) {
   const logoUrl = getLogoUrl(footerData?.menu_1?.logo)
   const siteName = footerData?.menu_1?.siteName?.trim() || 'Ternary'
-  const description = footerData?.menu_1?.description?.trim()
+  const rawDescription = footerData?.menu_1?.description
+  const description = typeof rawDescription === 'string' ? rawDescription.trim() : rawDescription
   // Use the CMS legal string when it's a real value — never the literal "Copyright" placeholder
   // that some seed rows carry — and fall back to the designed line so the row always renders.
   const rawCopyright = footerData?.menu_1?.copyright?.trim()
@@ -133,11 +153,12 @@ export default function Footer({ footerData }: FooterProps) {
       ? rawCopyright
       : null
   const legal = copyright || '© Ternary Solutions, Inc. and its subsidiaries. All Rights Reserved.'
+  const legalLinks = (footerData?.legalLinks ?? []).filter((item) => item?.label && item?.link)
 
   return (
     <footer className="mx-auto w-full max-w-7xl px-5 py-16">
-      {/* Top text row — logo block + the four link columns, space-between on desktop */}
-      <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-5 lg:gap-6">
+      {/* Top text row — logo block + the five link columns, space-between on desktop */}
+      <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6 lg:gap-6">
         {/* Logo block (gap24) — combination mark + wordmark, then the two-line tagline */}
         <Motion
           tag="div"
@@ -160,9 +181,16 @@ export default function Footer({ footerData }: FooterProps) {
           {/* Tagline: two lines, Inter Regular 16px, tracking −0.8px, line-height 1.15 (Body/Regular).
               whitespace-pre-line honors the CMS line break; falls back to the designed two-line copy
               if the field is empty. Width matches the ~151px Figma tagline column. */}
-          <span className="max-w-[10rem] whitespace-pre-line text-[16px] font-normal leading-[1.15] tracking-[-0.05em] text-cream">
-            {description || 'Agentic Engineering.\nHuman Orchestration.'}
-          </span>
+          {description ? (
+            <RichTextComp
+              content={description as RichText}
+              className="max-w-[10rem] prose-p:mb-0 prose-p:whitespace-pre-line prose-p:text-[16px] prose-p:font-normal prose-p:leading-[1.15] prose-p:tracking-[-0.05em] prose-p:text-cream"
+            />
+          ) : (
+            <span className="max-w-[10rem] whitespace-pre-line text-[16px] font-normal leading-[1.15] tracking-[-0.05em] text-cream">
+              {'Agentic Engineering.\nHuman Orchestration.'}
+            </span>
+          )}
         </Motion>
 
         {/* Capabilities */}
@@ -206,12 +234,34 @@ export default function Footer({ footerData }: FooterProps) {
 
         {/* Company (menu_4) */}
         <FooterMenuColumn heading="Company" index={4} items={footerData?.menu_4?.menu ?? null} prefix="company" />
+
+        {/* Resources — Stories, Scales, Newsroom, Engagement model, Search */}
+        <FooterMenuColumn
+          heading="Resources"
+          index={5}
+          items={footerData?.resources?.menu ?? null}
+          prefix="resources"
+        />
       </div>
 
-      {/* Bottom full-width row — legal line. 16px gap above (no divider per Figma), full Text/Primary
-          cream, Inter Regular 14px, tracking −0.7px, line-height 1.15. */}
-      <div className="mt-4">
+      {/* Bottom full-width row — legal links + copyright line. 16px gap above (no divider per Figma),
+          full Text/Primary cream, Inter Regular 14px, tracking −0.7px, line-height 1.15. */}
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-[14px] font-normal leading-[1.15] tracking-[-0.05em] text-cream">{legal}</span>
+
+        {legalLinks.length > 0 && (
+          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2" aria-label="Legal">
+            {legalLinks.map((item, idx) => (
+              <Link
+                href={item.link ?? '#'}
+                key={`legal-link-${idx}`}
+                className="text-[14px] font-normal leading-[1.15] tracking-[-0.05em] text-cream/80 transition-colors duration-150 hover:text-cream focus-visible:text-cream"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
       </div>
     </footer>
   )

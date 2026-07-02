@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { Button } from '@/components/ui/button'
 import type { CtaBlock, Media } from '@/payload-types'
 import type { JSX } from 'react'
@@ -32,7 +33,7 @@ export function CtaBlockComponent({
   return (
     <Motion
       tag="section"
-      className="lg:p-10 p-6 rounded-md overflow-hidden lg:m-0 m-4 relative border border-white/[0.04]"
+      className="relative overflow-hidden rounded-md border border-white/[0.04] p-6 lg:p-10"
       style={{
         background: (backgroundImage as Media)?.url
           ? `url(${(backgroundImage as Media)?.url}) center/cover no-repeat`
@@ -46,12 +47,17 @@ export function CtaBlockComponent({
         className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('/noise.svg')] bg-[length:240px] bg-repeat"
       />
 
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 max-w-6xl mx-auto">
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
         <Motion className="flex flex-col items-start text-left lg:max-w-xl" {...motionBlockProps}>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-cream leading-[1.2]">
             {heading}
           </h2>
-          <p className="text-xs md:text-sm text-body/80 max-w-lg leading-relaxed">{description}</p>
+          {description && (
+            <RichTextComp
+              content={description as RichText}
+              className="max-w-lg prose-p:mb-0 prose-p:text-xs md:prose-p:text-sm prose-p:leading-relaxed prose-p:text-body/80"
+            />
+          )}
         </Motion>
 
         <div className="flex sm:flex-row flex-col gap-3 items-center shrink-0 lg:ml-auto">

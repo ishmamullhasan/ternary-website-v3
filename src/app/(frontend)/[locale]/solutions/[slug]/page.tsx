@@ -17,8 +17,8 @@ import { getPayload } from 'payload'
 import type { JSX, ReactNode } from 'react'
 
 // SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
-// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
-export const revalidate = 300
+// Freshness is purely tag-driven (no time-based revalidate) — the solution afterChange/afterDelete
+// hooks bust the tags below. dynamicParams lets slugs not in the prebuilt set render on demand.
 export const dynamicParams = true
 
 const getSolutionList = unstable_cache(

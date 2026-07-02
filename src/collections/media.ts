@@ -1,14 +1,25 @@
 import type { CollectionConfig } from 'payload'
 
 import { FixedToolbarFeature, InlineToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import { revalidateTag } from 'next/cache'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
+import { ALL_CACHE_TAGS } from '@/utilities/cacheTags'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// Media docs are depth-populated (URLs, sizes, alt) into cached reads of every collection, global
+// and page layout — there is no per-media tag on the read side. So a media edit (alt text, focal
+// point, replaced file) or delete must bust every content/global tag; otherwise the embedding pages
+// keep serving the stale copy forever under pure tag-based revalidation. Media edits are rare, so
+// the blanket bust is an acceptable trade for correctness.
+const bustAllTags = () => {
+  for (const tag of ALL_CACHE_TAGS) revalidateTag(tag, 'max')
+}
 
 const Media: CollectionConfig = {
   slug: 'media',
@@ -18,6 +29,10 @@ const Media: CollectionConfig = {
     delete: authenticated,
     read: anyone,
     update: authenticated,
+  },
+  hooks: {
+    afterChange: [bustAllTags],
+    afterDelete: [bustAllTags],
   },
   admin: {
     group: 'System',

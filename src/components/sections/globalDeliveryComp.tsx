@@ -2,12 +2,13 @@
 
 import Motion from '@/components/animation/motion'
 import { EASE, reveal } from '@/components/animation/reveal'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Media } from '@/payload-types'
 import Image from 'next/image'
 
 interface GlobalDeliveryCompProps {
   heading?: string | null
-  description?: string | null
+  description?: RichText | string | null
   image?: Media | null
   title?: string | null
   excerpt?: string | null
@@ -22,7 +23,9 @@ export default function GlobalDeliveryComp({ heading, description, image, title,
       <Motion {...reveal} className="flex flex-col gap-10 lg:flex-row lg:justify-between lg:gap-16">
         <div className="flex flex-col lg:w-2/5">
           {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
-          {description && <p className="mt-4 text-body">{description}</p>}
+          {description && (
+            <RichTextComp content={description as RichText} className="mt-4 prose-p:mb-0 prose-p:text-body" />
+          )}
         </div>
 
         {(excerpt || title) && (

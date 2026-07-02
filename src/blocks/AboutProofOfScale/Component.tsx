@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutProofOfScaleBlock, Media } from '@/payload-types'
 import { Box } from 'lucide-react'
 import Image from 'next/image'
@@ -42,7 +43,12 @@ export function AboutProofOfScaleComponent({
                 {heading}
               </h2>
             ) : null}
-            {description ? <p className="mt-4 max-w-2xl text-base leading-relaxed text-body">{description}</p> : null}
+            {description ? (
+              <RichTextComp
+                content={description as RichText}
+                className="mt-4 max-w-2xl prose-p:mb-0 prose-p:text-base prose-p:leading-relaxed prose-p:text-body"
+              />
+            ) : null}
           </Motion>
 
           {stats?.length ? (
@@ -77,7 +83,10 @@ export function AboutProofOfScaleComponent({
               </h2>
             ) : null}
             {company?.description ? (
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-body">{company.description}</p>
+              <RichTextComp
+                content={company.description as RichText}
+                className="mt-4 max-w-2xl prose-p:mb-0 prose-p:text-base prose-p:leading-relaxed prose-p:text-body"
+              />
             ) : null}
           </Motion>
 

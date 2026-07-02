@@ -1,6 +1,7 @@
 'use client'
 
 import Section from '@/components/layout/section'
+import type { RichText } from '@/components/richtext'
 import { careersText } from '@/lib/careers-colors'
 import type { JobListing } from '@/lib/jobs-data'
 import { ArrowRight, ChevronDown } from 'lucide-react'
@@ -13,7 +14,9 @@ interface JobsProps {
   /** Server-fetched roles. `null` = upstream fetch failed → error state; `[]` = no open roles. */
   jobs: JobListing[] | null
   heading?: string
-  description?: string
+  // richText after the CMS field conversion; legacy plain strings still occur until the data
+  // migration runs. Rendered by <Section desc>, which accepts both.
+  description?: RichText | string | null
   /** Locale segment to prefix job detail links with (WEB-445), e.g. "en". "" keeps legacy links. */
   localePrefix?: string
 }

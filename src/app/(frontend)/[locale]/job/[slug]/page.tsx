@@ -59,8 +59,9 @@ export async function generateMetadata({
 
   // Jobs come from the recruiting API (not a Payload collection), so there's no `meta` group —
   // pass a title-only synthetic doc; generateMeta applies site defaults for everything else.
+  // Title reads "<job title> | Job" and the layout template appends " | Ternary Solutions".
   return generateMeta({
-    doc: { title: jobData.title },
+    doc: { title: jobData.title ? `${jobData.title} | Job` : null },
     fallbackTitle: 'Job',
     // ✅ excerpt (API) → fall back to body_markdown
     fallbackDescription: jobData.excerpt || jobData.body_markdown,

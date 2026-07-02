@@ -27,7 +27,7 @@ export const CategoryLanding: Block = {
             width: '50%',
           },
         },
-        { name: 'description', label: 'Description', type: 'textarea', localized: true },
+        { name: 'description', label: 'Description', type: 'richText', localized: true },
         imageField({ name: 'image', label: 'Image' }),
         {
           name: 'link',

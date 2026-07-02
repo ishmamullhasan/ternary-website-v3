@@ -2,6 +2,7 @@
 
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, toneFor, type Tone } from '@/components/sections/stories/gradient'
 import { cn } from '@/lib/utils'
 import type { Insight, PressRelease, Story } from '@/payload-types'
@@ -92,7 +93,7 @@ function GradientTileCard({ item, index }: { item: NormalizedItem; index: number
     >
       <Link
         href={item.href}
-        className="group relative block aspect-[16/11] overflow-hidden rounded-md ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+        className="group relative block aspect-[358/585] overflow-hidden rounded-md ring-1 ring-white/5 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream motion-reduce:transition-none motion-reduce:hover:translate-y-0"
       >
         {/* Single top-down scrim (text is top-anchored in the new Figma tile). */}
         <GradientPanel tone={item.tone} interactive scrim="top" />
@@ -161,7 +162,8 @@ function TextCard({ item, index }: { item: NormalizedItem; index: number }): JSX
 
 interface AllStoriesGridProps {
   heading?: string | null
-  description?: string | null
+  // Rich text (Lexical) or a legacy plain string — RichTextComp renders both.
+  description?: RichText | string | null
   items?: StoryGridItem[] | null
   pressReleases?: PressRelease[] | null
 }
@@ -249,7 +251,7 @@ export default function AllStoriesGrid({
   const hasSearch = searchQuery.trim().length > 0
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-5">
+    <section className="w-full">
       {(heading || description) && (
         <div className="mb-6 flex max-w-[724px] flex-col gap-4">
           {heading && (
@@ -258,9 +260,10 @@ export default function AllStoriesGrid({
             </h2>
           )}
           {description && (
-            <p className="text-base font-normal leading-[1.15] tracking-[-0.05em] text-body opacity-90">
-              {description}
-            </p>
+            <RichTextComp
+              content={description}
+              className="opacity-90 prose-p:mb-0 prose-p:text-base prose-p:font-normal prose-p:leading-[1.15] prose-p:tracking-[-0.05em] prose-p:text-body"
+            />
           )}
         </div>
       )}

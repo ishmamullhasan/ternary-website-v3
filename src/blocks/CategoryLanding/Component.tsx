@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import { cn } from '@/lib/utils'
 import type { CategoryLandingBlock, Media } from '@/payload-types'
 import { ArrowUpRight, FileText, FlaskConical, Lightbulb, Newspaper, type LucideIcon } from 'lucide-react'
@@ -51,7 +52,12 @@ export const CategoryLandingComponent = (data: CategoryLandingBlock): JSX.Elemen
             {data.heading}
           </h2>
         )}
-        {data.description && <p className="text-[15px] leading-relaxed text-body">{data.description}</p>}
+        {data.description && (
+          <RichTextComp
+            content={data.description as RichText}
+            className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body"
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -106,7 +112,10 @@ export const CategoryLandingComponent = (data: CategoryLandingBlock): JSX.Elemen
                     </h3>
                   )}
                   {category.description && (
-                    <p className="line-clamp-2 text-[14px] leading-relaxed text-cream/75">{category.description}</p>
+                    <RichTextComp
+                      content={category.description as RichText}
+                      className="line-clamp-2 prose-p:mb-0 prose-p:text-[14px] prose-p:leading-relaxed prose-p:text-cream/75"
+                    />
                   )}
                   {category.link && (
                     <span className="inline-flex items-center gap-1.5 pt-1 text-[14px] text-cream/90 transition-colors group-hover:text-cream">

@@ -14,9 +14,9 @@ import type { PaginatedDocs, TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-// SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
-// revalidate every 5 minutes. dynamicParams lets slugs not in the prebuilt set render on demand.
-export const revalidate = 300
+// SSG: prebuild known slugs (generateStaticParams below) and serve them statically. Freshness is
+// purely tag-driven (no time-based revalidate) — the legal collection and legalCenter global hooks
+// bust the tags below. dynamicParams lets slugs not in the prebuilt set render on demand.
 export const dynamicParams = true
 
 // Shared reveal easing/curve, matching the signature hero (heroFeatured.tsx).
@@ -58,13 +58,16 @@ async function fetchLegalCenter(locale: TypedLocale) {
   return payload.findGlobal({ slug: 'legalCenter', locale })
 }
 
-// Tag-based ISR (WEB-457): cached + busted by `revalidateTag('legalCenter')` / `revalidateTag('legal')`
+// Tag-based ISR (WEB-457): cached + busted by `revalidateTag('legal-center')` / `revalidateTag('legal')`
 // (legalCenter afterChange hook); bypassed in draft mode so live preview stays real-time.
 async function getLegalCenter(locale: TypedLocale) {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchLegalCenter(locale)
   return unstable_cache(() => fetchLegalCenter(locale), [`legalCenter_${locale}`], {
-    tags: ['legalCenter', 'legal'],
+    // 'legal-center' (hyphenated) is the tag the legalCenter global's afterChange hook actually
+    // busts (and the one listed in GLOBAL_TAGS) — the previous 'legalCenter' spelling was never
+    // revalidated by anything, so edits to the global stayed cached until a legal doc changed.
+    tags: ['legal-center', 'legal'],
   })()
 }
 
@@ -178,7 +181,7 @@ export default async function Page({
   return (
     <div className="min-h-screen antialiased">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-5 pb-16 lg:gap-24 lg:pb-24">
-        <Motion tag="section" {...sectionReveal}>
+        <Motion tag="section" className="w-full pt-20 lg:pt-40" {...sectionReveal}>
           <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[300px_1fr] lg:gap-8">
             {/* LEFT SIDEBAR: Legal Center menu & compliance notice. Sticky on desktop so the
                 navigation + notice stay reachable through long legal documents. */}
@@ -330,9 +333,10 @@ export default async function Page({
                   {legal.cta.heading}
                 </h3>
                 {legal.cta.description && (
-                  <p className="mt-3 text-[15px] leading-relaxed text-cream/80 lg:text-[16px]">
-                    {legal.cta.description}
-                  </p>
+                  <RichTextComp
+                    content={legal.cta.description as RichText}
+                    className="mt-3 prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-cream/80 lg:prose-p:text-[16px]"
+                  />
                 )}
               </div>
 

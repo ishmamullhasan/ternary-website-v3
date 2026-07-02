@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Section from '@/components/layout/section'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { SolutionsEngageBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
@@ -58,7 +59,10 @@ export function SolutionsEngageComponent(props: SolutionsEngageBlock): JSX.Eleme
                 <h2 className="font-display text-3xl font-medium leading-[1.15] text-cream">{props.heading}</h2>
               ) : null}
               {props?.description ? (
-                <p className="max-w-2xl text-base leading-[1.4] text-body">{props.description}</p>
+                <RichTextComp
+                  content={props.description as RichText}
+                  className="max-w-2xl prose-p:mb-0 prose-p:text-base prose-p:leading-[1.4] prose-p:text-body"
+                />
               ) : null}
             </div>
           )}
@@ -90,7 +94,10 @@ export function SolutionsEngageComponent(props: SolutionsEngageBlock): JSX.Eleme
                     ) : null}
                     {/* Short intro line under the labels (Figma 1275:4491). */}
                     {card?.description ? (
-                      <p className="mt-1 text-base leading-[1.4] text-body">{card.description}</p>
+                      <RichTextComp
+                        content={card.description as RichText}
+                        className="mt-1 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.4] prose-p:text-body"
+                      />
                     ) : null}
                   </div>
                 )

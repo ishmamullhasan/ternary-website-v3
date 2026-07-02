@@ -89,9 +89,9 @@ function SprintPanel({ item, keyBase }: { item: Scale; keyBase: string }): JSX.E
   if (showUp.length === 0 && sprintLog.length === 0 && metrics.length === 0) return null
 
   return (
-    <div className="mt-8 w-full rounded-md border border-line bg-main">
+    <div className="flex flex-col gap-8">
       {(showUp.length > 0 || sprintLog.length > 0) && (
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 p-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 rounded-md border border-line bg-ink p-6 lg:grid-cols-2">
           {/* How we show up — numbered list */}
           {showUp.length > 0 && (
             <div>
@@ -196,9 +196,9 @@ function RoadmapPanel({ item, keyBase }: { item: Scale; keyBase: string }): JSX.
   }
 
   return (
-    <div className="mt-8 w-full rounded-md border border-line bg-main">
+    <div className="flex flex-col gap-8">
       {(phases.length > 0 || footnotes.length > 0) && (
-        <div className="p-6">
+        <div className="rounded-md border border-line bg-ink p-6">
           {/* Header meta row */}
           {(meta.label || meta.span) && (
             <div className="flex items-center justify-between gap-4 text-[12px] tracking-[-0.01em] text-subtle">
@@ -315,9 +315,9 @@ function ProcurementPanel({ item, keyBase }: { item: Scale; keyBase: string }): 
   if (capability.length === 0 && path.length === 0 && metrics.length === 0) return null
 
   return (
-    <div className="mt-8 w-full rounded-md border border-line bg-main">
+    <div className="flex flex-col gap-8">
       {(capability.length > 0 || path.length > 0) && (
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 p-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 rounded-md border border-line bg-ink p-6 lg:grid-cols-2">
           {/* Capability statement — term/value table */}
           {capability.length > 0 && (
             <div>
@@ -392,7 +392,7 @@ export function ScaleShowcaseComponent(props: ScaleShowcaseBlock): JSX.Element {
   if (scales.length === 0) return <></>
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-5 lg:gap-24">
+    <div className="flex w-full flex-col gap-16 lg:gap-24">
       {scales.map((item, scaleIndex) => {
         const tagsList = item.tags
           ? item.tags
@@ -416,70 +416,73 @@ export function ScaleShowcaseComponent(props: ScaleShowcaseBlock): JSX.Element {
             transition={{ duration: 0.6, ease: EASE }}
             className="flex w-full flex-col"
           >
-            {/* Header — sits on the page background */}
-            <div className="flex max-w-3xl flex-col items-start text-left">
-              {item.subTitle && (
-                <span className="mb-4 inline-block rounded-full border border-line bg-main px-4 py-2 text-[14px] font-medium leading-none text-cream">
-                  {item.subTitle}
-                </span>
-              )}
+            {/* Panel wrapper — Figma surface/card (#1b1a17); holds header + data box + metrics */}
+            <div className="flex w-full flex-col gap-8 rounded-md border border-line bg-card p-5 sm:p-8 lg:p-10">
+              {/* Header — sits on the card */}
+              <div className="flex max-w-3xl flex-col items-start text-left">
+                {item.subTitle && (
+                  <span className="mb-4 inline-block rounded-full border border-line bg-main px-4 py-2 text-[14px] font-medium leading-none text-cream">
+                    {item.subTitle}
+                  </span>
+                )}
 
-              {item.title && (
-                <h2 className="font-display max-w-2xl text-[clamp(1.6rem,3.4vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.017em] text-cream">
-                  {item.title}
-                </h2>
-              )}
+                {item.title && (
+                  <h2 className="font-display max-w-2xl text-[clamp(1.6rem,3.4vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.017em] text-cream">
+                    {item.title}
+                  </h2>
+                )}
 
-              {item.description && (
-                <RichTextComp
-                  content={item.description as RichText}
-                  className="prose-sm mt-4 max-w-2xl text-[16px] leading-[1.5] text-body"
-                />
-              )}
+                {item.description && (
+                  <RichTextComp
+                    content={item.description as RichText}
+                    className="prose-sm mt-4 max-w-2xl text-[16px] leading-[1.5] text-body"
+                  />
+                )}
 
-              {tagsList.length > 0 && (
-                <div className="mt-4 flex items-center gap-2 text-[12px] tracking-[-0.01em] text-subtle">
-                  <TierIcon size={14} strokeWidth={1.75} aria-hidden className="shrink-0" />
-                  <span className="leading-none">{tagsList.join(' · ')}</span>
-                </div>
+                {tagsList.length > 0 && (
+                  <div className="mt-4 flex items-center gap-2 text-[12px] tracking-[-0.01em] text-subtle">
+                    <TierIcon size={14} strokeWidth={1.75} aria-hidden className="shrink-0" />
+                    <span className="leading-none">{tagsList.join(' · ')}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Data panel — bespoke per panelType, generic by default */}
+              {panelType === 'sprint' ? (
+                <SprintPanel item={item} keyBase={keyBase} />
+              ) : panelType === 'roadmap' ? (
+                <RoadmapPanel item={item} keyBase={keyBase} />
+              ) : panelType === 'procurement' ? (
+                <ProcurementPanel item={item} keyBase={keyBase} />
+              ) : (
+                hasGenericContent && (
+                  <div className="flex flex-col gap-8">
+                    {tagsList.length > 0 && (
+                      <div className="rounded-md border border-line bg-ink p-6">
+                        <span className="text-[12px] tracking-[-0.01em] text-subtle">How we show up</span>
+                        <ul className="mt-5 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+                          {tagsList.map((tag, idx) => (
+                            <li
+                              key={`${keyBase}-tag-${idx}`}
+                              className="group flex items-start gap-3 border-t border-line pt-4"
+                            >
+                              <span className="mt-px text-[12px] tabular-nums leading-none text-subtle">
+                                {String(idx + 1).padStart(2, '0')}
+                              </span>
+                              <span className="text-[14px] font-medium capitalize leading-[1.3] tracking-[-0.01em] text-cream transition-colors duration-300 group-hover:text-cream">
+                                {tag}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <MetricsRow metrics={metrics} keyBase={keyBase} />
+                  </div>
+                )
               )}
             </div>
-
-            {/* Data panel — bespoke per panelType, generic by default */}
-            {panelType === 'sprint' ? (
-              <SprintPanel item={item} keyBase={keyBase} />
-            ) : panelType === 'roadmap' ? (
-              <RoadmapPanel item={item} keyBase={keyBase} />
-            ) : panelType === 'procurement' ? (
-              <ProcurementPanel item={item} keyBase={keyBase} />
-            ) : (
-              hasGenericContent && (
-                <div className="mt-8 w-full rounded-md border border-line bg-main">
-                  {tagsList.length > 0 && (
-                    <div className="p-6">
-                      <span className="text-[12px] tracking-[-0.01em] text-subtle">How we show up</span>
-                      <ul className="mt-5 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {tagsList.map((tag, idx) => (
-                          <li
-                            key={`${keyBase}-tag-${idx}`}
-                            className="group flex items-start gap-3 border-t border-line pt-4"
-                          >
-                            <span className="mt-px text-[12px] tabular-nums leading-none text-subtle">
-                              {String(idx + 1).padStart(2, '0')}
-                            </span>
-                            <span className="text-[14px] font-medium capitalize leading-[1.3] tracking-[-0.01em] text-cream transition-colors duration-300 group-hover:text-cream">
-                              {tag}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  <MetricsRow metrics={metrics} keyBase={keyBase} />
-                </div>
-              )
-            )}
           </Motion>
         )
       })}

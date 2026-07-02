@@ -1,6 +1,7 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
+import { PAGES_EMBED_TAGS } from '@/utilities/cacheTags'
 import config from '@payload-config'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
@@ -10,9 +11,9 @@ import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
 import type { JSX } from 'react'
 
-// SSG + ISR: prebuild one static index page per locale (generateStaticParams below) and serve them
-// statically, then revalidate every 5 minutes.
-export const revalidate = 300
+// SSG: prebuild one static index page per locale (generateStaticParams below) and serve statically.
+// Freshness is purely tag-driven (no time-based revalidate): every Payload afterChange/afterDelete
+// hook busts the tags this page's cached read carries, so edits show up on the next request.
 
 export async function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
@@ -42,15 +43,17 @@ const fetchHomePage = async (draft: boolean, locale: TypedLocale) => {
 
 // Tag-based ISR (WEB-457): published reads are cached and busted on-demand by the
 // `revalidateTag('pages')` / `revalidateTag('pages_home')` calls in the Pages afterChange hook.
-// Cache key bumped to _v3 to force a fresh read on this deploy so the new heroFeatured block (added
-// to the home layout out-of-request) surfaces instead of a stale cached layout. In draft mode (live
-// preview) we bypass the cache so editors always see the freshest draft.
+// The home layout embeds docs from every content collection at depth 2 (solutions, capabilities,
+// scales, team, …), so the read also carries every collection tag — editing an embedded doc busts
+// this cache too, not just its own detail page. Cache key bumped to _v3 to force a fresh read on
+// this deploy so the new heroFeatured block (added to the home layout out-of-request) surfaces
+// instead of a stale cached layout. In draft mode (live preview) we bypass the cache so editors
+// always see the freshest draft.
 const getHomePage = (draft: boolean, locale: TypedLocale) =>
   draft
     ? fetchHomePage(true, locale)
     : unstable_cache(() => fetchHomePage(false, locale), [`pages_home_${locale}_v3`], {
-        tags: ['pages', 'pages_home'],
-        revalidate: 300,
+        tags: [...new Set(['pages_home', ...PAGES_EMBED_TAGS])],
       })()
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {

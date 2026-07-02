@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { IndustriesHeroBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
@@ -17,15 +18,20 @@ export function IndustriesHeroComponent(props: IndustriesHeroBlock): JSX.Element
         >
           {props?.heading}
         </Motion>
-        <Motion
-          tag="p"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
-          className="mt-6 max-w-3xl text-base leading-[1.15] text-body"
-        >
-          {props?.description}
-        </Motion>
+        {props?.description && (
+          <Motion
+            tag="div"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
+            className="mt-6 max-w-3xl"
+          >
+            <RichTextComp
+              content={props.description as RichText}
+              className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
+            />
+          </Motion>
+        )}
       </div>
     </section>
   )

@@ -22,6 +22,15 @@ const Capability: CollectionConfig = {
         revalidateTag('capability', 'max')
       },
     ],
+    // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
+    afterDelete: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`capability_${doc.slug}`, 'max')
+        }
+        revalidateTag('capability', 'max')
+      },
+    ],
   },
   admin: {
     group: 'Content',
@@ -83,7 +92,7 @@ const Capability: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea',
+                  type: 'richText',
                   localized: true,
                 },
                 {
@@ -437,7 +446,7 @@ const Capability: CollectionConfig = {
                 {
                   name: 'description',
                   label: 'Description',
-                  type: 'textarea' as const,
+                  type: 'richText' as const,
                   required: false,
                   localized: true,
                 },

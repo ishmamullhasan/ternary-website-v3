@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutHeroBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
@@ -40,13 +41,16 @@ export function AboutHeroComponent({ heading, description }: AboutHeroBlock): JS
 
         {description ? (
           <Motion
-            tag="p"
+            tag="div"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE, delay: 0.1 }}
-            className="mt-6 max-w-2xl text-base font-medium leading-relaxed text-body/90"
+            className="mt-6 max-w-2xl"
           >
-            {description}
+            <RichTextComp
+              content={description as RichText}
+              className="prose-p:mb-0 prose-p:text-base prose-p:font-medium prose-p:leading-relaxed prose-p:text-body/90"
+            />
           </Motion>
         ) : null}
       </div>

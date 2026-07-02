@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Media } from '@/payload-types'
 import type { JSX } from 'react'
 
@@ -20,7 +21,8 @@ import type { JSX } from 'react'
 interface ScalesHeroBlock {
   eyebrow?: string | null
   heading?: string | null
-  description?: string | null
+  // richText since the description→Lexical migration; string kept for legacy DB rows.
+  description?: RichText | string | null
   items?:
     | {
         title: string
@@ -52,7 +54,7 @@ export function ScalesHeroComponent(props: ScalesHeroBlock): JSX.Element {
   const items = props?.items ?? []
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-5 lg:pt-16 lg:pb-8 pt-10 pb-4">
+    <section className="w-full lg:pt-16 lg:pb-8 pt-10 pb-4">
       {/* Header */}
       <Motion
         tag="div"
@@ -71,7 +73,10 @@ export function ScalesHeroComponent(props: ScalesHeroBlock): JSX.Element {
           </h1>
         )}
         {props?.description && (
-          <p className="mt-6 max-w-[644px] text-[16px] leading-[1.5] text-body">{props.description}</p>
+          <RichTextComp
+            content={props.description as RichText}
+            className="mt-6 max-w-[644px] prose-p:mb-0 prose-p:text-[16px] prose-p:leading-[1.5] prose-p:text-body"
+          />
         )}
       </Motion>
 

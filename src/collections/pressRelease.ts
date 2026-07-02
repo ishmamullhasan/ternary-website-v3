@@ -34,6 +34,15 @@ const PressRelease: CollectionConfig = {
         revalidateTag('pressRelease', 'max')
       },
     ],
+    // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
+    afterDelete: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`pressRelease_${doc.slug}`, 'max')
+        }
+        revalidateTag('pressRelease', 'max')
+      },
+    ],
   },
   admin: {
     group: 'Newsroom',

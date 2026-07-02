@@ -2,13 +2,15 @@
 import Motion from '@/components/animation/motion'
 import { reveal, revealItem } from '@/components/animation/reveal'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Media, Scale } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
 interface EngagementCompProps {
   heading?: string | null
-  description?: string | null
+  // richText since the description→Lexical migration; string kept for legacy DB rows.
+  description?: RichText | string | null
   model?: Scale[] | null
 }
 
@@ -20,8 +22,10 @@ export default function EngagementComp({ heading, description, model }: Engageme
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
         {/* top header */}
         <Motion className="lg:w-2/5" {...reveal}>
-          <p className="text-body">{description}</p>
-          <h2 className="mt-3 text-section font-display font-medium text-cream">{heading}</h2>
+          <h2 className="text-section font-display font-medium text-cream">{heading}</h2>
+          {description && (
+            <RichTextComp content={description as RichText} className="mt-3 prose-p:mb-0 prose-p:text-body" />
+          )}
         </Motion>
 
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:w-auto lg:grid-cols-3">

@@ -49,6 +49,15 @@ export const makeContentCollection = (
         revalidateTag(slug, 'max')
       },
     ],
+    // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
+    afterDelete: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`${slug}_${doc.slug}`, 'max')
+        }
+        revalidateTag(slug, 'max')
+      },
+    ],
   },
   // Spread the versions config in only when the caller opts in, so non-versioned collections keep
   // their original (versionless) shape and zero type-regen drift.

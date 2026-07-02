@@ -19,6 +19,9 @@ const save = async (fn: () => Promise<unknown>) => {
   try {
     await fn()
   } catch (e) {
+    // Payload validation errors bury the per-field detail in e.data.errors — dump it before rethrowing.
+    const errs = (e as { data?: { errors?: unknown[] } })?.data?.errors
+    if (errs) console.dir(errs, { depth: 6 })
     if (!BENIGN(e)) throw e
   }
 }
@@ -89,7 +92,9 @@ const isLexical = (v: unknown): boolean =>
 
 // ---- target field paths -------------------------------------------------------------------------
 // `paths` use a tiny mini-syntax: `a.b` = nested group; `a[].b` = iterate array `a`, field `b` on
-// each element. All target fields are `localized: true`, so the per-locale doc holds plain values.
+// each element; `a[k=v].b` = iterate array `a` but only elements whose `k` equals `v` (used to
+// target one block type inside a `blocks` field). All target fields are `localized: true`, so the
+// per-locale doc holds plain values.
 type Target = { collection: string; paths: string[] }
 
 const TARGETS: Target[] = [
@@ -103,6 +108,9 @@ const TARGETS: Target[] = [
       'caseStudies.items[].approach',
       'caseStudies.items[].outcome',
       'practiceLead.bio',
+      // textarea→richText description sweep: hero + CTA descriptions.
+      'heroSection.description',
+      'cta.description',
     ],
   },
   { collection: 'insight', paths: ['leadParagraph', 'relatedInsights.description', 'cta.description'] },
@@ -112,7 +120,35 @@ const TARGETS: Target[] = [
   },
   { collection: 'team', paths: ['description'] },
   { collection: 'scale', paths: ['description'] },
+  // legal uses the shared ctaGroup(), whose description became richText.
+  { collection: 'legal', paths: ['cta.description'] },
+  {
+    collection: 'pages',
+    // Every layout block's `description` (sectionHeader/ctaGroup/inline) is now richText, so the
+    // blanket `layout[].description` is safe: strings convert, Lexical values are idempotently
+    // skipped. Headings stay plain text except aboutSection's, so that one keeps a filtered path.
+    // The nested-array paths cover per-item descriptions (solutionsEngage.cards,
+    // contactRoutes/industryPanels.items, categoryLanding.categories); blocks whose arrays lack a
+    // description field are no-ops.
+    paths: [
+      'layout[blockType=aboutSection].heading',
+      'layout[blockType=aboutSection].bottomDescription',
+      'layout[blockType=capabilitiesSection].description_2',
+      'layout[].description',
+      'layout[].cards[].description',
+      'layout[].items[].description',
+      'layout[].categories[].description',
+    ],
+  },
+  {
+    collection: 'industry',
+    paths: ['layout[].description', 'layout[].items[].description'],
+  },
 ]
+
+// Globals with converted description fields — handled via findGlobal/updateGlobal per locale
+// (per-locale writes: `locale: 'all'` is known to drop nested-group localized values).
+const GLOBAL_TARGETS: Target[] = [{ collection: 'footer', paths: ['menu_1.description'] }]
 
 type Change = { collection: string; id: string; field: string; locale: string }
 const changes: Change[] = []
@@ -128,31 +164,37 @@ const bump = (c: string) => skipped.set(c, (skipped.get(c) ?? 0) + 1)
 function applyPath(
   doc: Record<string, unknown>,
   segments: string[],
-  fn: (parent: Record<string, unknown>, key: string) => boolean,
+  fn: (parent: Record<string, unknown>, key: string, concretePath: string) => boolean,
+  prefix = '',
 ): boolean {
   const [head, ...rest] = segments
-  const isArray = head.endsWith('[]')
-  const key = isArray ? head.slice(0, -2) : head
+  // `a[]` iterates every element; `a[k=v]` iterates only elements where el.k === v.
+  const arrayMatch = head.match(/^(\w+)\[(?:(\w+)=(\w+))?\]$/)
+  const key = arrayMatch ? arrayMatch[1] : head
+  const at = prefix ? `${prefix}.${key}` : key
 
   if (rest.length === 0) {
-    // leaf
+    // leaf — `concretePath` is the fully-indexed dotted path (e.g. `layout.3.items.2.description`),
+    // usable as a direct Mongo $set key.
     if (!(key in doc)) return false
-    return fn(doc, key)
+    return fn(doc, key, at)
   }
 
   const next = doc[key]
-  if (isArray) {
+  if (arrayMatch) {
     if (!Array.isArray(next)) return false
+    const [, , filterKey, filterVal] = arrayMatch
     let changed = false
-    for (const el of next) {
+    next.forEach((el, i) => {
       if (el && typeof el === 'object') {
-        if (applyPath(el as Record<string, unknown>, rest, fn)) changed = true
+        if (filterKey && (el as Record<string, unknown>)[filterKey] !== filterVal) return
+        if (applyPath(el as Record<string, unknown>, rest, fn, `${at}.${i}`)) changed = true
       }
-    }
+    })
     return changed
   }
   if (!next || typeof next !== 'object' || Array.isArray(next)) return false
-  return applyPath(next as Record<string, unknown>, rest, fn)
+  return applyPath(next as Record<string, unknown>, rest, fn, at)
 }
 
 const run = async () => {
@@ -163,6 +205,9 @@ const run = async () => {
       const res = await payload.find({
         collection: collection as never,
         locale: locale as never,
+        // No fallback: a locale with no OWN value must come back empty, not as the default-locale
+        // value — otherwise the per-locale write would materialize a copied-from-en value there.
+        fallbackLocale: false,
         depth: 0,
         limit: 500,
         pagination: false,
@@ -170,14 +215,17 @@ const run = async () => {
       for (const raw of res.docs as Record<string, unknown>[]) {
         const { id, createdAt: _c, updatedAt: _u, ...data } = raw
         const before = changes.length
+        // Fully-indexed leaf paths + converted values, kept for the direct-$set fallback below.
+        const leafSets: { path: string; value: unknown }[] = []
 
         for (const path of paths) {
           const segments = path.split('.')
-          applyPath(data as Record<string, unknown>, segments, (parent, key) => {
+          applyPath(data as Record<string, unknown>, segments, (parent, key, concretePath) => {
             const val = parent[key]
             if (typeof val === 'string') {
               const lex = textToLexical(val)
               parent[key] = lex // null for blank — clears the stale string
+              leafSets.push({ path: concretePath, value: lex })
               changes.push({ collection, id: String(id), field: path, locale })
               console.log(
                 `  [${collection}] ${String(id)} · ${path} · ${locale}  →  ${lex ? 'lexical' : 'null (blank)'}`,
@@ -191,15 +239,72 @@ const run = async () => {
 
         const docChanged = changes.length > before
         if (docChanged && !DRY) {
-          await save(() =>
-            payload.update({
+          try {
+            await payload.update({
               collection: collection as never,
               id: id as never,
               locale: locale as never,
               data: data as never,
-            }),
-          )
+            })
+          } catch (e) {
+            if (BENIGN(e)) {
+              // revalidateTag outside a request — the write already committed.
+            } else if ((e as { name?: string }).name === 'ValidationError') {
+              // A per-locale full-doc update re-validates EVERY required field in that locale, and
+              // some docs legitimately lack unrelated required values there (e.g. bn item titles on
+              // the about page). Fall back to a direct Mongo $set of ONLY the converted leaves —
+              // localized leaves are stored as `{ en, bn }` objects, so `<path>.<locale>` targets
+              // exactly the value we transformed and touches nothing else.
+              const model = (payload.db as unknown as { collections: Record<string, { updateOne: CallableFunction }> })
+                .collections[collection]
+              const $set = Object.fromEntries(leafSets.map(({ path, value }) => [`${path}.${locale}`, value]))
+              // strict:false is required — mongoose's schema strict mode silently strips dotted
+              // paths into blocks arrays (updateOne reports modifiedCount:1 but writes nothing).
+              await model.updateOne({ _id: id }, { $set }, { strict: false })
+              console.log(
+                `  [${collection}] ${String(id)} · ${locale} — full update blocked by unrelated required fields; direct $set of ${leafSets.length} leaf value(s) instead`,
+              )
+            } else throw e
+          }
         }
+      }
+    }
+  }
+
+  for (const { collection: slug, paths } of GLOBAL_TARGETS) {
+    for (const locale of LOCALES) {
+      const raw = (await payload.findGlobal({
+        slug: slug as never,
+        locale: locale as never,
+        fallbackLocale: false,
+        depth: 0,
+      })) as Record<string, unknown>
+      const { id: _id, globalType: _g, createdAt: _c, updatedAt: _u, ...data } = raw
+      const before = changes.length
+
+      for (const path of paths) {
+        applyPath(data as Record<string, unknown>, path.split('.'), (parent, key) => {
+          const val = parent[key]
+          if (typeof val === 'string') {
+            const lex = textToLexical(val)
+            parent[key] = lex
+            changes.push({ collection: `global:${slug}`, id: slug, field: path, locale })
+            console.log(`  [global:${slug}] ${path} · ${locale}  →  ${lex ? 'lexical' : 'null (blank)'}`)
+            return true
+          }
+          if (isLexical(val)) bump(`global:${slug}`)
+          return false
+        })
+      }
+
+      if (changes.length > before && !DRY) {
+        await save(() =>
+          payload.updateGlobal({
+            slug: slug as never,
+            locale: locale as never,
+            data: data as never,
+          }),
+        )
       }
     }
   }

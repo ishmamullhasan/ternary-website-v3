@@ -54,11 +54,10 @@ async function getDocBySlug(
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchDocBySlug(collection, slug, locale)
   return unstable_cache(() => fetchDocBySlug(collection, slug, locale), [`${collection}_${slug}_${locale}`], {
+    // Purely tag-driven: the collection's afterChange/afterDelete hooks bust these tags. Content
+    // written straight to the DB (seed/ops scripts) must be followed by GET /next/revalidate or the
+    // admin "Revalidate site" button — there is no time-based fallback anymore.
     tags: [`${collection}_${slug}`, COLLECTION_CONFIG[collection].tag],
-    // Time-based safety net (matches `revalidate = 300` on the routes): tag busting only fires from
-    // Payload's afterChange hook, so content written straight to the DB (seed/ops scripts) would
-    // otherwise stay cached forever — including a stale `null` that 404s a since-published doc.
-    revalidate: 300,
   })()
 }
 

@@ -128,11 +128,19 @@ export const Pages: CollectionConfig = {
         return data
       },
     ],
-    // Future-proofing (mirrors makeContentCollection): emit this page's own slug tag plus the
-    // collection-wide tag so editor saves bust the corresponding cache entries. The frontend is
-    // revalidate=0 today (src/app/(frontend)/layout.tsx), so these tags are not yet consumed —
-    // this is a no-op until the WEB-445 cache-tag work wires the fetchers to read them.
+    // Emit this page's own slug tag plus the collection-wide tag so editor saves bust the cached
+    // reads in [locale]/page.tsx and [locale]/[...slug]/page.tsx (tag-based ISR — no time-based
+    // revalidate anywhere).
     afterChange: [
+      ({ doc }) => {
+        if (doc?.slug) {
+          revalidateTag(`pages_${doc.slug}`, 'max')
+        }
+        revalidateTag('pages', 'max')
+      },
+    ],
+    // Deletes must bust the same tags, or the deleted page keeps rendering from cache.
+    afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
           revalidateTag(`pages_${doc.slug}`, 'max')

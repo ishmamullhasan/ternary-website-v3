@@ -3,13 +3,15 @@ import Motion from '@/components/animation/motion'
 import { reveal, revealItem } from '@/components/animation/reveal'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Media, Scale } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
 interface SalesCompProps {
   heading?: string | null
-  description?: string | null
+  // richText since the description→Lexical migration; string kept for legacy DB rows.
+  description?: RichText | string | null
   scales?: Scale[] | null
 }
 
@@ -20,8 +22,10 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
     <section className="section-card flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
       {/* top header */}
       <Motion className="lg:w-2/5" {...reveal}>
-        {description ? <p className="text-body">{description}</p> : null}
-        {heading ? <h2 className="mt-4 text-section font-display font-medium text-cream">{heading}</h2> : null}
+        {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}
+        {description ? (
+          <RichTextComp content={description as RichText} className="mt-4 prose-p:mb-0 prose-p:text-body" />
+        ) : null}
       </Motion>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:flex-1">

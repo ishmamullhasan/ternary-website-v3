@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Industry, IndustryPanelsBlock, Media } from '@/payload-types'
 import { CircleCheck, Network } from 'lucide-react'
 import Image from 'next/image'
@@ -99,7 +100,10 @@ export function IndustryPanelsComponent(props: IndustryPanelsBlock): JSX.Element
               <h2 className="font-display max-w-md text-3xl font-medium leading-[1.15] text-cream">{panelTitle}</h2>
 
               {panelDescription && (
-                <p className="mt-4 max-w-xl text-base leading-[1.15] text-body">{panelDescription}</p>
+                <RichTextComp
+                  content={panelDescription as RichText | string}
+                  className="mt-4 max-w-xl prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
+                />
               )}
 
               {tags.length > 0 && (

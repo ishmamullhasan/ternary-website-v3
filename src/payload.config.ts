@@ -40,10 +40,16 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     components: {
-      // First-party analytics dashboard (WEB-447) rendered above the admin home dashboard. This is
-      // a path string resolved through the generated import map (pnpm generate:importmap), so the
-      // server component never leaks into the client admin bundle.
-      beforeDashboard: ['@/components/admin/AnalyticsDashboard'],
+      // Rendered above the admin home dashboard, top-to-bottom. These are path strings resolved
+      // through the generated import map (pnpm generate:importmap), so server components never leak
+      // into the client admin bundle.
+      beforeDashboard: [
+        // One-click whole-site cache revalidator (clears every content/global tag + the full page
+        // cache).
+        '@/components/admin/revalidate/CacheRevalidator',
+        // First-party analytics dashboard (WEB-447).
+        '@/components/admin/AnalyticsDashboard',
+      ],
     },
     importMap: {
       baseDir: path.resolve(dirname),

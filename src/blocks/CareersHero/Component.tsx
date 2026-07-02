@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import RichTextComp, { type RichText } from '@/components/richtext'
 import type { CareersHeroBlock, Media } from '@/payload-types'
 import type { JSX } from 'react'
 
@@ -46,10 +47,13 @@ export function CareersHeroComponent(props: CareersHeroBlock): JSX.Element {
               </span>
             ))}
           </h1>
-          <p className="max-w-[34rem] text-base font-medium leading-[1.5] text-body">
-            {props.description ||
-              'Build production systems you own end to end. We hire engineers who want technical depth, operational accountability, and real influence over what ships.'}
-          </p>
+          <RichTextComp
+            content={
+              (props.description as RichText) ||
+              'Build production systems you own end to end. We hire engineers who want technical depth, operational accountability, and real influence over what ships.'
+            }
+            className="max-w-[34rem] prose-p:mb-0 prose-p:text-base prose-p:font-medium prose-p:leading-[1.5] prose-p:text-body"
+          />
         </div>
         <div>
           <a

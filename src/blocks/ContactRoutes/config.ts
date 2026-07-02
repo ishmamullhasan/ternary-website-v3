@@ -20,7 +20,7 @@ export const ContactRoutes: Block = {
       fields: [
         { name: 'title', label: 'Title', type: 'text', required: false, localized: true, admin: { width: '50%' } },
         { name: 'email', label: 'Email', type: 'text', required: false, admin: { width: '50%' } },
-        { name: 'description', label: 'Description', type: 'textarea', required: false, localized: true },
+        { name: 'description', label: 'Description', type: 'richText', required: false, localized: true },
         {
           name: 'replyWindow',
           label: 'Reply Window',
