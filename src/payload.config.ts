@@ -17,6 +17,7 @@ import { sesEmailAdapter } from '@/email/sesAdapter'
 import Footer from '@/globals/footer'
 import Header from '@/globals/header'
 import LegalCenter from '@/globals/legalCenter'
+import Ops from '@/globals/ops'
 import { pruneAnalyticsTask } from '@/jobs/pruneAnalytics'
 import plugins from '@/plugins'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -138,7 +139,7 @@ export default buildConfig({
     Analytics,
   ],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, LegalCenter],
+  globals: [Header, Footer, LegalCenter, Ops],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

@@ -216,11 +216,14 @@ const storiesArchiveBlock = {
 }
 
 // aboutSection.items: a curated "what we do" mix (4 capabilities + 3 scales + Orchestra) = 8 cards.
+// Bento rows: { item, size }. Default pattern fills a 4-col dense grid with no holes for 8 cards:
+// large(2×2) + 2 standard stacked beside it, then a wide(2×1) row, then standards backfill.
+const BENTO_PATTERN = ['large', 'standard', 'standard', 'standard', 'standard', 'wide', 'standard', 'standard']
 const aboutItems = [
   ...capIds.map((id) => poly('capability', id)),
   ...scaleIds.map((id) => poly('scale', id)),
   ...(orchestraId ? [poly('model', orchestraId)] : []),
-]
+].map((rel, i) => ({ item: rel, size: BENTO_PATTERN[i] ?? 'standard' }))
 
 const home = (
   await payload.find({

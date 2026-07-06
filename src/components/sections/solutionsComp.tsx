@@ -4,9 +4,7 @@ import Motion from '@/components/animation/motion'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import { Button } from '@/components/ui/button'
 import type { Media, Solution } from '@/payload-types'
-import { ArrowUpRight } from 'lucide-react'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
@@ -38,7 +36,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
           {description && (
             <RichTextComp
               content={description as RichText}
-              className="mt-3 prose-p:mb-0 prose-p:text-body lg:prose-p:text-base"
+              className="prose-p:mb-0 prose-p:text-body lg:prose-p:text-base"
             />
           )}
         </div>
@@ -51,14 +49,18 @@ export default function SolutionsComp({ heading, description, image, items }: So
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="group relative my-8 aspect-[16/7] w-full overflow-hidden rounded-md border border-white/[0.06] lg:my-10"
+        className="group relative my-8 aspect-[16/10] w-full overflow-hidden rounded-md border border-white/[0.06] lg:my-10 lg:aspect-[16/7]"
       >
         <GradientPanel tone={toneFor(undefined, 0)} interactive />
         {hero?.url && <Image src={hero.url} alt={hero.alt || ''} fill className="relative object-cover" />}
       </Motion>
 
       <div className="w-full">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-5">
+        {/* Two layouts share one DOM via flex `order`. Mobile (Figma 888:4122): title → excerpt →
+            Learn More, with a full-width divider BETWEEN items. Desktop (Figma 339:8087): excerpt →
+            divider → title → Learn More, each column top-aligned with a uniform 8px gap (NOT pinned
+            to the bottom — the divider floats directly under each excerpt). */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-4">
           {solutions.map((item, index: number): JSX.Element => {
             return (
               <Motion
@@ -71,21 +73,29 @@ export default function SolutionsComp({ heading, description, image, items }: So
                   delay: index * 0.05,
                 }}
               >
-                {item.excerpts && <p className="text-sm leading-relaxed text-body">{item.excerpts}</p>}
-                {/* Divider + title + link pinned to the bottom so titles align across columns. */}
-                <hr className="mt-auto border-line" />
-                <h3 className="mt-3 font-display text-base font-medium text-cream">{item.title}</h3>
+                {/* Mobile-only separator between items (skipped on the first). Cream line (Figma). */}
+                {index > 0 && <hr className="order-1 mb-4 border-cream lg:hidden" />}
 
-                <Button asChild variant="link" size="clear" className="mt-2 text-body hover:text-cream">
-                  <Link href="/solutions" className="group/link inline-flex items-center gap-1">
-                    Learn More
-                    <ArrowUpRight
-                      size={16}
-                      aria-hidden
-                      className="transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 motion-reduce:transition-none"
-                    />
-                  </Link>
-                </Button>
+                <h3 className="order-2 font-display text-xl font-medium text-cream lg:order-3 lg:mt-2 lg:text-base">
+                  {item.title}
+                </h3>
+
+                {item.excerpts && (
+                  <p className="order-3 mt-3 text-base leading-[1.15] text-body lg:order-1 lg:mt-0 lg:text-sm">
+                    {item.excerpts}
+                  </p>
+                )}
+
+                {/* Desktop-only cream divider directly under the excerpt (columns are top-aligned). */}
+                <hr className="order-4 hidden border-cream lg:order-2 lg:mt-2 lg:block" />
+
+                {/* Plain cream text link — no arrow (Figma 890:7313). */}
+                <Link
+                  href="/solutions"
+                  className="order-5 mt-3 inline-flex w-fit items-center text-sm font-medium text-cream transition-opacity hover:opacity-70 lg:order-4 lg:mt-2"
+                >
+                  Learn More
+                </Link>
               </Motion>
             )
           })}

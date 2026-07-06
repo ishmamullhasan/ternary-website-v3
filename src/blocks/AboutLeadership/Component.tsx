@@ -1,3 +1,4 @@
+import Corousel from '@/components/animation/corousel'
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutLeadershipBlock, Media, Team } from '@/payload-types'
@@ -23,8 +24,14 @@ export function AboutLeadershipComponent({ heading, description, members }: Abou
     viewport: { once: true, margin: '-60px' as const },
   }
 
-  // Global manual roster order (admin drag-and-drop) wins over the relationship's pick order.
-  const team = sortByTeamOrder((members as Team[] | undefined)?.filter(Boolean) ?? [])
+  // Each row is { member, wide } (admin picks which cards take the wide column). Keep only rows
+  // whose relationship resolved to a Team doc; the global manual roster order (admin drag-and-drop)
+  // wins over the row order, with each row's `wide` flag traveling with its member.
+  const team = sortByTeamOrder(
+    (members ?? []).flatMap((row) =>
+      row?.member && typeof row.member === 'object' ? [{ ...(row.member as Team), wide: row.wide === true }] : [],
+    ),
+  )
 
   if (!heading && team.length === 0) return null
 
@@ -43,83 +50,95 @@ export function AboutLeadershipComponent({ heading, description, members }: Abou
       </Motion>
 
       {team.length ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {team.map((member, index) => {
-            const portrait = (member.image as Media | undefined)?.url ?? undefined
-            const socials = [
-              { href: member.linkedin, Icon: Linkedin, label: 'LinkedIn' },
-              { href: member.x, Icon: Twitter, label: 'X' },
-              { href: member.github, Icon: Github, label: 'GitHub' },
-              { href: member.website, Icon: Globe, label: 'Website' },
-            ].filter((s): s is { href: string; Icon: typeof Linkedin; label: string } => Boolean(s.href))
-            return (
-              <Motion
-                key={member.id ?? index}
-                className="group relative h-[520px] overflow-hidden rounded-md ring-1 ring-white/5 transition-transform duration-500 ease-out hover:-translate-y-1"
-                {...motionBlockProps}
-                transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-              >
-                {portrait ? (
-                  <Image
-                    src={portrait}
-                    alt={member.name ?? 'Team member'}
-                    fill
-                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover grayscale transition-[filter,transform] duration-700 ease-out group-hover:scale-105 group-hover:grayscale-0"
-                  />
-                ) : (
+        <>
+          {/* Below xl the section is a swipeable quote-card carousel with dot pagination (mobile
+              Figma 1000:5067) — same slides as the careers "Team voices" section. */}
+          <div className="xl:hidden">
+            <Corousel items={team.map((member) => ({ team: member, wide: member.wide }))} navVariant="dots" />
+          </div>
+
+          {/* Mixed card widths per Figma (1018:4153): narrow cards span 3 tracks, wide cards span 4
+              (the design's 358:480 ≈ 3:4 ratio) — which cards are wide is picked per row in the
+              admin panel. An alternating narrow/wide/narrow/wide pick fills the 14-track row
+              exactly. */}
+          <div className="hidden gap-4 xl:grid xl:grid-cols-14">
+            {team.map((member, index) => {
+              const portrait = (member.image as Media | undefined)?.url ?? undefined
+              const socials = [
+                { href: member.linkedin, Icon: Linkedin, label: 'LinkedIn' },
+                { href: member.x, Icon: Twitter, label: 'X' },
+                { href: member.github, Icon: Github, label: 'GitHub' },
+                { href: member.website, Icon: Globe, label: 'Website' },
+              ].filter((s): s is { href: string; Icon: typeof Linkedin; label: string } => Boolean(s.href))
+              return (
+                <Motion
+                  key={member.id ?? index}
+                  className={`group relative h-[520px] overflow-hidden rounded-md ring-1 ring-white/5 transition-transform duration-500 ease-out hover:-translate-y-1 ${member.wide ? 'xl:col-span-4' : 'xl:col-span-3'}`}
+                  {...motionBlockProps}
+                  transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+                >
+                  {portrait ? (
+                    <Image
+                      src={portrait}
+                      alt={member.name ?? 'Team member'}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover grayscale transition-[filter,transform] duration-700 ease-out group-hover:scale-105 group-hover:grayscale-0"
+                    />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                      style={{
+                        backgroundImage: 'radial-gradient(135% 135% at 22% 14%, #4f6bed 0%, #25307e 44%, #0c1030 100%)',
+                      }}
+                    />
+                  )}
                   <span
                     aria-hidden
-                    className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-                    style={{
-                      backgroundImage: 'radial-gradient(135% 135% at 22% 14%, #4f6bed 0%, #25307e 44%, #0c1030 100%)',
-                    }}
+                    className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.12] mix-blend-overlay"
                   />
-                )}
-                <span
-                  aria-hidden
-                  className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.12] mix-blend-overlay"
-                />
-                <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
+                  <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
 
-                <div className="absolute inset-x-6 bottom-6">
-                  {member.name ? (
-                    <h3 className="font-display text-2xl font-medium tracking-[-0.05em] text-cream">{member.name}</h3>
-                  ) : null}
-                  {member.position ? (
-                    <p className="mt-2 inline-flex w-fit rounded-full border border-[#757571] px-4 py-1 text-xs text-cream/85 backdrop-blur-sm">
-                      {member.position}
-                    </p>
-                  ) : null}
-                  {member.description ? (
-                    <RichTextComp
-                      content={member.description as RichText}
-                      className="mt-3 max-w-none prose-p:mb-0 prose-p:text-sm prose-p:leading-relaxed prose-p:text-cream/75"
-                    />
-                  ) : member.excerpt ? (
-                    <p className="mt-3 text-sm leading-relaxed text-cream/75">{member.excerpt}</p>
-                  ) : null}
-                  {socials.length ? (
-                    <div className="mt-4 flex gap-3">
-                      {socials.map(({ href, Icon, label }) => (
-                        <Link
-                          key={label}
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`${label} — ${member.name ?? 'team member'}`}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-cream transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
-                        >
-                          <Icon aria-hidden className="h-4 w-4" />
-                        </Link>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              </Motion>
-            )
-          })}
-        </div>
+                  <div className="absolute inset-x-6 bottom-6">
+                    {member.name ? (
+                      <h3 className="font-display text-2xl font-medium tracking-[-0.05em] text-cream">{member.name}</h3>
+                    ) : null}
+                    {member.position ? (
+                      <p className="mt-2 inline-flex w-fit rounded-full border border-[#757571] px-4 py-1 text-xs text-cream/85 backdrop-blur-sm">
+                        {member.position}
+                      </p>
+                    ) : null}
+                    {member.description ? (
+                      <RichTextComp
+                        content={member.description as RichText}
+                        className="mt-3 max-w-none prose-p:mb-0 prose-p:text-sm prose-p:leading-relaxed prose-p:text-cream/75"
+                      />
+                    ) : member.excerpt ? (
+                      <p className="mt-3 text-sm leading-relaxed text-cream/75">{member.excerpt}</p>
+                    ) : null}
+                    {socials.length ? (
+                      <div className="mt-4 flex gap-3">
+                        {socials.map(({ href, Icon, label }) => (
+                          <Link
+                            key={label}
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${label} — ${member.name ?? 'team member'}`}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-cream transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+                          >
+                            <Icon aria-hidden className="h-4 w-4" />
+                          </Link>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                </Motion>
+              )
+            })}
+          </div>
+        </>
       ) : null}
     </section>
   )

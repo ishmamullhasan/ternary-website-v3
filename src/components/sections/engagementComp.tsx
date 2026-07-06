@@ -23,9 +23,7 @@ export default function EngagementComp({ heading, description, model }: Engageme
         {/* top header */}
         <Motion className="lg:w-2/5" {...reveal}>
           <h2 className="text-section font-display font-medium text-cream">{heading}</h2>
-          {description && (
-            <RichTextComp content={description as RichText} className="mt-3 prose-p:mb-0 prose-p:text-body" />
-          )}
+          {description && <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />}
         </Motion>
 
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:w-auto lg:grid-cols-3">

@@ -26,7 +26,7 @@ type CareerCardItem = {
 }
 
 // A team slide carries the resolved member plus a `wide` flag: wide cards keep the full
-// (current) width, non-wide cards render at two-thirds of it.
+// (current) width, non-wide cards render at three-quarters of it (Figma 358px vs 480px).
 type TeamSlide = { team: Team; wide?: boolean }
 
 type CorouselProps =
@@ -138,8 +138,8 @@ export default function Corousel({ items, variant = 'team', navVariant = 'arrows
             return (
               <SwiperSlide
                 key={i}
-                // Wide = the full `--tw` card width; non-wide = two-thirds of it.
-                style={{ width: wide ? 'var(--tw)' : 'calc(var(--tw) * 2 / 3)' }}
+                // Wide = the full `--tw` card width; non-wide = three-quarters of it.
+                style={{ width: wide ? 'var(--tw)' : 'calc(var(--tw) * 3 / 4)' }}
               >
                 <div className="relative h-[480px] rounded-md overflow-hidden">
                   {hasImage ? (

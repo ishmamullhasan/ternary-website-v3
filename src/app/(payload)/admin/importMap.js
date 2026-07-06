@@ -36,6 +36,7 @@ import { AccountRowLabel as AccountRowLabel_06d0cb594d8f6ba2ac35015f930c882e } f
 import { LinkToDoc as LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { ReindexButton as ReindexButton_aead06e4cbf6b2620c5c51c9ab283634 } from '@payloadcms/plugin-search/client'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
+import { default as default_3e7886a116337b3a5fdbc61dfa4c0736 } from '@/globals/nav/MenuRowLabel'
 import { SignInButton as SignInButton_06d0cb594d8f6ba2ac35015f930c882e } from 'payload-authjs/components'
 import { default as default_38a60579efdcf4006ff5a0cf0ab3e698 } from '@/components/admin/revalidate/CacheRevalidator'
 import { default as default_d8816c4bca290ed5b5596bb3533c3751 } from '@/components/admin/AnalyticsDashboard'
@@ -82,6 +83,7 @@ export const importMap = {
   "@payloadcms/plugin-search/client#LinkToDoc": LinkToDoc_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/plugin-search/client#ReindexButton": ReindexButton_aead06e4cbf6b2620c5c51c9ab283634,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
+  "@/globals/nav/MenuRowLabel#default": default_3e7886a116337b3a5fdbc61dfa4c0736,
   "payload-authjs/components#SignInButton": SignInButton_06d0cb594d8f6ba2ac35015f930c882e,
   "@/components/admin/revalidate/CacheRevalidator#default": default_38a60579efdcf4006ff5a0cf0ab3e698,
   "@/components/admin/AnalyticsDashboard#default": default_d8816c4bca290ed5b5596bb3533c3751,

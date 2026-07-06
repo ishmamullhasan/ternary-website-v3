@@ -12,17 +12,53 @@ export const AboutSection: Block = {
   interfaceName: 'AboutSectionBlock',
   labels: { singular: 'About Section', plural: 'About Sections' },
   fields: [
-    ...sectionHeader({ richHeading: true }),
     {
-      name: 'items',
-      label: 'Highlighted Items',
-      type: 'relationship',
-      relationTo: ['capability', 'solution', 'industry', 'scale', 'model', 'story', 'insight', 'pressRelease'],
-      hasMany: true,
+      name: 'content',
+      label: 'Heading & Description',
+      type: 'richText',
+      localized: true,
       admin: {
         description:
-          'Mixed list of records (capabilities, solutions, industries, scales, models, stories, insights or press releases) featured in the About section. Each card shows a content-type label and a Learn more link. Order here is the display order.',
+          'Section intro rendered above the bento grid. Use a Heading (H2/H3) for the title line(s) and normal paragraphs for the supporting copy — headings get the display style, paragraphs the body style.',
       },
+    },
+    {
+      name: 'items',
+      label: 'Bento Cards',
+      type: 'array',
+      admin: {
+        description:
+          'Cards in the bento grid, in display order. The grid is 4 columns on desktop, 2 on tablet, 1 on mobile; cards pack densely, so mix sizes freely — smaller cards flow into the gaps left by larger ones.',
+      },
+      fields: [
+        {
+          name: 'item',
+          label: 'Item',
+          type: 'relationship',
+          relationTo: ['capability', 'solution', 'industry', 'scale', 'model', 'story', 'insight', 'pressRelease'],
+          required: true,
+          admin: {
+            description:
+              'The record (capability, solution, industry, scale, model, story, insight or press release) this card features. The card shows its content-type label and links to it.',
+          },
+        },
+        {
+          name: 'size',
+          label: 'Card Size',
+          type: 'select',
+          defaultValue: 'standard',
+          options: [
+            { label: 'Standard (1×1)', value: 'standard' },
+            { label: 'Wide (2 columns)', value: 'wide' },
+            { label: 'Tall (2 rows)', value: 'tall' },
+            { label: 'Large (2×2)', value: 'large' },
+          ],
+          admin: {
+            description:
+              'Footprint in the bento grid. Wide/Large span 2 columns (from tablet up); Tall/Large span 2 rows.',
+          },
+        },
+      ],
     },
     {
       name: 'organizations',
@@ -108,24 +144,15 @@ export const CapabilitiesSection: Block = {
       },
     },
     {
-      name: 'heading_2',
-      label: 'Secondary Heading',
-      type: 'text',
-      localized: true,
+      name: 'slides',
+      label: 'Intro Media Slides',
+      type: 'array',
       admin: {
-        description: 'Heading for the secondary content block beside the capabilities list.',
+        description:
+          'Media slides for the secondary intro carousel (shown on all screens). Add two or more to enable the slider; a single slide renders as a static panel.',
       },
+      fields: [imageField({ name: 'image', required: true })],
     },
-    {
-      name: 'description_2',
-      label: 'Secondary Description',
-      type: 'richText',
-      localized: true,
-      admin: {
-        description: 'Body copy for the secondary content block.',
-      },
-    },
-    imageField({ name: 'image' }),
   ],
 }
 

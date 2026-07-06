@@ -39,9 +39,7 @@ export default function TeamComp({ heading, description, members: rawMembers }: 
         {/* Left header — description first, heading below (Figma 339:13754). */}
         <div className="lg:w-1/4">
           {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
-          {description && (
-            <RichTextComp content={description as RichText} className="mt-3 prose-p:mb-0 prose-p:text-body" />
-          )}
+          {description && <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />}
         </div>
 
         {/* Member grid — a preview of the roster; the overflow tile links to the full /team page. */}

@@ -13,17 +13,21 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     cacheTag = encodeURIComponent(cacheTag)
   }
 
+  // Payload media URLs can already carry a query string (e.g. `?prefix=...`), so a naive `?tag`
+  // append would produce a malformed double-`?` URL. Pick the right separator per URL.
+  const withTag = (base: string): string => (cacheTag ? `${base}${base.includes('?') ? '&' : '?'}${cacheTag}` : base)
+
   // Check if URL already has http/https protocol
   if (url.startsWith('http://') || url.startsWith('https://')) {
-    return cacheTag ? `${url}?${cacheTag}` : url
+    return withTag(url)
   }
 
   // Same-origin relative paths must stay relative so SSR and client hydration match.
   if (url.startsWith('/')) {
-    return cacheTag ? `${url}?${cacheTag}` : url
+    return withTag(url)
   }
 
   // Otherwise prepend client-side URL
   const baseUrl = getClientSideURL()
-  return cacheTag ? `${baseUrl}${url}?${cacheTag}` : `${baseUrl}${url}`
+  return withTag(`${baseUrl}${url}`)
 }

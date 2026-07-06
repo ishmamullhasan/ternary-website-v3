@@ -39,11 +39,11 @@ export default function SubscribeForm({ emailPlaceholder, buttonLabel }: Subscri
   }
 
   return (
-    <form className="max-w-lg" onSubmit={handleSubmit} noValidate>
+    <form className="w-full max-w-[512px]" onSubmit={handleSubmit} noValidate>
       <label htmlFor={inputId} className="sr-only">
         Email address
       </label>
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col items-stretch gap-2 sm:flex-row">
         <input
           id={inputId}
           type="email"
@@ -57,11 +57,11 @@ export default function SubscribeForm({ emailPlaceholder, buttonLabel }: Subscri
           aria-invalid={status === 'error'}
           aria-describedby={status === 'error' ? `${inputId}-error` : undefined}
           placeholder={emailPlaceholder || 'you@company.com'}
-          className="h-10 flex-1 rounded-md border border-line bg-page px-4 text-sm tracking-[-0.01em] text-cream placeholder:text-subtle focus-visible:border-subtle focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-cream"
+          className="min-w-0 flex-1 rounded-full border border-subtle bg-main px-4 py-[9px] text-base tracking-[-0.05em] text-cream placeholder:text-subtle focus-visible:border-subtle focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-cream"
         />
         <button
           type="submit"
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-cream px-5 text-sm text-ink transition-colors hover:bg-cream-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-cream px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-cream-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
         >
           {buttonLabel || 'Subscribe'}
           <ArrowRight size={16} aria-hidden />

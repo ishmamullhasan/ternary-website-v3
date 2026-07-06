@@ -188,6 +188,69 @@ const Footer: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'socialLinks',
+      label: 'Social Links',
+      type: 'array',
+      required: false,
+      admin: { description: 'Social media icons shown in the footer bottom bar.' },
+      fields: [
+        {
+          name: 'platform',
+          label: 'Platform',
+          type: 'select',
+          required: false,
+          options: [
+            { label: 'Facebook', value: 'facebook' },
+            { label: 'X (Twitter)', value: 'twitter' },
+            { label: 'LinkedIn', value: 'linkedin' },
+            { label: 'Instagram', value: 'instagram' },
+            { label: 'YouTube', value: 'youtube' },
+            { label: 'GitHub', value: 'github' },
+          ],
+        },
+        {
+          name: 'link',
+          label: 'Link',
+          type: 'text',
+          required: false,
+        },
+      ],
+    },
+    {
+      name: 'partners',
+      label: 'Partner Badges',
+      type: 'array',
+      required: false,
+      maxRows: 4,
+      admin: {
+        description:
+          'The four white pill logos at the bottom-right of the footer. Each takes a logo image and an optional link.',
+      },
+      fields: [
+        {
+          name: 'logo',
+          label: 'Logo',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+        },
+        {
+          name: 'name',
+          label: 'Name',
+          type: 'text',
+          required: false,
+          localized: true,
+          admin: { description: 'Used as the accessible label and as a text fallback when no logo image is set.' },
+        },
+        {
+          name: 'link',
+          label: 'Link',
+          type: 'text',
+          required: false,
+        },
+      ],
+    },
   ],
 }
 

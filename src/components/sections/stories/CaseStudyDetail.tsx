@@ -4,17 +4,7 @@ import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
 import type { Story } from '@/payload-types'
-import {
-  ArrowLeft,
-  ArrowUpRight,
-  Briefcase,
-  Building2,
-  CalendarDays,
-  Clock,
-  Quote,
-  Sparkles,
-  Users,
-} from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, Briefcase, Building2, CalendarDays, Clock, Users } from 'lucide-react'
 import type { JSX } from 'react'
 
 /** A related-case-study card for the carousel — uses the signature gradient/noise media. */
@@ -59,29 +49,6 @@ function MetaCell({ icon: Icon, label, value }: { icon: typeof Building2; label:
   )
 }
 
-/** Left label column shared by Challenge / Approach / Lessons / Why-it-matters. */
-function SectionLabel({
-  eyebrow,
-  heading,
-  subtitle,
-}: {
-  eyebrow?: string
-  heading?: string | null
-  subtitle?: string | null
-}): JSX.Element {
-  return (
-    <div className="lg:sticky lg:top-28 lg:self-start">
-      {eyebrow && <p className="text-[12px] tracking-[0.1em] text-subtle">{eyebrow}</p>}
-      {hasText(heading) && (
-        <h2 className="mt-4 font-display text-[clamp(1.5rem,3vw,1.75rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
-          {heading}
-        </h2>
-      )}
-      {hasText(subtitle) && <p className="mt-3 text-[15px] leading-[1.5] tracking-[-0.01em] text-body">{subtitle}</p>}
-    </div>
-  )
-}
-
 export default function CaseStudyDetail({ story, backHref, related = [] }: CaseStudyDetailProps): JSX.Element {
   const heroTone = toneFor('story', 0)
   const tags = cleanList(story.tags, 'name')
@@ -94,28 +61,6 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   if (hasText(meta?.duration)) metaCells.push({ icon: Clock, label: 'Duration', value: meta!.duration! })
   if (hasText(meta?.team)) metaCells.push({ icon: Users, label: 'Team', value: meta!.team! })
   if (hasText(meta?.year)) metaCells.push({ icon: CalendarDays, label: 'Year', value: meta!.year! })
-
-  const challenge = story.challenge
-  const challengeParas = cleanList(challenge?.paragraphs, 'text')
-  const approach = story.approach
-  const approachCards = cleanList(approach?.cards, 'body')
-  const solution = story.solution
-  const solutionParas = cleanList(solution?.paragraphs, 'text')
-  const outcome = story.outcome
-  const metrics = (outcome?.metrics ?? []).filter((m) => hasText(m?.value) || hasText(m?.label))
-  const quote = outcome?.quote
-  const lessons = story.lessons
-  const lessonCards = (lessons?.cards ?? []).filter((c) => hasText(c?.title) || hasText(c?.body))
-  const whyItMatters = story.whyItMatters
-
-  const hasStructured =
-    challengeParas.length > 0 ||
-    approachCards.length > 0 ||
-    solutionParas.length > 0 ||
-    metrics.length > 0 ||
-    hasText(quote?.text) ||
-    lessonCards.length > 0 ||
-    hasText(whyItMatters)
 
   const hasBody = Boolean(story.content)
 
@@ -183,203 +128,8 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         </div>
       </Motion>
 
-      {hasStructured ? (
+      {hasBody ? (
         <div className="mx-auto mt-16 w-full max-w-7xl px-5 lg:mt-24">
-          {/* 01 — The Challenge */}
-          {(challengeParas.length > 0 || hasText(challenge?.heading)) && (
-            <Motion
-              tag="section"
-              {...reveal}
-              className="grid gap-8 border-t border-badge pt-12 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-16"
-            >
-              <SectionLabel
-                eyebrow="01 — The Challenge"
-                heading={challenge?.heading ?? 'What the client faced.'}
-                subtitle={challenge?.subtitle}
-              />
-              <div className="flex flex-col gap-5">
-                {challengeParas.map((para, i) => (
-                  <p key={i} className="text-[15px] leading-[1.6] tracking-[-0.01em] text-body lg:text-base">
-                    {para.text}
-                  </p>
-                ))}
-              </div>
-            </Motion>
-          )}
-
-          {/* 02 — The Approach */}
-          {(approachCards.length > 0 || hasText(approach?.heading)) && (
-            <Motion
-              tag="section"
-              {...reveal}
-              className="mt-16 grid gap-8 border-t border-badge pt-12 lg:mt-24 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-16"
-            >
-              <SectionLabel
-                eyebrow="02 — The Approach"
-                heading={approach?.heading ?? 'How we framed it.'}
-                subtitle={approach?.subtitle}
-              />
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {approachCards.map((card, i) => (
-                  <Motion
-                    key={i}
-                    tag="div"
-                    {...revealItem(i)}
-                    className="flex flex-col gap-4 rounded-md border border-badge bg-card p-6"
-                  >
-                    <span className="text-[13px] tracking-[0.08em] text-subtle">{String(i + 1).padStart(2, '0')}</span>
-                    <p className="text-[15px] leading-[1.55] tracking-[-0.01em] text-body">{card.body}</p>
-                  </Motion>
-                ))}
-              </div>
-            </Motion>
-          )}
-
-          {/* 03 — The Solution */}
-          {(solutionParas.length > 0 || hasText(solution?.heading)) && (
-            <Motion tag="section" {...reveal} className="mt-16 border-t border-badge pt-12 lg:mt-24">
-              <div className="max-w-2xl">
-                <p className="text-[12px] tracking-[0.1em] text-subtle">03 — The Solution</p>
-                <h2 className="mt-4 font-display text-[clamp(1.5rem,3vw,1.75rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
-                  {solution?.heading ?? 'What we actually built.'}
-                </h2>
-              </div>
-              <div className="mt-8 flex max-w-4xl flex-col gap-6">
-                {solutionParas.map((para, i) => (
-                  <p key={i} className="text-[15px] leading-[1.7] tracking-[-0.01em] text-body lg:text-base">
-                    {para.text}
-                  </p>
-                ))}
-              </div>
-            </Motion>
-          )}
-
-          {/* 04 — The Outcome */}
-          {(metrics.length > 0 || hasText(quote?.text) || hasText(outcome?.heading)) && (
-            <Motion tag="section" {...reveal} className="mt-16 border-t border-badge pt-12 lg:mt-24">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                <div className="max-w-md">
-                  <p className="text-[12px] tracking-[0.1em] text-subtle">04 — The Outcome</p>
-                  <h2 className="mt-4 font-display text-[clamp(1.5rem,3vw,1.75rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
-                    {outcome?.heading ?? 'Measurable results.'}
-                  </h2>
-                </div>
-                {hasText(outcome?.intro) && (
-                  <p className="max-w-xl text-[15px] leading-[1.6] tracking-[-0.01em] text-body">{outcome!.intro}</p>
-                )}
-              </div>
-
-              {metrics.length > 0 && (
-                <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  {metrics.map((m, i) => (
-                    <Motion
-                      key={i}
-                      tag="div"
-                      {...revealItem(i)}
-                      className="flex flex-col gap-3 rounded-md border border-badge bg-card p-6"
-                    >
-                      <Sparkles size={16} className="text-cream/70" aria-hidden />
-                      {hasText(m.value) && (
-                        <span className="font-display text-[clamp(1.75rem,3vw,2.25rem)] font-medium leading-[1.05] tracking-[-0.03em] text-cream">
-                          {m.value}
-                        </span>
-                      )}
-                      {hasText(m.label) && <span className="text-[15px] tracking-[-0.01em] text-cream">{m.label}</span>}
-                      {hasText(m.sublabel) && (
-                        <span className="text-[13px] leading-[1.4] tracking-[-0.01em] text-subtle">{m.sublabel}</span>
-                      )}
-                    </Motion>
-                  ))}
-                </div>
-              )}
-
-              {hasText(quote?.text) && (
-                <Motion
-                  tag="figure"
-                  {...reveal}
-                  transition={{ duration: 0.6, ease: EASE, delay: 0.08 }}
-                  className="mt-4 rounded-md border border-badge bg-card p-6 lg:p-8"
-                >
-                  <Quote size={24} className="text-cream/60" aria-hidden />
-                  <blockquote className="mt-4 text-[clamp(1.05rem,2vw,1.35rem)] leading-[1.4] tracking-[-0.02em] text-cream">
-                    {quote!.text}
-                  </blockquote>
-                  {(hasText(quote?.authorName) || hasText(quote?.authorRole)) && (
-                    <figcaption className="mt-6 flex items-center gap-3">
-                      <span className="relative size-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
-                        <GradientPanel tone={heroTone} />
-                      </span>
-                      <span className="flex flex-col">
-                        {hasText(quote?.authorName) && (
-                          <span className="text-[15px] tracking-[-0.01em] text-cream">{quote!.authorName}</span>
-                        )}
-                        {hasText(quote?.authorRole) && (
-                          <span className="text-[13px] tracking-[-0.01em] text-subtle">{quote!.authorRole}</span>
-                        )}
-                      </span>
-                    </figcaption>
-                  )}
-                </Motion>
-              )}
-            </Motion>
-          )}
-
-          {/* 05 — What we'd do again */}
-          {(lessonCards.length > 0 || hasText(lessons?.heading)) && (
-            <Motion
-              tag="section"
-              {...reveal}
-              className="mt-16 grid gap-8 border-t border-badge pt-12 lg:mt-24 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-16"
-            >
-              <SectionLabel
-                eyebrow="05 — What we'd do again"
-                heading={lessons?.heading ?? 'Lessons and reusable patterns.'}
-                subtitle={lessons?.subtitle}
-              />
-              <div className="flex flex-col gap-4">
-                {lessonCards.map((card, i) => (
-                  <Motion
-                    key={i}
-                    tag="div"
-                    {...revealItem(i)}
-                    className="flex gap-5 rounded-md border border-badge bg-card p-6"
-                  >
-                    <span className="shrink-0 text-[13px] tracking-[0.08em] text-subtle">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <div className="flex flex-col gap-2">
-                      {hasText(card.title) && (
-                        <h3 className="text-[15px] font-medium tracking-[-0.01em] text-cream">{card.title}</h3>
-                      )}
-                      {hasText(card.body) && (
-                        <p className="text-[15px] leading-[1.55] tracking-[-0.01em] text-body">{card.body}</p>
-                      )}
-                    </div>
-                  </Motion>
-                ))}
-              </div>
-            </Motion>
-          )}
-
-          {/* Why it matters */}
-          {hasText(whyItMatters) && (
-            <Motion
-              tag="section"
-              {...reveal}
-              className="mt-16 grid gap-8 border-t border-badge pt-12 lg:mt-24 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-16"
-            >
-              <h2 className="font-display text-[clamp(1.5rem,3vw,1.75rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
-                Why it matters
-              </h2>
-              <p className="max-w-3xl text-[clamp(1.05rem,1.6vw,1.25rem)] leading-[1.5] tracking-[-0.01em] text-body">
-                {whyItMatters}
-              </p>
-            </Motion>
-          )}
-        </div>
-      ) : hasBody ? (
-        // Back-compat: stories without structured case-study fields fall back to the rich-text body.
-        <div className="mx-auto w-full max-w-7xl px-5 py-16 lg:py-24">
           <Motion tag="div" {...reveal} className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-16">
             <div className="lg:sticky lg:top-28 lg:self-start">
               <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">The story</p>

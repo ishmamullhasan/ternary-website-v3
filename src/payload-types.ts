@@ -129,11 +129,13 @@ export interface Config {
     header: Header;
     footer: Footer;
     legalCenter: LegalCenter;
+    ops: Op;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     legalCenter: LegalCenterSelect<false> | LegalCenterSelect<true>;
+    ops: OpsSelect<false> | OpsSelect<true>;
   };
   locale: 'en' | 'bn';
   widgets: {
@@ -349,67 +351,6 @@ export interface Story {
     team?: string | null;
     year?: string | null;
   };
-  challenge?: {
-    heading?: string | null;
-    subtitle?: string | null;
-    paragraphs?:
-      | {
-          text?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  approach?: {
-    heading?: string | null;
-    subtitle?: string | null;
-    /**
-     * Auto-numbered 01, 02, 03 … in the layout.
-     */
-    cards?:
-      | {
-          body?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  solution?: {
-    heading?: string | null;
-    paragraphs?:
-      | {
-          text?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  outcome?: {
-    heading?: string | null;
-    intro?: string | null;
-    metrics?:
-      | {
-          value?: string | null;
-          label?: string | null;
-          sublabel?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-    quote?: {
-      text?: string | null;
-      authorName?: string | null;
-      authorRole?: string | null;
-    };
-  };
-  lessons?: {
-    heading?: string | null;
-    subtitle?: string | null;
-    cards?:
-      | {
-          title?: string | null;
-          body?: string | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  whyItMatters?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -1321,22 +1262,10 @@ export interface CtaBlock {
  * via the `definition` "AboutSectionBlock".
  */
 export interface AboutSectionBlock {
-  heading?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  description?: {
+  /**
+   * Section intro rendered above the bento grid. Use a Heading (H2/H3) for the title line(s) and normal paragraphs for the supporting copy — headings get the display style, paragraphs the body style.
+   */
+  content?: {
     root: {
       type: string;
       children: {
@@ -1352,43 +1281,52 @@ export interface AboutSectionBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Mixed list of records (capabilities, solutions, industries, scales, models, stories, insights or press releases) featured in the About section. Each card shows a content-type label and a Learn more link. Order here is the display order.
+   * Cards in the bento grid, in display order. The grid is 4 columns on desktop, 2 on tablet, 1 on mobile; cards pack densely, so mix sizes freely — smaller cards flow into the gaps left by larger ones.
    */
   items?:
-    | (
-        | {
-            relationTo: 'capability';
-            value: string | Capability;
-          }
-        | {
-            relationTo: 'solution';
-            value: string | Solution;
-          }
-        | {
-            relationTo: 'industry';
-            value: string | Industry;
-          }
-        | {
-            relationTo: 'scale';
-            value: string | Scale;
-          }
-        | {
-            relationTo: 'model';
-            value: string | Model;
-          }
-        | {
-            relationTo: 'story';
-            value: string | Story;
-          }
-        | {
-            relationTo: 'insight';
-            value: string | Insight;
-          }
-        | {
-            relationTo: 'pressRelease';
-            value: string | PressRelease;
-          }
-      )[]
+    | {
+        /**
+         * The record (capability, solution, industry, scale, model, story, insight or press release) this card features. The card shows its content-type label and links to it.
+         */
+        item:
+          | {
+              relationTo: 'capability';
+              value: string | Capability;
+            }
+          | {
+              relationTo: 'solution';
+              value: string | Solution;
+            }
+          | {
+              relationTo: 'industry';
+              value: string | Industry;
+            }
+          | {
+              relationTo: 'scale';
+              value: string | Scale;
+            }
+          | {
+              relationTo: 'model';
+              value: string | Model;
+            }
+          | {
+              relationTo: 'story';
+              value: string | Story;
+            }
+          | {
+              relationTo: 'insight';
+              value: string | Insight;
+            }
+          | {
+              relationTo: 'pressRelease';
+              value: string | PressRelease;
+            };
+        /**
+         * Footprint in the bento grid. Wide/Large span 2 columns (from tablet up); Tall/Large span 2 rows.
+         */
+        size?: ('standard' | 'wide' | 'tall' | 'large') | null;
+        id?: string | null;
+      }[]
     | null;
   /**
    * Logo wall of partner / member organizations shown within the About section.
@@ -2002,28 +1940,14 @@ export interface CapabilitiesSectionBlock {
    */
   capability?: (string | Capability)[] | null;
   /**
-   * Heading for the secondary content block beside the capabilities list.
+   * Media slides for the secondary intro carousel (shown on all screens). Add two or more to enable the slider; a single slide renders as a static panel.
    */
-  heading_2?: string | null;
-  /**
-   * Body copy for the secondary content block.
-   */
-  description_2?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  image?: (string | null) | Media;
+  slides?:
+    | {
+        image: string | Media;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'capabilitiesSection';
@@ -3478,9 +3402,18 @@ export interface AboutLeadershipBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * The leadership team members to feature, in order. Managed in the Team collection.
+   * The leadership team members to feature, in order. "Wide" cards take the larger column; uncheck it for the narrow (three-quarters) column.
    */
-  members?: (string | Team)[] | null;
+  members?:
+    | {
+        member: string | Team;
+        /**
+         * On = wide column · Off = narrow column
+         */
+        wide?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'aboutLeadership';
@@ -3728,13 +3661,13 @@ export interface CareersTeamBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Team members shown in the carousel, in order. "Wide" cards keep the full size; uncheck it to make a card two-thirds width.
+   * Team members shown in the carousel, in order. "Wide" cards keep the full size; uncheck it to make a card three-quarters width.
    */
   members?:
     | {
         member: string | Team;
         /**
-         * On = full size · Off = two-thirds width
+         * On = full size · Off = three-quarters width
          */
         wide?: boolean | null;
         id?: string | null;
@@ -4290,9 +4223,14 @@ export interface IndustriesSectionBlockSelect<T extends boolean = true> {
  * via the `definition` "AboutSectionBlock_select".
  */
 export interface AboutSectionBlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
-  items?: T;
+  content?: T;
+  items?:
+    | T
+    | {
+        item?: T;
+        size?: T;
+        id?: T;
+      };
   organizations?:
     | T
     | {
@@ -4330,9 +4268,12 @@ export interface CapabilitiesSectionBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
   capability?: T;
-  heading_2?: T;
-  description_2?: T;
-  image?: T;
+  slides?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -4997,7 +4938,13 @@ export interface AboutProofOfScaleBlockSelect<T extends boolean = true> {
 export interface AboutLeadershipBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
-  members?: T;
+  members?:
+    | T
+    | {
+        member?: T;
+        wide?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -5302,76 +5249,6 @@ export interface StorySelect<T extends boolean = true> {
         team?: T;
         year?: T;
       };
-  challenge?:
-    | T
-    | {
-        heading?: T;
-        subtitle?: T;
-        paragraphs?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-      };
-  approach?:
-    | T
-    | {
-        heading?: T;
-        subtitle?: T;
-        cards?:
-          | T
-          | {
-              body?: T;
-              id?: T;
-            };
-      };
-  solution?:
-    | T
-    | {
-        heading?: T;
-        paragraphs?:
-          | T
-          | {
-              text?: T;
-              id?: T;
-            };
-      };
-  outcome?:
-    | T
-    | {
-        heading?: T;
-        intro?: T;
-        metrics?:
-          | T
-          | {
-              value?: T;
-              label?: T;
-              sublabel?: T;
-              id?: T;
-            };
-        quote?:
-          | T
-          | {
-              text?: T;
-              authorName?: T;
-              authorRole?: T;
-            };
-      };
-  lessons?:
-    | T
-    | {
-        heading?: T;
-        subtitle?: T;
-        cards?:
-          | T
-          | {
-              title?: T;
-              body?: T;
-              id?: T;
-            };
-      };
-  whyItMatters?: T;
   meta?:
     | T
     | {
@@ -6216,7 +6093,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Site header: logo, primary navigation, and CTA button.
+ * Site header: logo, primary navigation (with mega menus), secondary links, and CTA.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
@@ -6225,23 +6102,225 @@ export interface Header {
   id: string;
   logo?: (string | null) | Media;
   siteName?: string | null;
+  /**
+   * Small heading shown above the item list in the open mega menu (e.g. "Explore").
+   */
+  exploreLabel?: string | null;
+  /**
+   * Top-level nav items, left to right. Each item is either a plain link or opens a full-screen mega menu.
+   */
   menu?:
     | {
-        label?: string | null;
+        label: string;
         /**
-         * Optional. Leave empty if this item has sub-items.
+         * Choose whether this item navigates directly, or opens its mega-menu panel below.
+         */
+        type: 'link' | 'mega';
+        /**
+         * For a plain link: where it goes. For a mega menu: the optional "overview" destination.
          */
         link?: string | null;
         /**
-         * Add sub-items for dropdown. If empty, this is a regular link.
+         * Contents of the full-screen panel. Only used when Behaviour is "Mega menu".
          */
-        subItems?:
-          | {
-              label?: string | null;
-              link?: string | null;
-              id?: string | null;
-            }[]
+        panel?: {
+          /**
+           * Small uppercase label above the panel heading.
+           */
+          eyebrow?: string | null;
+          /**
+           * Large headline shown at the top of the panel.
+           */
+          heading?: string | null;
+          /**
+           * e.g. "View all".
+           */
+          viewAllLabel?: string | null;
+          viewAllLink?: string | null;
+          /**
+           * Optional highlighted card at the left of the panel.
+           */
+          featured?: {
+            enabled?: boolean | null;
+            /**
+             * Small pill, e.g. "New".
+             */
+            badge?: string | null;
+            title?: string | null;
+            description?: string | null;
+            ctaLabel?: string | null;
+            link?: string | null;
+          };
+          /**
+           * Grouped link columns. Each has a small heading and a list of icon items.
+           */
+          columns?:
+            | {
+                heading?: string | null;
+                items?:
+                  | {
+                      /**
+                       * Optional icon glyph shown beside the label.
+                       */
+                      icon?:
+                        | (
+                            | 'arrow-up-right'
+                            | 'sparkles'
+                            | 'brain'
+                            | 'database'
+                            | 'cloud'
+                            | 'layers'
+                            | 'cpu'
+                            | 'code'
+                            | 'smartphone'
+                            | 'globe'
+                            | 'users'
+                            | 'book-open'
+                            | 'book-marked'
+                            | 'rocket'
+                            | 'building'
+                            | 'shield-check'
+                            | 'line-chart'
+                            | 'boxes'
+                            | 'network'
+                            | 'server'
+                            | 'zap'
+                            | 'briefcase'
+                            | 'newspaper'
+                            | 'search'
+                            | 'factory'
+                            | 'heart-pulse'
+                            | 'landmark'
+                            | 'shopping-bag'
+                            | 'plane'
+                            | 'trophy'
+                            | 'workflow'
+                            | 'compass'
+                            | 'phone'
+                            | 'mail'
+                          )
+                        | null;
+                      label: string;
+                      description?: string | null;
+                      /**
+                       * Root-relative path (e.g. /solutions) or a full URL.
+                       */
+                      link?: string | null;
+                      id?: string | null;
+                    }[]
+                  | null;
+                id?: string | null;
+              }[]
+            | null;
+          /**
+           * Pill buttons shown along the bottom of the panel.
+           */
+          resources?:
+            | {
+                /**
+                 * Optional icon glyph shown beside the label.
+                 */
+                icon?:
+                  | (
+                      | 'arrow-up-right'
+                      | 'sparkles'
+                      | 'brain'
+                      | 'database'
+                      | 'cloud'
+                      | 'layers'
+                      | 'cpu'
+                      | 'code'
+                      | 'smartphone'
+                      | 'globe'
+                      | 'users'
+                      | 'book-open'
+                      | 'book-marked'
+                      | 'rocket'
+                      | 'building'
+                      | 'shield-check'
+                      | 'line-chart'
+                      | 'boxes'
+                      | 'network'
+                      | 'server'
+                      | 'zap'
+                      | 'briefcase'
+                      | 'newspaper'
+                      | 'search'
+                      | 'factory'
+                      | 'heart-pulse'
+                      | 'landmark'
+                      | 'shopping-bag'
+                      | 'plane'
+                      | 'trophy'
+                      | 'workflow'
+                      | 'compass'
+                      | 'phone'
+                      | 'mail'
+                    )
+                  | null;
+                label: string;
+                /**
+                 * Root-relative path (e.g. /solutions) or a full URL.
+                 */
+                link?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Quick links shown at the bottom of the mega-menu sidebar (About, Careers, Insights, …).
+   */
+  secondaryLinks?:
+    | {
+        /**
+         * Optional icon glyph shown beside the label.
+         */
+        icon?:
+          | (
+              | 'arrow-up-right'
+              | 'sparkles'
+              | 'brain'
+              | 'database'
+              | 'cloud'
+              | 'layers'
+              | 'cpu'
+              | 'code'
+              | 'smartphone'
+              | 'globe'
+              | 'users'
+              | 'book-open'
+              | 'book-marked'
+              | 'rocket'
+              | 'building'
+              | 'shield-check'
+              | 'line-chart'
+              | 'boxes'
+              | 'network'
+              | 'server'
+              | 'zap'
+              | 'briefcase'
+              | 'newspaper'
+              | 'search'
+              | 'factory'
+              | 'heart-pulse'
+              | 'landmark'
+              | 'shopping-bag'
+              | 'plane'
+              | 'trophy'
+              | 'workflow'
+              | 'compass'
+              | 'phone'
+              | 'mail'
+            )
           | null;
+        label: string;
+        /**
+         * Root-relative path (e.g. /solutions) or a full URL.
+         */
+        link?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -6314,6 +6393,30 @@ export interface Footer {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Social media icons shown in the footer bottom bar.
+   */
+  socialLinks?:
+    | {
+        platform?: ('facebook' | 'twitter' | 'linkedin' | 'instagram' | 'youtube' | 'github') | null;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * The four white pill logos at the bottom-right of the footer. Each takes a logo image and an optional link.
+   */
+  partners?:
+    | {
+        logo?: (string | null) | Media;
+        /**
+         * Used as the accessible label and as a text fallback when no logo image is set.
+         */
+        name?: string | null;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -6334,24 +6437,83 @@ export interface LegalCenter {
   createdAt?: string | null;
 }
 /**
+ * Operational toggles. These take effect immediately — no deploy needed.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ops".
+ */
+export interface Op {
+  id: string;
+  /**
+   * When on, visiting any page with ?reval=1 instantly busts its cache and re-renders it fresh. Leave off normally — while on, anyone (not just admins) can trigger re-renders.
+   */
+  queryRevalidation?: boolean | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
   logo?: T;
   siteName?: T;
+  exploreLabel?: T;
   menu?:
     | T
     | {
         label?: T;
+        type?: T;
         link?: T;
-        subItems?:
+        panel?:
           | T
           | {
-              label?: T;
-              link?: T;
-              id?: T;
+              eyebrow?: T;
+              heading?: T;
+              viewAllLabel?: T;
+              viewAllLink?: T;
+              featured?:
+                | T
+                | {
+                    enabled?: T;
+                    badge?: T;
+                    title?: T;
+                    description?: T;
+                    ctaLabel?: T;
+                    link?: T;
+                  };
+              columns?:
+                | T
+                | {
+                    heading?: T;
+                    items?:
+                      | T
+                      | {
+                          icon?: T;
+                          label?: T;
+                          description?: T;
+                          link?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              resources?:
+                | T
+                | {
+                    icon?: T;
+                    label?: T;
+                    link?: T;
+                    id?: T;
+                  };
             };
+        id?: T;
+      };
+  secondaryLinks?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        link?: T;
         id?: T;
       };
   button?:
@@ -6409,6 +6571,21 @@ export interface FooterSelect<T extends boolean = true> {
         link?: T;
         id?: T;
       };
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        link?: T;
+        id?: T;
+      };
+  partners?:
+    | T
+    | {
+        logo?: T;
+        name?: T;
+        link?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -6423,6 +6600,16 @@ export interface LegalCenterSelect<T extends boolean = true> {
   menuTitle?: T;
   noticeTitle?: T;
   noticeDescription?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ops_select".
+ */
+export interface OpsSelect<T extends boolean = true> {
+  queryRevalidation?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

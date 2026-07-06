@@ -144,6 +144,14 @@ const footerData = {
     { label: t('Privacy Policy', 'গোপনীয়তা নীতি'), link: '/legals/privacy-and-policy' },
     { label: t('Modern Slavery Statement', 'আধুনিক দাসত্ব বিবৃতি'), link: '/legals/modern-slavery-statement' },
   ],
+  // Icons render from inline brand glyphs (platform → SVG); fill the real handle URLs in the CMS.
+  // Partner pill badges are left for manual entry — each needs a logo image upload.
+  socialLinks: [
+    { platform: 'facebook', link: 'https://www.facebook.com/' },
+    { platform: 'twitter', link: 'https://x.com/' },
+    { platform: 'linkedin', link: 'https://www.linkedin.com/' },
+    { platform: 'instagram', link: 'https://www.instagram.com/' },
+  ],
 }
 
 if (DRY) {

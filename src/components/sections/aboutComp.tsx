@@ -4,9 +4,9 @@ import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Capability, Industry, Insight, Media, Model, PressRelease, Scale, Solution, Story } from '@/payload-types'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import Image from 'next/image'
-import type { JSX } from 'react'
+import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
 
 type MultiRelation =
   | { relationTo: 'capability'; value: Capability }
@@ -25,15 +25,94 @@ const CONTENT_TYPE_LABEL: Record<MultiRelation['relationTo'], string> = {
   industry: 'Industry',
   scale: 'Scale',
   model: 'Model',
-  story: 'Story',
+  story: 'Case Study',
   insight: 'Insight',
   pressRelease: 'Press Release',
 }
 
+// Meta shown in the hover overlay's bottom panel (Figma 2392:2778): code + date row, then
+// read-time · category beside the CTA. Only the editorial collections carry these fields;
+// stories map their caseMeta equivalents, everything else just gets the CTA.
+type CardMeta = {
+  code?: string | null
+  date?: string | null
+  readTime?: string | null
+  category?: string | null
+  cta: string
+}
+
+const formatDate = (iso?: string | null): string | null => {
+  if (!iso) return null
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime())
+    ? null
+    : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function getItemMeta(item: MultiRelation): CardMeta {
+  if (typeof item.value === 'string') return { cta: 'Explore' }
+  switch (item.relationTo) {
+    case 'insight':
+      return {
+        code: item.value.code,
+        date: formatDate(item.value.publishedDate),
+        readTime: item.value.readTime,
+        category: item.value.categoryLabel,
+        cta: 'Read',
+      }
+    case 'pressRelease':
+      return {
+        code: item.value.code,
+        date: formatDate(item.value.releaseDate),
+        readTime: item.value.readTime,
+        category: item.value.categoryLabel,
+        cta: 'Read',
+      }
+    case 'story':
+      return {
+        date: item.value.caseMeta?.year,
+        readTime: item.value.caseMeta?.duration,
+        category: item.value.caseMeta?.industry,
+        cta: 'Read',
+      }
+    default:
+      return { cta: 'Explore' }
+  }
+}
+
+type CardSize = 'standard' | 'wide' | 'tall' | 'large'
+
+interface BentoRow {
+  item?: MultiRelation | null
+  size?: CardSize | null
+  id?: string | null
+}
+
+// Grid footprint per card size — spans only apply at xl+, where the bento grid takes over from
+// the mobile carousel (which renders every card at a uniform size, ignoring these footprints).
+const SIZE_SPAN: Record<CardSize, string> = {
+  standard: '',
+  wide: 'xl:col-span-2',
+  tall: 'xl:row-span-2',
+  large: 'xl:row-span-2 xl:col-span-2',
+}
+
+// next/image `sizes` per footprint in the xl bento grid (2-col cards render twice as wide).
+const SIZE_IMG_SIZES: Record<CardSize, string> = {
+  standard: '(min-width: 1280px) 25vw, 90vw',
+  wide: '(min-width: 1280px) 50vw, 90vw',
+  tall: '(min-width: 1280px) 25vw, 90vw',
+  large: '(min-width: 1280px) 50vw, 90vw',
+}
+
 interface AboutProps {
+  /** Section intro: heading node(s) + paragraph(s) in ONE richText (headings get the display
+      style, paragraphs the body style). `heading`/`description` are the pre-merge legacy pair. */
+  content?: RichText | null
   heading?: RichText | string | null
   description?: RichText | string | null
-  items?: MultiRelation[] | null
+  /** Bento rows ({ item, size }); bare relations (the pre-bento shape) are still accepted. */
+  items?: (BentoRow | MultiRelation)[] | null
   organizations?: {
     heading?: string | null
     organization?:
@@ -83,35 +162,220 @@ function getItemHref(item: MultiRelation): string {
   }
 }
 
-export default function AboutComp({ heading, description, items, organizations, bottomDescription }: AboutProps) {
-  const list = (items as MultiRelation[]) ?? []
+// Single bento/carousel card. Layout is absolute-positioned, so it fills whatever box its
+// wrapper defines (a grid cell in the xl bento, a fixed-height slide in the mobile carousel).
+// `isTwoRow` widens the hover excerpt clamp for the taller footprints.
+function BentoCard({
+  item,
+  index,
+  isTwoRow,
+  imgSizes,
+}: {
+  item: MultiRelation
+  index: number
+  isTwoRow: boolean
+  imgSizes: string
+}): JSX.Element {
+  const thumbnail = item.value.thumbnail as Media | null | undefined
+  const imageUrl = thumbnail?.url
+  const meta = getItemMeta(item)
+
+  return (
+    <Link
+      href={getItemHref(item)}
+      className={`group relative block h-full overflow-hidden rounded-md border border-white/[0.06] bg-ink transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${focusRing}`}
+    >
+      {/* gradient field IS the fallback; optional CMS image layers on top */}
+      <GradientPanel tone={toneFor(undefined, index)} interactive />
+      {imageUrl && (
+        <Image
+          src={imageUrl}
+          alt={item.value.title || 'story'}
+          fill
+          sizes={imgSizes}
+          className="relative object-cover"
+        />
+      )}
+      {/* top scrim so the header text stays legible over any image (Figma: black/60 → 50%) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent to-50%" />
+
+      {/* hover overlay — frosted layer revealing excerpt + meta pinned to the bottom
+          (Figma 2392:2778). Painted below the header block so title/type stay crisp. */}
+      <div className="absolute inset-0 flex flex-col justify-end gap-3 bg-black/[0.32] px-6 pt-24 pb-8 opacity-0 backdrop-blur-[75px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">
+        {item.value.excerpts && (
+          <p
+            className={`${isTwoRow ? 'line-clamp-4' : 'line-clamp-2'} text-base leading-[1.15] tracking-[-0.05em] text-body`}
+          >
+            {item.value.excerpts}
+          </p>
+        )}
+        <div className="flex flex-col gap-1">
+          {(meta.code || meta.date) && (
+            <div className="flex items-center justify-between text-xs leading-[1.15] tracking-[-0.05em] text-body">
+              <span>{meta.code}</span>
+              <span>{meta.date}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between gap-3 border-t border-subtle pt-2">
+            <span className="flex min-w-0 items-center gap-2 text-xs leading-[1.15] tracking-[-0.05em] text-body">
+              {meta.readTime && (
+                <span className="flex shrink-0 items-center gap-1">
+                  <Clock size={12} strokeWidth={2} aria-hidden />
+                  {meta.readTime}
+                </span>
+              )}
+              {meta.category && (
+                <span className="truncate">{meta.readTime ? `· ${meta.category}` : meta.category}</span>
+              )}
+            </span>
+            <span className="flex shrink-0 items-center gap-1 text-base leading-[1.15] tracking-[-0.05em] text-cream">
+              {meta.cta}
+              <ArrowUpRight size={14} strokeWidth={2} aria-hidden />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* header — title + content type, always visible (Figma 2392:2742) */}
+      <div className="absolute inset-x-6 top-8 flex flex-col gap-2">
+        {item.value.title && (
+          <h3 className="line-clamp-2 text-base leading-[1.15] font-semibold tracking-[-0.05em] text-cream">
+            {item.value.title}
+          </h3>
+        )}
+        <p className="text-sm leading-[1.15] tracking-[-0.05em] text-cream">{CONTENT_TYPE_LABEL[item.relationTo]}</p>
+      </div>
+    </Link>
+  )
+}
+
+// Mobile/tablet carousel (below xl): uniform full-height slides that snap horizontally with a peek
+// of the next card, driven by centered prev/next pill buttons (Figma 893:18958).
+function AboutCarousel({ cards }: { cards: { rel: MultiRelation; size: CardSize }[] }): JSX.Element {
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const [canPrev, setCanPrev] = useState(false)
+  const [canNext, setCanNext] = useState(true)
+
+  const update = useCallback(() => {
+    const el = scrollerRef.current
+    if (!el) return
+    setCanPrev(el.scrollLeft > 8)
+    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 8)
+  }, [])
+
+  useEffect(() => {
+    update()
+    const el = scrollerRef.current
+    if (!el) return
+    el.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      el.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [update])
+
+  const scrollByCard = (dir: 1 | -1) => {
+    const el = scrollerRef.current
+    if (!el) return
+    const slide = el.querySelector<HTMLElement>('[data-slide]')
+    const amount = slide ? slide.offsetWidth + 16 : el.clientWidth * 0.86
+    el.scrollBy({ left: dir * amount, behavior: 'smooth' })
+  }
+
+  return (
+    <div className="mt-10 w-full xl:hidden">
+      <div
+        ref={scrollerRef}
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {cards.map(({ rel }, index) => (
+          <div key={index} data-slide className="h-[468px] w-[86%] shrink-0 snap-start">
+            <BentoCard item={rel} index={index} isTwoRow imgSizes="86vw" />
+          </div>
+        ))}
+      </div>
+
+      {/* prev / next controls (Figma 893:18958): 32px pills, disabled state fades to 50% */}
+      <div className="mt-6 flex items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={() => scrollByCard(-1)}
+          disabled={!canPrev}
+          aria-label="Previous"
+          className={`flex size-8 items-center justify-center rounded-full border border-white/[0.06] bg-ink text-cream transition-opacity disabled:opacity-50 ${focusRing}`}
+        >
+          <ChevronLeft size={16} strokeWidth={2} aria-hidden />
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollByCard(1)}
+          disabled={!canNext}
+          aria-label="Next"
+          className={`flex size-8 items-center justify-center rounded-full border border-white/[0.06] bg-ink text-cream transition-opacity disabled:opacity-50 ${focusRing}`}
+        >
+          <ChevronRight size={16} strokeWidth={2} aria-hidden />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default function AboutComp({
+  content,
+  heading,
+  description,
+  items,
+  organizations,
+  bottomDescription,
+}: AboutProps) {
+  // Normalize both shapes to { rel, size } and drop unpopulated relations (depth-0 string values).
+  const list = (items ?? [])
+    .map((row) =>
+      'relationTo' in row
+        ? { rel: row, size: 'standard' as CardSize }
+        : { rel: row.item ?? null, size: row.size ?? ('standard' as CardSize) },
+    )
+    .filter((c): c is { rel: MultiRelation; size: CardSize } => typeof c.rel?.value === 'object')
   if (list.length === 0) return null
 
   return (
     <section className="w-full">
       <div className="flex flex-col items-center">
-        {/* heading */}
-        {(heading || description) && (
+        {/* section intro — ONE richText: heading nodes take the display style, paragraphs the body
+            style. Arbitrary clamp values mirror .text-section (globals.css) — the plain class has
+            no generated prose-headings: variants, so it can't be used here. */}
+        {content ? (
           <div className="flex max-w-2xl flex-col items-center text-center">
-            {heading && (
-              /* Arbitrary values mirror .text-section (globals.css) — the plain `.text-section` class
-                 has no generated prose-p:/prose-headings: variants, so it can't be used here. */
-              <RichTextComp
-                content={heading as RichText}
-                className="prose-p:mb-0 prose-p:text-[clamp(1.5rem,3vw,1.875rem)] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mb-0 prose-headings:text-[clamp(1.5rem,3vw,1.875rem)] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
-              />
-            )}
-            {description && (
-              <RichTextComp content={description as RichText} className="mt-3 prose-p:mb-0 prose-p:text-body" />
-            )}
+            <RichTextComp
+              content={content}
+              className="prose-headings:mb-0 prose-headings:text-[clamp(1.5rem,3vw,1.875rem)] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-0 prose-p:mb-0 prose-p:text-body"
+            />
           </div>
+        ) : (
+          (heading || description) && (
+            <div className="flex max-w-2xl flex-col items-center text-center">
+              {heading && (
+                <RichTextComp
+                  content={heading as RichText}
+                  className="prose-p:mb-0 prose-p:text-[clamp(1.5rem,3vw,1.875rem)] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mb-0 prose-headings:text-[clamp(1.5rem,3vw,1.875rem)] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
+                />
+              )}
+              {description && (
+                <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />
+              )}
+            </div>
+          )
         )}
 
-        {/* cards grid */}
-        <div className="mt-10 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {list.map((item, index: number): JSX.Element => {
-            const thumbnail = item.value.thumbnail as Media | null | undefined
-            const imageUrl = thumbnail?.url
+        {/* mobile / tablet: uniform same-height carousel (below xl) */}
+        <AboutCarousel cards={list} />
+
+        {/* xl+ bento grid — fixed row height, dense packing so standard cards backfill the gaps
+            that Wide/Tall/Large cards leave. Spans per card come from the CMS `size` field. */}
+        <div className="mt-10 hidden w-full auto-rows-[15rem] grid-cols-4 gap-4 [grid-auto-flow:dense] xl:grid">
+          {list.map(({ rel: item, size }, index: number): JSX.Element => {
+            const isTwoRow = size === 'tall' || size === 'large'
 
             return (
               <Motion
@@ -119,46 +383,9 @@ export default function AboutComp({ heading, description, items, organizations, 
                 key={index}
                 {...motionGridItemProps}
                 transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+                className={SIZE_SPAN[size]}
               >
-                <Link
-                  href={getItemHref(item)}
-                  className={`group relative block aspect-[358/585] overflow-hidden rounded-md border border-white/[0.06] bg-ink transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${focusRing}`}
-                >
-                  {/* gradient field IS the fallback; optional CMS image layers on top */}
-                  <GradientPanel tone={toneFor(undefined, index)} interactive />
-                  {imageUrl && (
-                    <Image
-                      src={imageUrl}
-                      alt={item.value.title || 'story'}
-                      fill
-                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      className="relative object-cover"
-                    />
-                  )}
-
-                  {/* text — content-type badge + single-line title header, with a Learn more affordance
-                       pinned to the bottom (the whole card is already the link). */}
-                  <div className="absolute inset-5 flex flex-col">
-                    <div>
-                      <span className="inline-flex items-center rounded-md border border-white/15 bg-white/[0.06] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/85 backdrop-blur-sm">
-                        {CONTENT_TYPE_LABEL[item.relationTo]}
-                      </span>
-                      {item.value.title && (
-                        <h3 className="mt-3 line-clamp-1 font-display text-lg font-medium tracking-tight text-cream">
-                          {item.value.title}
-                        </h3>
-                      )}
-                      {item.value.excerpts && (
-                        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-cream/75">{item.value.excerpts}</p>
-                      )}
-                    </div>
-
-                    <span className="mt-auto inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-cream/90 transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:transition-none">
-                      Learn more
-                      <ArrowUpRight size={15} strokeWidth={2} aria-hidden />
-                    </span>
-                  </div>
-                </Link>
+                <BentoCard item={item} index={index} isTwoRow={isTwoRow} imgSizes={SIZE_IMG_SIZES[size]} />
               </Motion>
             )
           })}

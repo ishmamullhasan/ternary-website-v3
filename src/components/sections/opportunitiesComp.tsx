@@ -23,7 +23,7 @@ export default function OpportunitiesComp({ heading, description, opportunity }:
   return (
     <section className="section-card">
       {/* Header — heading ABOVE the supporting sentence, left-aligned. */}
-      <Motion {...reveal} className="mb-8 flex max-w-2xl flex-col gap-4 lg:mb-14">
+      <Motion {...reveal} className="mb-8 flex max-w-2xl flex-col lg:mb-14">
         {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
         {description && (
           <RichTextComp

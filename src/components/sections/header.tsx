@@ -1,24 +1,25 @@
 'use client'
 
+import MegaMenuOverlay, { type NavEntry, type SecondaryLink } from '@/components/nav/MegaMenuOverlay'
 import { localeFromPath, localizedHref } from '@/lib/i18n/locales'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
-import { ChevronDown, Menu, X } from 'lucide-react'
+import { ArrowUpRight, ChevronDown, Menu } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavState } from './useNavState'
 
-type SubMenuItem = { label?: string | null; link?: string | null }
-type MenuItem = { label?: string | null; link?: string | null; subItems?: SubMenuItem[] | null }
 type MediaWithUrl = { url?: string | null }
 
 interface HeaderData {
   logo?: MediaWithUrl | string | null
   siteName?: string | null
-  menu?: MenuItem[] | null
+  exploreLabel?: string | null
+  menu?: NavEntry[] | null
+  secondaryLinks?: SecondaryLink[] | null
   button?: { label?: string | null; link?: string | null } | null
 }
 
@@ -27,18 +28,16 @@ interface HeaderProps {
 }
 
 function getLogoUrl(logo: MediaWithUrl | string | null | undefined): string | null {
-  if (!logo) return null
-  if (typeof logo === 'string') return null
-  const url = logo?.url
-  return url ? getMediaUrl(url) : null
+  if (!logo || typeof logo === 'string') return null
+  return logo?.url ? getMediaUrl(logo.url) : null
 }
+
+const isMega = (e: NavEntry) => e.type === 'mega' && !!e.panel
 
 /**
  * Ternary combination mark, inlined from the brand asset (public/favicon.svg). Rendering it as
  * SVG paths rather than an <Image> means the mark always appears — the CMS logo media lives on S3
- * and degrades to a broken box locally — and stays crisp at any size. currentColor lets the cream
- * fill flow from the surrounding text token. The design shows the 30px mark only (no wordmark) in
- * the nav bar, so the wordmark text is opt-in for the footer lockup.
+ * and degrades to a broken box locally — and stays crisp at any size.
  */
 function TernaryMark({ className }: { className?: string }) {
   return (
@@ -51,171 +50,57 @@ function TernaryMark({ className }: { className?: string }) {
 
 export default function Header({ headerData }: HeaderProps) {
   const path = usePathname()
-  // CMS menu links are stored locale-LESS; resolve them for the active locale so nav stays in the
-  // current language (en → unprefixed, bn → /bn). Derived from the URL via localeFromPath.
+  // CMS links are stored locale-LESS; resolve them for the active locale (derived from the URL).
   const locale = localeFromPath(path)
-  const [open, setOpen] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
-  const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState<{ [key: string]: boolean }>({})
-  const panelRef = useRef<HTMLDivElement>(null)
-  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const open = openIndex !== null
 
-  // Liquid-glass floating-pill state: shrinks while actively scrolling, re-expands at rest or
-  // while hovered/focused. Replaces the old inline `scrolled` state + scroll useEffect.
   const { compact, setInteracting } = useNavState()
-  const reduce = useReducedMotion()
+  const reduce = useReducedMotion() ?? false
 
-  const menuItems = headerData?.menu?.filter((item) => item?.label) ?? []
+  const menu = useMemo(() => (headerData?.menu ?? []).filter((m) => m?.label), [headerData?.menu])
+  const secondaryLinks = useMemo(
+    () => (headerData?.secondaryLinks ?? []).filter((s) => s?.label),
+    [headerData?.secondaryLinks],
+  )
+  const cta = headerData?.button
   const logoUrl = getLogoUrl(headerData?.logo)
+  const firstMega = useMemo(() => menu.findIndex(isMega), [menu])
 
+  // Close on route change.
   useEffect(() => {
-    setOpen(false)
-    setActiveDropdown(null)
-    setMobileSubmenuOpen({})
+    setOpenIndex(null)
   }, [path])
 
+  // Escape closes; lock body scroll while the full-screen menu is open.
   useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (!open && !activeDropdown) return
-
-      if (open && panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-
-      if (activeDropdown) {
-        const activeRef = dropdownRefs.current[activeDropdown]
-        if (activeRef && !activeRef.contains(e.target as Node)) {
-          setActiveDropdown(null)
-        }
-      }
-    }
-
-    function onEsc(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setOpen(false)
-        setActiveDropdown(null)
-      }
-    }
-
-    document.addEventListener('mousedown', onClick)
-    document.addEventListener('keydown', onEsc)
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpenIndex(null)
+    document.addEventListener('keydown', onKey)
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.removeEventListener('mousedown', onClick)
-      document.removeEventListener('keydown', onEsc)
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prev
     }
-  }, [open, activeDropdown])
+  }, [open])
 
-  const toggleMobileSubmenu = (itemId: string) => {
-    setMobileSubmenuOpen((prev) => ({
-      ...prev,
-      [itemId]: !prev[itemId],
-    }))
-  }
-
-  const DesktopNav = (
-    <div className="flex items-center gap-0">
-      {menuItems.map((item, i) => {
-        const hasSubmenu = item.subItems && item.subItems.length > 0
-        const itemId = `item-${i}`
-        const isDropdownActive = activeDropdown === itemId
-        // Active when the route matches the item or any of its sub-items (so a nested page still
-        // lights the parent in the bar).
-        const itemActive =
-          (item.link && path === item.link) || item.subItems?.some((s) => s.link && path === s.link) || false
-
-        // Nav item type per design (navigation-menu-item label I339:8022;2:116): Inter SemiBold
-        // 14px, leading 1.15, tracking 0 (reset from the body's −0.05em), full Text/Primary
-        // (#f4f3ec = text-cream — all six items render at full cream, no resting dim). Item box =
-        // px16/py8 (px-4/py-2), radius/md (rounded-md), label→chevron gap-4 (gap-1).
-        const itemClass = cn(
-          'flex items-center gap-1 rounded-md px-4 py-2 text-[14px] font-semibold leading-[1.15] tracking-normal text-cream',
-          'transition-colors duration-200 hover:bg-white/[0.06]',
-          (itemActive || isDropdownActive) && 'bg-white/[0.06]',
-        )
-
-        if (hasSubmenu) {
-          return (
-            <div
-              key={i}
-              className="relative"
-              ref={(el) => {
-                dropdownRefs.current[itemId] = el
-              }}
-              onMouseEnter={() => {
-                if (timeoutRef.current) clearTimeout(timeoutRef.current)
-                setActiveDropdown(itemId)
-              }}
-              onMouseLeave={() => {
-                if (timeoutRef.current) clearTimeout(timeoutRef.current)
-                timeoutRef.current = setTimeout(() => setActiveDropdown(null), 220)
-              }}
-            >
-              <Link
-                href={localizedHref(locale, item.link)}
-                aria-haspopup="menu"
-                aria-expanded={isDropdownActive}
-                // Keyboard users can open the panel by focusing the trigger; blur is handled by the
-                // click-outside / Escape listeners.
-                onFocus={() => {
-                  if (timeoutRef.current) clearTimeout(timeoutRef.current)
-                  setActiveDropdown(itemId)
-                }}
-                className={itemClass}
-              >
-                <span>{item.label || 'Label'}</span>
-                <ChevronDown
-                  aria-hidden
-                  className={cn(
-                    'size-3 text-cream/60 transition-transform duration-200',
-                    isDropdownActive && 'rotate-180 text-cream',
-                  )}
-                />
-              </Link>
-
-              {isDropdownActive && item.subItems && item.subItems.length > 0 && (
-                <div
-                  role="menu"
-                  className="absolute top-full left-0 mt-2 min-w-[220px] origin-top rounded-md border border-white/10 bg-ink/95 p-1.5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.85)] backdrop-blur-md supports-[backdrop-filter]:bg-ink/80"
-                >
-                  {item.subItems.map((subItem, j) => {
-                    const subHref = localizedHref(locale, subItem.link)
-                    const subActive = path === subHref
-                    return (
-                      <Link
-                        key={j}
-                        href={subHref}
-                        role="menuitem"
-                        className={cn(
-                          'block rounded-sm px-3 py-2 text-[14px] font-medium tracking-normal transition-colors duration-150',
-                          subActive
-                            ? 'bg-white/[0.08] text-cream'
-                            : 'text-cream/75 hover:bg-white/[0.06] hover:text-cream',
-                        )}
-                      >
-                        {subItem.label || 'Submenu Item'}
-                      </Link>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          )
-        } else {
-          const href = localizedHref(locale, item.link)
-          return (
-            <Link
-              key={i}
-              href={href}
-              className={cn(itemClass, 'relative')}
-              aria-current={itemActive ? 'page' : undefined}
-            >
-              {item.label || 'Label'}
-            </Link>
-          )
-        }
-      })}
-    </div>
+  const LogoMark = (
+    <>
+      {logoUrl ? (
+        <Image
+          src={logoUrl}
+          width={30}
+          height={30}
+          alt=""
+          className={cn('h-[30px] w-auto transition-[height] duration-200', reduce && compact && 'h-[26px]')}
+        />
+      ) : (
+        <TernaryMark
+          className={cn('h-[30px] w-auto text-cream transition-[height] duration-200', reduce && compact && 'h-[26px]')}
+        />
+      )}
+    </>
   )
 
   const Logo = (
@@ -223,166 +108,121 @@ export default function Header({ headerData }: HeaderProps) {
       href={localizedHref(locale, '/')}
       className="flex shrink-0 items-center gap-2.5"
       aria-label={headerData?.siteName || 'Ternary'}
+      onClick={() => setOpenIndex(null)}
     >
-      {logoUrl ? (
-        <Image
-          src={logoUrl}
-          width={30}
-          height={30}
-          alt=""
-          // Under reduced motion the spring scale is off, so a slightly smaller logo when compact
-          // reads the shrink without animating the bar.
-          className={cn('w-auto transition-[height] duration-200', reduce && compact ? 'h-[26px]' : 'h-[30px]')}
-        />
-      ) : (
-        // Inline brand mark fallback — CMS logo media (S3) degrades to a broken box, the mark does not.
-        <TernaryMark
-          className={cn(
-            'w-auto text-cream transition-[height] duration-200',
-            reduce && compact ? 'h-[26px]' : 'h-[30px]',
-          )}
-        />
-      )}
+      {LogoMark}
     </Link>
   )
 
   return (
-    // Outer fixed positioner — never animates; just centers the floating pill at the top and
-    // stays click-through outside the bar so the page below remains interactive.
-    <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:pt-4 pointer-events-none">
-      {/* Inner animated liquid-glass pill. Springs between expanded/compact padding + scale; under
-          reduced motion the spring is dropped and padding is applied via conditional classes. */}
-      <motion.header
-        className={cn(
-          'pointer-events-auto w-full max-w-7xl rounded-2xl px-5 glass',
-          // Reduced-motion fallback for the padding shrink (the spring `animate` is undefined below).
-          reduce && (compact ? 'py-2' : 'py-3.5'),
-        )}
-        initial={false}
-        animate={reduce ? undefined : compact ? 'compact' : 'expanded'}
-        variants={{
-          expanded: { paddingTop: 14, paddingBottom: 14, scale: 1 },
-          compact: { paddingTop: 8, paddingBottom: 8, scale: 0.97 },
-        }}
-        transition={{ type: 'spring', stiffness: 380, damping: 34, mass: 0.7 }}
-        style={{ transformOrigin: 'top center' }}
-        // Hover/focus keeps the bar expanded so menus + CTA are full-size under the pointer/keyboard.
-        onMouseEnter={() => setInteracting(true)}
-        onMouseLeave={() => setInteracting(false)}
-        onFocus={() => setInteracting(true)}
-        onBlur={(e) => {
-          // Only treat focus as leaving when it moves OUTSIDE the bar — tabbing between nav items
-          // within the bar shouldn't flicker it back to compact.
-          if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setInteracting(false)
-        }}
-      >
-        <div className="flex w-full flex-row items-center justify-between">
-          {/* Logo — combination mark only (design shows no wordmark beside it in the bar) */}
-          {Logo}
+    <>
+      {/* Outer fixed positioner — centers the floating pill and stays click-through outside it. */}
+      <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:pt-4 pointer-events-none">
+        <motion.header
+          className={cn(
+            'pointer-events-auto w-full max-w-7xl rounded-2xl px-5 glass',
+            reduce && (compact ? 'py-2' : 'py-3.5'),
+          )}
+          initial={false}
+          animate={reduce ? undefined : compact ? 'compact' : 'expanded'}
+          variants={{
+            expanded: { paddingTop: 14, paddingBottom: 14, scale: 1 },
+            compact: { paddingTop: 8, paddingBottom: 8, scale: 0.97 },
+          }}
+          transition={{ type: 'spring', stiffness: 380, damping: 34, mass: 0.7 }}
+          style={{ transformOrigin: 'top center' }}
+          onMouseEnter={() => setInteracting(true)}
+          onMouseLeave={() => setInteracting(false)}
+          onFocus={() => setInteracting(true)}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setInteracting(false)
+          }}
+        >
+          <div className="flex w-full flex-row items-center justify-between gap-4">
+            {Logo}
 
-          {/* Desktop Navigation — pushed to the opposite (right) end via justify-between */}
-          <div className="hidden md:flex">{DesktopNav}</div>
-
-          {/* Mobile: menu toggle - right */}
-          <div className="flex items-center gap-2 md:hidden">
-            <button
-              type="button"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              aria-expanded={open}
-              aria-controls="mobile-nav"
-              onClick={() => setOpen((v) => !v)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-cream transition-colors duration-200 hover:bg-white/[0.06] active:scale-95"
-            >
-              {open ? <X className="size-6" /> : <Menu className="size-6" />}
-            </button>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Mobile Panel — a second floating glass card anchored just below the pill */}
-      <div
-        id="mobile-nav"
-        ref={panelRef}
-        className={cn(
-          'fixed inset-x-4 top-[76px] z-[60] max-h-[calc(100vh-5.5rem)] overflow-y-auto rounded-2xl glass pointer-events-auto md:hidden',
-          open ? 'animate-[accordion-down_200ms_ease-out]' : 'hidden',
-        )}
-      >
-        <div className="flex flex-col px-4 py-3">
-          {menuItems.map((item, i) => {
-            const hasSubmenu = item.subItems && item.subItems.length > 0
-            const itemId = `item-${i}`
-            const isSubmenuOpen = mobileSubmenuOpen[itemId]
-            const itemActive =
-              (item.link && path === item.link) || item.subItems?.some((s) => s.link && path === s.link) || false
-
-            if (hasSubmenu) {
-              return (
-                <div key={i} className="border-b border-white/[0.08] last:border-b-0">
-                  <button
-                    type="button"
-                    onClick={() => toggleMobileSubmenu(itemId)}
-                    aria-expanded={isSubmenuOpen}
-                    className={cn(
-                      'flex w-full items-center justify-between rounded-md px-3 py-3 text-[15px] font-medium tracking-normal transition-colors duration-200',
-                      itemActive ? 'text-cream' : 'text-cream/85 hover:text-cream',
-                    )}
+            {/* Desktop navigation */}
+            <nav className="hidden items-center gap-0.5 md:flex">
+              {menu.map((entry, i) => {
+                const mega = isMega(entry)
+                const active = i === openIndex
+                const itemClass = cn(
+                  'flex items-center gap-1 rounded-md px-3.5 py-2 text-[14px] font-semibold leading-[1.15] tracking-normal text-cream transition-colors duration-200 hover:bg-white/[0.06]',
+                  active && 'bg-white/[0.06]',
+                )
+                if (mega) {
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      aria-haspopup="dialog"
+                      aria-expanded={active}
+                      onClick={() => setOpenIndex(active ? null : i)}
+                      className={itemClass}
+                    >
+                      <span>{entry.label}</span>
+                      <ChevronDown
+                        aria-hidden
+                        className={cn(
+                          'size-3 text-cream/60 transition-transform duration-200',
+                          active && 'rotate-180 text-cream',
+                        )}
+                      />
+                    </button>
+                  )
+                }
+                const itemActive = entry.link && path === localizedHref(locale, entry.link)
+                return (
+                  <Link
+                    key={i}
+                    href={localizedHref(locale, entry.link)}
+                    className={cn(itemClass, itemActive && 'bg-white/[0.06]')}
+                    aria-current={itemActive ? 'page' : undefined}
                   >
-                    <span>{item.label || 'Label'}</span>
-                    <ChevronDown
-                      aria-hidden
-                      className={cn(
-                        'size-4 text-cream/60 transition-transform duration-200',
-                        isSubmenuOpen && 'rotate-180 text-cream',
-                      )}
-                    />
-                  </button>
+                    {entry.label}
+                  </Link>
+                )
+              })}
+            </nav>
 
-                  {isSubmenuOpen && (
-                    <div className="flex flex-col gap-0.5 pb-2 pl-3">
-                      {item.subItems?.map((subItem, j) => {
-                        const subHref = localizedHref(locale, subItem.link)
-                        const subActive = path === subHref
-                        return (
-                          <Link
-                            key={j}
-                            href={subHref}
-                            onClick={() => setOpen(false)}
-                            className={cn(
-                              'block rounded-sm px-3 py-2 text-[14px] font-medium tracking-normal transition-colors duration-150',
-                              subActive
-                                ? 'bg-white/[0.08] text-cream'
-                                : 'text-cream/70 hover:bg-white/[0.06] hover:text-cream',
-                            )}
-                          >
-                            {subItem.label || 'Submenu Item'}
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              )
-            } else {
-              const href = localizedHref(locale, item.link)
-              return (
+            {/* Right cluster: CTA (desktop) + hamburger (mobile) */}
+            <div className="flex items-center gap-2">
+              {cta?.label && (
                 <Link
-                  key={i}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  aria-current={itemActive ? 'page' : undefined}
-                  className={cn(
-                    'block rounded-md px-3 py-3 text-[15px] font-medium tracking-normal transition-colors duration-200 border-b border-white/[0.08] last:border-b-0',
-                    itemActive ? 'text-cream' : 'text-cream/85 hover:text-cream',
-                  )}
+                  href={localizedHref(locale, cta.link)}
+                  className="hidden items-center gap-1.5 rounded-full bg-cream px-4 py-2 text-[13px] font-semibold text-page transition-colors hover:bg-cream-hover md:inline-flex"
                 >
-                  {item.label || 'Label'}
+                  {cta.label}
+                  <ArrowUpRight className="size-3.5" aria-hidden />
                 </Link>
-              )
-            }
-          })}
-        </div>
+              )}
+              <button
+                type="button"
+                aria-label="Open menu"
+                aria-expanded={open}
+                onClick={() => setOpenIndex(open ? null : firstMega >= 0 ? firstMega : 0)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md text-cream transition-colors duration-200 hover:bg-white/[0.06] active:scale-95 md:hidden"
+              >
+                <Menu className="size-6" />
+              </button>
+            </div>
+          </div>
+        </motion.header>
       </div>
-    </div>
+
+      <MegaMenuOverlay
+        open={open}
+        menu={menu}
+        secondaryLinks={secondaryLinks}
+        cta={cta}
+        exploreLabel={headerData?.exploreLabel}
+        locale={locale}
+        activeIndex={openIndex}
+        onActiveIndex={setOpenIndex}
+        onClose={() => setOpenIndex(null)}
+        reduce={reduce}
+        logo={Logo}
+      />
+    </>
   )
 }

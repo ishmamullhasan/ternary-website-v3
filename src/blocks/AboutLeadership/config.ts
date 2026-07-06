@@ -11,12 +11,28 @@ export const AboutLeadership: Block = {
     {
       name: 'members',
       label: 'Members',
-      type: 'relationship',
-      relationTo: 'team',
-      hasMany: true,
+      type: 'array',
       admin: {
-        description: 'The leadership team members to feature, in order. Managed in the Team collection.',
+        description:
+          'The leadership team members to feature, in order. "Wide" cards take the larger column; uncheck it for the narrow (three-quarters) column.',
       },
+      fields: [
+        {
+          name: 'member',
+          label: 'Member',
+          type: 'relationship',
+          relationTo: 'team',
+          required: true,
+          admin: { width: '70%' },
+        },
+        {
+          name: 'wide',
+          label: 'Wide',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: { width: '30%', description: 'On = wide column · Off = narrow column' },
+        },
+      ],
     },
   ],
 }

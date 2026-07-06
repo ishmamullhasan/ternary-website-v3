@@ -24,7 +24,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
       <Motion className="lg:w-2/5" {...reveal}>
         {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}
         {description ? (
-          <RichTextComp content={description as RichText} className="mt-4 prose-p:mb-0 prose-p:text-body" />
+          <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />
         ) : null}
       </Motion>
 

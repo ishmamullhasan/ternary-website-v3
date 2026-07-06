@@ -22,6 +22,16 @@ const DEFAULT_PREFIX_STRIP = new RegExp(`^/${DEFAULT_LOCALE}(?=/|$)`)
 export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl
 
+  // Editor cache-buster: any page visited with ?reval=1 bounces through /next/revalidate?path=…,
+  // which busts that page's tag (if the Ops Switches global allows it) and 303s back to the clean
+  // URL. Handled before locale routing so it works on prefixed and unprefixed paths alike.
+  if (req.nextUrl.searchParams.get('reval') === '1') {
+    const url = req.nextUrl.clone()
+    url.pathname = '/next/revalidate'
+    url.search = `?path=${encodeURIComponent(pathname)}`
+    return NextResponse.redirect(url, { status: 303 })
+  }
+
   // Non-default locales keep their prefix and render the [locale] segment directly.
   if (NON_DEFAULT_PREFIX.test(pathname)) return NextResponse.next()
 

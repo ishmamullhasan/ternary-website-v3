@@ -19,7 +19,7 @@ export const CareersTeam: Block = {
       type: 'array',
       admin: {
         description:
-          'Team members shown in the carousel, in order. "Wide" cards keep the full size; uncheck it to make a card two-thirds width.',
+          'Team members shown in the carousel, in order. "Wide" cards keep the full size; uncheck it to make a card three-quarters width.',
       },
       fields: [
         {
@@ -35,7 +35,7 @@ export const CareersTeam: Block = {
           label: 'Wide',
           type: 'checkbox',
           defaultValue: true,
-          admin: { width: '30%', description: 'On = full size · Off = two-thirds width' },
+          admin: { width: '30%', description: 'On = full size · Off = three-quarters width' },
         },
       ],
     },

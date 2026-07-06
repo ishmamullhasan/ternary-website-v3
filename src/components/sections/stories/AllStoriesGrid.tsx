@@ -6,6 +6,7 @@ import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, toneFor, type Tone } from '@/components/sections/stories/gradient'
 import { cn } from '@/lib/utils'
 import type { Insight, PressRelease, Story } from '@/payload-types'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 import {
   ArrowUpRight,
   BookOpen,
@@ -27,13 +28,14 @@ type FilterKey = 'all' | ContentType
 const FILTER_OPTIONS: { key: ContentType; label: string; icon: typeof BookOpen }[] = [
   { key: 'story', label: 'Case Study', icon: FileText },
   { key: 'pressRelease', label: 'Press Release', icon: Newspaper },
-  { key: 'insight', label: 'Thought Piece', icon: BookOpen },
+  { key: 'insight', label: 'Insights', icon: BookOpen },
   { key: 'research', label: 'Research Report', icon: FlaskConical },
 ]
 
+/** Pill / type label shown on each card (matches the Figma card badges). */
 const CATEGORY_LABELS: Record<ContentType, string> = {
   story: 'Case Study',
-  insight: 'Thought Piece',
+  insight: 'Insights',
   pressRelease: 'Press Release',
   research: 'Research Report',
 }
@@ -48,6 +50,10 @@ interface NormalizedItem {
   code?: string | null
   date?: string | null
   readTime?: string | null
+  /** The doc's own category label (e.g. "Engineering Studio") shown in the meta row. */
+  studioLabel?: string | null
+  /** Resolved thumbnail URL (insights render an image tile; falls back to a gradient). */
+  image?: string | null
   categoryLabel?: string | null
   tone: Tone
 }
@@ -79,6 +85,71 @@ const motionGridItemProps = {
   viewport: { once: true, margin: '-40px' as const },
 }
 
+/* ------------------------------------------------------------------ */
+/* Shared card fragments                                              */
+/* ------------------------------------------------------------------ */
+
+/** The rounded outline badge that sits above every card title. */
+function CardPill({ label }: { label?: string | null }): JSX.Element | null {
+  if (!label) return null
+  return (
+    <span className="inline-flex w-fit items-center rounded-full border border-subtle bg-main px-4 py-2 font-display text-lg leading-none tracking-[-0.05em] text-cream">
+      {label}
+    </span>
+  )
+}
+
+/** Code (e.g. CS-014) on the left, formatted date on the right. */
+function CodeDateRow({ item }: { item: NormalizedItem }): JSX.Element | null {
+  if (!item.code && !item.date) return null
+  return (
+    <div className="flex items-center justify-between text-[12px] tracking-[-0.05em] text-body">
+      <span>{item.code ?? ''}</span>
+      <span>{formatDate(item.date)}</span>
+    </div>
+  )
+}
+
+/** Divider + read-time · studio on the left, a Read affordance that nudges on hover. */
+function MetaFooter({ item }: { item: NormalizedItem }): JSX.Element {
+  return (
+    <div className="flex items-center justify-between border-t border-subtle pt-4 text-[12px] tracking-[-0.05em] text-body">
+      <span className="flex min-w-0 items-center gap-2">
+        <Clock size={12} className="shrink-0" aria-hidden />
+        <span className="truncate">
+          {item.readTime ?? '12 min'}
+          {item.studioLabel ? ` · ${item.studioLabel}` : ''}
+        </span>
+      </span>
+      <span className="flex shrink-0 items-center gap-1 text-base text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1">
+        Read <ArrowUpRight size={14} aria-hidden />
+      </span>
+    </div>
+  )
+}
+
+/** Image tile for insight cards — real thumbnail when present, signature gradient otherwise. */
+function InsightMedia({ item }: { item: NormalizedItem }): JSX.Element {
+  if (item.image) {
+    return (
+      <>
+        <img
+          src={item.image}
+          alt=""
+          loading="lazy"
+          className="absolute inset-0 size-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
+        />
+        <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent to-black/25" />
+      </>
+    )
+  }
+  return <GradientPanel tone={item.tone} interactive scrim="none" />
+}
+
+/* ------------------------------------------------------------------ */
+/* Card variants                                                      */
+/* ------------------------------------------------------------------ */
+
 /**
  * Gradient/noise tile card — the design's hero archive card. Eyebrow + title overlay
  * sit on the signature content-type gradient with a scrim for legibility, and a Read
@@ -109,8 +180,8 @@ function GradientTileCard({ item, index }: { item: NormalizedItem; index: number
 }
 
 /**
- * Clean text card — ID badge, Poppins title, Inter excerpt, code + date row, divider,
- * meta (read time · studio) and a Read affordance with an arrow nudge on hover.
+ * Clean text card (press releases) — ID badge, Poppins title, Inter excerpt, code + date
+ * row, divider, meta (read time · studio) and a Read affordance with an arrow nudge on hover.
  */
 function TextCard({ item, index }: { item: NormalizedItem; index: number }): JSX.Element {
   return (
@@ -124,9 +195,7 @@ function TextCard({ item, index }: { item: NormalizedItem; index: number }): JSX
         href={item.href}
         className="group flex h-full min-h-[300px] flex-col gap-3 rounded-lg border border-line bg-main p-6 transition-colors duration-300 hover:border-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
       >
-        <span className="inline-flex w-fit items-center rounded-full border border-subtle bg-main px-4 py-2 font-display text-lg leading-none tracking-[-0.05em] text-cream">
-          {item.categoryLabel}
-        </span>
+        <CardPill label={item.categoryLabel} />
 
         <h3 className="line-clamp-3 font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
           {item.title}
@@ -136,24 +205,83 @@ function TextCard({ item, index }: { item: NormalizedItem; index: number }): JSX
           <p className="line-clamp-3 text-base leading-[1.15] tracking-[-0.05em] text-body">{item.excerpt}</p>
         )}
 
-        {(item.code || item.date) && (
-          <div className="mt-auto flex items-center justify-between text-[12px] tracking-[-0.05em] text-body">
-            <span>{item.code ?? ''}</span>
-            <span>{formatDate(item.date)}</span>
-          </div>
-        )}
+        <div className="mt-auto flex flex-col gap-3">
+          <CodeDateRow item={item} />
+          <MetaFooter item={item} />
+        </div>
+      </Link>
+    </Motion>
+  )
+}
 
-        <div className="flex items-center justify-between border-t border-subtle pt-4 text-[12px] tracking-[-0.05em] text-body">
-          <span className="flex min-w-0 items-center gap-2">
-            <Clock size={12} className="shrink-0" aria-hidden />
-            <span className="truncate">
-              {item.readTime ?? '12 min'}
-              {item.categoryLabel ? ` · ${item.categoryLabel}` : ''}
-            </span>
-          </span>
-          <span className="flex shrink-0 items-center gap-1 text-base text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1">
-            Read <ArrowUpRight size={14} aria-hidden />
-          </span>
+/**
+ * Insight card — signature image/gradient tile on top, then pill, Poppins title, excerpt,
+ * code + date and the meta footer. Fills a single bento column.
+ */
+function InsightImageCard({ item, index }: { item: NormalizedItem; index: number }): JSX.Element {
+  return (
+    <Motion
+      tag="div"
+      {...motionGridItemProps}
+      transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+      className="h-full"
+    >
+      <Link
+        href={item.href}
+        className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-main transition-colors duration-300 hover:border-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+      >
+        <div className="relative aspect-[482/440] w-full overflow-hidden">
+          <InsightMedia item={item} />
+        </div>
+        <div className="flex flex-1 flex-col gap-3 p-6">
+          <CardPill label={item.categoryLabel} />
+          <h3 className="line-clamp-2 font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+            {item.title}
+          </h3>
+          {item.excerpt && (
+            <p className="line-clamp-3 text-base leading-[1.15] tracking-[-0.05em] text-body">{item.excerpt}</p>
+          )}
+          <div className="mt-auto flex flex-col gap-3">
+            <CodeDateRow item={item} />
+            <MetaFooter item={item} />
+          </div>
+        </div>
+      </Link>
+    </Motion>
+  )
+}
+
+/**
+ * Wide insight card (bento accent) — spans two columns: pill + title + excerpt on top, a
+ * wide image band in the middle, and the code/date + meta footer beneath.
+ */
+function InsightWideCard({ item, index }: { item: NormalizedItem; index: number }): JSX.Element {
+  return (
+    <Motion
+      tag="div"
+      {...motionGridItemProps}
+      transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+      className="h-full md:col-span-2 lg:col-span-2"
+    >
+      <Link
+        href={item.href}
+        className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-main transition-colors duration-300 hover:border-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+      >
+        <div className="flex flex-col gap-3 p-6 pb-4">
+          <CardPill label={item.categoryLabel} />
+          <h3 className="line-clamp-2 font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+            {item.title}
+          </h3>
+          {item.excerpt && (
+            <p className="line-clamp-2 text-base leading-[1.15] tracking-[-0.05em] text-body">{item.excerpt}</p>
+          )}
+        </div>
+        <div className="relative min-h-[240px] w-full flex-1 overflow-hidden">
+          <InsightMedia item={item} />
+        </div>
+        <div className="flex flex-col gap-3 p-6 pt-4">
+          <CodeDateRow item={item} />
+          <MetaFooter item={item} />
         </div>
       </Link>
     </Motion>
@@ -187,6 +315,8 @@ export default function AllStoriesGrid({
       .map((item, index): NormalizedItem => {
         const doc = item.value
         const type = item.relationTo as ContentType
+        const rawRead = 'readTime' in doc ? (doc as { readTime?: unknown }).readTime : null
+        const thumb = 'thumbnail' in doc ? doc.thumbnail : null
         return {
           id: `${type}-${doc.id}`,
           type,
@@ -195,7 +325,10 @@ export default function AllStoriesGrid({
           excerpt: doc.excerpts,
           code: 'code' in doc ? doc.code : null,
           date: 'publishedDate' in doc ? doc.publishedDate : null,
-          readTime: 'readTime' in doc && typeof doc.readTime === 'number' ? `${doc.readTime} min` : null,
+          readTime:
+            typeof rawRead === 'number' ? `${rawRead} min` : typeof rawRead === 'string' && rawRead ? rawRead : null,
+          studioLabel: 'categoryLabel' in doc ? (doc.categoryLabel as string | null) : null,
+          image: thumb && typeof thumb === 'object' ? getMediaUrl(thumb.url, thumb.updatedAt) : null,
           categoryLabel: CATEGORY_LABELS[type],
           tone: toneFor(type, index),
         }
@@ -213,6 +346,11 @@ export default function AllStoriesGrid({
           code: pr.code,
           date: pr.releaseDate,
           readTime: pr.readTime,
+          studioLabel: pr.categoryLabel,
+          image:
+            pr.thumbnail && typeof pr.thumbnail === 'object'
+              ? getMediaUrl(pr.thumbnail.url, pr.thumbnail.updatedAt)
+              : null,
           categoryLabel: CATEGORY_LABELS.pressRelease,
           tone: toneFor('pressRelease', index),
         }),
@@ -243,10 +381,11 @@ export default function AllStoriesGrid({
     })
   }, [normalized, activeFilter, searchQuery])
 
-  // The design opens the archive with a band of gradient tiles, then text cards beneath.
-  const TILE_COUNT = 8
-  const tileItems = filtered.slice(0, TILE_COUNT)
-  const textItems = filtered.slice(TILE_COUNT)
+  // The design lays the archive out in three type-specific bands: case-study gradient tiles,
+  // a row of press-release text cards, then an insights bento (image cards + one wide accent).
+  const storyItems = useMemo(() => filtered.filter((i) => i.type === 'story' || i.type === 'research'), [filtered])
+  const pressItems = useMemo(() => filtered.filter((i) => i.type === 'pressRelease'), [filtered])
+  const insightItems = useMemo(() => filtered.filter((i) => i.type === 'insight'), [filtered])
 
   const hasSearch = searchQuery.trim().length > 0
 
@@ -313,19 +452,34 @@ export default function AllStoriesGrid({
 
       {filtered.length > 0 ? (
         <div className="space-y-4">
-          {tileItems.length > 0 && (
+          {/* Case studies — up to two rows of gradient tiles. */}
+          {storyItems.length > 0 && (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {tileItems.map((item, index) => (
+              {storyItems.map((item, index) => (
                 <GradientTileCard key={item.id} item={item} index={index} />
               ))}
             </div>
           )}
 
-          {textItems.length > 0 && (
+          {/* Press releases — a row of clean text cards. */}
+          {pressItems.length > 0 && (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {textItems.map((item, index) => (
-                <TextCard key={item.id} item={item} index={index + tileItems.length} />
+              {pressItems.map((item, index) => (
+                <TextCard key={item.id} item={item} index={index} />
               ))}
+            </div>
+          )}
+
+          {/* Insights — a bento of image cards; every fifth card widens to two columns. */}
+          {insightItems.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {insightItems.map((item, index) =>
+                index % 5 === 4 ? (
+                  <InsightWideCard key={item.id} item={item} index={index} />
+                ) : (
+                  <InsightImageCard key={item.id} item={item} index={index} />
+                ),
+              )}
             </div>
           )}
         </div>

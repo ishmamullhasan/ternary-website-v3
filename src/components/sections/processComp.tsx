@@ -29,12 +29,18 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
         {/* Header — pinned to the left, mirroring the capability "How we do it" rhythm. */}
         <Motion className="flex shrink-0 flex-col gap-4 lg:w-[32%]" {...reveal}>
           <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">Process</p>
-          {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
-          {description && (
-            <RichTextComp
-              content={description as RichText}
-              className="max-w-md prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body"
-            />
+          {/* Heading + description grouped so their gap matches the other sections (natural flow),
+              while the eyebrow keeps the container's gap-4 rhythm above the heading. */}
+          {(heading || description) && (
+            <div>
+              {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
+              {description && (
+                <RichTextComp
+                  content={description as RichText}
+                  className="max-w-md prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body"
+                />
+              )}
+            </div>
           )}
         </Motion>
 
