@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import PressActions from '@/components/sections/insights/PressActions'
 import JsonLd from '@/components/seo/JsonLd'
@@ -21,6 +22,7 @@ import {
   Phone,
   Quote,
   Tag,
+  Twitter,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
@@ -143,6 +145,7 @@ function RelatedPressReleaseCard({ item, index, locale }: { item: PressRelease; 
   return (
     <Motion
       tag="div"
+      className="h-full"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
@@ -326,7 +329,7 @@ export default async function Page({
                 <a
                   href={mediaKit.url}
                   download
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full border border-subtle px-4 py-2.5 text-[14px] text-cream transition-colors hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full border border-cream/40 px-4 py-2.5 text-[14px] text-cream transition-colors hover:border-cream/60 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
                 >
                   <Download size={14} />
                   Download media kit
@@ -406,7 +409,7 @@ export default async function Page({
                     rel="noopener noreferrer"
                     className="inline-flex w-fit items-center gap-2 rounded-[2px] text-[16px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
                   >
-                    X / Twitter
+                    <Twitter size={14} className="shrink-0" aria-hidden />X / Twitter
                   </a>
                   <a
                     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
@@ -414,12 +417,14 @@ export default async function Page({
                     rel="noopener noreferrer"
                     className="inline-flex w-fit items-center gap-2 rounded-[2px] text-[16px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
                   >
+                    <Linkedin size={14} className="shrink-0" aria-hidden />
                     LinkedIn
                   </a>
                   <a
                     href={`mailto:?subject=${shareTitle}&body=${encodeURIComponent(shareUrl)}`}
                     className="inline-flex w-fit items-center gap-2 rounded-[2px] text-[16px] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70"
                   >
+                    <Mail size={14} className="shrink-0" aria-hidden />
                     Email
                   </a>
                 </div>
@@ -614,7 +619,15 @@ export default async function Page({
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[280px]">
+            {relatedItems.map((item, index) => (
+              <RelatedPressReleaseCard key={item.id} item={item} index={index} locale={typedLocale} />
+            ))}
+          </MobileCarousel>
+
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
             {relatedItems.map((item, index) => (
               <RelatedPressReleaseCard key={item.id} item={item} index={index} locale={typedLocale} />
             ))}

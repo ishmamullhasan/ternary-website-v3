@@ -100,9 +100,9 @@ export default async function Page({
     .map((c) => ({ name: c.label as string, url: `${base}/${typedLocale}${c.url}` }))
 
   return (
-    <main>
+    <div>
       {crumbs.length > 0 && <JsonLd data={breadcrumbList(crumbs)} />}
       <RenderBlocks blocks={page.layout} />
-    </main>
+    </div>
   )
 }

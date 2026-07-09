@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
@@ -190,6 +191,41 @@ function Pill({ children }: { children: ReactNode }): JSX.Element {
 // Reusable section shell: near-black bordered panel with generous editorial padding.
 const SECTION_SHELL = 'rounded-md border border-white/[0.06] bg-ink p-6 lg:p-12'
 
+// Single related-solution card — shared by the sm+ grid and the mobile carousel. `h-full` on the
+// Motion root lets the flex/grid parent stretch every card to equal height.
+function RelatedSolutionCard({
+  solution,
+  locale,
+  index,
+}: {
+  solution: Solution
+  locale: TypedLocale
+  index: number
+}): JSX.Element {
+  return (
+    <Motion {...revealItem(index)} className="h-full">
+      <Link
+        href={`/${locale}/solutions/${solution.slug}`}
+        className={cn(
+          'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-white/[0.03]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page',
+        )}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="text-[16px] font-medium text-cream">{solution.title}</h3>
+          <ArrowUpRight
+            size={15}
+            strokeWidth={2}
+            aria-hidden
+            className="shrink-0 text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream"
+          />
+        </div>
+        {solution.excerpts && <p className="text-[13px] leading-relaxed text-subtle">{solution.excerpts}</p>}
+      </Link>
+    </Motion>
+  )
+}
+
 export default async function Page({
   params,
 }: {
@@ -300,28 +336,27 @@ export default async function Page({
         <Motion tag="section" className={SECTION_SHELL} {...reveal}>
           <SectionHeader index={2} label="Related solutions" heading="Explore more" className="mb-10" />
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[280px]">
             {relatedSolutions.map((item, index) => (
-              <Motion key={item.id ?? `related-${index}`} {...revealItem(index)}>
-                <Link
-                  href={`/${typedLocale}/solutions/${item.slug}`}
-                  className={cn(
-                    'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-white/[0.03]',
-                    focusRing,
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-[16px] font-medium text-cream">{item.title}</h3>
-                    <ArrowUpRight
-                      size={15}
-                      strokeWidth={2}
-                      aria-hidden
-                      className="shrink-0 text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream"
-                    />
-                  </div>
-                  {item.excerpts && <p className="text-[13px] leading-relaxed text-subtle">{item.excerpts}</p>}
-                </Link>
-              </Motion>
+              <RelatedSolutionCard
+                key={item.id ?? `related-${index}`}
+                solution={item}
+                locale={typedLocale}
+                index={index}
+              />
+            ))}
+          </MobileCarousel>
+
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
+            {relatedSolutions.map((item, index) => (
+              <RelatedSolutionCard
+                key={item.id ?? `related-${index}`}
+                solution={item}
+                locale={typedLocale}
+                index={index}
+              />
             ))}
           </div>
         </Motion>
@@ -335,18 +370,18 @@ export default async function Page({
       >
         <NoiseGradient tone={CTA_TONE} />
 
-        <div className="relative z-10 flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <Motion className="flex max-w-xl flex-col items-start gap-3" {...revealItem(0)}>
+        <div className="relative z-10 flex flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
+          <Motion className="flex max-w-xl flex-col items-center gap-3 lg:items-start" {...revealItem(0)}>
             <Pill>Let&apos;s talk</Pill>
             <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
               {solution.title ? `Ready to put ${solution.title} to work?` : 'Ready to get started?'}
             </h2>
-            <p className="max-w-lg text-[14px] leading-relaxed text-cream/75">
+            <p className="mx-auto max-w-lg text-[14px] leading-relaxed text-cream/75 lg:mx-0">
               Tell us where you are today and we&apos;ll map the fastest path to outcomes that matter.
             </p>
           </Motion>
 
-          <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row lg:ml-auto">
+          <div className="flex w-full shrink-0 flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row lg:ml-auto">
             <Link
               href={`/${typedLocale}/contact`}
               className={cn(

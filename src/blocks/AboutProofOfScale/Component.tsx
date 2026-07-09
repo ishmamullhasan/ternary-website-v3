@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutProofOfScaleBlock, Media } from '@/payload-types'
 import { Box } from 'lucide-react'
@@ -11,6 +12,45 @@ const MOTION_BLOCK = {
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-60px' as const },
+}
+
+type CompanyItem = NonNullable<NonNullable<AboutProofOfScaleBlock['company']>['items']>[number]
+
+// Single company card — shared by the sm+ grid and the mobile carousel (excerpt → uppercase tag
+// pills → icon + brand footer).
+function CompanyCard({ item }: { item: CompanyItem }): JSX.Element {
+  const logoUrl = (item.logo as Media | undefined)?.url ?? undefined
+  const logoAlt = (item.logo as Media | undefined)?.alt ?? item.name ?? ''
+  return (
+    <div className="group flex h-full min-h-[267px] flex-col justify-between rounded-sm bg-ink px-4 pb-4 pt-6 transition-[transform,background-color] duration-300 ease-out hover:-translate-y-1 hover:bg-[#151414]">
+      <div className="flex flex-col gap-4">
+        {item.excerpt ? <p className="text-base leading-snug text-body/90">{item.excerpt}</p> : null}
+        {item.stack?.length ? (
+          <div className="flex flex-wrap gap-2">
+            {item.stack.map((tag, tagIndex) => (
+              <span
+                key={tag.id ?? tagIndex}
+                className="rounded-full border border-subtle bg-main px-4 py-1 text-xs font-normal uppercase tracking-[-0.025em] text-cream/90"
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
+
+      {item.name ? (
+        <div className="mt-8 flex items-center gap-2 text-cream">
+          {logoUrl ? (
+            <Image src={logoUrl} alt={logoAlt} width={24} height={24} className="h-6 w-6 shrink-0 object-contain" />
+          ) : (
+            <Box aria-hidden className="h-6 w-6 text-cream/80" />
+          )}
+          <span className="text-2xl font-bold tracking-[-0.025em]">{item.name}</span>
+        </div>
+      ) : null}
+    </div>
+  )
 }
 
 /**
@@ -93,53 +133,29 @@ export function AboutProofOfScaleComponent({
           {company?.items?.length ? (
             // Figma right-aligns the 4-up card grid at a fixed 1171px (≈280px cards), leaving the
             // left edge open under the heading; below lg it relaxes to a full-width 1/2-col stack.
-            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:ml-auto lg:mt-8 lg:max-w-[1171px] lg:grid-cols-4">
-              {company.items.map((item, index) => {
-                const logoUrl = (item.logo as Media | undefined)?.url ?? undefined
-                const logoAlt = (item.logo as Media | undefined)?.alt ?? item.name ?? ''
-                return (
+            <>
+              {/* Mobile: horizontal snap carousel with pagination dots (mt-8 mirrors the grid's top
+                  spacing, since the grid is hidden on mobile). */}
+              <MobileCarousel slideClassName="w-[280px]" className="mt-8">
+                {company.items.map((item, index) => (
+                  <CompanyCard key={item.id ?? index} item={item} />
+                ))}
+              </MobileCarousel>
+
+              {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+              <div className="mt-8 hidden gap-4 sm:grid sm:grid-cols-2 lg:ml-auto lg:mt-8 lg:max-w-[1171px] lg:grid-cols-4">
+                {company.items.map((item, index) => (
                   <Motion
                     key={item.id ?? index}
-                    className="group flex h-full min-h-[267px] flex-col justify-between rounded-sm bg-ink px-4 pb-4 pt-6 transition-[transform,background-color] duration-300 ease-out hover:-translate-y-1 hover:bg-[#151414]"
+                    className="h-full"
                     {...MOTION_BLOCK}
                     transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
                   >
-                    <div className="flex flex-col gap-4">
-                      {item.excerpt ? <p className="text-base leading-snug text-body/90">{item.excerpt}</p> : null}
-                      {item.stack?.length ? (
-                        <div className="flex flex-wrap gap-2">
-                          {item.stack.map((tag, tagIndex) => (
-                            <span
-                              key={tag.id ?? tagIndex}
-                              className="rounded-full border border-subtle bg-main px-4 py-1 text-xs font-normal uppercase tracking-[-0.025em] text-cream/90"
-                            >
-                              {tag.name}
-                            </span>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    {item.name ? (
-                      <div className="mt-8 flex items-center gap-2 text-cream">
-                        {logoUrl ? (
-                          <Image
-                            src={logoUrl}
-                            alt={logoAlt}
-                            width={24}
-                            height={24}
-                            className="h-6 w-6 shrink-0 object-contain"
-                          />
-                        ) : (
-                          <Box aria-hidden className="h-6 w-6 text-cream/80" />
-                        )}
-                        <span className="text-2xl font-bold tracking-[-0.025em]">{item.name}</span>
-                      </div>
-                    ) : null}
+                    <CompanyCard item={item} />
                   </Motion>
-                )
-              })}
-            </div>
+                ))}
+              </div>
+            </>
           ) : null}
         </section>
       ) : null}

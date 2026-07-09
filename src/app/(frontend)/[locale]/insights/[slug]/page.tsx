@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import GradientAvatar from '@/components/sections/insights/GradientAvatar'
@@ -136,6 +137,7 @@ function RelatedInsightCard({ item, index, locale }: { item: Insight; index: num
   return (
     <Motion
       tag="div"
+      className="h-full"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
@@ -257,7 +259,8 @@ export default async function Page({
             </div>
 
             {showMetaRow && (
-              <div className="flex flex-wrap items-center gap-x-8 gap-y-6">
+              // Mobile stacks the author above its own row of meta pairs; sm+ flows all four inline.
+              <div className="flex flex-col gap-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8">
                 {showAuthorMeta && (
                   <div className="flex items-center gap-3">
                     <GradientAvatar image={authorImage} name={author?.name} size={40} />
@@ -268,9 +271,14 @@ export default async function Page({
                   </div>
                 )}
 
-                <MetaPair label="Published" value={insight.publishedDate ? formatDate(insight.publishedDate) : null} />
-                <MetaPair label="Read time" value={insight.readTime} />
-                <MetaPair label="Slug" value={insight.slug} />
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-6 sm:contents">
+                  <MetaPair
+                    label="Published"
+                    value={insight.publishedDate ? formatDate(insight.publishedDate) : null}
+                  />
+                  <MetaPair label="Read time" value={insight.readTime} />
+                  <MetaPair label="Slug" value={insight.slug} />
+                </div>
               </div>
             )}
           </div>
@@ -375,7 +383,15 @@ export default async function Page({
             />
           )}
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[280px]">
+            {relatedItems.map((item, index) => (
+              <RelatedInsightCard key={item.id} item={item} index={index} locale={typedLocale} />
+            ))}
+          </MobileCarousel>
+
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
             {relatedItems.map((item, index) => (
               <RelatedInsightCard key={item.id} item={item} index={index} locale={typedLocale} />
             ))}
@@ -403,20 +419,20 @@ export default async function Page({
           />
           <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/45" />
 
-          <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex flex-col items-start text-left lg:max-w-xl">
+          <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
+            <div className="flex flex-col items-center text-center lg:items-start lg:text-left lg:max-w-xl">
               <h2 className="mb-3 font-display text-2xl font-medium leading-[1.2] tracking-[-0.02em] text-cream md:text-3xl lg:text-4xl">
                 {insight.cta.heading}
               </h2>
               {insight.cta.description && (
                 <RichTextComp
                   content={insight.cta.description as RichText}
-                  className="max-w-lg [&_p]:text-[14px] [&_p]:leading-relaxed [&_p]:text-body/85 md:[&_p]:text-[15px]"
+                  className="mx-auto max-w-lg [&_p]:text-[14px] [&_p]:leading-relaxed [&_p]:text-body/85 md:[&_p]:text-[15px] lg:mx-0"
                 />
               )}
             </div>
 
-            <div className="flex shrink-0 flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:ml-auto">
+            <div className="flex w-full shrink-0 flex-col items-stretch justify-center gap-3 sm:w-auto sm:flex-row sm:items-center lg:ml-auto">
               {insight.cta.button_1?.label && (
                 <Link
                   href={insight.cta.button_1.link || '#'}

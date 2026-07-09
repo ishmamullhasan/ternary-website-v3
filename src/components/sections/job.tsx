@@ -1,9 +1,11 @@
 'use client'
 
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Section from '@/components/layout/section'
 import type { RichText } from '@/components/richtext'
 import { careersText } from '@/lib/careers-colors'
 import type { JobListing } from '@/lib/jobs-data'
+import { cn } from '@/lib/utils'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { motion } from 'motion/react'
 import Link from 'next/link'
@@ -19,6 +21,9 @@ interface JobsProps {
   description?: RichText | string | null
   /** Locale segment to prefix job detail links with (WEB-445), e.g. "en". "" keeps legacy links. */
   localePrefix?: string
+  /** When true, the role listing becomes a horizontal carousel on mobile (used by the job-detail
+      "Other Open Roles" strip); the grid still renders at sm+. Defaults to the plain stacked grid. */
+  mobileCarousel?: boolean
 }
 
 const fadeUp = {
@@ -101,7 +106,13 @@ function JobCard({ job, localePrefix }: { job: JobListing; localePrefix: string 
   )
 }
 
-export default function Jobs({ jobs, heading, description, localePrefix = '' }: JobsProps): JSX.Element {
+export default function Jobs({
+  jobs,
+  heading,
+  description,
+  localePrefix = '',
+  mobileCarousel = false,
+}: JobsProps): JSX.Element {
   // Hooks must run unconditionally before any early return (react-hooks/rules-of-hooks).
   const [selectedDepartment, setSelectedDepartment] = useState<string>('All Departments')
   const [selectedLevel, setSelectedLevel] = useState<string>('All Levels')
@@ -248,7 +259,15 @@ export default function Jobs({ jobs, heading, description, localePrefix = '' }: 
         )}
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      {mobileCarousel && filteredJobs.length > 0 && (
+        <MobileCarousel slideClassName="w-[300px]" className="mb-0">
+          {filteredJobs.map((job) => (
+            <JobCard key={job.id ?? job.slug} job={job} localePrefix={localePrefix} />
+          ))}
+        </MobileCarousel>
+      )}
+
+      <div className={cn('grid grid-cols-1 gap-5 md:grid-cols-2', mobileCarousel && 'hidden sm:grid')}>
         {filteredJobs.length > 0 ? (
           filteredJobs.map((job) => <JobCard key={job.id ?? job.slug} job={job} localePrefix={localePrefix} />)
         ) : (

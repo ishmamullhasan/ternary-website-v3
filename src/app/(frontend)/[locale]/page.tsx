@@ -73,8 +73,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   const page = await getHomePage(draft, typedLocale)
 
   return (
-    <main>
+    <div>
       <RenderBlocks blocks={page?.layout} />
-    </main>
+    </div>
   )
 }

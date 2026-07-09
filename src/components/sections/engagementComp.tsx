@@ -2,6 +2,7 @@
 import Motion from '@/components/animation/motion'
 import { reveal, revealItem } from '@/components/animation/reveal'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Media, Scale } from '@/payload-types'
 import Image from 'next/image'
@@ -12,6 +13,27 @@ interface EngagementCompProps {
   // richText since the description→Lexical migration; string kept for legacy DB rows.
   description?: RichText | string | null
   model?: Scale[] | null
+}
+
+// Single engagement-model card — shared by the sm+ grid and the mobile carousel. Gradient base IS
+// the fallback (always rendered); an optional CMS image layers on top.
+function EngagementCard({ item, index }: { item: Scale; index: number }): JSX.Element {
+  const thumbnail = item.thumbnail as Media | undefined
+  const url = thumbnail?.url
+
+  return (
+    <div className="group relative aspect-[22/25] w-full overflow-hidden rounded-md border border-line bg-ink">
+      <GradientPanel tone={toneFor(undefined, index)} interactive />
+
+      {url && <Image src={url} alt={item.title || 'engagement model'} fill className="relative object-cover" />}
+
+      {/* text */}
+      <div className="absolute inset-x-4 bottom-4 z-10">
+        <h3 className="font-medium text-cream">{item.title}</h3>
+        <p className="mt-2 text-sm text-cream">{item.excerpts}</p>
+      </div>
+    </div>
+  )
 }
 
 export default function EngagementComp({ heading, description, model }: EngagementCompProps) {
@@ -26,33 +48,22 @@ export default function EngagementComp({ heading, description, model }: Engageme
           {description && <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />}
         </Motion>
 
-        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:w-auto lg:grid-cols-3">
-          {model.map((item, index): JSX.Element => {
-            const thumbnail = item.thumbnail as Media | undefined
-            const url = thumbnail?.url
+        <div className="w-full lg:w-auto">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[260px]">
+            {model.map((item, index) => (
+              <EngagementCard key={index} item={item} index={index} />
+            ))}
+          </MobileCarousel>
 
-            return (
-              <Motion
-                key={index}
-                className="group relative aspect-[22/25] overflow-hidden rounded-md border border-line bg-ink"
-                {...revealItem(index)}
-              >
-                {/* gradient base IS the fallback — always rendered */}
-                <GradientPanel tone={toneFor(undefined, index)} interactive />
-
-                {/* optional CMS media layered on top */}
-                {url && (
-                  <Image src={url} alt={item.title || 'engagement model'} fill className="relative object-cover" />
-                )}
-
-                {/* text */}
-                <div className="absolute inset-x-4 bottom-4 z-10">
-                  <h3 className="font-medium text-cream">{item.title}</h3>
-                  <p className="mt-2 text-sm text-cream">{item.excerpts}</p>
-                </div>
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden w-full gap-4 sm:grid sm:grid-cols-2 lg:w-auto lg:grid-cols-3">
+            {model.map((item, index): JSX.Element => (
+              <Motion key={index} {...revealItem(index)}>
+                <EngagementCard item={item} index={index} />
               </Motion>
-            )
-          })}
+            ))}
+          </div>
         </div>
       </div>
     </section>

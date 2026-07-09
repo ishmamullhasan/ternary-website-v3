@@ -25,6 +25,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import {
   BlocksFeature,
   FixedToolbarFeature,
+  HeadingFeature,
   InlineToolbarFeature,
   lexicalEditor,
   LinkFeature,
@@ -90,7 +91,12 @@ export default buildConfig({
   // values stay the generic SerializedEditorState shape.
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
-      ...defaultFeatures,
+      // Drop the stock heading feature (h1–h6) and re-add it restricted to h2–h4. The page's single
+      // <h1> is owned by the hero block or the page shell, so an authored h1 in body copy creates a
+      // second one; h5/h6 only ever appear via a skipped level. Toolbar-only — stored nodes are
+      // untouched, and the JSX converter (components/richtext/index.tsx) still renders legacy h1.
+      ...defaultFeatures.filter((f) => f.key !== 'heading'),
+      HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
       LinkFeature({
         enabledCollections: ['pages', 'insight', 'pressRelease', 'story', 'capability'],
       }),

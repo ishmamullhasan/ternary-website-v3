@@ -64,7 +64,7 @@ export function AboutFundingStoryComponent({
           the CTA below (Figma pairs the copy closer than it sits from the button). */}
       <div className="flex flex-col items-center">
         {eyebrow ? (
-          <span className="font-display text-xs font-medium uppercase tracking-[0.18em] text-cream/60">{eyebrow}</span>
+          <span className="font-display text-xs font-medium uppercase tracking-[0.18em] text-cream/70">{eyebrow}</span>
         ) : null}
         {heading ? (
           <h2 className="max-w-[1276px] font-display text-[clamp(1.75rem,4vw,40px)] font-medium leading-[1.15] text-balance text-cream">

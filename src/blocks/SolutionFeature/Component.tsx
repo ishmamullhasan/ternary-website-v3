@@ -323,7 +323,7 @@ function FeaturePanel({ widget, stat }: { widget: string; stat?: SolutionFeature
 }
 
 const InfoCard = ({ title, description }: { title?: string | null; description?: string | null }): JSX.Element => (
-  <div className="flex min-h-44 flex-col justify-end rounded-md bg-main p-6">
+  <div className="flex min-h-44 flex-col justify-start rounded-md bg-main p-6">
     <h4 className="font-display mb-2 text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">{title}</h4>
     <p className="text-base leading-[1.4] text-body">{description}</p>
   </div>
@@ -433,7 +433,7 @@ export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Eleme
 
       {/* Who/Shape detail cards */}
       {(who?.label || shape?.label) && (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-4">
           {who?.label ? <InfoCard title={who.label} description={who.value} /> : null}
           {shape?.label ? <InfoCard title={shape.label} description={shape.value} /> : null}
         </div>

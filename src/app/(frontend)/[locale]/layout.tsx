@@ -1,10 +1,11 @@
+import SkipLink from '@/components/a11y/SkipLink'
 import AnalyticsBeacon from '@/components/analytics/AnalyticsBeacon'
 import LivePreviewListener from '@/components/LivePreviewListener'
 import LocaleFab from '@/components/LocaleFab'
 import Footer from '@/components/sections/footer'
 import Header from '@/components/sections/header'
 import JsonLd from '@/components/seo/JsonLd'
-import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
+import { asTypedLocale, LOCALES, type Locale } from '@/lib/i18n/locales'
 import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME } from '@/lib/seo/config'
 import { organization, website } from '@/lib/seo/jsonLd'
 import { getFooter, getHeader } from '@/utilities/getGlobals'
@@ -91,13 +92,25 @@ export default async function RootLayout({
       <body
         className={`${poppins.variable} ${inter.variable} antialiased py-0 bg-page text-cream w-full overflow-x-hidden`}
       >
+        {/* Must be the first focusable element in the document (WCAG 2.4.1). */}
+        <SkipLink locale={typedLocale as Locale} />
         {/* Sitewide structured data: who publishes this site + the site itself. */}
         <JsonLd data={organization()} />
         <JsonLd data={website()} />
         <Header headerData={headerData as React.ComponentProps<typeof Header>['headerData']} />
         {/* Top offset clears the fixed floating-pill header (the old hero lg:pt-10/pt-4 is folded
             into this so spacing isn't doubled). The locale switcher now lives inside the header. */}
-        <main className="flex flex-col" style={{ paddingTop: 'calc(var(--nav-h) + var(--nav-gap) + 12px)' }}>
+        {/* tabIndex={-1} makes <main> a programmatic focus target for the skip link — without it,
+            activating the link scrolls the viewport but leaves focus stranded in the header.
+            outline-none is safe here (unlike on a control): SC 2.4.7 governs user interface
+            components, and a landmark focused transiently by the skip link is not one. Otherwise
+            the global :focus-visible rule would draw a cream outline around the entire page. */}
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex flex-col focus:outline-none"
+          style={{ paddingTop: 'calc(var(--nav-h) + var(--nav-gap) + 12px)' }}
+        >
           {children}
         </main>
         <Footer footerData={footerData as React.ComponentProps<typeof Footer>['footerData']} />

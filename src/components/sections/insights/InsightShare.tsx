@@ -1,5 +1,6 @@
 'use client'
 
+import { Check, Link2, Linkedin, Twitter } from 'lucide-react'
 import { useState } from 'react'
 
 interface InsightShareProps {
@@ -27,13 +28,18 @@ export default function InsightShare({ url, title }: InsightShareProps) {
   }
 
   const linkClass =
-    'rounded-sm text-left text-[16px] leading-[1.15] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70'
+    'inline-flex items-center gap-2 rounded-sm text-left text-[16px] leading-[1.15] text-subtle transition-colors hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70'
 
   return (
     <div className="flex flex-col gap-4 rounded-sm bg-main p-4">
-      <p className="text-[12px] text-subtle">Share</p>
+      <p className="text-[14px] font-bold text-cream">Share</p>
       <div className="flex flex-col gap-2">
         <button type="button" onClick={handleCopyLink} className={linkClass} aria-live="polite">
+          {copied ? (
+            <Check size={16} className="shrink-0" aria-hidden />
+          ) : (
+            <Link2 size={16} className="shrink-0" aria-hidden />
+          )}
           {copied ? 'Link copied' : 'Copy link'}
         </button>
         <a
@@ -42,6 +48,7 @@ export default function InsightShare({ url, title }: InsightShareProps) {
           rel="noopener noreferrer"
           className={linkClass}
         >
+          <Twitter size={16} className="shrink-0" aria-hidden />
           Post on X
         </a>
         <a
@@ -50,6 +57,7 @@ export default function InsightShare({ url, title }: InsightShareProps) {
           rel="noopener noreferrer"
           className={linkClass}
         >
+          <Linkedin size={16} className="shrink-0" aria-hidden />
           Share to LinkedIn
         </a>
       </div>

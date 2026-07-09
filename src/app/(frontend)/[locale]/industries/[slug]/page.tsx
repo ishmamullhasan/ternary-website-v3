@@ -1,5 +1,6 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
@@ -196,7 +197,7 @@ function RelatedCard({
   index: number
 }): JSX.Element {
   return (
-    <Motion {...revealItem(index)}>
+    <Motion {...revealItem(index)} className="h-full">
       <Link
         href={`/${locale}/industries/${industry.slug}`}
         className={cn(
@@ -255,9 +256,9 @@ export default async function Page({
   // fall through to the bespoke presentation below, so no existing page regresses.
   if (industry.layout?.length) {
     return (
-      <main>
+      <div>
         <RenderBlocks blocks={industry.layout as PageDoc['layout']} />
-      </main>
+      </div>
     )
   }
 
@@ -333,7 +334,15 @@ export default async function Page({
         <Motion tag="section" className="rounded-md border border-white/[0.06] bg-card p-6 lg:p-12" {...reveal}>
           <SectionHeader index={2} label="Related industries" heading="Explore more verticals" className="mb-10" />
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[280px]">
+            {relatedIndustries.map((item, index) => (
+              <RelatedCard key={item.id} industry={item} locale={typedLocale} index={index} />
+            ))}
+          </MobileCarousel>
+
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
             {relatedIndustries.map((item, index) => (
               <RelatedCard key={item.id} industry={item} locale={typedLocale} index={index} />
             ))}
@@ -349,17 +358,17 @@ export default async function Page({
       >
         <NoiseGradient tone={CTA_TONE} />
 
-        <div className="relative z-10 flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <Motion className="flex max-w-xl flex-col items-start gap-3" {...revealItem(0)}>
+        <div className="relative z-10 flex flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
+          <Motion className="flex max-w-xl flex-col items-center gap-3 lg:items-start" {...revealItem(0)}>
             <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
               {industry.title ? `Building for ${industry.title}?` : "Let's build what's next"}
             </h2>
-            <p className="max-w-lg text-[14px] leading-relaxed text-cream/75">
+            <p className="mx-auto max-w-lg text-[14px] leading-relaxed text-cream/75 lg:mx-0">
               Tell us where you&apos;re headed and we&apos;ll map the engineering path to get there.
             </p>
           </Motion>
 
-          <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row lg:ml-auto">
+          <div className="flex w-full shrink-0 flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row lg:ml-auto">
             <CtaButton
               href={`/${typedLocale}/contact`}
               label={

@@ -6093,7 +6093,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Site header: logo, primary navigation (with mega menus), secondary links, and CTA.
+ * Site header: logo, primary navigation (with mega menus), and secondary links.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
@@ -6324,10 +6324,6 @@ export interface Header {
         id?: string | null;
       }[]
     | null;
-  button?: {
-    label?: string | null;
-    link?: string | null;
-  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -6515,12 +6511,6 @@ export interface HeaderSelect<T extends boolean = true> {
         label?: T;
         link?: T;
         id?: T;
-      };
-  button?:
-    | T
-    | {
-        label?: T;
-        link?: T;
       };
   updatedAt?: T;
   createdAt?: T;

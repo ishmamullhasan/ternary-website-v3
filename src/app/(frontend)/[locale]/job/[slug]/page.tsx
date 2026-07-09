@@ -160,7 +160,7 @@ export default async function Page({
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
       <JsonLd data={jobLd} />
       <JsonLd data={breadcrumbsLd} />
-      <main className="pb-24 max-w-7xl mx-auto px-5 space-y-24 lg:space-y-28">
+      <div className="pb-24 max-w-7xl mx-auto px-5 space-y-24 lg:space-y-28">
         {/* Hero */}
         <Motion tag="section" {...motionSectionProps}>
           <div className={`w-full ${careersText.body}`}>
@@ -299,9 +299,11 @@ export default async function Page({
               )}
             </div>
 
-            {/* Sidebar — Team box is 🟡 CMS; Compensation box mixes ✅ API band + ✅ equity/note */}
+            {/* Sidebar — Team box is 🟡 CMS; Compensation box mixes ✅ API band + ✅ equity/note.
+                order-first pulls it above the description on mobile (single column); lg:order-none
+                restores source order so it sits in the right column on desktop. */}
             {(showTeamBox || showCompensationBox) && (
-              <div className="space-y-5 lg:sticky lg:top-28">
+              <div className="order-first space-y-5 lg:order-none lg:sticky lg:top-28">
                 {showTeamBox && (
                   <Motion
                     className={`${careersBg.card} border ${careersBorder.subtle} rounded-md p-6 space-y-6`}
@@ -414,6 +416,7 @@ export default async function Page({
             heading={jobData.openRoles?.heading || 'Other Open Roles'}
             description={jobData.openRoles?.description || undefined}
             localePrefix={`/${typedLocale}`}
+            mobileCarousel
           />
         )}
 
@@ -485,7 +488,7 @@ export default async function Page({
             </div>
           </Motion>
         )}
-      </main>
+      </div>
     </div>
   )
 }

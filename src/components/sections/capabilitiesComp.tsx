@@ -1,6 +1,7 @@
 'use client'
 import Motion from '@/components/animation/motion'
 import { EASE, reveal, revealItem } from '@/components/animation/reveal'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Capability, Media } from '@/payload-types'
@@ -126,6 +127,23 @@ function IntroMediaCarousel({ slides }: { slides: Media[] }): JSX.Element {
   )
 }
 
+// Single discipline card — shared by the sm+ bento grid and the mobile carousel so both render
+// identically (title, excerpt, Explore CTA). Fills whatever box its wrapper defines.
+function CapabilityCard({ item }: { item: Capability }): JSX.Element {
+  return (
+    <Link
+      href={`/capabilities/${item.slug}`}
+      className={`group flex h-full min-h-[160px] flex-col justify-between rounded-[5px] bg-button-dark p-4 transition-colors duration-300 hover:bg-[#1a1810] ${focusRing}`}
+    >
+      <div>
+        <h3 className="text-[16px] font-medium leading-[1.15] text-cream">{item.title}</h3>
+        {item.excerpts && <p className="mt-2 text-[14px] leading-[1.3] text-cream/80">{item.excerpts}</p>}
+      </div>
+      <span className="mt-6 text-[14px] font-medium whitespace-nowrap text-cream">Explore</span>
+    </Link>
+  )
+}
+
 export default function CapabilitiesComp({ heading, description, capability, slides }: CapabilitiesCompProps) {
   // Empty-state guard: the capabilities grid is the primary content of this section.
   if (!capability || capability.length === 0) return null
@@ -148,25 +166,23 @@ export default function CapabilitiesComp({ heading, description, capability, sli
         )}
       </Motion>
 
-      {/* Disciplines grid: on lg a 5-column grid whose first column is left empty (the design's
+      {/* Mobile: horizontal snap carousel with pagination dots (Figma 1221:2339). */}
+      <MobileCarousel slideClassName="h-[212px] w-[260px]">
+        {capability.map((item, index) => (
+          <CapabilityCard key={item.id ?? index} item={item} />
+        ))}
+      </MobileCarousel>
+
+      {/* Disciplines grid (sm+): on lg a 5-column grid whose first column is left empty (the design's
           indent), so the 8 cards occupy columns 2–5 across two 192px rows. Below lg it collapses
-          to a 1/2-column stack with no gutter. */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:auto-rows-[192px]">
+          to a 2-column stack. Hidden on mobile, where the carousel takes over. */}
+      <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-5 lg:auto-rows-[192px]">
         {/* Empty left gutter (desktop only), spanning both rows. */}
         <div aria-hidden className="hidden lg:block lg:row-span-2" />
         {capability.map((item, index): JSX.Element => {
           return (
             <Motion key={item.id ?? index} tag="div" className="h-full" {...revealItem(index)}>
-              <Link
-                href={`/capabilities/${item.slug}`}
-                className={`group flex h-full min-h-[160px] flex-col justify-between rounded-[5px] bg-button-dark p-4 transition-colors duration-300 hover:bg-[#1a1810] ${focusRing}`}
-              >
-                <div>
-                  <h3 className="text-[16px] font-medium leading-[1.15] text-cream">{item.title}</h3>
-                  {item.excerpts && <p className="mt-2 text-[14px] leading-[1.3] text-cream/80">{item.excerpts}</p>}
-                </div>
-                <span className="mt-6 text-[14px] font-medium whitespace-nowrap text-cream">Explore</span>
-              </Link>
+              <CapabilityCard item={item} />
             </Motion>
           )
         })}

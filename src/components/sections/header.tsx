@@ -4,7 +4,7 @@ import MegaMenuOverlay, { type NavEntry, type SecondaryLink } from '@/components
 import { localeFromPath, localizedHref } from '@/lib/i18n/locales'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
-import { ArrowUpRight, ChevronDown, Menu } from 'lucide-react'
+import { ChevronDown, Menu } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -20,7 +20,6 @@ interface HeaderData {
   exploreLabel?: string | null
   menu?: NavEntry[] | null
   secondaryLinks?: SecondaryLink[] | null
-  button?: { label?: string | null; link?: string | null } | null
 }
 
 interface HeaderProps {
@@ -63,7 +62,6 @@ export default function Header({ headerData }: HeaderProps) {
     () => (headerData?.secondaryLinks ?? []).filter((s) => s?.label),
     [headerData?.secondaryLinks],
   )
-  const cta = headerData?.button
   const logoUrl = getLogoUrl(headerData?.logo)
   const firstMega = useMemo(() => menu.findIndex(isMega), [menu])
 
@@ -120,7 +118,7 @@ export default function Header({ headerData }: HeaderProps) {
       <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:pt-4 pointer-events-none">
         <motion.header
           className={cn(
-            'pointer-events-auto w-full max-w-7xl rounded-2xl px-5 glass',
+            'pointer-events-auto w-full max-w-7xl rounded-2xl px-5 md:glass xl:max-w-5xl',
             reduce && (compact ? 'py-2' : 'py-3.5'),
           )}
           initial={false}
@@ -139,9 +137,11 @@ export default function Header({ headerData }: HeaderProps) {
           }}
         >
           <div className="flex w-full flex-row items-center justify-between gap-4">
-            {Logo}
+            {/* Mobile: the header bar is transparent (glass only kicks in at md), so give the logo
+                its own frosted rounded badge below md; at md+ it sits bare inside the glass pill. */}
+            <div className="shrink-0 max-md:glass max-md:rounded-2xl max-md:p-2.5">{Logo}</div>
 
-            {/* Desktop navigation */}
+            {/* Desktop navigation — pushed to the far edge, opposite the logo. */}
             <nav className="hidden items-center gap-0.5 md:flex">
               {menu.map((entry, i) => {
                 const mega = isMega(entry)
@@ -184,37 +184,29 @@ export default function Header({ headerData }: HeaderProps) {
                 )
               })}
             </nav>
-
-            {/* Right cluster: CTA (desktop) + hamburger (mobile) */}
-            <div className="flex items-center gap-2">
-              {cta?.label && (
-                <Link
-                  href={localizedHref(locale, cta.link)}
-                  className="hidden items-center gap-1.5 rounded-full bg-cream px-4 py-2 text-[13px] font-semibold text-page transition-colors hover:bg-cream-hover md:inline-flex"
-                >
-                  {cta.label}
-                  <ArrowUpRight className="size-3.5" aria-hidden />
-                </Link>
-              )}
-              <button
-                type="button"
-                aria-label="Open menu"
-                aria-expanded={open}
-                onClick={() => setOpenIndex(open ? null : firstMega >= 0 ? firstMega : 0)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-md text-cream transition-colors duration-200 hover:bg-white/[0.06] active:scale-95 md:hidden"
-              >
-                <Menu className="size-6" />
-              </button>
-            </div>
           </div>
         </motion.header>
       </div>
+
+      {/* Floating burger (mobile only) — mirrors the language FAB, pinned to the opposite
+          bottom corner. Toggles the same full-screen mega overlay the desktop nav opens. */}
+      <button
+        type="button"
+        aria-label="Open menu"
+        aria-expanded={open}
+        onClick={() => setOpenIndex(open ? null : firstMega >= 0 ? firstMega : 0)}
+        className={cn(
+          'glass pointer-events-auto fixed bottom-5 left-5 z-50 flex size-12 items-center justify-center rounded-full text-cream md:hidden',
+          'transition-transform duration-200 motion-safe:hover:scale-105 active:scale-95 sm:bottom-6 sm:left-6 sm:size-14',
+        )}
+      >
+        <Menu className="size-5 sm:size-6" />
+      </button>
 
       <MegaMenuOverlay
         open={open}
         menu={menu}
         secondaryLinks={secondaryLinks}
-        cta={cta}
         exploreLabel={headerData?.exploreLabel}
         locale={locale}
         activeIndex={openIndex}

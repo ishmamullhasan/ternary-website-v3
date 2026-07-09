@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
@@ -348,7 +349,15 @@ export default function StoryDetail({ story, backHref, related = [] }: StoryDeta
               All case studies <ArrowUpRight size={16} aria-hidden />
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[280px]">
+            {related.map((card, index) => (
+              <RelatedStoryCard key={card.href} card={card} index={index} />
+            ))}
+          </MobileCarousel>
+
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
             {related.map((card, index) => (
               <RelatedStoryCard key={card.href} card={card} index={index} />
             ))}
@@ -367,6 +376,7 @@ function RelatedStoryCard({ card, index }: { card: RelatedStoryCardData; index: 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.3) }}
+      className="h-full"
     >
       <Link
         href={card.href}

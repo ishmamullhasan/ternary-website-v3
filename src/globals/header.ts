@@ -43,7 +43,7 @@ const Header: GlobalConfig = {
   label: 'Header',
   admin: {
     group: 'Site Settings',
-    description: 'Site header: logo, primary navigation (with mega menus), secondary links, and CTA.',
+    description: 'Site header: logo, primary navigation (with mega menus), and secondary links.',
   },
   hooks: {
     afterChange: [
@@ -261,27 +261,6 @@ const Header: GlobalConfig = {
         initCollapsed: true,
       },
       fields: [iconField(), labelField(), linkField()],
-    },
-    {
-      name: 'button',
-      label: 'CTA Button',
-      type: 'group',
-      required: false,
-      fields: [
-        {
-          name: 'label',
-          label: 'Label',
-          type: 'text',
-          required: false,
-          localized: true,
-        },
-        {
-          name: 'link',
-          label: 'Link',
-          type: 'text',
-          required: false,
-        },
-      ],
     },
   ],
 }

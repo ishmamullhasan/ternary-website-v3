@@ -127,9 +127,7 @@ export default buildConfig({
   admin: {
     user: User.slug,
     livePreview: {
-      breakpoints: [
-        /* mobile, tablet, desktop */
-      ],
+      breakpoints: [/* mobile, tablet, desktop */],
     },
   },
   editor: lexicalEditor(),

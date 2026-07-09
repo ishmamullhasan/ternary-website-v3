@@ -5,18 +5,21 @@ import type { JSX } from 'react'
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 // Adapt the column count to the data so the row never leaves an orphan wrapping below md.
+// Mobile shows two columns (single stat stays full width); sm+ fans out to the full row.
 const COLS: Record<number, string> = {
-  1: 'sm:grid-cols-1',
-  2: 'sm:grid-cols-2',
-  3: 'sm:grid-cols-3',
-  4: 'sm:grid-cols-2 lg:grid-cols-4',
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-2 sm:grid-cols-3',
+  4: 'grid-cols-2 lg:grid-cols-4',
 }
 
 export function ContactStatsComponent(props: ContactStatsBlock): JSX.Element | null {
   const stats = props?.stats ?? []
   if (stats.length === 0) return null
 
-  const cols = COLS[Math.min(stats.length, 4)] ?? 'sm:grid-cols-3'
+  const cols = COLS[Math.min(stats.length, 4)] ?? 'grid-cols-2 sm:grid-cols-3'
+  // On the mobile 2-col grid an odd count leaves a half-width orphan; span its last card full width.
+  const spanLastOnMobile = stats.length > 1 && stats.length % 2 === 1
 
   return (
     <Motion
@@ -25,7 +28,7 @@ export function ContactStatsComponent(props: ContactStatsBlock): JSX.Element | n
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, ease: EASE }}
-      className={`grid grid-cols-1 gap-8 ${cols}`}
+      className={`grid gap-4 sm:gap-8 ${cols}`}
     >
       {stats.map((stat, i) => (
         <Motion
@@ -34,7 +37,9 @@ export function ContactStatsComponent(props: ContactStatsBlock): JSX.Element | n
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.5, ease: EASE, delay: Math.min(i * 0.07, 0.28) }}
-          className="group flex flex-col items-center justify-center gap-4 rounded-lg border border-line bg-main px-4 py-6 text-center transition-colors duration-300 hover:border-line-strong"
+          className={`group flex flex-col items-center justify-center gap-4 rounded-lg border border-line bg-main px-4 py-6 text-center transition-colors duration-300 hover:border-line-strong${
+            spanLastOnMobile && i === stats.length - 1 ? ' col-span-2 sm:col-span-1' : ''
+          }`}
         >
           {stat.value && (
             <p className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">

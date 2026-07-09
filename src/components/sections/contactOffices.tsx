@@ -35,7 +35,7 @@ function Detail({
   children: JSX.Element | string | JSX.Element[]
 }): JSX.Element {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1 lg:gap-2">
       <div className="flex items-center gap-1.5 text-[12px] tracking-[-0.05em] text-subtle">
         <Icon size={12} aria-hidden />
         {label}
@@ -55,7 +55,9 @@ function NavButton({ dir, onClick, label }: { dir: 'prev' | 'next'; onClick: () 
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={`flex size-8 shrink-0 items-center justify-center self-end rounded-sm bg-cream text-ink transition-colors hover:bg-cream-hover ${focusRing}`}
+      className={`flex size-8 shrink-0 items-center justify-center rounded-sm bg-cream text-ink transition-colors hover:bg-cream-hover lg:self-end ${
+        dir === 'prev' ? 'lg:order-first' : 'lg:order-last'
+      } ${focusRing}`}
     >
       <Icon size={16} aria-hidden />
     </button>
@@ -137,30 +139,29 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
         {/* Floating office card */}
         <Motion
           key={office.city ?? index}
-          className="relative flex w-full items-stretch gap-3 rounded-md bg-card p-4 lg:gap-6 lg:p-6"
+          className="relative flex w-full flex-col gap-4 rounded-md bg-card px-4 py-6 lg:flex-row lg:items-stretch lg:gap-6 lg:p-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: EASE }}
           aria-live="polite"
         >
-          {multiple && <NavButton dir="prev" onClick={() => go(-1)} label="Previous office" />}
-
-          <div className="flex flex-1 flex-col gap-4 px-1 lg:px-4">
+          <div className="flex flex-1 flex-col gap-2 lg:gap-4 lg:px-4">
             {/* Heading group */}
             <div className="flex flex-col gap-2">
-              {office.tag && <p className="text-[16px] tracking-[-0.05em] text-subtle">{office.tag}</p>}
-              <div className="flex flex-wrap items-end gap-x-2 gap-y-1">
-                <h3 className="font-display text-[24px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+              {office.tag && <p className="text-[12px] tracking-[-0.05em] text-subtle lg:text-[16px]">{office.tag}</p>}
+              {/* Stacked on mobile; city and timezone sit on one baseline at lg. */}
+              <div className="flex flex-col gap-1 lg:flex-row lg:flex-wrap lg:items-end lg:gap-x-2 lg:gap-y-1">
+                <h3 className="text-[16px] font-medium leading-[1.15] tracking-[-0.05em] text-cream lg:font-display lg:text-[24px]">
                   {office.city}
                 </h3>
                 {office.timezone && (
-                  <span className="pb-1 text-[12px] tracking-[-0.05em] text-subtle">{office.timezone}</span>
+                  <span className="text-[12px] tracking-[-0.05em] text-subtle lg:pb-1">{office.timezone}</span>
                 )}
               </div>
             </div>
 
-            {/* Detail columns */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-6 lg:grid-cols-4">
+            {/* Detail columns — one stacked column on mobile, 4-up at lg. */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4">
               {addressLines.length > 0 && (
                 <Detail icon={MapPin} label="Address">
                   {addressLines.map((entry, i) => (
@@ -198,7 +199,14 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
             </div>
           </div>
 
-          {multiple && <NavButton dir="next" onClick={() => go(1)} label="Next office" />}
+          {/* Nav row sits under the content on mobile; `lg:contents` unwraps it so the buttons
+              become flex items of the card and flank the content via their order classes. */}
+          {multiple && (
+            <div className="flex items-center justify-between lg:contents">
+              <NavButton dir="prev" onClick={() => go(-1)} label="Previous office" />
+              <NavButton dir="next" onClick={() => go(1)} label="Next office" />
+            </div>
+          )}
         </Motion>
       </div>
     </Motion>

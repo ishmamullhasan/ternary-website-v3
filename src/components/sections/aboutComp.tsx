@@ -131,10 +131,32 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 const focusRing =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/80 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
+// Card reveal: a gentle upward drift + fade, staggered per index.
 const motionGridItemProps = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.35 as const },
+  viewport: { once: true, amount: 0.25 as const },
+}
+
+// The carousel can't use motionGridItemProps: a slide parked off-screen *horizontally* never
+// intersects the viewport, so a per-slide whileInView leaves every card but the first invisible
+// until the user scrolls it in. Instead the strip itself owns the trigger and staggers its slides
+// through variants, so all cards reveal together when the section scrolls into view.
+const carouselStripVariants = {
+  hidden: {},
+  shown: { transition: { staggerChildren: 0.05 } },
+}
+
+const carouselSlideVariants = {
+  hidden: { opacity: 0, y: 24 },
+  shown: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
+}
+
+// Section intro reveal: the copy glides in from the right as it scrolls into view.
+const motionIntroProps = {
+  initial: { opacity: 0, x: 64 },
+  whileInView: { opacity: 1, x: 0 },
+  viewport: { once: true, amount: 0.5 as const },
 }
 
 function getItemHref(item: MultiRelation): string {
@@ -183,7 +205,7 @@ function BentoCard({
   return (
     <Link
       href={getItemHref(item)}
-      className={`group relative block h-full overflow-hidden rounded-md border border-white/[0.06] bg-ink transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${focusRing}`}
+      className={`group relative block h-full overflow-hidden rounded-md border border-white/[0.06] bg-ink transition-[transform,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.01] hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] motion-reduce:transition-none motion-reduce:hover:scale-100 ${focusRing}`}
     >
       {/* gradient field IS the fallback; optional CMS image layers on top */}
       <GradientPanel tone={toneFor(undefined, index)} interactive />
@@ -193,7 +215,7 @@ function BentoCard({
           alt={item.value.title || 'story'}
           fill
           sizes={imgSizes}
-          className="relative object-cover"
+          className="relative object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.3] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         />
       )}
       {/* top scrim so the header text stays legible over any image (Figma: black/60 → 50%) */}
@@ -201,15 +223,15 @@ function BentoCard({
 
       {/* hover overlay — frosted layer revealing excerpt + meta pinned to the bottom
           (Figma 2392:2778). Painted below the header block so title/type stay crisp. */}
-      <div className="absolute inset-0 flex flex-col justify-end gap-3 bg-black/[0.32] px-6 pt-24 pb-8 opacity-0 backdrop-blur-[75px] transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">
+      <div className="absolute inset-0 flex flex-col justify-end gap-3 overflow-hidden bg-black/[0.32] px-6 pt-24 pb-8 opacity-0 backdrop-blur-[75px] transition-opacity duration-200 ease-out group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">
         {item.value.excerpts && (
           <p
-            className={`${isTwoRow ? 'line-clamp-4' : 'line-clamp-2'} text-base leading-[1.15] tracking-[-0.05em] text-body`}
+            className={`${isTwoRow ? 'line-clamp-4' : 'line-clamp-2'} translate-x-[120%] text-base leading-[1.15] tracking-[-0.05em] text-body transition-transform duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0 group-focus-visible:translate-x-0 motion-reduce:translate-x-0 motion-reduce:transition-none`}
           >
             {item.value.excerpts}
           </p>
         )}
-        <div className="flex flex-col gap-1">
+        <div className="flex translate-x-[120%] flex-col gap-1 transition-transform delay-100 duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0 group-focus-visible:translate-x-0 motion-reduce:translate-x-0 motion-reduce:transition-none">
           {(meta.code || meta.date) && (
             <div className="flex items-center justify-between text-xs leading-[1.15] tracking-[-0.05em] text-body">
               <span>{meta.code}</span>
@@ -284,15 +306,32 @@ function AboutCarousel({ cards }: { cards: { rel: MultiRelation; size: CardSize 
   }
 
   return (
-    <div className="mt-10 w-full xl:hidden">
+    <Motion
+      tag="div"
+      initial="hidden"
+      whileInView="shown"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={carouselStripVariants}
+      className="mt-10 w-full xl:hidden"
+    >
+      {/* overflow-y-hidden pins the strip to one axis (`overflow-x: auto` alone computes
+          `overflow-y: auto`, letting the slides drag/scroll vertically). The pb-6/-mb-5 pair gives
+          the slides' 24px reveal drift room to run without being clipped by that hidden axis,
+          while keeping the strip's outer spacing at the original 4px. */}
       <div
         ref={scrollerRef}
-        className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden -mb-5 pb-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {cards.map(({ rel }, index) => (
-          <div key={index} data-slide className="h-[468px] w-[86%] shrink-0 snap-start">
+          <Motion
+            tag="div"
+            key={index}
+            data-slide
+            variants={carouselSlideVariants}
+            className="h-[468px] w-[86%] shrink-0 snap-start"
+          >
             <BentoCard item={rel} index={index} isTwoRow imgSizes="86vw" />
-          </div>
+          </Motion>
         ))}
       </div>
 
@@ -317,7 +356,7 @@ function AboutCarousel({ cards }: { cards: { rel: MultiRelation; size: CardSize 
           <ChevronRight size={16} strokeWidth={2} aria-hidden />
         </button>
       </div>
-    </div>
+    </Motion>
   )
 }
 
@@ -345,27 +384,33 @@ export default function AboutComp({
         {/* section intro — ONE richText: heading nodes take the display style, paragraphs the body
             style. Arbitrary clamp values mirror .text-section (globals.css) — the plain class has
             no generated prose-headings: variants, so it can't be used here. */}
-        {content ? (
-          <div className="flex max-w-2xl flex-col items-center text-center">
-            <RichTextComp
-              content={content}
-              className="prose-headings:mb-0 prose-headings:text-[clamp(1.5rem,3vw,1.875rem)] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-0 prose-p:mb-0 prose-p:text-body"
-            />
-          </div>
-        ) : (
-          (heading || description) && (
-            <div className="flex max-w-2xl flex-col items-center text-center">
-              {heading && (
-                <RichTextComp
-                  content={heading as RichText}
-                  className="prose-p:mb-0 prose-p:text-[clamp(1.5rem,3vw,1.875rem)] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mb-0 prose-headings:text-[clamp(1.5rem,3vw,1.875rem)] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
-                />
-              )}
-              {description && (
-                <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />
-              )}
-            </div>
-          )
+        {/* section intro — glides in from the right as it enters the viewport (motionIntroProps) */}
+        {(content || heading || description) && (
+          <Motion
+            tag="div"
+            {...motionIntroProps}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="flex max-w-2xl flex-col items-center text-center"
+          >
+            {content ? (
+              <RichTextComp
+                content={content}
+                className="prose-headings:mb-0 prose-headings:text-[clamp(1.5rem,3vw,1.875rem)] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-0 prose-p:mb-0 prose-p:text-body"
+              />
+            ) : (
+              <>
+                {heading && (
+                  <RichTextComp
+                    content={heading as RichText}
+                    className="prose-p:mb-0 prose-p:text-[clamp(1.5rem,3vw,1.875rem)] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mb-0 prose-headings:text-[clamp(1.5rem,3vw,1.875rem)] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
+                  />
+                )}
+                {description && (
+                  <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />
+                )}
+              </>
+            )}
+          </Motion>
         )}
 
         {/* mobile / tablet: uniform same-height carousel (below xl) */}

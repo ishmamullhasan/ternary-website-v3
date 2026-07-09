@@ -250,7 +250,7 @@ export default async function Page({
             </aside>
 
             {/* RIGHT CONTENT: document view */}
-            <main className="flex flex-col gap-12 lg:gap-[72px]">
+            <div className="flex flex-col gap-12 lg:gap-[72px]">
               {/* Header: code pill + last-updated, title, Download PDF */}
               <Motion className="flex flex-col gap-6 border-b border-subtle pb-6" {...blockReveal}>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -301,7 +301,7 @@ export default async function Page({
                   </div>
                 )}
               </Motion>
-            </main>
+            </div>
           </div>
         </Motion>
 
@@ -327,7 +327,7 @@ export default async function Page({
             {/* Legibility scrim toward the right where the button sits */}
             <span aria-hidden className="absolute inset-0 bg-gradient-to-r from-black/10 via-transparent to-black/40" />
 
-            <div className="relative flex flex-col items-start justify-between gap-8 p-8 md:flex-row md:items-center md:p-12">
+            <div className="relative flex flex-col items-center justify-center gap-8 p-8 text-center md:flex-row md:items-center md:justify-between md:p-12 md:text-left">
               <div className="max-w-2xl">
                 <h3 className="font-display text-[28px] font-medium leading-[1.12] tracking-tight text-cream md:text-[32px]">
                   {legal.cta.heading}
@@ -341,7 +341,7 @@ export default async function Page({
               </div>
 
               {ctaButtons.length > 0 && (
-                <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+                <div className="flex shrink-0 flex-col items-center gap-3 sm:flex-row sm:items-stretch">
                   {ctaButtons.map((button, i) => (
                     <Link
                       key={`${button.label}-${i}`}

@@ -1,6 +1,7 @@
 'use client'
 
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { ContactRoutesBlock } from '@/payload-types'
 import {
@@ -140,7 +141,21 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Mobile: horizontal snap carousel with pagination dots. */}
+      <MobileCarousel slideClassName="w-[280px]">
+        {routes.map((route, i) => (
+          <RouteCard
+            key={route.id ?? i}
+            route={route}
+            index={i}
+            selected={i === selectedIndex}
+            onSelect={() => setSelectedIndex(i)}
+          />
+        ))}
+      </MobileCarousel>
+
+      {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+      <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
         {routes.map((route, i) => (
           <RouteCard
             key={route.id ?? i}
@@ -162,7 +177,7 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
         aria-live="polite"
       >
         {/* Left — signature noise gradient summary (412px) */}
-        <div className="relative flex min-h-[188px] flex-col justify-between overflow-hidden p-8">
+        <div className="relative flex min-h-[188px] flex-col justify-between overflow-hidden p-4 lg:p-8">
           <span aria-hidden className="absolute inset-0" style={{ backgroundImage: selectedTone }} />
           <span
             aria-hidden
@@ -180,15 +195,15 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
           </div>
         </div>
 
-        {/* Right — best for / reach the owner (996px) */}
-        <div className="grid grid-cols-1 gap-8 p-8 md:grid-cols-2">
+        {/* Right — best for / reach the owner. Stacks on mobile, two columns at lg. */}
+        <div className="grid grid-cols-1 items-start gap-4 p-4 lg:grid-cols-2 lg:p-8">
           {/* Best for */}
-          <div className="space-y-4">
-            <span className="text-[12px] tracking-[-0.05em] text-body">Best for</span>
-            <ul className="space-y-2">
+          <div className="space-y-2 lg:space-y-4">
+            <span className="block text-[12px] tracking-[-0.05em] text-body">Best for</span>
+            <ul className="space-y-1 lg:space-y-2">
               {(selected.bestFor ?? []).map((entry, i) => (
                 <li key={entry.id ?? i} className="flex items-start gap-2 text-[16px] tracking-[-0.05em] text-body">
-                  <span className="mt-[7px] size-1 shrink-0 rounded-full bg-body" aria-hidden />
+                  <span className="mt-2 size-1 shrink-0 rounded-full bg-body" aria-hidden />
                   {entry.item}
                 </li>
               ))}
@@ -196,29 +211,30 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
           </div>
 
           {/* Reach the owner */}
-          <div className="space-y-4">
-            <span className="text-[12px] tracking-[-0.05em] text-body">Reach the owner</span>
-            <div className="space-y-3 rounded-sm bg-card p-3">
+          <div className="space-y-3 2xl:space-y-4">
+            <span className="block text-[12px] tracking-[-0.05em] text-body">Reach the owner</span>
+            <div className="space-y-3 rounded-sm bg-card px-2 py-3 2xl:p-3">
               <div className="flex items-center gap-2">
                 <Mail size={14} className="shrink-0 text-cream" aria-hidden />
                 <span className="truncate text-[16px] tracking-[-0.05em] text-cream">{selected.email}</span>
               </div>
-              <div className="flex flex-wrap items-center gap-3">
+              {/* Buttons stack full-width up to 2xl, then sit side by side. */}
+              <div className="flex flex-col items-center gap-2 2xl:flex-row 2xl:items-end 2xl:gap-4">
                 <a
                   href={mailHref}
-                  className={`group inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-cream px-6 text-[15px] text-ink transition-colors hover:bg-cream-hover ${focusRing}`}
+                  className={`group inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-cream px-8 py-2 font-display text-[16px] leading-[1.15] text-ink opacity-90 transition-[background-color,opacity] hover:opacity-100 hover:bg-cream-hover 2xl:flex-1 ${focusRing}`}
                 >
                   {selected.cta || 'Start an engagement'}
                   <ArrowUpRight
-                    size={15}
+                    size={14}
                     strokeWidth={2.5}
                     aria-hidden
-                    className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    className="shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                   />
                 </a>
                 <a
                   href="#message"
-                  className={`inline-flex h-10 items-center rounded-lg bg-button-dark px-6 text-[15px] text-cream/90 transition-colors hover:text-cream ${focusRing}`}
+                  className={`inline-flex h-10 w-full shrink-0 items-center justify-center rounded-lg bg-button-dark px-8 py-2 font-display text-[16px] leading-[1.15] text-cream opacity-90 transition-opacity hover:opacity-100 2xl:w-auto ${focusRing}`}
                 >
                   Learn more
                 </a>

@@ -82,26 +82,6 @@ body {
     --nav-gap: 18px;
   }
 
-  /* Frosted-glass material for the floating navbar pill: a translucent page-tinted base,
-     a saturated blur, a hairline cream border, and a layered shadow (top sheen + bottom
-     edge + soft drop). Falls back to a more opaque base where backdrop-filter is unsupported. */
-  .glass {
-    background-color: color-mix(in oklab, var(--color-page) 55%, transparent);
-    -webkit-backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-saturate));
-    backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-saturate));
-    border: 1px solid color-mix(in oklab, var(--color-cream) 12%, transparent);
-    box-shadow:
-      inset 0 1px 0 0 color-mix(in oklab, var(--color-cream) 18%, transparent),
-      inset 0 -1px 0 0 color-mix(in oklab, #000 35%, transparent),
-      0 20px 50px -24px rgba(0, 0, 0, 0.85);
-  }
-
-  @supports not (backdrop-filter: blur(1px)) {
-    .glass {
-      background-color: color-mix(in oklab, var(--color-page) 88%, transparent);
-    }
-  }
-
   /* Signature section surface (Figma `--surface/card`): each home/marketing content section sits on
      a raised near-black card, one step lighter than the page, with an 8px radius and no border —
      matching the design where the sections are cards rather than transparent pass-throughs. Padding
@@ -129,6 +109,25 @@ body {
     line-height: 1.15;
     letter-spacing: -0.02em;
     font-weight: 500;
+  }
+}
+
+/* Frosted-glass material for the floating navbar pill: a translucent page-tinted base,
+   a saturated blur, a hairline cream border, and a layered shadow (top sheen + bottom
+   edge + soft drop). Falls back to a more opaque base where backdrop-filter is unsupported.
+   Defined as a Tailwind @utility so responsive variants (e.g. `md:glass`) compile. */
+@utility glass {
+  background-color: color-mix(in oklab, var(--color-page) 55%, transparent);
+  -webkit-backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-saturate));
+  backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-saturate));
+  border: 1px solid color-mix(in oklab, var(--color-cream) 12%, transparent);
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, var(--color-cream) 18%, transparent),
+    inset 0 -1px 0 0 color-mix(in oklab, #000 35%, transparent),
+    0 20px 50px -24px rgba(0, 0, 0, 0.85);
+
+  @supports not (backdrop-filter: blur(1px)) {
+    background-color: color-mix(in oklab, var(--color-page) 88%, transparent);
   }
 }
 
@@ -186,7 +185,12 @@ body {
   --color-cream: #f4f3ec;
   --color-cream-hover: #e8e7df;
   --color-body: #d5d5d5;
-  --color-subtle: #757571;
+  /* Was #757571 — 4.41:1 on --color-page and 3.52:1 on --color-badge, below the 4.5:1 WCAG AA
+     floor for normal text (SC 1.4.3). It styles 11px uppercase eyebrow labels, so the large-text
+     exemption does not apply. #8a8a86 clears AA on every surface (5.65:1 page, 4.51:1 badge) with
+     the smallest visual delta. AAA (7:1) would need #ababa5, which collapses this into
+     --color-body and flattens the type hierarchy. Guarded by tests/int/contrast.int.spec.ts. */
+  --color-subtle: #8a8a86;
   --color-badge: #202020;
   --color-button-dark: #14120b;
   --color-line: #27272a;

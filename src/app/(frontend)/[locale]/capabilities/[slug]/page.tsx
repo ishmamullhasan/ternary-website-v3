@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
@@ -196,6 +197,95 @@ function StackTags({ tags }: { tags?: { name?: string | null; id?: string | null
 // Reusable section shell: near-black bordered panel with generous editorial padding.
 const SECTION_SHELL = 'rounded-md border border-white/[0.06] bg-card p-6 lg:p-12'
 
+type CaseStudyItem = NonNullable<NonNullable<Capability['caseStudies']>['items']>[number]
+
+// Single case-study card — shared by the sm+ grid and the mobile carousel.
+function CaseStudyCard({ item }: { item: CaseStudyItem }): JSX.Element {
+  return (
+    <div className="group flex h-full min-h-[400px] flex-col justify-between rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.14]">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          {item.meta && <span className="text-[12px] text-subtle">{item.meta}</span>}
+          <h3 className="text-[16px] font-medium leading-snug tracking-[-0.05em] text-cream">{item.title}</h3>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {item.problem && (
+            <div className="flex flex-col gap-1">
+              <p className="text-[12px] text-subtle">Problem</p>
+              <RichTextComp
+                content={item.problem as RichText}
+                className="prose-sm text-[14px] leading-relaxed text-body"
+              />
+            </div>
+          )}
+          {item.approach && (
+            <div className="flex flex-col gap-1">
+              <p className="text-[12px] text-subtle">Approach</p>
+              <RichTextComp
+                content={item.approach as RichText}
+                className="prose-sm text-[14px] leading-relaxed text-body"
+              />
+            </div>
+          )}
+          {item.outcome && (
+            <div className="flex flex-col gap-1">
+              <p className="text-[12px] text-subtle">Outcome</p>
+              <RichTextComp
+                content={item.outcome as RichText}
+                className="prose-sm text-[14px] leading-relaxed text-body"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {(item.metricValue || item.metricLabel) && (
+        <div className="mt-8 flex items-baseline gap-1">
+          {item.metricValue && (
+            <span className="font-display text-[30px] font-medium leading-none tracking-[-0.05em] text-cream">
+              {item.metricValue}
+            </span>
+          )}
+          {item.metricLabel && <span className="text-[12px] text-subtle">{item.metricLabel}</span>}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Single related-capability card — shared by the sm+ grid and the mobile carousel.
+function RelatedCapabilityCard({
+  item,
+  locale,
+  focusRing,
+}: {
+  item: Capability
+  locale: TypedLocale
+  focusRing: string
+}): JSX.Element {
+  return (
+    <Link
+      href={`/${locale}/capabilities/${item.slug}`}
+      className={cn(
+        'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.16]',
+        focusRing,
+      )}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <h3 className="text-[16px] font-medium text-cream">{item.title}</h3>
+        <ArrowUpRight
+          size={15}
+          strokeWidth={2}
+          aria-hidden
+          className="shrink-0 text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream"
+        />
+      </div>
+      {item.excerpts && <p className="text-[12px] leading-relaxed text-subtle">{item.excerpts}</p>}
+    </Link>
+  )
+}
+
 export default async function Page({
   params,
 }: {
@@ -392,60 +482,18 @@ export default async function Page({
             className="mb-10"
           />
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[280px]">
+            {(capability.caseStudies.items ?? []).map((item, index) => (
+              <CaseStudyCard key={item.id ?? `case-${index}`} item={item} />
+            ))}
+          </MobileCarousel>
+
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
             {capability.caseStudies.items?.map((item, index) => (
-              <Motion
-                key={item.id ?? `case-${index}`}
-                className="group flex min-h-[400px] flex-col justify-between rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.14]"
-                {...revealItem(index)}
-              >
-                <div className="flex flex-col gap-6">
-                  <div className="flex flex-col gap-2">
-                    {item.meta && <span className="text-[12px] text-subtle">{item.meta}</span>}
-                    <h3 className="text-[16px] font-medium leading-snug tracking-[-0.05em] text-cream">{item.title}</h3>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    {item.problem && (
-                      <div className="flex flex-col gap-1">
-                        <p className="text-[12px] text-subtle">Problem</p>
-                        <RichTextComp
-                          content={item.problem as RichText}
-                          className="prose-sm text-[14px] leading-relaxed text-body"
-                        />
-                      </div>
-                    )}
-                    {item.approach && (
-                      <div className="flex flex-col gap-1">
-                        <p className="text-[12px] text-subtle">Approach</p>
-                        <RichTextComp
-                          content={item.approach as RichText}
-                          className="prose-sm text-[14px] leading-relaxed text-body"
-                        />
-                      </div>
-                    )}
-                    {item.outcome && (
-                      <div className="flex flex-col gap-1">
-                        <p className="text-[12px] text-subtle">Outcome</p>
-                        <RichTextComp
-                          content={item.outcome as RichText}
-                          className="prose-sm text-[14px] leading-relaxed text-body"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {(item.metricValue || item.metricLabel) && (
-                  <div className="mt-8 flex items-baseline gap-1">
-                    {item.metricValue && (
-                      <span className="font-display text-[30px] font-medium leading-none tracking-[-0.05em] text-cream">
-                        {item.metricValue}
-                      </span>
-                    )}
-                    {item.metricLabel && <span className="text-[12px] text-subtle">{item.metricLabel}</span>}
-                  </div>
-                )}
+              <Motion key={item.id ?? `case-${index}`} className="h-full" {...revealItem(index)}>
+                <CaseStudyCard item={item} />
               </Motion>
             ))}
           </div>
@@ -606,27 +654,23 @@ export default async function Page({
             className="mb-10"
           />
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[280px]">
             {relatedCapabilities.map((item, index) => (
-              <Motion key={item.id ?? `related-${index}`} {...revealItem(index)}>
-                <Link
-                  href={`/${typedLocale}/capabilities/${item.slug}`}
-                  className={cn(
-                    'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.16]',
-                    focusRing,
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-[16px] font-medium text-cream">{item.title}</h3>
-                    <ArrowUpRight
-                      size={15}
-                      strokeWidth={2}
-                      aria-hidden
-                      className="shrink-0 text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream"
-                    />
-                  </div>
-                  {item.excerpts && <p className="text-[12px] leading-relaxed text-subtle">{item.excerpts}</p>}
-                </Link>
+              <RelatedCapabilityCard
+                key={item.id ?? `related-${index}`}
+                item={item}
+                locale={typedLocale}
+                focusRing={focusRing}
+              />
+            ))}
+          </MobileCarousel>
+
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
+            {relatedCapabilities.map((item, index) => (
+              <Motion key={item.id ?? `related-${index}`} className="h-full" {...revealItem(index)}>
+                <RelatedCapabilityCard item={item} locale={typedLocale} focusRing={focusRing} />
               </Motion>
             ))}
           </div>
@@ -649,21 +693,21 @@ export default async function Page({
           ) : null}
           <NoiseGradient tone={CTA_TONE} className={ctaBackground?.url ? 'opacity-90 mix-blend-multiply' : ''} />
 
-          <div className="relative z-10 flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <Motion className="flex max-w-xl flex-col items-start gap-3" {...revealItem(0)}>
+          <div className="relative z-10 flex flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
+            <Motion className="flex max-w-xl flex-col items-center gap-3 lg:items-start" {...revealItem(0)}>
               <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
                 {cta.heading}
               </h2>
               {cta.description && (
                 <RichTextComp
                   content={cta.description as RichText}
-                  className="max-w-lg prose-p:mb-0 prose-p:text-[14px] prose-p:leading-relaxed prose-p:text-cream/75"
+                  className="mx-auto max-w-lg prose-p:mb-0 prose-p:text-[14px] prose-p:leading-relaxed prose-p:text-cream/75 lg:mx-0"
                 />
               )}
             </Motion>
 
             {ctaButtons.length > 0 && (
-              <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row lg:ml-auto">
+              <div className="flex w-full shrink-0 flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row lg:ml-auto">
                 {ctaButtons.map((button, index) => {
                   const isPrimary = index === 0
                   return (

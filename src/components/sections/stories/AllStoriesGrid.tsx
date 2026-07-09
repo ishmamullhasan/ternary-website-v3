@@ -1,6 +1,7 @@
 'use client'
 
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, toneFor, type Tone } from '@/components/sections/stories/gradient'
@@ -161,6 +162,7 @@ function GradientTileCard({ item, index }: { item: NormalizedItem; index: number
       tag="div"
       {...motionGridItemProps}
       transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+      className="h-full"
     >
       <Link
         href={item.href}
@@ -336,25 +338,23 @@ export default function AllStoriesGrid({
 
     const fromPress = (pressReleases ?? [])
       .filter((pr): pr is PressRelease => typeof pr === 'object' && pr !== null && Boolean(pr.slug))
-      .map(
-        (pr, index): NormalizedItem => ({
-          id: `pressRelease-${pr.id}`,
-          type: 'pressRelease',
-          href: detailHref('pressRelease', pr.slug),
-          title: pr.title ?? 'Untitled',
-          excerpt: pr.excerpts,
-          code: pr.code,
-          date: pr.releaseDate,
-          readTime: pr.readTime,
-          studioLabel: pr.categoryLabel,
-          image:
-            pr.thumbnail && typeof pr.thumbnail === 'object'
-              ? getMediaUrl(pr.thumbnail.url, pr.thumbnail.updatedAt)
-              : null,
-          categoryLabel: CATEGORY_LABELS.pressRelease,
-          tone: toneFor('pressRelease', index),
-        }),
-      )
+      .map((pr, index): NormalizedItem => ({
+        id: `pressRelease-${pr.id}`,
+        type: 'pressRelease',
+        href: detailHref('pressRelease', pr.slug),
+        title: pr.title ?? 'Untitled',
+        excerpt: pr.excerpts,
+        code: pr.code,
+        date: pr.releaseDate,
+        readTime: pr.readTime,
+        studioLabel: pr.categoryLabel,
+        image:
+          pr.thumbnail && typeof pr.thumbnail === 'object'
+            ? getMediaUrl(pr.thumbnail.url, pr.thumbnail.updatedAt)
+            : null,
+        categoryLabel: CATEGORY_LABELS.pressRelease,
+        tone: toneFor('pressRelease', index),
+      }))
 
     return [...fromItems, ...fromPress]
   }, [items, pressReleases])
@@ -407,33 +407,35 @@ export default function AllStoriesGrid({
         </div>
       )}
 
-      {/* Filter bar */}
-      <div className="mb-8 flex items-center gap-4 rounded-sm bg-main p-4">
-        <span className="flex shrink-0 items-center gap-2 text-subtle">
-          <SlidersHorizontal size={16} aria-hidden />
-          <span className="text-[12px] tracking-[-0.05em]">Filter</span>
-        </span>
+      {/* Filter bar — stacks vertically on mobile, single row from lg up. */}
+      <div className="mb-8 flex flex-col gap-4 rounded-sm bg-main p-4 lg:flex-row lg:items-center">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <span className="flex shrink-0 items-center gap-2 text-subtle">
+            <SlidersHorizontal size={16} aria-hidden />
+            <span className="text-[12px] tracking-[-0.05em]">Filter</span>
+          </span>
 
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <FilterPill
-            label="All"
-            count={counts.all}
-            active={activeFilter === 'all'}
-            onClick={() => setActiveFilter('all')}
-          />
-          {FILTER_OPTIONS.map(({ key, label, icon: Icon }) => (
+          <div className="-mx-1 flex min-w-0 flex-1 items-center gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible sm:pb-0">
             <FilterPill
-              key={key}
-              label={label}
-              count={counts[key]}
-              icon={Icon}
-              active={activeFilter === key}
-              onClick={() => setActiveFilter(key)}
+              label="All"
+              count={counts.all}
+              active={activeFilter === 'all'}
+              onClick={() => setActiveFilter('all')}
             />
-          ))}
+            {FILTER_OPTIONS.map(({ key, label, icon: Icon }) => (
+              <FilterPill
+                key={key}
+                label={label}
+                count={counts[key]}
+                icon={Icon}
+                active={activeFilter === key}
+                onClick={() => setActiveFilter(key)}
+              />
+            ))}
+          </div>
         </div>
 
-        <div className="relative w-72 shrink-0">
+        <div className="relative w-full shrink-0 lg:w-72">
           <Search
             size={14}
             className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-subtle"
@@ -454,33 +456,63 @@ export default function AllStoriesGrid({
         <div className="space-y-4">
           {/* Case studies — up to two rows of gradient tiles. */}
           {storyItems.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {storyItems.map((item, index) => (
-                <GradientTileCard key={item.id} item={item} index={index} />
-              ))}
-            </div>
+            <>
+              {/* Mobile: horizontal snap carousel with pagination dots. */}
+              <MobileCarousel slideClassName="w-[280px]">
+                {storyItems.map((item, index) => (
+                  <GradientTileCard key={item.id} item={item} index={index} />
+                ))}
+              </MobileCarousel>
+
+              {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+              <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+                {storyItems.map((item, index) => (
+                  <GradientTileCard key={item.id} item={item} index={index} />
+                ))}
+              </div>
+            </>
           )}
 
           {/* Press releases — a row of clean text cards. */}
           {pressItems.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {pressItems.map((item, index) => (
-                <TextCard key={item.id} item={item} index={index} />
-              ))}
-            </div>
+            <>
+              {/* Mobile: horizontal snap carousel with pagination dots. */}
+              <MobileCarousel slideClassName="w-[280px]">
+                {pressItems.map((item, index) => (
+                  <TextCard key={item.id} item={item} index={index} />
+                ))}
+              </MobileCarousel>
+
+              {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+              <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+                {pressItems.map((item, index) => (
+                  <TextCard key={item.id} item={item} index={index} />
+                ))}
+              </div>
+            </>
           )}
 
           {/* Insights — a bento of image cards; every fifth card widens to two columns. */}
           {insightItems.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {insightItems.map((item, index) =>
-                index % 5 === 4 ? (
-                  <InsightWideCard key={item.id} item={item} index={index} />
-                ) : (
+            <>
+              {/* Mobile: horizontal snap carousel — every insight renders as the normal card. */}
+              <MobileCarousel slideClassName="w-[280px]">
+                {insightItems.map((item, index) => (
                   <InsightImageCard key={item.id} item={item} index={index} />
-                ),
-              )}
-            </div>
+                ))}
+              </MobileCarousel>
+
+              {/* sm+ bento grid — hidden on mobile, where the carousel takes over. */}
+              <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
+                {insightItems.map((item, index) =>
+                  index % 5 === 4 ? (
+                    <InsightWideCard key={item.id} item={item} index={index} />
+                  ) : (
+                    <InsightImageCard key={item.id} item={item} index={index} />
+                  ),
+                )}
+              </div>
+            </>
           )}
         </div>
       ) : (
@@ -531,7 +563,7 @@ function FilterPill({
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[12px] tracking-[-0.05em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream',
+        'inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-[12px] tracking-[-0.05em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream',
         active ? 'border-cream bg-cream text-ink' : 'border-subtle bg-page text-body hover:border-cream',
       )}
     >

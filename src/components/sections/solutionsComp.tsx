@@ -2,6 +2,7 @@
 
 import Motion from '@/components/animation/motion'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Media, Solution } from '@/payload-types'
@@ -20,6 +21,36 @@ const motionGridItemProps = {
   whileInView: { opacity: 1, scale: 1 },
   viewport: { once: false, amount: 0.35 as const },
   transition: { duration: 0.4, ease: 'easeOut' as const },
+}
+
+// Single solution card — shared by the sm+ grid and the mobile carousel. Two layouts share one DOM
+// via flex `order` (see the grid comment below); the reflow lives inside the card so it works in both.
+function SolutionCard({ item, index }: { item: Solution; index: number }): JSX.Element {
+  return (
+    <div className="flex h-full flex-col">
+      {/* Mobile-only separator between items (skipped on the first). Cream line (Figma). */}
+      {index > 0 && <hr className="order-1 mb-4 border-cream lg:hidden" />}
+
+      <h3 className="order-2 font-display text-xl font-medium text-cream lg:order-3 lg:mt-2 lg:text-base">
+        {item.title}
+      </h3>
+
+      {item.excerpts && (
+        <p className="order-3 mt-3 text-base leading-[1.15] text-body lg:order-1 lg:mt-0 lg:text-sm">{item.excerpts}</p>
+      )}
+
+      {/* Desktop-only cream divider directly under the excerpt (columns are top-aligned). */}
+      <hr className="order-4 hidden border-cream lg:order-2 lg:mt-2 lg:block" />
+
+      {/* Plain cream text link — no arrow (Figma 890:7313). */}
+      <Link
+        href="/solutions"
+        className="order-5 mt-3 inline-flex w-fit items-center text-sm font-medium text-cream transition-opacity hover:opacity-70 lg:order-4 lg:mt-2"
+      >
+        Learn More
+      </Link>
+    </div>
+  )
 }
 
 export default function SolutionsComp({ heading, description, image, items }: SolutionsCompProps): JSX.Element | null {
@@ -60,7 +91,15 @@ export default function SolutionsComp({ heading, description, image, items }: So
             Learn More, with a full-width divider BETWEEN items. Desktop (Figma 339:8087): excerpt →
             divider → title → Learn More, each column top-aligned with a uniform 8px gap (NOT pinned
             to the bottom — the divider floats directly under each excerpt). */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-4">
+        {/* Mobile: horizontal snap carousel with pagination dots. */}
+        <MobileCarousel slideClassName="w-[280px]">
+          {solutions.map((item, index) => (
+            <SolutionCard key={item.id ?? index} item={item} index={index} />
+          ))}
+        </MobileCarousel>
+
+        {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+        <div className="hidden gap-6 sm:grid lg:grid-cols-4 lg:gap-4">
           {solutions.map((item, index: number): JSX.Element => {
             return (
               <Motion
@@ -73,29 +112,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
                   delay: index * 0.05,
                 }}
               >
-                {/* Mobile-only separator between items (skipped on the first). Cream line (Figma). */}
-                {index > 0 && <hr className="order-1 mb-4 border-cream lg:hidden" />}
-
-                <h3 className="order-2 font-display text-xl font-medium text-cream lg:order-3 lg:mt-2 lg:text-base">
-                  {item.title}
-                </h3>
-
-                {item.excerpts && (
-                  <p className="order-3 mt-3 text-base leading-[1.15] text-body lg:order-1 lg:mt-0 lg:text-sm">
-                    {item.excerpts}
-                  </p>
-                )}
-
-                {/* Desktop-only cream divider directly under the excerpt (columns are top-aligned). */}
-                <hr className="order-4 hidden border-cream lg:order-2 lg:mt-2 lg:block" />
-
-                {/* Plain cream text link — no arrow (Figma 890:7313). */}
-                <Link
-                  href="/solutions"
-                  className="order-5 mt-3 inline-flex w-fit items-center text-sm font-medium text-cream transition-opacity hover:opacity-70 lg:order-4 lg:mt-2"
-                >
-                  Learn More
-                </Link>
+                <SolutionCard item={item} index={index} />
               </Motion>
             )
           })}

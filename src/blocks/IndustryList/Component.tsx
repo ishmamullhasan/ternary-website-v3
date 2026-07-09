@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Industry, IndustryListBlock } from '@/payload-types'
 import {
@@ -42,6 +43,23 @@ function iconFor(title: string | null | undefined, index: number): LucideIcon {
   return FALLBACK_CYCLE[index % FALLBACK_CYCLE.length]
 }
 
+// Single industry benefit card — shared by the sm+ grid and the mobile carousel. The glyph is
+// resolved by the caller and passed in so this stays a static component (no per-render component).
+function IndustryCard({ item, icon: Icon }: { item: Industry; icon: LucideIcon }): JSX.Element {
+  return (
+    <div className="flex h-full min-h-[254px] flex-col justify-end gap-4 rounded-md bg-main p-6">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-page text-cream">
+        <Icon size={20} strokeWidth={1.75} aria-hidden />
+      </span>
+
+      <div>
+        <h3 className="font-display text-2xl font-medium leading-[1.15] text-cream opacity-90">{item.title}</h3>
+        {item.excerpts && <p className="mt-2 text-base leading-[1.15] text-body opacity-75">{item.excerpts}</p>}
+      </div>
+    </div>
+  )
+}
+
 export function IndustryListComponent(props: IndustryListBlock): JSX.Element | null {
   const industries = (props?.industry ?? []).filter((i): i is Industry => typeof i === 'object' && i !== null)
 
@@ -70,30 +88,27 @@ export function IndustryListComponent(props: IndustryListBlock): JSX.Element | n
         </Motion>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {industries.map((item, index) => {
-          const Icon = iconFor(item.title, index)
-          return (
-            <Motion
-              key={item.id ?? index}
-              tag="div"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-              className="flex min-h-[254px] flex-col justify-end gap-4 rounded-md bg-main p-6"
-            >
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-page text-cream">
-                <Icon size={20} strokeWidth={1.75} aria-hidden />
-              </span>
+      {/* Mobile: horizontal snap carousel with pagination dots. */}
+      <MobileCarousel slideClassName="w-[280px]">
+        {industries.map((item, index) => (
+          <IndustryCard key={item.id ?? index} item={item} icon={iconFor(item.title, index)} />
+        ))}
+      </MobileCarousel>
 
-              <div>
-                <h3 className="font-display text-2xl font-medium leading-[1.15] text-cream opacity-90">{item.title}</h3>
-                {item.excerpts && <p className="mt-2 text-base leading-[1.15] text-body opacity-75">{item.excerpts}</p>}
-              </div>
-            </Motion>
-          )
-        })}
+      {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+      <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+        {industries.map((item, index) => (
+          <Motion
+            key={item.id ?? index}
+            tag="div"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
+          >
+            <IndustryCard item={item} icon={iconFor(item.title, index)} />
+          </Motion>
+        ))}
       </div>
     </section>
   )

@@ -46,7 +46,6 @@ interface Props {
   open: boolean
   menu: NavEntry[]
   secondaryLinks: SecondaryLink[]
-  cta?: { label?: string | null; link?: string | null } | null
   exploreLabel?: string | null
   locale: string
   activeIndex: number | null
@@ -64,7 +63,6 @@ export default function MegaMenuOverlay({
   open,
   menu,
   secondaryLinks,
-  cta,
   exploreLabel,
   locale,
   activeIndex,
@@ -196,16 +194,6 @@ export default function MegaMenuOverlay({
                     {s.label}
                   </Link>
                 ))}
-                {cta?.label && (
-                  <Link
-                    href={href(cta.link)}
-                    onClick={onClose}
-                    className="mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-cream px-5 py-2.5 text-sm font-semibold text-page transition-colors hover:bg-cream-hover"
-                  >
-                    {cta.label}
-                    <ArrowUpRight className="size-4" aria-hidden />
-                  </Link>
-                )}
               </div>
             </aside>
 
@@ -295,17 +283,6 @@ export default function MegaMenuOverlay({
                 </Link>
               ))}
             </div>
-
-            {cta?.label && (
-              <Link
-                href={href(cta.link)}
-                onClick={onClose}
-                className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-cream px-6 py-3.5 text-base font-semibold text-page transition-colors hover:bg-cream-hover"
-              >
-                {cta.label}
-                <ArrowUpRight className="size-5" aria-hidden />
-              </Link>
-            )}
           </div>
         </motion.div>
       )}

@@ -47,20 +47,23 @@ export function CtaBlockComponent({
         className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay bg-[url('/noise.svg')] bg-[length:240px] bg-repeat"
       />
 
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-        <Motion className="flex flex-col items-start text-left lg:max-w-xl" {...motionBlockProps}>
+      <div className="relative z-10 flex flex-col items-center justify-center text-center lg:flex-row lg:items-center lg:justify-between lg:text-left gap-8">
+        <Motion
+          className="flex w-full flex-col items-center text-center lg:w-auto lg:items-start lg:text-left lg:max-w-xl"
+          {...motionBlockProps}
+        >
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-cream leading-[1.2]">
             {heading}
           </h2>
           {description && (
             <RichTextComp
               content={description as RichText}
-              className="max-w-lg prose-p:mb-0 prose-p:text-xs md:prose-p:text-sm prose-p:leading-relaxed prose-p:text-body/80"
+              className="mx-auto max-w-lg prose-p:mb-0 prose-p:text-xs md:prose-p:text-sm prose-p:leading-relaxed prose-p:text-body/80 lg:mx-0"
             />
           )}
         </Motion>
 
-        <div className="flex sm:flex-row flex-col gap-3 items-center shrink-0 lg:ml-auto">
+        <div className="flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row shrink-0 lg:ml-auto">
           {button_1?.label && (
             <Button
               asChild

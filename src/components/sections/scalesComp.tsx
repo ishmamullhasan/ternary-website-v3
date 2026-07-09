@@ -2,6 +2,7 @@
 import Motion from '@/components/animation/motion'
 import { reveal, revealItem } from '@/components/animation/reveal'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Media, Scale } from '@/payload-types'
@@ -13,6 +14,39 @@ interface SalesCompProps {
   // richText since the description→Lexical migration; string kept for legacy DB rows.
   description?: RichText | string | null
   scales?: Scale[] | null
+}
+
+// Single scale card — shared by the sm+ grid and the mobile carousel. The gradient panel IS the
+// fallback (always rendered); an optional CMS image layers on top.
+function ScaleCard({ item, index }: { item: Scale; index: number }): JSX.Element {
+  const thumb = item.thumbnail as Media | string | null | undefined
+  const mediaUrl = typeof thumb === 'object' && thumb ? thumb.url : null
+
+  return (
+    <Link href={`/scales`} className="group block h-full">
+      <div className="relative h-full overflow-hidden rounded-md border border-line bg-ink aspect-[268/296]">
+        <GradientPanel tone={toneFor(undefined, index)} interactive />
+
+        {mediaUrl ? (
+          <Image
+            src={mediaUrl}
+            alt={item.title || 'industry'}
+            fill
+            className="relative object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          />
+        ) : null}
+
+        {/* bottom-to-transparent scrim keeps the card text legible over imagery */}
+        <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-black/70" />
+
+        {/* text */}
+        <div className="absolute inset-x-4 bottom-4 z-10">
+          <h3 className="font-medium text-cream">{item.title}</h3>
+          {item.excerpts ? <p className="mt-2 text-sm text-cream">{item.excerpts}</p> : null}
+        </div>
+      </div>
+    </Link>
+  )
 }
 
 export default function SalesComp({ heading, description, scales }: SalesCompProps) {
@@ -28,41 +62,22 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
         ) : null}
       </Motion>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:flex-1">
-        {scales.map((item, index): JSX.Element => {
-          const thumb = item.thumbnail as Media | string | null | undefined
-          const mediaUrl = typeof thumb === 'object' && thumb ? thumb.url : null
+      <div className="w-full lg:flex-1">
+        {/* Mobile: horizontal snap carousel with pagination dots. */}
+        <MobileCarousel slideClassName="w-[260px]">
+          {scales.map((item, index) => (
+            <ScaleCard key={index} item={item} index={index} />
+          ))}
+        </MobileCarousel>
 
-          return (
+        {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+        <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+          {scales.map((item, index): JSX.Element => (
             <Motion key={index} {...revealItem(index)}>
-              <Link href={`/scales`} className="group block">
-                {/* gradient card — the gradient IS the fallback, always rendered */}
-                <div className="relative aspect-[268/296] overflow-hidden rounded-md border border-line bg-ink">
-                  <GradientPanel tone={toneFor(undefined, index)} interactive />
-
-                  {/* optional CMS image layered on top of the gradient */}
-                  {mediaUrl ? (
-                    <Image
-                      src={mediaUrl}
-                      alt={item.title || 'industry'}
-                      fill
-                      className="relative object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                    />
-                  ) : null}
-
-                  {/* bottom-to-transparent scrim keeps the card text legible over imagery */}
-                  <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-black/70" />
-
-                  {/* text */}
-                  <div className="absolute inset-x-4 bottom-4 z-10">
-                    <h3 className="font-medium text-cream">{item.title}</h3>
-                    {item.excerpts ? <p className="mt-2 text-sm text-cream">{item.excerpts}</p> : null}
-                  </div>
-                </div>
-              </Link>
+              <ScaleCard item={item} index={index} />
             </Motion>
-          )
-        })}
+          ))}
+        </div>
       </div>
     </section>
   )

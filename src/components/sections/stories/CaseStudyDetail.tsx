@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import { EASE, reveal, revealItem } from '@/components/animation/reveal'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
@@ -167,7 +168,15 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
               All case studies <ArrowUpRight size={16} aria-hidden />
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* Mobile: horizontal snap carousel with pagination dots. */}
+          <MobileCarousel slideClassName="w-[280px]">
+            {related.map((card, index) => (
+              <RelatedStoryCard key={card.href} card={card} index={index} />
+            ))}
+          </MobileCarousel>
+
+          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
+          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
             {related.map((card, index) => (
               <RelatedStoryCard key={card.href} card={card} index={index} />
             ))}
@@ -179,7 +188,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
       <section className="mx-auto mt-16 w-full max-w-7xl px-5 lg:mt-24">
         <div className="relative overflow-hidden rounded-md ring-1 ring-white/10">
           <GradientPanel tone="violet" />
-          <div className="relative flex flex-col gap-6 p-8 lg:flex-row lg:items-center lg:justify-between lg:p-12">
+          <div className="relative flex flex-col items-center gap-6 p-8 text-center lg:flex-row lg:items-center lg:justify-between lg:p-12 lg:text-left">
             <div className="max-w-xl">
               <h2 className="font-display text-[clamp(1.5rem,3vw,2rem)] font-medium leading-[1.12] tracking-[-0.03em] text-cream">
                 Have a similar problem worth solving?
@@ -203,7 +212,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
 
 function RelatedStoryCard({ card, index }: { card: RelatedStoryCardData; index: number }): JSX.Element {
   return (
-    <Motion tag="div" {...revealItem(index)}>
+    <Motion tag="div" {...revealItem(index)} className="h-full">
       <Link
         href={card.href}
         className="group flex h-full flex-col overflow-hidden rounded-md border border-white/5 bg-main transition-[transform,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:border-white/10 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream motion-reduce:transition-none motion-reduce:hover:translate-y-0"

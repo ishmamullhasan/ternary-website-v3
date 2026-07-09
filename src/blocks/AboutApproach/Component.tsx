@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import MobileCarousel from '@/components/layout/MobileCarousel'
 import Section from '@/components/layout/section'
 import { cn } from '@/lib/utils'
 import type { AboutApproachBlock, Media } from '@/payload-types'
@@ -6,6 +7,8 @@ import { Zap } from 'lucide-react'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+type ApproachItem = NonNullable<AboutApproachBlock['items']>[number]
 
 /**
  * Icon + title + desc unit (design "Benefit block"): a 48px round `bg-main` icon badge, a 32px gap
@@ -66,6 +69,35 @@ function BentoMedia({ url, alt }: { url?: string; alt?: string }): JSX.Element {
   )
 }
 
+/**
+ * Featured "Ternary Way" cell — full-bleed grayscale media under grain, with the icon/title/desc
+ * group anchored to the bottom. Reused by both the desktop bento (fixed heights) and the mobile
+ * carousel (`h-full` slide). `className` sizes the outer surface.
+ */
+function FeaturedCard({ item, className }: { item?: ApproachItem; className?: string }): JSX.Element {
+  const url = item?.media ? ((item.media as Media)?.url ?? undefined) : undefined
+  return (
+    <div className={cn('group relative overflow-hidden rounded-md', className)}>
+      <BentoMedia url={url} alt={item?.title ?? undefined} />
+      <div className="relative z-10 flex h-full flex-col justify-end gap-8 p-6 lg:p-8">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-main">
+          <Zap aria-hidden className="h-6 w-6 text-cream" />
+        </div>
+        <div className="flex flex-col gap-2">
+          {item?.title ? (
+            <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">
+              {item.title}
+            </h3>
+          ) : null}
+          {item?.excerpt ? (
+            <p className="max-w-md text-base leading-tight tracking-[-0.02em] text-body/75">{item.excerpt}</p>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function AboutApproachComponent({ heading, description, items }: AboutApproachBlock): JSX.Element | null {
   const motionGridItemProps = {
     initial: { opacity: 0, y: 20 },
@@ -78,36 +110,28 @@ export function AboutApproachComponent({ heading, description, items }: AboutApp
   const [featured, ...rest] = items
   const rightColumn = rest.slice(0, 2) // stacked beside the featured media
   const bottomRow = rest.slice(2) // remaining benefits in the lower band
-  const featuredImageUrl = featured?.media ? ((featured.media as Media)?.url ?? undefined) : undefined
 
   return (
     <div>
       <Section title={heading ?? ''} desc={description ?? ''} className="rounded-md bg-main px-9 py-12">
+        {/* Mobile: single horizontal carousel of every benefit (featured first). `sm:hidden`
+            is baked into MobileCarousel, so the bento grid below takes over at sm+. */}
+        <MobileCarousel slideClassName="h-[420px] w-[280px]">
+          {items.map((item, index) =>
+            index === 0 ? (
+              <FeaturedCard key={item.id ?? `approach-slide-${index}`} item={item} className="h-full" />
+            ) : (
+              <BenefitCard key={item.id ?? `approach-slide-${index}`} item={item} />
+            ),
+          )}
+        </MobileCarousel>
+
         {/* Body: row A (featured + stacked pair) over row B (narrow + wide), 16px apart. */}
-        <div className="flex flex-col gap-4">
+        <div className="hidden flex-col gap-4 sm:flex">
           {/* Row A: featured media (2/3) + a stacked pair of benefits (1/3). */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <Motion className="lg:col-span-2" {...motionGridItemProps} transition={{ duration: 0.5, ease: EASE }}>
-              <div className="group relative h-[460px] overflow-hidden rounded-md lg:h-[600px]">
-                <BentoMedia url={featuredImageUrl} alt={featured?.title ?? undefined} />
-                <div className="relative z-10 flex h-full flex-col justify-end gap-8 p-6 lg:p-8">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-main">
-                    <Zap aria-hidden className="h-6 w-6 text-cream" />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    {featured?.title ? (
-                      <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">
-                        {featured.title}
-                      </h3>
-                    ) : null}
-                    {featured?.excerpt ? (
-                      <p className="max-w-md text-base leading-tight tracking-[-0.02em] text-body/75">
-                        {featured.excerpt}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
+              <FeaturedCard item={featured} className="h-[460px] lg:h-[600px]" />
             </Motion>
 
             {rightColumn.length ? (

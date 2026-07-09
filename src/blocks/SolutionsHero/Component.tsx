@@ -187,7 +187,7 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.7, ease: EASE }}
-        className="relative aspect-[16/10] w-full overflow-hidden rounded-md ring-1 ring-line sm:aspect-[1480/843]"
+        className="relative w-full overflow-hidden rounded-md ring-1 ring-line lg:aspect-[1480/843]"
       >
         {/* Always-present gradient + grain so the frame never reads as an empty/broken box. */}
         <span
@@ -208,13 +208,15 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
         ) : null}
-        {/* Bottom scrim keeps the overlaid cards legible against the photo. */}
+        {/* Bottom scrim keeps the overlaid cards legible against the photo (desktop). */}
         <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/75" />
+        {/* Mobile/tablet: flat 50% darken behind the centered card grid (Figma 1719:2995). */}
+        <span aria-hidden className="absolute inset-0 bg-black/50 lg:hidden" />
 
         {/* Offering row — four disciplines as separate frosted cards inset over the bottom of the
             photo (Figma: gaps between cards, ~32px outer inset). */}
         {cells.length > 0 ? (
-          <div className="absolute inset-x-0 bottom-0 grid grid-cols-2 gap-3 p-4 sm:p-6 lg:grid-cols-4 lg:gap-4 lg:p-8">
+          <div className="relative z-10 grid grid-cols-2 content-center gap-2 px-4 py-12 lg:absolute lg:inset-x-0 lg:bottom-0 lg:grid-cols-4 lg:gap-4 lg:p-8">
             {cells.map(({ shape, card }, index) => (
               <Motion
                 tag="div"
@@ -223,14 +225,22 @@ export function SolutionsHeroComponent(props: SolutionsHeroBlock): JSX.Element {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.07, 0.42) }}
-                className="group flex flex-col items-center gap-4 rounded-xl border border-white/10 bg-ink/75 px-5 py-6 text-center backdrop-blur-md lg:px-6 lg:py-7"
+                className="group flex flex-col items-center gap-2 rounded-md bg-card px-3 pb-4 pt-6 text-center lg:gap-4 lg:rounded-xl lg:border lg:border-white/10 lg:bg-ink/75 lg:px-6 lg:py-7 lg:backdrop-blur-md"
               >
-                <div className="transition-transform duration-500 ease-out group-hover:-translate-y-1">
+                {/* Isometric cube is a desktop-only flourish. The Figma mobile layout (1719:2995) is
+                    text-only, so the cube is hidden until the grid becomes 4-up at lg. */}
+                <div className="hidden transition-transform duration-500 ease-out group-hover:-translate-y-1 lg:block">
                   <IconShapes cubes={shape.cubes} cy={shape.cy} />
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <h3 className="font-display text-[18px] font-medium leading-[1.2] text-cream">{card?.title}</h3>
-                  {card?.excerpt ? <p className="text-[12px] leading-relaxed text-subtle">{card.excerpt}</p> : null}
+                <div className="flex flex-col gap-2 lg:gap-1.5">
+                  <h3 className="font-display text-[16px] font-medium leading-[1.15] tracking-[-0.05em] text-cream lg:text-[18px] lg:leading-[1.2] lg:tracking-normal">
+                    {card?.title}
+                  </h3>
+                  {card?.excerpt ? (
+                    <p className="text-[14px] leading-[1.15] text-body lg:text-[12px] lg:leading-relaxed lg:text-subtle">
+                      {card.excerpt}
+                    </p>
+                  ) : null}
                 </div>
               </Motion>
             ))}

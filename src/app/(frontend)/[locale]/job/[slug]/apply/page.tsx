@@ -106,12 +106,12 @@ export default async function Page({
 
   return (
     <div className={`min-h-screen ${careersBg.page} ${careersText.cream} font-sans selection:bg-white/20`}>
-      <main className="pb-24 max-w-7xl mx-auto px-5 space-y-20 lg:space-y-24">
+      <div className="pb-24 max-w-7xl mx-auto px-5 space-y-20 lg:space-y-24">
         {/* Hero */}
         <Motion tag="section" className="space-y-6" {...motionSectionProps}>
           <Link
             href={`/${typedLocale}/job/${jobData.slug}`}
-            className={`group inline-flex items-center gap-2 text-sm ${careersText.muted} hover:text-cream transition-colors rounded-sm focus-visible:outline-none`}
+            className={`group inline-flex items-center gap-2 text-sm ${careersText.muted} hover:text-cream transition-colors rounded-sm`}
           >
             <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
             Job Details
@@ -178,7 +178,7 @@ export default async function Page({
             localePrefix={`/${typedLocale}`}
           />
         )}
-      </main>
+      </div>
     </div>
   )
 }

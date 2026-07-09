@@ -107,8 +107,7 @@ const run = async () => {
     limit: 1,
   })
   const cdoc = cp.docs?.[0] as
-    | { id?: unknown; layout?: Record<string, unknown>[]; createdAt?: unknown; updatedAt?: unknown }
-    | undefined
+    { id?: unknown; layout?: Record<string, unknown>[]; createdAt?: unknown; updatedAt?: unknown } | undefined
   if (cdoc?.layout) {
     let changed = false
     for (const block of cdoc.layout) {
