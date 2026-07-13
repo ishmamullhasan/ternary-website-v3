@@ -12,7 +12,7 @@ export const seed = async ({ payload, req: _req }: { payload: Payload; req: Payl
     payload.updateGlobal({
       slug: 'header',
       data: {
-        siteName: 'Ternary Solutions',
+        siteName: 'Ternary',
         menu: [],
       },
       context: { disableRevalidate: true },
@@ -21,7 +21,7 @@ export const seed = async ({ payload, req: _req }: { payload: Payload; req: Payl
       slug: 'footer',
       data: {
         menu_1: {
-          siteName: 'Ternary Solutions',
+          siteName: 'Ternary',
           // description is a richText (Lexical) field — seed a minimal single-paragraph state.
           description: {
             root: {
@@ -45,7 +45,7 @@ export const seed = async ({ payload, req: _req }: { payload: Payload; req: Payl
               ],
             },
           },
-          copyright: `© ${new Date().getFullYear()} Ternary Solutions`,
+          copyright: `© ${new Date().getFullYear()} Ternary`,
         },
       },
       context: { disableRevalidate: true },

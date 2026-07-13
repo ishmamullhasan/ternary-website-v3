@@ -11,7 +11,7 @@ const Footer: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('footer', 'max')
+        revalidateTag('footer', { expire: 0 })
       },
     ],
   },

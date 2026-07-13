@@ -22,7 +22,7 @@ function EngagementCard({ item, index }: { item: Scale; index: number }): JSX.El
   const url = thumbnail?.url
 
   return (
-    <div className="group relative aspect-[22/25] w-full overflow-hidden rounded-md border border-line bg-ink">
+    <div className="group relative aspect-[3/5] w-full overflow-hidden rounded-md border border-line bg-ink">
       <GradientPanel tone={toneFor(undefined, index)} interactive />
 
       {url && <Image src={url} alt={item.title || 'engagement model'} fill className="relative object-cover" />}
@@ -48,7 +48,10 @@ export default function EngagementComp({ heading, description, model }: Engageme
           {description && <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />}
         </Motion>
 
-        <div className="w-full lg:w-auto">
+        {/* lg:flex-1 (not lg:w-auto): the cards are `w-full` inside `1fr` tracks, so a shrink-to-fit
+            wrapper makes the track width depend on the card width and vice versa — it resolves to
+            zero and the cards collapse to their 1px borders. flex-1 gives the tracks a definite width. */}
+        <div className="w-full lg:flex-1">
           {/* Mobile: horizontal snap carousel with pagination dots. */}
           <MobileCarousel slideClassName="w-[260px]">
             {model.map((item, index) => (
@@ -57,7 +60,7 @@ export default function EngagementComp({ heading, description, model }: Engageme
           </MobileCarousel>
 
           {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
-          <div className="hidden w-full gap-4 sm:grid sm:grid-cols-2 lg:w-auto lg:grid-cols-3">
+          <div className="hidden w-full gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
             {model.map((item, index): JSX.Element => (
               <Motion key={index} {...revealItem(index)}>
                 <EngagementCard item={item} index={index} />

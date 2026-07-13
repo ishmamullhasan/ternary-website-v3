@@ -17,18 +17,18 @@ const Capability: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`capability_${doc.slug}`, 'max')
+          revalidateTag(`capability_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('capability', 'max')
+        revalidateTag('capability', { expire: 0 })
       },
     ],
     // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
     afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`capability_${doc.slug}`, 'max')
+          revalidateTag(`capability_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('capability', 'max')
+        revalidateTag('capability', { expire: 0 })
       },
     ],
   },

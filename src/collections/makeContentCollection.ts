@@ -44,18 +44,18 @@ export const makeContentCollection = (
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`${slug}_${doc.slug}`, 'max')
+          revalidateTag(`${slug}_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag(slug, 'max')
+        revalidateTag(slug, { expire: 0 })
       },
     ],
     // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
     afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`${slug}_${doc.slug}`, 'max')
+          revalidateTag(`${slug}_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag(slug, 'max')
+        revalidateTag(slug, { expire: 0 })
       },
     ],
   },

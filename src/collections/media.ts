@@ -18,7 +18,7 @@ const dirname = path.dirname(filename)
 // keep serving the stale copy forever under pure tag-based revalidation. Media edits are rare, so
 // the blanket bust is an acceptable trade for correctness.
 const bustAllTags = () => {
-  for (const tag of ALL_CACHE_TAGS) revalidateTag(tag, 'max')
+  for (const tag of ALL_CACHE_TAGS) revalidateTag(tag, { expire: 0 })
 }
 
 const Media: CollectionConfig = {

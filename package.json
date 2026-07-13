@@ -1,7 +1,7 @@
 {
   "name": "ternary-website-v3",
   "version": "1.0.0",
-  "description": "Ternary Solutions marketing website (Next.js + Payload CMS)",
+  "description": "Ternary marketing website (Next.js + Payload CMS)",
   "license": "UNLICENSED",
   "private": true,
   "type": "module",
@@ -30,7 +30,7 @@
     "@hookform/resolvers": "^5.4.0",
     "@payloadcms/admin-bar": "^3.85.2",
     "@payloadcms/db-mongodb": "^3.85.2",
-    "@payloadcms/email-nodemailer": "3.85.1",
+    "@payloadcms/email-nodemailer": "^3.85.2",
     "@payloadcms/live-preview-react": "^3.85.2",
     "@payloadcms/next": "^3.85.2",
     "@payloadcms/payload-cloud": "^3.85.2",
@@ -98,8 +98,10 @@
     "sonner": "^2.0.7",
     "swiper": "^12.2.0",
     "tailwind-merge": "^3.6.0",
+    "topojson-client": "^3.1.0",
     "typescript-eslint": "^8.63.0",
     "vaul": "^1.1.2",
+    "world-atlas": "^2.0.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -112,6 +114,7 @@
     "@types/node": "^26.1.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.5.2",
     "copyfiles": "^2.4.1",

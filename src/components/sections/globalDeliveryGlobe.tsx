@@ -1,37 +1,48 @@
 'use client'
 
+import { laneColor } from '@/components/sections/laneColors'
 import { cn } from '@/utilities/ui'
 import { motion, useReducedMotion, useSpring } from 'motion/react'
-import { useEffect, useRef, useState, type JSX } from 'react'
+import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
 
-type Hub = { name: string; location: [number, number]; size?: number }
+/** One end of a lane, as authored in the CMS (Global Delivery block → Shipping Lanes). */
+export type LanePoint = { label?: string | null; lat?: number | null; lng?: number | null }
+export type GlobeLane = {
+  from?: LanePoint | null
+  to?: LanePoint | null
+  color?: string | null
+}
 
-// Everything ships out of Dhaka; the arcs below all originate here.
-const ORIGIN: Hub = { name: 'Dhaka', location: [23.8103, 90.4125], size: 0.08 }
-
-// US delivery destinations — one per coast plus the interior, so three lanes still read as
-// national coverage without crowding the sphere.
-const DESTINATIONS: Hub[] = [
-  { name: 'New York', location: [40.7128, -74.006] },
-  { name: 'Austin', location: [30.2672, -97.7431] },
-  { name: 'San Francisco', location: [37.7749, -122.4194] },
+// Fallback routes, used when the block carries no lanes: everything ships out of Dhaka, to one US
+// hub per coast plus the interior, so three lanes read as national coverage without crowding the
+// sphere. These are what the globe drew before the lanes became CMS-authored.
+const DEFAULT_LANES: GlobeLane[] = [
+  {
+    from: { label: 'Dhaka', lat: 23.8103, lng: 90.4125 },
+    to: { label: 'New York', lat: 40.7128, lng: -74.006 },
+    color: 'cream',
+  },
+  {
+    from: { label: 'Dhaka', lat: 23.8103, lng: 90.4125 },
+    to: { label: 'Austin', lat: 30.2672, lng: -97.7431 },
+    color: 'amber',
+  },
+  {
+    from: { label: 'Dhaka', lat: 23.8103, lng: 90.4125 },
+    to: { label: 'San Francisco', lat: 37.7749, lng: -122.4194 },
+    color: 'azure',
+  },
 ]
-
-const HUBS: Hub[] = [ORIGIN, ...DESTINATIONS]
 
 // The SVG map's palette, normalized to cobe's 0..1 RGB: #757571 land dots, #F4F3EC hub markers.
 const BASE_COLOR: [number, number, number] = [0.459, 0.459, 0.443]
 const MARKER_COLOR: [number, number, number] = [0.957, 0.953, 0.925]
 const GLOW_COLOR: [number, number, number] = [0.13, 0.13, 0.12]
 
-// One tint per lane, as 8-bit channels for the overlay's rgba() strings. These are desaturated
-// pastels around the cream marker colour (#F4F3EC) rather than saturated hues — enough separation
-// to tell two crossing lanes apart, not enough to fight the muted globe. Indexed by DESTINATIONS.
-const ARC_RGB: string[] = [
-  '244, 243, 236', // cream
-  '240, 214, 170', // amber
-  '176, 206, 240', // azure
-]
+// Marker sizes. An origin is a place work ships *from* and usually anchors several lanes, so it
+// gets the larger dot.
+const ORIGIN_SIZE = 0.08
+const DESTINATION_SIZE = 0.05
 
 // Globe tilt. Shared by cobe (the `theta` option) and the overlay's projection — they must agree
 // or the arcs will drift off the sphere.
@@ -94,7 +105,50 @@ function greatCircleArc(a: Vec3, b: Vec3): Vec3[] {
   return points
 }
 
-const ARCS: Vec3[][] = DESTINATIONS.map((d) => greatCircleArc(toVec3(ORIGIN.location), toVec3(d.location)))
+type Marker = { location: [number, number]; size: number }
+type Arc = { points: Vec3[]; rgb: string }
+
+/**
+ * CMS lanes → what the globe actually draws: cobe markers (one per distinct endpoint, deduped so a
+ * shared origin isn't stamped three times) and a coloured great-circle arc per lane. A lane missing
+ * either coordinate is dropped rather than rendered at 0,0 in the Gulf of Guinea.
+ */
+function buildGlobeData(input: GlobeLane[]): { markers: Marker[]; arcs: Arc[]; places: string[] } {
+  type PlacedPoint = { label?: string | null; lat: number; lng: number }
+  const lanes = input.filter(
+    (l): l is { from: PlacedPoint; to: PlacedPoint; color?: string | null } =>
+      typeof l?.from?.lat === 'number' &&
+      typeof l?.from?.lng === 'number' &&
+      typeof l?.to?.lat === 'number' &&
+      typeof l?.to?.lng === 'number',
+  )
+  if (lanes.length === 0) return { markers: [], arcs: [], places: [] }
+
+  const markers = new Map<string, Marker>()
+  const addMarker = (lat: number, lng: number, size: number) => {
+    const key = `${lat},${lng}`
+    const existing = markers.get(key)
+    // A place that is an origin on any lane keeps the origin dot, even if another lane ends there.
+    if (existing) existing.size = Math.max(existing.size, size)
+    else markers.set(key, { location: [lat, lng], size })
+  }
+
+  const arcs: Arc[] = []
+  const places: string[] = []
+  lanes.forEach((lane, i) => {
+    addMarker(lane.from.lat, lane.from.lng, ORIGIN_SIZE)
+    addMarker(lane.to.lat, lane.to.lng, DESTINATION_SIZE)
+    arcs.push({
+      points: greatCircleArc(toVec3([lane.from.lat, lane.from.lng]), toVec3([lane.to.lat, lane.to.lng])),
+      rgb: laneColor(lane.color, i).rgb,
+    })
+    const from = lane.from.label?.trim()
+    const to = lane.to.label?.trim()
+    if (from && to) places.push(`${from} to ${to}`)
+  })
+
+  return { markers: [...markers.values()], arcs, places }
+}
 
 /**
  * Rotate a model-space point into view space with cobe's own rotation matrix (its shader builds
@@ -120,11 +174,26 @@ const occluded = (v: Vec3): boolean => v[2] < 0 && Math.hypot(v[0], v[1]) < 1
  * WebGL globe (via cobe) replacing the static delivery-network SVG. The globe library is
  * code-split and only fetched once the section scrolls into view. It auto-rotates, zooms in on
  * hover, and can be dragged to spin. A 2D canvas layered on top draws great-circle shipping lanes
- * from Dhaka to every US hub, each carrying a comet that runs origin → destination on a loop; the
- * lanes share the globe's rotation and hide behind its far side. Honors prefers-reduced-motion
- * (static globe, static lanes, no zoom) and falls back to the original SVG if WebGL/cobe fails.
+ * for every lane authored in the CMS, each carrying a comet that runs origin → destination on a
+ * loop in the lane's own flare colour; the lanes share the globe's rotation and hide behind its far
+ * side. Honors prefers-reduced-motion (static globe, static lanes, no zoom) and falls back to the
+ * original SVG if WebGL/cobe fails.
  */
-export default function GlobalDeliveryGlobe({ className }: { className?: string }): JSX.Element {
+export default function GlobalDeliveryGlobe({
+  className,
+  lanes,
+}: {
+  className?: string
+  lanes?: GlobeLane[] | null
+}): JSX.Element {
+  // Serialize before memoizing: the props array is a fresh reference on every parent render, and
+  // rebuilding the arcs would tear down and re-create the WebGL globe each time.
+  const lanesKey = JSON.stringify(lanes ?? [])
+  const { markers, arcs, places } = useMemo(() => {
+    const authored = buildGlobeData(JSON.parse(lanesKey) as GlobeLane[])
+    return authored.arcs.length ? authored : buildGlobeData(DEFAULT_LANES)
+  }, [lanesKey])
+
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const arcsRef = useRef<HTMLCanvasElement>(null)
@@ -181,11 +250,11 @@ export default function GlobalDeliveryGlobe({ className }: { className?: string 
     const start = performance.now()
     const measure = () => {
       side = canvas.offsetWidth
-      const arcs = arcsRef.current
-      if (arcs) {
+      const overlay = arcsRef.current
+      if (overlay) {
         // Overlay is ARC_PAD wider on each edge than the globe it sits over.
-        arcs.width = side * (1 + 2 * ARC_PAD) * dpr
-        arcs.height = arcs.width
+        overlay.width = side * (1 + 2 * ARC_PAD) * dpr
+        overlay.height = overlay.width
       }
     }
 
@@ -200,19 +269,18 @@ export default function GlobalDeliveryGlobe({ className }: { className?: string 
     }
 
     const drawArcs = (currentPhi: number, now: number) => {
-      const arcs = arcsRef.current
-      const ctx = arcs?.getContext('2d')
-      if (!arcs || !ctx) return
+      const overlay = arcsRef.current
+      const ctx = overlay?.getContext('2d')
+      if (!overlay || !ctx) return
 
-      const px = arcs.width
+      const px = overlay.width
       ctx.clearRect(0, 0, px, px)
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
 
-      for (let a = 0; a < ARCS.length; a++) {
-        const arc = ARCS[a]!
-        const rgb = ARC_RGB[a % ARC_RGB.length]!
-        const projected = arc.map((p) => project(p, currentPhi))
+      for (let a = 0; a < arcs.length; a++) {
+        const { points, rgb } = arcs[a]!
+        const projected = points.map((p) => project(p, currentPhi))
 
         // Lane: one path, broken wherever it passes behind the globe.
         ctx.beginPath()
@@ -235,7 +303,7 @@ export default function GlobalDeliveryGlobe({ className }: { className?: string 
         if (!animateArcs.current) continue
 
         // Comet: the shipment. Staggered per lane so departures never fire in lockstep.
-        const head = (((now - start) / PULSE_MS + a / ARCS.length) % 1) * ARC_SEGMENTS
+        const head = (((now - start) / PULSE_MS + a / arcs.length) % 1) * ARC_SEGMENTS
         const tail = head - PULSE_TAIL * ARC_SEGMENTS
 
         for (let i = Math.max(0, Math.ceil(tail)); i < head; i++) {
@@ -289,7 +357,7 @@ export default function GlobalDeliveryGlobe({ className }: { className?: string 
           baseColor: BASE_COLOR,
           markerColor: MARKER_COLOR,
           glowColor: GLOW_COLOR,
-          markers: HUBS.map((h) => ({ location: h.location, size: h.size ?? 0.05 })),
+          markers,
           onRender: (state: Record<string, number>) => {
             if (autoSpin.current && dragStart.current === null) phi.current += 0.0035
             const currentPhi = phi.current + dragDelta.current
@@ -319,7 +387,9 @@ export default function GlobalDeliveryGlobe({ className }: { className?: string 
       ro?.disconnect()
       globe?.destroy()
     }
-  }, [inView])
+    // `markers`/`arcs` only change when the authored lanes do (they are memoized on a serialized
+    // key), so the globe is rebuilt on a content change and never on a plain re-render.
+  }, [inView, arcs, markers])
 
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (reduce) return
@@ -361,7 +431,11 @@ export default function GlobalDeliveryGlobe({ className }: { className?: string 
             <canvas
               ref={canvasRef}
               role="img"
-              aria-label="Interactive globe showing Ternary delivery routes from Dhaka to hubs across the United States"
+              aria-label={
+                places.length
+                  ? `Interactive globe showing Ternary delivery routes: ${places.join(', ')}.`
+                  : 'Interactive globe showing Ternary delivery routes.'
+              }
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={endDrag}

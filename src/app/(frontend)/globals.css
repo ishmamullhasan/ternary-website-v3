@@ -62,6 +62,36 @@ body {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   User accessibility preferences (A11yFab). The FAB writes these data-attributes
+   onto <html> and persists them to localStorage; the rules below are the CSS half
+   of each toggle. The motion toggle's JS half lives in A11yFab.tsx, which also sets
+   MotionGlobalConfig.skipAnimations so Motion's JS-driven reveals go instant —
+   the media query above cannot reach those.
+   --------------------------------------------------------------------------- */
+
+html[data-a11y-motion='reduce'] *,
+html[data-a11y-motion='reduce'] *::before,
+html[data-a11y-motion='reduce'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Everything sizes in rem, so lifting the root size scales the whole type scale
+   (SC 1.4.4 — text resizable to 200% without loss of content). */
+html[data-a11y-text='large'] {
+  font-size: 112.5%;
+}
+
+/* SC 1.4.1 — do not rely on colour alone to signal a link. */
+html[data-a11y-links='underline'] main a,
+html[data-a11y-links='underline'] footer a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* Font utilities reference the runtime CSS variables injected by next/font on <body>
    (--font-poppins, --font-inter) directly. Tailwind v4 @theme can't resolve those runtime
    vars at build time, so these are plain utilities rather than --font-* theme tokens. */

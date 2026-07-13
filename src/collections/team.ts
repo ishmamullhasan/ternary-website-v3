@@ -19,18 +19,18 @@ const Team: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`team_${doc.slug}`, 'max')
+          revalidateTag(`team_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('team', 'max')
+        revalidateTag('team', { expire: 0 })
       },
     ],
     // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
     afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`team_${doc.slug}`, 'max')
+          revalidateTag(`team_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('team', 'max')
+        revalidateTag('team', { expire: 0 })
       },
     ],
   },

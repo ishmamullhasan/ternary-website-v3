@@ -18,18 +18,18 @@ const Scale: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`scale_${doc.slug}`, 'max')
+          revalidateTag(`scale_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('scale', 'max')
+        revalidateTag('scale', { expire: 0 })
       },
     ],
     // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
     afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`scale_${doc.slug}`, 'max')
+          revalidateTag(`scale_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('scale', 'max')
+        revalidateTag('scale', { expire: 0 })
       },
     ],
   },

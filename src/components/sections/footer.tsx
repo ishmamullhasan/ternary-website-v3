@@ -12,7 +12,7 @@ type MediaWithUrl = { url?: string | null }
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 /**
- * Ternary combination mark, inlined from the brand asset (public/favicon.svg) so the lockup always
+ * Ternary combination mark, inlined from the brand asset (public/icon/favicon.svg) so the lockup always
  * renders — the CMS logo media lives on S3 and degrades to a broken box locally. currentColor lets
  * the cream fill flow from the surrounding text token.
  */
@@ -211,7 +211,7 @@ export default function Footer({ footerData }: FooterProps) {
     rawCopyright && rawCopyright.toLowerCase() !== 'copyright' && rawCopyright.toLowerCase() !== 'copyright text'
       ? rawCopyright
       : null
-  const legal = copyright || '© Ternary Solutions, Inc. and its subsidiaries. All Rights Reserved.'
+  const legal = copyright || '© Ternary Limited and its subsidiaries. All Rights Reserved.'
   const legalLinks = (footerData?.legalLinks ?? []).filter((item) => item?.label && item?.link)
 
   // Social icons: keep only rows with a known platform + link; fall back to the designed set when empty.
@@ -319,7 +319,7 @@ export default function Footer({ footerData }: FooterProps) {
           space-between on desktop; stacks (badges first) on smaller screens. */}
       <div className="flex flex-col-reverse gap-10 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6 lg:py-12">
         {/* Left stack (gap24): social icons → legal links → copyright */}
-        <div className="flex flex-col gap-6 lg:w-[387px]">
+        <div className="flex flex-col gap-6">
           {/* Social icons: 44px squares (12px pad + 20px glyph), white/10 fill, 5px radius, 12px gap */}
           {socials.length > 0 && (
             <nav className="flex flex-wrap gap-3" aria-label="Social media">
@@ -338,7 +338,7 @@ export default function Footer({ footerData }: FooterProps) {
 
           {/* Legal links — inline, dot-separated (Figma 5px ellipse), Inter Regular 14px cream. */}
           {legalLinks.length > 0 && (
-            <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 lg:max-w-[310px]" aria-label="Legal">
+            <nav className="flex flex-wrap items-center gap-x-4 gap-y-2" aria-label="Legal">
               {legalLinks.map((item, idx) => (
                 <span className="flex items-center gap-x-4" key={`legal-link-${idx}`}>
                   {idx > 0 && <span aria-hidden className="size-[5px] shrink-0 rounded-full bg-cream/90" />}
@@ -363,21 +363,21 @@ export default function Footer({ footerData }: FooterProps) {
             {partners.map((partner, idx) => {
               const partnerLogo = getLogoUrl(partner?.logo)
               const partnerName = partner?.name?.trim() || `Partner ${idx + 1}`
-              const badge = (
-                <span className="flex size-[120px] items-center justify-center rounded-full bg-white p-[10px] shadow-[0px_8px_12px_rgba(0,0,0,0.12)] lg:size-[168px]">
-                  {partnerLogo ? (
-                    <Image
-                      src={partnerLogo}
-                      width={88}
-                      height={44}
-                      alt={partnerName}
-                      className="h-11 w-auto max-w-[88px] object-contain"
-                    />
-                  ) : (
-                    <span className="text-center text-[14px] font-medium leading-[1.15] tracking-[-0.05em] text-[#050505]">
-                      {partnerName}
-                    </span>
-                  )}
+              const badge = partnerLogo ? (
+                <span className="block size-[120px] overflow-hidden rounded-full shadow-[0px_8px_12px_rgba(0,0,0,0.12)] lg:size-[168px]">
+                  <Image
+                    src={partnerLogo}
+                    width={168}
+                    height={168}
+                    alt={partnerName}
+                    className="size-full object-cover"
+                  />
+                </span>
+              ) : (
+                <span className="flex size-[120px] items-center justify-center overflow-hidden rounded-full bg-white p-[10px] shadow-[0px_8px_12px_rgba(0,0,0,0.12)] lg:size-[168px]">
+                  <span className="text-center text-[14px] font-medium leading-[1.15] tracking-[-0.05em] text-[#050505]">
+                    {partnerName}
+                  </span>
                 </span>
               )
               return partner?.link ? (

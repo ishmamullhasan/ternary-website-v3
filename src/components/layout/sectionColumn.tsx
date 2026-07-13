@@ -54,16 +54,19 @@ export default function ColumnSection({
     const primaryColClass = cn('min-w-0', mainSide === 'right' && 'order-1 lg:order-2')
     const asideColClass = cn('min-w-0', mainSide === 'right' && 'order-2 lg:order-1')
 
+    // No max-width or horizontal gutter here: RenderBlocks already wraps every block in
+    // `max-w-7xl mx-auto px-5`, so re-applying it would inset this section a further 20px per side
+    // and leave it narrower than its siblings (e.g. SolutionsEngage).
     return (
       <Motion
         tag="section"
-        className={cn('max-w-7xl mx-auto px-5', className)}
+        className={cn(className)}
         initial={{ opacity: 0, y: 12 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
-        <div className="grid lg:grid-cols-2 gap-4 items-start">
+        <div className="grid lg:grid-cols-2 gap-4 items-start lg:items-stretch">
           <div className={primaryColClass}>
             {headerBlock}
             {children}

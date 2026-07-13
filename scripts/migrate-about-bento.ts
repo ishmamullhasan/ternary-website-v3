@@ -1,8 +1,9 @@
 // Migrate aboutSection.items from the flat polymorphic-relationship shape
 //   items: [{ relationTo, value }]
-// to the bento array shape
-//   items: [{ item: { relationTo, value }, size }]
-// Sizes follow the default 8-card pattern (large + wide + standards → no holes in a 4-col grid).
+// to the wrapped array shape
+//   items: [{ item: { relationTo, value } }]
+// The per-card `size` field this script once wrote is gone — the grid is uniform, so display
+// order is the only thing a row carries.
 //
 // Old rows are sourced from RAW Mongo docs (the new array schema no longer describes them, so a
 // schema-sanitized read may drop them); the update itself goes through the Local API, preserving
@@ -15,10 +16,9 @@ import config from '@payload-config'
 import { getPayload, type Payload } from 'payload'
 
 const DRY = process.env.SEED_DRY !== '0'
-const BENTO_PATTERN = ['large', 'standard', 'standard', 'standard', 'standard', 'wide', 'standard', 'standard']
 
 const payload: Payload = await getPayload({ config })
-payload.logger.info(`Migrate aboutSection items → bento rows ${DRY ? '(DRY RUN — no writes)' : '(WRITING)'}`)
+payload.logger.info(`Migrate aboutSection items → wrapped rows ${DRY ? '(DRY RUN — no writes)' : '(WRITING)'}`)
 
 // afterChange hooks call revalidateTag(), which throws outside a request context; the DB write
 // commits first, so swallow only that specific error (same handling as seed-content.ts).
@@ -33,7 +33,7 @@ const ignoreRevalidate = async (fn: () => Promise<unknown>): Promise<void> => {
 }
 
 type OldRow = { relationTo?: string; value?: unknown }
-type NewRow = { item: { relationTo: string; value: string }; size: string }
+type NewRow = { item: { relationTo: string; value: string } }
 
 const isOldRow = (r: unknown): r is Required<OldRow> =>
   !!r && typeof r === 'object' && 'relationTo' in r && 'value' in r && !('item' in r)
@@ -41,9 +41,9 @@ const isOldRow = (r: unknown): r is Required<OldRow> =>
 const convertItems = (rows: unknown[]): { rows: NewRow[]; converted: number } => {
   let converted = 0
   const out: NewRow[] = []
-  for (const [i, r] of rows.entries()) {
+  for (const r of rows) {
     if (isOldRow(r)) {
-      out.push({ item: { relationTo: r.relationTo, value: String(r.value) }, size: BENTO_PATTERN[i] ?? 'standard' })
+      out.push({ item: { relationTo: r.relationTo, value: String(r.value) } })
       converted++
     } else if (r && typeof r === 'object' && 'item' in r) {
       out.push(r as NewRow) // already migrated

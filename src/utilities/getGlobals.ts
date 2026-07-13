@@ -67,3 +67,22 @@ export async function getFooter(locale?: TypedLocale) {
     ? getGlobal('footer', 1, locale)
     : cachedGlobal('footer', 1, ['footer', 'capability', 'solution', 'industry'], locale)
 }
+
+/**
+ * Fetches the 404 global. Cached + revalidated by the `not-found` tag; bypassed in draft mode.
+ * The 404 boundary calls this once per locale (it has no `params` to narrow by), so keep depth at 0.
+ */
+export async function getNotFound(locale?: TypedLocale) {
+  const { isEnabled: draft } = await draftMode()
+  return draft ? getGlobal('notFound', 0, locale) : cachedGlobal('notFound', 0, ['not-found'], locale)
+}
+
+/**
+ * Fetches the error-page global. Cached + revalidated by the `error-page` tag; bypassed in draft mode.
+ * Read by /api/error-content, since the error boundaries that render this copy must be Client
+ * Components (a Next requirement) and so cannot call the local API themselves.
+ */
+export async function getErrorPage(locale?: TypedLocale) {
+  const { isEnabled: draft } = await draftMode()
+  return draft ? getGlobal('errorPage', 0, locale) : cachedGlobal('errorPage', 0, ['error-page'], locale)
+}

@@ -1,6 +1,6 @@
 # Ternary website content build — shared brief
 
-You are authoring website copy for **Ternary Solutions**, derived from the company pitch deck. The full
+You are authoring website copy for **Ternary**, derived from the company pitch deck. The full
 verbatim deck text is in `scripts/deck-content/_deck-source.json` (a JSON array; each entry has a slide
 number and its text). Read it for source material.
 

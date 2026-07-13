@@ -134,18 +134,18 @@ export const Pages: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`pages_${doc.slug}`, 'max')
+          revalidateTag(`pages_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('pages', 'max')
+        revalidateTag('pages', { expire: 0 })
       },
     ],
     // Deletes must bust the same tags, or the deleted page keeps rendering from cache.
     afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`pages_${doc.slug}`, 'max')
+          revalidateTag(`pages_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('pages', 'max')
+        revalidateTag('pages', { expire: 0 })
       },
     ],
   },

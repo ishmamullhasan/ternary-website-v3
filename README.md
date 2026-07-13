@@ -1,6 +1,6 @@
-# Ternary Solutions Website
+# Ternary Website
 
-The marketing website for **Ternary Solutions, Inc.** This is a proprietary,
+The marketing website for **Ternary Limited.** This is a proprietary,
 closed-source application — see [Proprietary notice](#proprietary-notice) below.
 
 ## Stack
@@ -91,8 +91,8 @@ see [`SECURITY.md`](./SECURITY.md).
 
 ## Proprietary notice
 
-Copyright © 2026 Ternary Solutions, Inc. All rights reserved. This software is
+Copyright © 2026 Ternary Limited. All rights reserved. This software is
 proprietary and confidential. It is **not** open-source and is provided for internal
 use only. Unauthorized copying, distribution, modification, or use of any part of it is
-prohibited without the express prior written permission of Ternary Solutions, Inc. See
+prohibited without the express prior written permission of Ternary Limited. See
 [`LICENSE`](./LICENSE).

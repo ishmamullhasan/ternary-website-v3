@@ -16,10 +16,22 @@ export const SolutionsEngage: Block = {
       maxRows: 3,
       admin: {
         ...rowLabelAdmin,
-        description: 'Three engagement models. Card gradient/bar colors are fixed in code by position.',
+        description:
+          'Three engagement models. Link each card to a Model record to show its thumbnail in the card panel; ' +
+          'without one (or without a thumbnail on it) the card falls back to the signature gradient.',
       },
       fields: [
         { name: 'title', label: 'Title', type: 'text', required: true, localized: true, admin: { width: '50%' } },
+        {
+          name: 'model',
+          label: 'Model',
+          type: 'relationship',
+          relationTo: 'model',
+          admin: {
+            width: '50%',
+            description: "The panel image is this model's Thumbnail (edit it under Content → Models).",
+          },
+        },
         {
           name: 'subtitle',
           label: 'Subtitle',

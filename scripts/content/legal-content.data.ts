@@ -1,12 +1,12 @@
 // English content for the three legal pages (privacy / terms / modern slavery). The legal `content`
 // field is localized richText with fallback:true, so seeding `en` is enough — `bn` falls back to en.
-// These are professional templates for Ternary Solutions; have counsel review before relying on them
+// These are professional templates for Ternary; have counsel review before relying on them
 // (the page's own compliance notice says as much).
 //
 // Block DSL: { h: '...' } heading (h2) | { p: '...' } paragraph | { ul: [...] } bullet list.
 export type Block = { h: string } | { p: string } | { ul: string[] }
 
-export const COMPANY = 'Ternary Solutions'
+export const COMPANY = 'Ternary'
 
 export const PRIVACY: Block[] = [
   {

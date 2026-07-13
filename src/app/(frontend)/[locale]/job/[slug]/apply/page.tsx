@@ -39,7 +39,7 @@ export async function generateMetadata({
 
   if (!jobData) return {}
 
-  // Bare "<job title> | Apply Job"; the layout title template appends " | Ternary Solutions"
+  // Bare "<job title> | Apply Job"; the layout title template appends " | Ternary"
   // (returning a string lets Next compose the suffix — avoids the old doubled site name).
   return {
     title: jobData.title ? `${jobData.title} | Apply Job` : 'Apply Job',

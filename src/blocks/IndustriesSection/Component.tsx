@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { IndustriesSectionBlock, Industry, Media } from '@/payload-types'
@@ -47,43 +48,53 @@ function iconFor(title: string | null | undefined, index: number): LucideIcon {
   return FALLBACK_CYCLE[index % FALLBACK_CYCLE.length]
 }
 
-type ImageTile = { key: string; imageUrl?: string; alt: string; href: string }
+// Home tile — the scale / engagement card treatment: the gradient panel IS the fallback (always
+// rendered), the industry's thumbnail layers on top, and the title + excerpt sit over a scrim.
+function IndustryCard({ item, index }: { item: Industry; index: number }): JSX.Element {
+  const thumb = item.thumbnail as Media | string | null | undefined
+  const media = typeof thumb === 'object' && thumb ? thumb : null
 
-// Two renderings share this block:
-//   • Home (default, !fullWidth) — a plain image grid: portrait tiles that are JUST an image + a
-//     link, nothing else (Figma 339-8110). The images come from the block's `images` array (pick a
-//     media image + link per tile); if none are set it falls back to the selected industries'
-//     thumbnails so existing content keeps working.
+  return (
+    <Link href={item.slug ? `/industries/${item.slug}` : '#'} className={`group block h-full rounded-md ${focusRing}`}>
+      <div className="relative aspect-[3/5] h-full overflow-hidden rounded-md border border-line bg-ink">
+        <GradientPanel tone={toneFor(undefined, index)} interactive />
+
+        {media?.url && (
+          <Image
+            src={media.url}
+            alt={media.alt || item.title || 'industry'}
+            fill
+            sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
+            className="relative object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+          />
+        )}
+
+        {/* bottom-to-transparent scrim keeps the card text legible over imagery */}
+        <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-black/70" />
+
+        <div className="absolute inset-x-4 bottom-4 z-10">
+          <h3 className="font-medium text-cream">{item.title}</h3>
+          {item.excerpts && <p className="mt-2 text-sm text-cream">{item.excerpts}</p>}
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+// Two renderings share this block, both driven by the picked `industries`:
+//   • Home (default, !fullWidth) — portrait cards carrying the industry's thumbnail, title and
+//     excerpt, in the scale/engagement card treatment, linking to the industry page.
 //   • fullWidth — the industry-detail benefit grid: icon chip + title + paragraph cards
-//     (Figma 1283-2668). Driven by `industries`. Left untouched.
+//     (Figma 1283-2668).
 export function IndustriesSectionComponent({
   heading,
   description,
-  images,
   industries,
   fullWidth,
 }: IndustriesSectionBlock): JSX.Element | null {
   const items = (industries ?? []).filter((i): i is Industry => typeof i === 'object' && i !== null)
 
-  // Explicitly-picked media tiles take priority over the industry-thumbnail fallback.
-  const pickedTiles: ImageTile[] = (images ?? []).flatMap((tile, i) => {
-    const media = tile?.image as Media | null | undefined
-    if (!media || typeof media !== 'object' || !media.url) return []
-    return [{ key: tile.id ?? `img-${i}`, imageUrl: media.url, alt: media.alt || 'industry', href: tile.link || '#' }]
-  })
-  const fallbackTiles: ImageTile[] = items.map((item, i) => {
-    const thumb = item.thumbnail as Media | null | undefined
-    return {
-      key: item.id ?? `ind-${i}`,
-      imageUrl: typeof thumb === 'object' && thumb ? (thumb.url ?? undefined) : undefined,
-      alt: item.title || 'industry',
-      href: item.slug ? `/industries/${item.slug}` : '#',
-    }
-  })
-  const tiles = pickedTiles.length > 0 ? pickedTiles : fallbackTiles
-
-  // Nothing to show: fullWidth needs industries; the image grid needs either source.
-  if (fullWidth ? items.length === 0 : tiles.length === 0) return null
+  if (items.length === 0) return null
 
   return (
     // Default: the cards sit inside a raised `section-card` panel (home/capabilities treatment).
@@ -122,32 +133,17 @@ export function IndustriesSectionComponent({
             on the industry-detail page (Figma 1283-2668). */}
         {!fullWidth && <div aria-hidden className="hidden lg:block lg:row-span-2" />}
 
-        {/* Home image grid — each tile is JUST an image + a link (no icon/title/excerpt). */}
         {!fullWidth &&
-          tiles.map((tile, index) => (
+          items.map((item, index) => (
             <Motion
-              key={tile.key}
+              key={item.id ?? index}
               tag="div"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.36) }}
             >
-              <Link
-                href={tile.href}
-                aria-label={tile.alt}
-                className={`group relative block aspect-[3/4] overflow-hidden rounded-md border border-white/[0.06] bg-ink transition-[transform,box-shadow,border-color] duration-500 ease-out hover:-translate-y-1 hover:border-white/[0.12] hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${focusRing}`}
-              >
-                {tile.imageUrl && (
-                  <Image
-                    src={tile.imageUrl}
-                    alt={tile.alt}
-                    fill
-                    sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                  />
-                )}
-              </Link>
+              <IndustryCard item={item} index={index} />
             </Motion>
           ))}
 

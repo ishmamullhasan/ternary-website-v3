@@ -36,8 +36,10 @@ export async function GET(req: NextRequest): Promise<Response> {
     const segments = path.split('/').filter(Boolean)
     if (LOCALES.includes(segments[0] as (typeof LOCALES)[number])) segments.shift()
     const slug = segments[segments.length - 1] ?? 'home'
-    // expire:0 — unlike the hooks' `'max'` (stale-while-revalidate), this expires the entry
-    // immediately so the redirected request already renders fresh.
+    // expire:0 expires the entry immediately, so the redirected request already renders fresh. Every
+    // revalidateTag on the site now uses this rather than the `'max'` stale-while-revalidate profile
+    // — SWR hands the *stale* copy to the next reader and only refreshes behind them, which defeats
+    // both this redirect and the live-refresh poller (WEB-490).
     revalidateTag(`pages_${slug}`, { expire: 0 })
     return NextResponse.redirect(back, { status: 303, headers: { 'x-reval': `pages_${slug}` } })
   }
@@ -48,6 +50,6 @@ export async function GET(req: NextRequest): Promise<Response> {
   }
   const single = req.nextUrl.searchParams.get('tag')
   const tags = single ? [single] : [...ALL_CACHE_TAGS]
-  for (const t of tags) revalidateTag(t, 'max')
+  for (const t of tags) revalidateTag(t, { expire: 0 })
   return NextResponse.json({ ok: true, revalidated: tags })
 }

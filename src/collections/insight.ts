@@ -29,18 +29,18 @@ const Insight: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`insight_${doc.slug}`, 'max')
+          revalidateTag(`insight_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('insight', 'max')
+        revalidateTag('insight', { expire: 0 })
       },
     ],
     // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
     afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`insight_${doc.slug}`, 'max')
+          revalidateTag(`insight_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('insight', 'max')
+        revalidateTag('insight', { expire: 0 })
       },
     ],
   },

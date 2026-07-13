@@ -29,18 +29,18 @@ const PressRelease: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`pressRelease_${doc.slug}`, 'max')
+          revalidateTag(`pressRelease_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('pressRelease', 'max')
+        revalidateTag('pressRelease', { expire: 0 })
       },
     ],
     // Deletes must bust the same tags, or list pages / embedding pages keep serving the removed doc.
     afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`pressRelease_${doc.slug}`, 'max')
+          revalidateTag(`pressRelease_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('pressRelease', 'max')
+        revalidateTag('pressRelease', { expire: 0 })
       },
     ],
   },

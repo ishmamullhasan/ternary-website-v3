@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to the Ternary Solutions website. This project follows a
+Thanks for contributing to the Ternary website. This project follows a
 ticket-first, PR-based workflow.
 
 ## Workflow

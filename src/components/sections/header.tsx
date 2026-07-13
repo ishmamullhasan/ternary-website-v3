@@ -4,7 +4,7 @@ import MegaMenuOverlay, { type NavEntry, type SecondaryLink } from '@/components
 import { localeFromPath, localizedHref } from '@/lib/i18n/locales'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
-import { ChevronDown, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -34,7 +34,7 @@ function getLogoUrl(logo: MediaWithUrl | string | null | undefined): string | nu
 const isMega = (e: NavEntry) => e.type === 'mega' && !!e.panel
 
 /**
- * Ternary combination mark, inlined from the brand asset (public/favicon.svg). Rendering it as
+ * Ternary combination mark, inlined from the brand asset (public/icon/favicon.svg). Rendering it as
  * SVG paths rather than an <Image> means the mark always appears — the CMS logo media lives on S3
  * and degrades to a broken box locally — and stays crisp at any size.
  */
@@ -64,6 +64,10 @@ export default function Header({ headerData }: HeaderProps) {
   )
   const logoUrl = getLogoUrl(headerData?.logo)
   const firstMega = useMemo(() => menu.findIndex(isMega), [menu])
+
+  // Both burgers (header pill at md+, floating FAB below md) open the same overlay, landing on the
+  // first mega entry so the panel is populated on open.
+  const toggleMenu = () => setOpenIndex(open ? null : firstMega >= 0 ? firstMega : 0)
 
   // Close on route change.
   useEffect(() => {
@@ -114,8 +118,26 @@ export default function Header({ headerData }: HeaderProps) {
 
   return (
     <>
+      {/* Mobile logo — a fixed badge that mirrors the floating burger (same size, same left inset,
+          opposite corner) and never reacts to scroll. Below md it replaces the header pill entirely. */}
+      <Link
+        href={localizedHref(locale, '/')}
+        aria-label={headerData?.siteName || 'Ternary'}
+        onClick={() => setOpenIndex(null)}
+        className={cn(
+          'glass fixed top-5 left-5 z-50 flex size-12 items-center justify-center rounded-2xl text-cream md:hidden',
+          'sm:top-6 sm:left-6 sm:size-14',
+        )}
+      >
+        {logoUrl ? (
+          <Image src={logoUrl} width={30} height={30} alt="" className="h-[26px] w-auto sm:h-[30px]" />
+        ) : (
+          <TernaryMark className="h-[26px] w-auto text-cream sm:h-[30px]" />
+        )}
+      </Link>
+
       {/* Outer fixed positioner — centers the floating pill and stays click-through outside it. */}
-      <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-3 sm:pt-4 pointer-events-none">
+      <div className="fixed inset-x-0 top-0 z-50 hidden justify-center px-4 pt-3 sm:pt-4 pointer-events-none md:flex">
         <motion.header
           className={cn(
             'pointer-events-auto w-full max-w-7xl rounded-2xl px-5 md:glass xl:max-w-5xl',
@@ -137,53 +159,24 @@ export default function Header({ headerData }: HeaderProps) {
           }}
         >
           <div className="flex w-full flex-row items-center justify-between gap-4">
-            {/* Mobile: the header bar is transparent (glass only kicks in at md), so give the logo
-                its own frosted rounded badge below md; at md+ it sits bare inside the glass pill. */}
-            <div className="shrink-0 max-md:glass max-md:rounded-2xl max-md:p-2.5">{Logo}</div>
+            <div className="shrink-0">{Logo}</div>
 
-            {/* Desktop navigation — pushed to the far edge, opposite the logo. */}
-            <nav className="hidden items-center gap-0.5 md:flex">
-              {menu.map((entry, i) => {
-                const mega = isMega(entry)
-                const active = i === openIndex
-                const itemClass = cn(
-                  'flex items-center gap-1 rounded-md px-3.5 py-2 text-[14px] font-semibold leading-[1.15] tracking-normal text-cream transition-colors duration-200 hover:bg-white/[0.06]',
-                  active && 'bg-white/[0.06]',
-                )
-                if (mega) {
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      aria-haspopup="dialog"
-                      aria-expanded={active}
-                      onClick={() => setOpenIndex(active ? null : i)}
-                      className={itemClass}
-                    >
-                      <span>{entry.label}</span>
-                      <ChevronDown
-                        aria-hidden
-                        className={cn(
-                          'size-3 text-cream/60 transition-transform duration-200',
-                          active && 'rotate-180 text-cream',
-                        )}
-                      />
-                    </button>
-                  )
-                }
-                const itemActive = entry.link && path === localizedHref(locale, entry.link)
-                return (
-                  <Link
-                    key={i}
-                    href={localizedHref(locale, entry.link)}
-                    className={cn(itemClass, itemActive && 'bg-white/[0.06]')}
-                    aria-current={itemActive ? 'page' : undefined}
-                  >
-                    {entry.label}
-                  </Link>
-                )
-              })}
-            </nav>
+            {/* Desktop (md+) — the whole nav lives in the mega overlay, so the bar carries nothing but
+                the logo and the burger that opens it. Below md the floating FAB does this job. */}
+            <button
+              type="button"
+              aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-haspopup="dialog"
+              aria-expanded={open}
+              onClick={toggleMenu}
+              className={cn(
+                'hidden shrink-0 items-center justify-center rounded-md p-2 text-cream md:flex',
+                'transition-colors duration-200 hover:bg-white/[0.06]',
+                open && 'bg-white/[0.06]',
+              )}
+            >
+              <Menu className="size-5" />
+            </button>
           </div>
         </motion.header>
       </div>
@@ -192,9 +185,10 @@ export default function Header({ headerData }: HeaderProps) {
           bottom corner. Toggles the same full-screen mega overlay the desktop nav opens. */}
       <button
         type="button"
-        aria-label="Open menu"
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-haspopup="dialog"
         aria-expanded={open}
-        onClick={() => setOpenIndex(open ? null : firstMega >= 0 ? firstMega : 0)}
+        onClick={toggleMenu}
         className={cn(
           'glass pointer-events-auto fixed bottom-5 left-5 z-50 flex size-12 items-center justify-center rounded-full text-cream md:hidden',
           'transition-transform duration-200 motion-safe:hover:scale-105 active:scale-95 sm:bottom-6 sm:left-6 sm:size-14',

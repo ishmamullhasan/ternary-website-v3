@@ -1,4 +1,5 @@
 import { Callout } from '@/blocks/Callout/config'
+import ActivityLog from '@/collections/activityLog'
 import Analytics from '@/collections/analytics'
 import Capability from '@/collections/capability'
 import Industry from '@/collections/industry'
@@ -14,10 +15,13 @@ import Story from '@/collections/story'
 import Team from '@/collections/team'
 import User from '@/collections/user'
 import { sesEmailAdapter } from '@/email/sesAdapter'
+import ErrorPage from '@/globals/errorPage'
 import Footer from '@/globals/footer'
 import Header from '@/globals/header'
 import LegalCenter from '@/globals/legalCenter'
+import NotFound from '@/globals/notFound'
 import Ops from '@/globals/ops'
+import Revalidator from '@/globals/revalidator'
 import { pruneAnalyticsTask } from '@/jobs/pruneAnalytics'
 import plugins from '@/plugins'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -141,11 +145,16 @@ export default buildConfig({
     Model,
     Team,
     Legal,
-    // System group — keep last so it sorts to the bottom of the admin nav.
+    // System group — keep last so it sorts to the bottom of the admin nav. Within the group, nav
+    // order follows registration order.
+    //
+    // Audit trail. Rows are written by the activity-log plugin (src/plugins/activityLog.ts), which
+    // hangs hooks off every other collection and global — including the ones plugins create.
+    ActivityLog,
     Analytics,
   ],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer, LegalCenter, Ops],
+  globals: [Header, Footer, LegalCenter, NotFound, ErrorPage, Ops, Revalidator],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

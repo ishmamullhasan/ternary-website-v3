@@ -48,7 +48,7 @@ const Header: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('header', 'max')
+        revalidateTag('header', { expire: 0 })
       },
     ],
   },

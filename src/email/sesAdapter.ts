@@ -22,7 +22,7 @@ export async function sesEmailAdapter(): Promise<EmailAdapter<unknown> | undefin
 
   return nodemailerAdapter({
     defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || 'no-reply@ternary.solutions',
-    defaultFromName: process.env.EMAIL_FROM_NAME || 'Ternary Solutions',
+    defaultFromName: process.env.EMAIL_FROM_NAME || 'Ternary',
     transportOptions: {
       host: SMTP_HOST || 'email-smtp.ap-southeast-1.amazonaws.com',
       port: Number(SMTP_PORT) || 587,

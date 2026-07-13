@@ -17,41 +17,73 @@ const PANEL_TONE: Record<string, string> = {
   incident: 'radial-gradient(135% 135% at 22% 16%, #1f9d6b 0%, #0f5a3d 46%, #07211a 100%)',
 }
 
-// The aside panels are bespoke marketing illustrations (like the isometric cubes in SolutionsHero):
-// their inner data is fixed in code and selected per feature by `widget`. CMS copy is surfaced where
-// it maps — `stat` overrides the trajectory panel's headline metric. The "Outcomes" footer is the
-// same institutional line across panels (distinct from the per-feature `description` paragraph that
-// renders under the heading), so it lives here as a shared constant.
-const OUTCOMES = 'Production-ready systems, full test coverage, CI/CD pipelines, and zero technical debt at launch.'
-
-// --- Static illustration data, matched to the Figma node verbatim ---
-const MIGRATION = {
-  legacy: { title: 'Legacy', items: ['Monolith', 'Batch jobs', 'Manual deploys'] },
-  modern: { title: 'Modern', items: ['Event-driven', 'Streaming', 'Continuous deploy'] },
-  metric: { label: 'Incident MTTR', delta: '−60%', before: '42 min', after: '17 min', afterPct: 40 },
+// The aside panels are bespoke marketing illustrations (like the isometric cubes in SolutionsHero),
+// selected per feature by `widget`. Every string and number they render is CMS-authored — see the
+// `outcomes` / `panelStat` / `panelMigration` / `panelCommits` / `panelReliability` groups in
+// config.ts. The constants below are the Figma-verbatim defaults, used only where a field is empty,
+// so a half-filled block degrades to the original design rather than to blanks.
+const DEFAULTS = {
+  outcomes: {
+    label: 'Outcomes',
+    text: 'Production-ready systems, full test coverage, CI/CD pipelines, and zero technical debt at launch.',
+  },
+  stat: { label: 'Architecture · Zero-to-One', liveLabel: 'Live', value: '10x', caption: 'Scale handled seamlessly' },
+  migration: {
+    label: 'Migration Plan · Reversible at every step',
+    connector: 'Dual-run',
+    legacy: { title: 'Legacy', items: ['Monolith', 'Batch jobs', 'Manual deploys'] },
+    modern: { title: 'Modern', items: ['Event-driven', 'Streaming', 'Continuous deploy'] },
+    metric: {
+      label: 'Incident MTTR',
+      delta: '−60%',
+      beforeLabel: 'Before',
+      before: '42 min',
+      afterLabel: 'After',
+      after: '17 min',
+      afterPct: 40,
+    },
+  },
+  commits: {
+    label: 'client-repo / main',
+    rows: [
+      { message: 'feat: orchestrator retry policy', author: 'ternary/mk', added: '+412', removed: '−38' },
+      { message: 'refactor: typed event bus', author: 'ternary/as', added: '+209', removed: '−154' },
+      { message: 'perf: streaming response chunks', author: 'ternary/jl', added: '+87', removed: '−12' },
+      { message: 'fix: rate-limit edge case', author: 'ternary/rp', added: '+34', removed: '−9' },
+      { message: 'chore: bump observability stack', author: 'ternary/tr', added: '+156', removed: '−201' },
+      { message: 'chore: bump observability stack', author: 'ternary/tr', added: '+156', removed: '−201' },
+    ],
+    footer: { label: 'Sprint 24 · This week', value: '40%', caption: 'Increase in sprint velocity' },
+  },
+  reliability: {
+    label: 'Reliability Console',
+    statusLabel: 'All systems nominal',
+    uptime: { value: '99.99%', caption: 'Sustained service availability' },
+    chart: { barCount: 56, dips: [15, 40], startLabel: '60d ago', endLabel: 'today' },
+    metrics: [
+      { label: 'API p99', value: '182ms' },
+      { label: 'Error rate', value: '0.02%' },
+      { label: 'Queue lag', value: '94ms' },
+    ],
+  },
 }
 
-const COMMITS: { msg: string; author: string; add: string; del: string }[] = [
-  { msg: 'feat: orchestrator retry policy', author: 'ternary/mk', add: '+412', del: '−38' },
-  { msg: 'refactor: typed event bus', author: 'ternary/as', add: '+209', del: '−154' },
-  { msg: 'perf: streaming response chunks', author: 'ternary/jl', add: '+87', del: '−12' },
-  { msg: 'fix: rate-limit edge case', author: 'ternary/rp', add: '+34', del: '−9' },
-  { msg: 'chore: bump observability stack', author: 'ternary/tr', add: '+156', del: '−201' },
-  { msg: 'chore: bump observability stack', author: 'ternary/tr', add: '+156', del: '−201' },
-]
+/** CMS value if it has content, else the design default. Empty strings are treated as unset. */
+const val = (cms: string | null | undefined, fallback: string): string => cms?.trim() || fallback
 
-const RELIABILITY_METRICS = [
-  { label: 'API p99', value: '182ms' },
-  { label: 'Error rate', value: '0.02%' },
-  { label: 'Queue lag', value: '94ms' },
-]
+/** CMS rows if the author supplied any, else the design defaults. */
+const rows = <T,>(cms: unknown[] | null | undefined, fallback: T[]): (T | unknown)[] =>
+  Array.isArray(cms) && cms.length > 0 ? cms : fallback
 
-// Deterministic uptime bars (no Math.random → stable across SSR/CSR). Two amber dips echo the design.
-const UPTIME_BARS = Array.from({ length: 56 }, (_, i) => {
-  const amber = i === 14 || i === 39
-  const base = 62 + Math.round(24 * Math.abs(Math.sin(i * 0.9)) + (i % 5) * 3)
-  return { height: amber ? 44 : Math.min(100, base), amber }
-})
+// Deterministic bar heights (no Math.random → stable across SSR/CSR). `dips` are 1-based positions.
+function buildBars(barCount: number, dips: number[]): { height: number; amber: boolean }[] {
+  const dipSet = new Set(dips)
+  return Array.from({ length: barCount }, (_, i) => {
+    const amber = dipSet.has(i + 1)
+    const base = 62 + Math.round(24 * Math.abs(Math.sin(i * 0.9)) + (i % 5) * 3)
+    return { height: amber ? 44 : Math.min(100, base), amber }
+  })
+}
 
 // --- Shared panel primitives ---
 
@@ -102,24 +134,30 @@ function LiveDot({ label = 'Live' }: { label?: string }): JSX.Element {
 }
 
 // Frosted "Outcomes" footer shared by the stat / commits / reliability panels.
-function OutcomesBand(): JSX.Element {
+function OutcomesBand({ outcomes }: { outcomes?: SolutionFeatureBlock['outcomes'] }): JSX.Element {
   return (
     <div className="rounded-sm bg-black/25 p-5 ring-1 ring-white/10 backdrop-blur-md">
-      <span className="block text-[12px] text-cream/70">Outcomes</span>
-      <p className="mt-2 text-[15px] leading-snug text-cream">{OUTCOMES}</p>
+      <span className="block text-[12px] text-cream/70">{val(outcomes?.label, DEFAULTS.outcomes.label)}</span>
+      <p className="mt-2 text-[15px] leading-snug text-cream">{val(outcomes?.text, DEFAULTS.outcomes.text)}</p>
     </div>
   )
 }
 
 // --- The four bespoke panels ---
 
-// trajectory · Product Engineering — concentric rings behind a large stat (CMS `stat` overrides).
-function StatPanel({ tone, stat }: { tone: string; stat?: SolutionFeatureBlock['stat'] }): JSX.Element {
-  const value = stat?.value?.trim() || '10x'
-  const caption = stat?.caption?.trim() || 'Scale handled seamlessly'
+// Every panel takes the block's own props so it can read its authored group plus the shared footer.
+type PanelProps = { tone: string; block: SolutionFeatureBlock }
+
+// trajectory · Product Engineering — concentric rings behind a large stat.
+function StatPanel({ tone, block }: PanelProps): JSX.Element {
+  const d = DEFAULTS.stat
+  const value = val(block.stat?.value, d.value)
+  const caption = val(block.stat?.caption, d.caption)
   return (
     <PanelShell tone={tone}>
-      <PanelLabel right={<LiveDot />}>Architecture · Zero-to-One</PanelLabel>
+      <PanelLabel right={<LiveDot label={val(block.panelStat?.liveLabel, d.liveLabel)} />}>
+        {val(block.panelStat?.label, d.label)}
+      </PanelLabel>
       <div className="relative flex flex-1 items-center justify-center py-6">
         <span aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <span className="aspect-square w-[88%] rounded-full ring-1 ring-white/10" />
@@ -133,7 +171,7 @@ function StatPanel({ tone, stat }: { tone: string; stat?: SolutionFeatureBlock['
           <span className="mt-3 block text-[12px] leading-none text-cream">{caption}</span>
         </div>
       </div>
-      <OutcomesBand />
+      <OutcomesBand outcomes={block.outcomes} />
     </PanelShell>
   )
 }
@@ -164,30 +202,48 @@ function StackCard({
 }
 
 // none · Enterprise Transformation — migration plan (legacy → dual-run → modern) + MTTR before/after.
-function MigrationPanel({ tone }: { tone: string }): JSX.Element {
-  const { legacy, modern, metric } = MIGRATION
+function MigrationPanel({ tone, block }: PanelProps): JSX.Element {
+  const d = DEFAULTS.migration
+  const p = block.panelMigration
+  const items = (cms: { label?: string | null }[] | null | undefined, fallback: string[]): string[] => {
+    const authored = (cms ?? []).map((r) => r?.label?.trim()).filter((s): s is string => Boolean(s))
+    return authored.length > 0 ? authored : fallback
+  }
+  const legacyItems = items(p?.legacy?.items, d.legacy.items)
+  const modernItems = items(p?.modern?.items, d.modern.items)
+  const afterPct = p?.metric?.afterPct ?? d.metric.afterPct
+
   return (
     <PanelShell tone={tone}>
-      <PanelLabel>Migration Plan · Reversible at every step</PanelLabel>
+      <PanelLabel>{val(p?.label, d.label)}</PanelLabel>
       <div className="flex flex-1 items-stretch gap-4">
         <div className="flex w-[42%] flex-col justify-center gap-2">
-          <StackCard title={legacy.title} items={legacy.items} icon={Database} />
+          <StackCard title={val(p?.legacy?.title, d.legacy.title)} items={legacyItems} icon={Database} />
           <div className="flex items-center justify-center gap-2 text-[12px] text-cream/80">
             <ArrowDown size={14} aria-hidden />
-            {/* connector label */}
-            <span>Dual-run</span>
+            <span>{val(p?.connector, d.connector)}</span>
             <ArrowDown size={14} aria-hidden />
           </div>
-          <StackCard title={modern.title} items={modern.items} icon={Zap} />
+          <StackCard title={val(p?.modern?.title, d.modern.title)} items={modernItems} icon={Zap} />
         </div>
         <div className="flex flex-1 flex-col justify-between rounded-md bg-black/20 p-4 ring-1 ring-white/10 backdrop-blur-sm">
           <div className="flex items-start justify-between">
-            <span className="text-[12px] text-cream/80">{metric.label}</span>
-            <span className="font-display text-2xl font-medium leading-none text-cream">{metric.delta}</span>
+            <span className="text-[12px] text-cream/80">{val(p?.metric?.label, d.metric.label)}</span>
+            <span className="font-display text-2xl font-medium leading-none text-cream">
+              {val(p?.metric?.delta, d.metric.delta)}
+            </span>
           </div>
           <div className="flex flex-col gap-3">
-            <Bar label="Before" value={metric.before} pct={100} />
-            <Bar label="After" value={metric.after} pct={metric.afterPct} />
+            <Bar
+              label={val(p?.metric?.beforeLabel, d.metric.beforeLabel)}
+              value={val(p?.metric?.before, d.metric.before)}
+              pct={100}
+            />
+            <Bar
+              label={val(p?.metric?.afterLabel, d.metric.afterLabel)}
+              value={val(p?.metric?.after, d.metric.after)}
+              pct={afterPct}
+            />
           </div>
         </div>
       </div>
@@ -210,7 +266,10 @@ function Bar({ label, value, pct }: { label: string; value: string; pct: number 
 }
 
 // techStack · Engineering Augmentation — live commit feed + sprint-velocity footer.
-function CommitsPanel({ tone }: { tone: string }): JSX.Element {
+function CommitsPanel({ tone, block }: PanelProps): JSX.Element {
+  const d = DEFAULTS.commits
+  const p = block.panelCommits
+  const commits = rows(p?.commits, d.rows) as (typeof d.rows)[number][]
   return (
     <PanelShell tone={tone}>
       <PanelLabel>
@@ -220,62 +279,74 @@ function CommitsPanel({ tone }: { tone: string }): JSX.Element {
           <span className="size-1.5 rounded-full bg-cream/40" />
         </span>
         <GitBranch size={13} aria-hidden />
-        client-repo / main
+        {val(p?.label, d.label)}
       </PanelLabel>
       <div className="flex-1 divide-y divide-white/10 overflow-hidden rounded-md bg-black/20 ring-1 ring-white/10 backdrop-blur-sm">
-        {COMMITS.map((commit, i) => (
+        {commits.map((commit, i) => (
           <div key={i} className="flex items-center justify-between gap-3 px-4 py-2.5">
             <div className="flex min-w-0 items-center gap-2.5">
               <GitCommitHorizontal size={14} className="shrink-0 text-cream/55" aria-hidden />
               <div className="min-w-0">
-                <p className="truncate text-[13px] text-cream">{commit.msg}</p>
+                <p className="truncate text-[13px] text-cream">{commit.message}</p>
                 <p className="text-[11px] text-cream/55">{commit.author}</p>
               </div>
             </div>
             <span className="shrink-0 font-mono text-[12px]">
-              <span className="text-emerald-200">{commit.add}</span> <span className="text-cream/55">{commit.del}</span>
+              <span className="text-emerald-200">{commit.added}</span>{' '}
+              <span className="text-cream/55">{commit.removed}</span>
             </span>
           </div>
         ))}
         <div className="flex items-center justify-between gap-3 bg-black/25 px-4 py-3">
-          <span className="text-[12px] text-cream/80">Sprint 24 · This week</span>
+          <span className="text-[12px] text-cream/80">{val(p?.footer?.label, d.footer.label)}</span>
           <span className="flex items-baseline gap-2">
-            <span className="font-display text-2xl font-medium leading-none text-cream">40%</span>
-            <span className="text-[12px] text-cream/70">Increase in sprint velocity</span>
+            <span className="font-display text-2xl font-medium leading-none text-cream">
+              {val(p?.footer?.value, d.footer.value)}
+            </span>
+            <span className="text-[12px] text-cream/70">{val(p?.footer?.caption, d.footer.caption)}</span>
           </span>
         </div>
       </div>
-      <OutcomesBand />
+      <OutcomesBand outcomes={block.outcomes} />
     </PanelShell>
   )
 }
 
 // incident · Managed Services — reliability console (uptime stat + bar chart + SLO metric cards).
-function ReliabilityPanel({ tone }: { tone: string }): JSX.Element {
+function ReliabilityPanel({ tone, block }: PanelProps): JSX.Element {
+  const d = DEFAULTS.reliability
+  const p = block.panelReliability
+
+  const authoredDips = (p?.chart?.dips ?? []).map((r) => r?.position).filter((n): n is number => typeof n === 'number')
+  const bars = buildBars(p?.chart?.barCount ?? d.chart.barCount, authoredDips.length > 0 ? authoredDips : d.chart.dips)
+  const metrics = rows(p?.metrics, d.metrics) as (typeof d.metrics)[number][]
+
   return (
     <PanelShell tone={tone}>
       <PanelLabel
         right={
           <>
             <span className="size-1.5 rounded-full bg-emerald-300 shadow-[0_0_8px] shadow-emerald-300/70" />
-            All systems nominal
+            {val(p?.statusLabel, d.statusLabel)}
           </>
         }
       >
         <Activity size={13} aria-hidden />
-        Reliability Console
+        {val(p?.label, d.label)}
       </PanelLabel>
       <div className="flex flex-1 flex-col gap-4 rounded-md bg-black/20 p-4 ring-1 ring-white/10 backdrop-blur-sm">
         <div className="flex items-start justify-between">
           <div>
-            <div className="font-display text-5xl font-medium leading-none tracking-[-0.04em] text-cream">99.99%</div>
-            <div className="mt-2 text-[12px] text-cream/70">Sustained service availability</div>
+            <div className="font-display text-5xl font-medium leading-none tracking-[-0.04em] text-cream">
+              {val(p?.uptime?.value, d.uptime.value)}
+            </div>
+            <div className="mt-2 text-[12px] text-cream/70">{val(p?.uptime?.caption, d.uptime.caption)}</div>
           </div>
           <ShieldCheck size={22} className="text-cream/70" aria-hidden />
         </div>
         <div>
           <div className="flex h-20 items-end gap-[3px]" aria-hidden>
-            {UPTIME_BARS.map((bar, i) => (
+            {bars.map((bar, i) => (
               <div
                 key={i}
                 className={`flex-1 rounded-[1px] ${bar.amber ? 'bg-amber-400' : 'bg-emerald-300/80'}`}
@@ -284,13 +355,13 @@ function ReliabilityPanel({ tone }: { tone: string }): JSX.Element {
             ))}
           </div>
           <div className="mt-1.5 flex justify-between text-[11px] text-cream/55">
-            <span>60d ago</span>
-            <span>today</span>
+            <span>{val(p?.chart?.startLabel, d.chart.startLabel)}</span>
+            <span>{val(p?.chart?.endLabel, d.chart.endLabel)}</span>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          {RELIABILITY_METRICS.map((metric) => (
-            <div key={metric.label} className="rounded-md bg-black/25 p-2.5 ring-1 ring-white/10">
+          {metrics.map((metric, i) => (
+            <div key={i} className="rounded-md bg-black/25 p-2.5 ring-1 ring-white/10">
               <div className="flex items-center justify-between text-[11px] text-cream/65">
                 <span>{metric.label}</span>
                 <Check size={11} className="text-emerald-300" aria-hidden />
@@ -300,25 +371,26 @@ function ReliabilityPanel({ tone }: { tone: string }): JSX.Element {
           ))}
         </div>
       </div>
-      <OutcomesBand />
+      <OutcomesBand outcomes={block.outcomes} />
     </PanelShell>
   )
 }
 
 // Select the bespoke panel by the feature's `widget` discriminator (the four marketing sections map
 // 1:1 to widget values; see config.ts). `none` is Enterprise Transformation's migration plan.
-function FeaturePanel({ widget, stat }: { widget: string; stat?: SolutionFeatureBlock['stat'] }): JSX.Element {
+function FeaturePanel({ block }: { block: SolutionFeatureBlock }): JSX.Element {
+  const widget = block.widget ?? 'none'
   const tone = PANEL_TONE[widget] ?? PANEL_TONE.none
   switch (widget) {
     case 'none':
-      return <MigrationPanel tone={tone} />
+      return <MigrationPanel tone={tone} block={block} />
     case 'techStack':
-      return <CommitsPanel tone={tone} />
+      return <CommitsPanel tone={tone} block={block} />
     case 'incident':
-      return <ReliabilityPanel tone={tone} />
+      return <ReliabilityPanel tone={tone} block={block} />
     case 'trajectory':
     default:
-      return <StatPanel tone={tone} stat={stat} />
+      return <StatPanel tone={tone} block={block} />
   }
 }
 
@@ -336,10 +408,7 @@ export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Eleme
   const widget = props?.widget ?? 'none'
 
   return (
-    <ColumnSection
-      mainSide={props?.mainSide === 'right' ? 'right' : 'left'}
-      aside={<FeaturePanel widget={widget} stat={props?.stat} />}
-    >
+    <ColumnSection mainSide={props?.mainSide === 'right' ? 'right' : 'left'} aside={<FeaturePanel block={props} />}>
       {/* Header — rendered here (not via ColumnSection) for correct eyebrow scale, eggshell heading and Inter labels. */}
       <Motion
         tag="div"

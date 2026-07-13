@@ -26,7 +26,7 @@ export function organization(): JsonLdObject {
     '@type': 'Organization',
     name: SITE_NAME,
     url,
-    logo: `${url}/favicon.svg`,
+    logo: `${url}/icon/favicon.svg`,
     description: SITE_DESCRIPTION,
     sameAs,
   }

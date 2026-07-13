@@ -537,7 +537,7 @@ export default function ApplyForm({ slug }: ApplyFormProps): JSX.Element {
                 id="employerName"
                 value={form.employerName}
                 onChange={set('employerName')}
-                placeholder="ABC Corporation, Inc."
+                placeholder="Ternary Limited"
                 {...inputProps('employerName')}
               />
             </Field>

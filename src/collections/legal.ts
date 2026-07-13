@@ -17,18 +17,18 @@ const Legal: CollectionConfig = {
     afterChange: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`legal_${doc.slug}`, 'max')
+          revalidateTag(`legal_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('legal', 'max')
+        revalidateTag('legal', { expire: 0 })
       },
     ],
     // Deletes must bust the same tags, or the legal-center nav keeps serving the removed doc.
     afterDelete: [
       ({ doc }) => {
         if (doc?.slug) {
-          revalidateTag(`legal_${doc.slug}`, 'max')
+          revalidateTag(`legal_${doc.slug}`, { expire: 0 })
         }
-        revalidateTag('legal', 'max')
+        revalidateTag('legal', { expire: 0 })
       },
     ],
   },

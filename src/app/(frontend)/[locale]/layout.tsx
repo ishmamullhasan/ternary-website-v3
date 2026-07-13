@@ -1,6 +1,8 @@
 import SkipLink from '@/components/a11y/SkipLink'
+import A11yFab from '@/components/A11yFab'
 import AnalyticsBeacon from '@/components/analytics/AnalyticsBeacon'
 import LivePreviewListener from '@/components/LivePreviewListener'
+import LiveRefresh from '@/components/LiveRefresh'
 import LocaleFab from '@/components/LocaleFab'
 import Footer from '@/components/sections/footer'
 import Header from '@/components/sections/header'
@@ -11,9 +13,10 @@ import { organization, website } from '@/lib/seo/jsonLd'
 import { getFooter, getHeader } from '@/utilities/getGlobals'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getServerSideURL } from '@/utilities/getURL'
+import { hasEditorSession } from '@/utilities/liveContent'
 import type { Metadata } from 'next'
 import { Inter, Poppins } from 'next/font/google'
-import { draftMode } from 'next/headers'
+import { cookies, draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import '../globals.css'
 
@@ -53,6 +56,20 @@ export const metadata: Metadata = {
     default: SITE_NAME,
   },
   description: SITE_DESCRIPTION,
+  // Icon set lives in public/icon/; only favicon.ico stays at the root, where legacy clients and
+  // crawlers probe for it unprompted. Order matters — browsers take the last icon they understand,
+  // so the SVG (scalable, theme-aware) is listed after the raster fallbacks.
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/icon/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/icon/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: [{ url: '/favicon.ico' }],
+    apple: [{ url: '/icon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
+  manifest: '/icon/site.webmanifest',
+  appleWebApp: { title: SITE_NAME },
   openGraph: {
     type: 'website',
     siteName: SITE_NAME,
@@ -86,6 +103,15 @@ export default async function RootLayout({
   // so production visitors never ship the client refresh listener (WEB-449).
   const { isEnabled: isDraftMode } = await draftMode()
 
+  // Live refresh (WEB-490): ship the poller only to logged-in editors. RefreshRouteOnSave above
+  // covers the admin's own preview iframe, but it works by postMessage from that iframe's parent —
+  // an editor watching the real site in a second tab gets nothing from it. This does.
+  //
+  // Cookie *presence* only: verifying the session would mean a DB round-trip on every page render
+  // for every visitor, to decide whether to mount a component whose only power is re-rendering a
+  // page they can already see. See hasEditorSession().
+  const isEditor = hasEditorSession((await cookies()).getAll().map((c) => c.name))
+
   return (
     // scroll-padding-top keeps in-page anchor targets clear of the fixed floating pill.
     <html lang={typedLocale} style={{ scrollPaddingTop: 'calc(var(--nav-h) + var(--nav-gap) + 12px)' }}>
@@ -116,10 +142,15 @@ export default async function RootLayout({
         <Footer footerData={footerData as React.ComponentProps<typeof Footer>['footerData']} />
         {/* Floating glass language switcher (bottom-right), global across every page. */}
         <LocaleFab />
+        {/* Accessibility preferences (bottom-left, md+ only — below md that corner is the burger). */}
+        <A11yFab />
         {/* First-party pageview beacon (WEB-447). Leaf client component; posts to /api/track. */}
         <AnalyticsBeacon />
         {/* Live-preview refresh listener (WEB-449) — only in draft mode. */}
         {isDraftMode && <LivePreviewListener />}
+        {/* Live content refresh (WEB-490) — only for logged-in editors. Draft mode already
+            re-renders on every save via LivePreviewListener, so don't poll on top of it. */}
+        {isEditor && !isDraftMode && <LiveRefresh />}
       </body>
     </html>
   )

@@ -232,7 +232,7 @@ const plugins: Plugin[] = [
   }),
   seoPlugin({
     generateTitle: ({ doc }: { doc?: { title?: string | null } }) =>
-      doc?.title ? `${doc.title} | Ternary Solutions` : 'Ternary Solutions',
+      doc?.title ? `${doc.title} | Ternary` : 'Ternary',
     generateURL: ({ doc }: { doc?: { slug?: string | null } }) => {
       const url = getServerSideURL()
       return doc?.slug ? `${url}/${doc.slug}` : url
@@ -577,7 +577,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { docs } = await getLegalBySlug(slug)()
   const legal = docs[0]
   if (!legal) notFound()
-  return { title: legal.title ? `${legal.title} | Ternary Solutions` : 'Ternary Solutions' }
+  return { title: legal.title ? `${legal.title} | Ternary` : 'Ternary' }
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }): Promise<JSX.Element> {

@@ -3,11 +3,18 @@ import { getJobs } from '@/lib/jobs-data'
 import { pagePath } from '@/lib/seo/pagePath'
 import { getServerSideURL } from '@/utilities/getURL'
 import config from '@payload-config'
-import type { MetadataRoute } from 'next'
 import { getPayload } from 'payload'
 
-// Content is dynamically rendered (draftMode + relationship population), so the sitemap is
-// generated from the database at request time rather than by the static next-sitemap crawler.
+// Hand-rolled instead of Next's `sitemap.ts` MetadataRoute export, for one reason: that API cannot
+// emit an `<?xml-stylesheet?>` processing instruction. Without it, browsers show this file as a wall
+// of flat text — Chrome's XML tree viewer bails out on any document containing XHTML-namespace
+// elements, and the `<xhtml:link>` hreflang alternates below are exactly that. The stylesheet
+// (public/sitemap.xsl) renders a readable table for humans; crawlers ignore it and parse the raw XML.
+//
+// Output is otherwise byte-for-byte equivalent to what the metadata route produced.
+//
+// Content is dynamically rendered (draftMode + relationship population), so the sitemap is generated
+// from the database at request time rather than by a static crawler.
 export const dynamic = 'force-dynamic'
 
 // The plugin-seo meta group (WEB-442). depth 0 returns the group inline, so we can read
@@ -23,10 +30,19 @@ const isHidden = (doc: WithMeta): boolean => doc.meta?.hideFromSitemap === true
 const DETAIL_ROUTES: { collection: string; prefix: string; priority: number }[] = [
   { collection: 'capability', prefix: 'capabilities', priority: 0.8 },
   { collection: 'insight', prefix: 'insights', priority: 0.7 },
-  { collection: 'story', prefix: 'stories', priority: 0.7 },
+  // Detail lives at /case-studies/<slug>; /stories/<slug> is a 301 in next.config.js. Emit the
+  // destination — a sitemap must list canonical URLs, never ones that redirect.
+  { collection: 'story', prefix: 'case-studies', priority: 0.7 },
   { collection: 'pressRelease', prefix: 'press-release', priority: 0.6 },
   { collection: 'legal', prefix: 'legals', priority: 0.3 },
 ]
+
+type Entry = {
+  url: string
+  lastModified?: Date
+  priority?: number
+  alternates: Record<string, string>
+}
 
 // A page exists in every locale (fallback fills missing bn content). For one locale-LESS path we
 // emit one sitemap entry per locale, each carrying the full hreflang alternates map (en + bn +
@@ -38,20 +54,20 @@ function buildLanguages(base: string, path: string): Record<string, string> {
   return languages
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+async function buildEntries(): Promise<Entry[]> {
   const base = getServerSideURL()
   const payload = await getPayload({ config })
-  const entries: MetadataRoute.Sitemap = []
+  const entries: Entry[] = []
 
   // Emit one entry per locale for a single locale-LESS path, with shared hreflang alternates.
   const pushLocalized = (path: string, opts: { lastModified?: Date; priority?: number }) => {
-    const languages = buildLanguages(base, path)
+    const alternates = buildLanguages(base, path)
     for (const l of LOCALES) {
       entries.push({
         url: `${base}${localizedPath(l, path)}`,
         lastModified: opts.lastModified,
         priority: opts.priority,
-        alternates: { languages },
+        alternates,
       })
     }
   }
@@ -94,8 +110,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Job detail pages (sourced from the recruiting service via jobs-data). Jobs are not Payload
-  // docs and carry no meta group, so there is no hideFromSitemap to honour here.
+  // Job detail pages (sourced from the recruiting service via jobs-data). Jobs are not Payload docs
+  // and carry no meta group, so there is no hideFromSitemap to honour here.
   try {
     const jobs = await getJobs()
     for (const j of jobs) {
@@ -110,4 +126,41 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   return entries
+}
+
+// Slugs and titles are authored in the CMS, so a stray `&` or `<` in a URL must not break the
+// document. Escaping is on us now that we serialize by hand.
+const xml = (value: string): string =>
+  value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
+function serialize(entries: Entry[]): string {
+  const urls = entries
+    .map((e) => {
+      const alternates = Object.entries(e.alternates)
+        .map(([lang, href]) => `    <xhtml:link rel="alternate" hreflang="${xml(lang)}" href="${xml(href)}" />`)
+        .join('\n')
+      const lines = [`    <loc>${xml(e.url)}</loc>`, alternates]
+      if (e.lastModified) lines.push(`    <lastmod>${e.lastModified.toISOString()}</lastmod>`)
+      if (e.priority !== undefined) lines.push(`    <priority>${e.priority}</priority>`)
+      return `  <url>\n${lines.join('\n')}\n  </url>`
+    })
+    .join('\n')
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls}
+</urlset>
+`
+}
+
+export async function GET() {
+  const entries = await buildEntries()
+
+  return new Response(serialize(entries), {
+    headers: {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=0, must-revalidate',
+    },
+  })
 }

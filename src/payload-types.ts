@@ -80,6 +80,7 @@ export interface Config {
     model: Model;
     team: Team;
     legal: Legal;
+    activityLog: ActivityLog;
     analytics: Analytics;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -110,6 +111,7 @@ export interface Config {
     model: ModelSelect<false> | ModelSelect<true>;
     team: TeamSelect<false> | TeamSelect<true>;
     legal: LegalSelect<false> | LegalSelect<true>;
+    activityLog: ActivityLogSelect<false> | ActivityLogSelect<true>;
     analytics: AnalyticsSelect<false> | AnalyticsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -129,13 +131,19 @@ export interface Config {
     header: Header;
     footer: Footer;
     legalCenter: LegalCenter;
+    notFound: NotFound;
+    errorPage: ErrorPage;
     ops: Op;
+    revalidator: Revalidator;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     legalCenter: LegalCenterSelect<false> | LegalCenterSelect<true>;
+    notFound: NotFoundSelect<false> | NotFoundSelect<true>;
+    errorPage: ErrorPageSelect<false> | ErrorPageSelect<true>;
     ops: OpsSelect<false> | OpsSelect<true>;
+    revalidator: RevalidatorSelect<false> | RevalidatorSelect<true>;
   };
   locale: 'en' | 'bn';
   widgets: {
@@ -937,24 +945,11 @@ export interface IndustriesSectionBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Home image grid (default mode): pick a media image per tile with an optional link. Up to 8 (4 per row × 2 rows). Falls back to the picked Industries below when empty.
-   */
-  images?:
-    | {
-        image: string | Media;
-        /**
-         * Optional URL the tile links to (e.g. /industries/healthcare).
-         */
-        link?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Used for the full-width benefit grid (icon + title + excerpt). In the default image grid these are a fallback when no Image tiles are set — each tile shows the industry thumbnail and links to its page.
+   * Industry records to feature, in display order. Each card shows the industry thumbnail, title and excerpt, and links to its page.
    */
   industries?: (string | Industry)[] | null;
   /**
-   * Off (default): image grid — cards sit in columns 2–5 with an empty left gutter (home treatment). On: a flush 4-column benefit grid from the Industries above (industry-detail treatment).
+   * Off (default): portrait cards in columns 2–5 with an empty left gutter (home treatment). On: a flush 4-column benefit grid (icon + title + excerpt, industry-detail treatment).
    */
   fullWidth?: boolean | null;
   id?: string | null;
@@ -1263,7 +1258,7 @@ export interface CtaBlock {
  */
 export interface AboutSectionBlock {
   /**
-   * Section intro rendered above the bento grid. Use a Heading (H2/H3) for the title line(s) and normal paragraphs for the supporting copy — headings get the display style, paragraphs the body style.
+   * Section intro rendered above the card grid. Use a Heading (H2/H3) for the title line(s) and normal paragraphs for the supporting copy — headings get the display style, paragraphs the body style.
    */
   content?: {
     root: {
@@ -1281,7 +1276,7 @@ export interface AboutSectionBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Cards in the bento grid, in display order. The grid is 4 columns on desktop, 2 on tablet, 1 on mobile; cards pack densely, so mix sizes freely — smaller cards flow into the gaps left by larger ones.
+   * Cards in the grid, in display order. Every card is the same size: a uniform 4-column grid on desktop, and a swipeable carousel below that.
    */
   items?:
     | {
@@ -1321,10 +1316,6 @@ export interface AboutSectionBlock {
               relationTo: 'pressRelease';
               value: string | PressRelease;
             };
-        /**
-         * Footprint in the bento grid. Wide/Large span 2 columns (from tablet up); Tall/Large span 2 rows.
-         */
-        size?: ('standard' | 'wide' | 'tall' | 'large') | null;
         id?: string | null;
       }[]
     | null;
@@ -2031,15 +2022,34 @@ export interface GlobalDeliverySectionBlock {
     };
     [k: string]: unknown;
   } | null;
-  image?: (string | null) | Media;
   /**
-   * Title rendered alongside the image in the global delivery callout.
+   * Each row is one lane the 3D globe draws, from one point to another. Add a row, then pin both ends on the map above (or type the coordinates). With no lanes the globe falls back to its built-in Dhaka → US routes.
    */
-  title?: string | null;
-  /**
-   * Short supporting copy shown under the title.
-   */
-  excerpt?: string | null;
+  lanes?:
+    | {
+        from: {
+          /**
+           * e.g. Dhaka. Announced to screen readers; never drawn on the globe.
+           */
+          label: string;
+          lat: number;
+          lng: number;
+        };
+        to: {
+          /**
+           * e.g. Dhaka. Announced to screen readers; never drawn on the globe.
+           */
+          label: string;
+          lat: number;
+          lng: number;
+        };
+        /**
+         * Tint of this lane and of the comet that travels it. The map above previews it. Muted pastels only — a saturated hue fights the globe.
+         */
+        color?: ('cream' | 'amber' | 'azure' | 'rose' | 'sage' | 'lilac' | 'copper' | 'teal') | null;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'globalDeliverySection';
@@ -3018,6 +3028,106 @@ export interface SolutionFeatureBlock {
       | null;
   };
   /**
+   * Frosted footer band at the bottom of the panel. The Migration panel has no footer.
+   */
+  outcomes?: {
+    label?: string | null;
+    text?: string | null;
+  };
+  /**
+   * The big figure itself is the "Stat" group above.
+   */
+  panelStat?: {
+    label?: string | null;
+    liveLabel?: string | null;
+  };
+  panelMigration?: {
+    label?: string | null;
+    /**
+     * Between the two stacks, e.g. "Dual-run".
+     */
+    connector?: string | null;
+    legacy?: {
+      title?: string | null;
+      items?:
+        | {
+            label?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    modern?: {
+      title?: string | null;
+      items?:
+        | {
+            label?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    metric?: {
+      label?: string | null;
+      delta?: string | null;
+      beforeLabel?: string | null;
+      before?: string | null;
+      afterLabel?: string | null;
+      after?: string | null;
+      /**
+       * The "before" bar is always full width; this is the after bar, 0–100.
+       */
+      afterPct?: number | null;
+    };
+  };
+  panelCommits?: {
+    label?: string | null;
+    commits?:
+      | {
+          message?: string | null;
+          author?: string | null;
+          added?: string | null;
+          removed?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    footer?: {
+      label?: string | null;
+      value?: string | null;
+      caption?: string | null;
+    };
+  };
+  panelReliability?: {
+    label?: string | null;
+    statusLabel?: string | null;
+    uptime?: {
+      value?: string | null;
+      caption?: string | null;
+    };
+    /**
+     * Bar heights are generated deterministically; you control how many bars there are and which ones dip amber.
+     */
+    chart?: {
+      barCount?: number | null;
+      /**
+       * Bar positions (1-based) to render as an amber dip.
+       */
+      dips?:
+        | {
+            position?: number | null;
+            id?: string | null;
+          }[]
+        | null;
+      startLabel?: string | null;
+      endLabel?: string | null;
+    };
+    metrics?:
+      | {
+          label?: string | null;
+          value?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
    * Layout used for the two detail cards below the widget.
    */
   detailStyle?: ('bigPanel' | 'largeStacked' | 'compactGrid') | null;
@@ -3057,11 +3167,15 @@ export interface SolutionsEngageBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Three engagement models. Card gradient/bar colors are fixed in code by position.
+   * Three engagement models. Link each card to a Model record to show its thumbnail in the card panel; without one (or without a thumbnail on it) the card falls back to the signature gradient.
    */
   cards?:
     | {
         title: string;
+        /**
+         * The panel image is this model's Thumbnail (edit it under Content → Models).
+         */
+        model?: (string | null) | Model;
         /**
          * Rendered word-per-line in a mono font.
          */
@@ -3797,6 +3911,79 @@ export interface Legal {
   createdAt: string;
 }
 /**
+ * Every create, update, and delete across the CMS, with the signed-in user who made it. Written automatically and append-only — entries cannot be edited or deleted, by anyone.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activityLog".
+ */
+export interface ActivityLog {
+  id: string;
+  /**
+   * Human-readable one-liner, e.g. "Updated Pages › Home (2 fields)".
+   */
+  summary?: string | null;
+  action?: ('create' | 'update' | 'publish' | 'unpublish' | 'delete' | 'login' | 'logout') | null;
+  entityType?: ('collection' | 'global') | null;
+  timestamp?: string | null;
+  /**
+   * Slug of the collection or global that changed.
+   */
+  slug?: string | null;
+  /**
+   * Empty for globals — a global has no document ID.
+   */
+  documentId?: string | null;
+  documentTitle?: string | null;
+  /**
+   * Which locale the write targeted. "all" means the write carried every locale at once.
+   */
+  locale?: string | null;
+  user?: (string | null) | User;
+  /**
+   * Captured at the time of the change.
+   */
+  userEmail?: string | null;
+  userName?: string | null;
+  userRole?: string | null;
+  /**
+   * A "system" write had no signed-in user: a seed script, a cron job, or an internal hook.
+   */
+  source?: ('admin' | 'api' | 'system') | null;
+  ip?: string | null;
+  changeCount?: number | null;
+  /**
+   * Comma-separated field paths, for scanning the list view without opening the diff.
+   */
+  fieldsChanged?: string | null;
+  userAgent?: string | null;
+  /**
+   * Field-by-field diff: path, kind (added/removed/changed/moved), and the before/after values. Rich text is recorded as a single atomic change; large values are truncated to a preview; auth tokens and password hashes are redacted.
+   */
+  changes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Full copy of the document as it was immediately before deletion. Recorded only on delete — for every other action the diff above plus the collection version history reconstruct the state.
+   */
+  snapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * First-party pageview log. Rows are written automatically by the site beacon — do not edit by hand. See the dashboard on the admin home for aggregates.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4034,6 +4221,10 @@ export interface PayloadLockedDocument {
         value: string | Legal;
       } | null)
     | ({
+        relationTo: 'activityLog';
+        value: string | ActivityLog;
+      } | null)
+    | ({
         relationTo: 'analytics';
         value: string | Analytics;
       } | null)
@@ -4206,13 +4397,6 @@ export interface JobsBlockTypeSelect<T extends boolean = true> {
 export interface IndustriesSectionBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
-  images?:
-    | T
-    | {
-        image?: T;
-        link?: T;
-        id?: T;
-      };
   industries?: T;
   fullWidth?: T;
   id?: T;
@@ -4228,7 +4412,6 @@ export interface AboutSectionBlockSelect<T extends boolean = true> {
     | T
     | {
         item?: T;
-        size?: T;
         id?: T;
       };
   organizations?:
@@ -4306,9 +4489,26 @@ export interface EngagementSectionBlockSelect<T extends boolean = true> {
 export interface GlobalDeliverySectionBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
-  image?: T;
-  title?: T;
-  excerpt?: T;
+  lanes?:
+    | T
+    | {
+        from?:
+          | T
+          | {
+              label?: T;
+              lat?: T;
+              lng?: T;
+            };
+        to?:
+          | T
+          | {
+              label?: T;
+              lat?: T;
+              lng?: T;
+            };
+        color?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -4768,6 +4968,110 @@ export interface SolutionFeatureBlockSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  outcomes?:
+    | T
+    | {
+        label?: T;
+        text?: T;
+      };
+  panelStat?:
+    | T
+    | {
+        label?: T;
+        liveLabel?: T;
+      };
+  panelMigration?:
+    | T
+    | {
+        label?: T;
+        connector?: T;
+        legacy?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+            };
+        modern?:
+          | T
+          | {
+              title?: T;
+              items?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+            };
+        metric?:
+          | T
+          | {
+              label?: T;
+              delta?: T;
+              beforeLabel?: T;
+              before?: T;
+              afterLabel?: T;
+              after?: T;
+              afterPct?: T;
+            };
+      };
+  panelCommits?:
+    | T
+    | {
+        label?: T;
+        commits?:
+          | T
+          | {
+              message?: T;
+              author?: T;
+              added?: T;
+              removed?: T;
+              id?: T;
+            };
+        footer?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              caption?: T;
+            };
+      };
+  panelReliability?:
+    | T
+    | {
+        label?: T;
+        statusLabel?: T;
+        uptime?:
+          | T
+          | {
+              value?: T;
+              caption?: T;
+            };
+        chart?:
+          | T
+          | {
+              barCount?: T;
+              dips?:
+                | T
+                | {
+                    position?: T;
+                    id?: T;
+                  };
+              startLabel?: T;
+              endLabel?: T;
+            };
+        metrics?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+      };
   detailStyle?: T;
   detail?:
     | T
@@ -4790,6 +5094,7 @@ export interface SolutionsEngageBlockSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
+        model?: T;
         subtitle?: T;
         description?: T;
         idealFor?: T;
@@ -5806,6 +6111,33 @@ export interface LegalSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activityLog_select".
+ */
+export interface ActivityLogSelect<T extends boolean = true> {
+  summary?: T;
+  action?: T;
+  entityType?: T;
+  timestamp?: T;
+  slug?: T;
+  documentId?: T;
+  documentTitle?: T;
+  locale?: T;
+  user?: T;
+  userEmail?: T;
+  userName?: T;
+  userRole?: T;
+  source?: T;
+  ip?: T;
+  changeCount?: T;
+  fieldsChanged?: T;
+  userAgent?: T;
+  changes?: T;
+  snapshot?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "analytics_select".
  */
 export interface AnalyticsSelect<T extends boolean = true> {
@@ -6433,6 +6765,113 @@ export interface LegalCenter {
   createdAt?: string | null;
 }
 /**
+ * Everything shown on the 404 (page-not-found) screen. The header and footer come from their own globals.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notFound".
+ */
+export interface NotFound {
+  id: string;
+  /**
+   * The small monospace pill above the headline.
+   */
+  statusLabel?: string | null;
+  /**
+   * The oversized word. Long values shrink to fit, but keep it to one word.
+   */
+  headline?: string | null;
+  /**
+   * Monospace line with the blinking caret after it.
+   */
+  probingText?: string | null;
+  title?: string | null;
+  description?: string | null;
+  primaryLabel?: string | null;
+  /**
+   * Locale-less internal path (e.g. /stories) — the /bn prefix is added automatically. External URLs, mailto:, tel: and #anchors also work.
+   */
+  primaryLink?: string | null;
+  secondaryLabel?: string | null;
+  /**
+   * Locale-less internal path (e.g. /stories) — the /bn prefix is added automatically. External URLs, mailto:, tel: and #anchors also work.
+   */
+  secondaryLink?: string | null;
+  /**
+   * The cards below the buttons. Three fit the row on desktop; a fourth wraps.
+   */
+  cards?:
+    | {
+        /**
+         * Small monospace label — conventionally the route, e.g. "contact".
+         */
+        eyebrow?: string | null;
+        title: string;
+        /**
+         * Locale-less internal path (e.g. /stories) — the /bn prefix is added automatically. External URLs, mailto:, tel: and #anchors also work.
+         */
+        link: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Everything shown when a page crashes with an unexpected error. Separate from the 404 screen, which has its own global.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "errorPage".
+ */
+export interface ErrorPage {
+  id: string;
+  /**
+   * The small monospace pill above the headline.
+   */
+  statusLabel?: string | null;
+  /**
+   * The oversized word. Long values shrink to fit, but keep it to one word.
+   */
+  headline?: string | null;
+  /**
+   * Monospace line with the blinking caret after it.
+   */
+  probingText?: string | null;
+  title?: string | null;
+  description?: string | null;
+  /**
+   * The primary button. It re-renders the failed page in place, so it has no link — Next owns that behaviour.
+   */
+  retryLabel?: string | null;
+  secondaryLabel?: string | null;
+  /**
+   * Locale-less internal path (e.g. /contact) — the /bn prefix is added automatically. External URLs, mailto:, tel: and #anchors also work.
+   */
+  secondaryLink?: string | null;
+  /**
+   * Prefixes the error digest (e.g. "Reference: 1a2b3c"). Next only exposes a digest, never the raw message, so this is safe to show — it is what support quotes back to match the server log. Hidden when there is no digest.
+   */
+  digestLabel?: string | null;
+  /**
+   * The cards below the buttons. Three fit the row on desktop; a fourth wraps.
+   */
+  cards?:
+    | {
+        /**
+         * Small monospace label — conventionally the route, e.g. "contact".
+         */
+        eyebrow?: string | null;
+        title: string;
+        /**
+         * Locale-less internal path (e.g. /contact) — the /bn prefix is added automatically. External URLs, mailto:, tel: and #anchors also work.
+         */
+        link: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Operational toggles. These take effect immediately — no deploy needed.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -6444,6 +6883,17 @@ export interface Op {
    * When on, visiting any page with ?reval=1 instantly busts its cache and re-renders it fresh. Leave off normally — while on, anyone (not just admins) can trigger re-renders.
    */
   queryRevalidation?: boolean | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Rebuild the live site’s cached content from Payload. Use it when the production site is not showing a change you have already published.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "revalidator".
+ */
+export interface Revalidator {
+  id: string;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -6596,10 +7046,71 @@ export interface LegalCenterSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notFound_select".
+ */
+export interface NotFoundSelect<T extends boolean = true> {
+  statusLabel?: T;
+  headline?: T;
+  probingText?: T;
+  title?: T;
+  description?: T;
+  primaryLabel?: T;
+  primaryLink?: T;
+  secondaryLabel?: T;
+  secondaryLink?: T;
+  cards?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        link?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "errorPage_select".
+ */
+export interface ErrorPageSelect<T extends boolean = true> {
+  statusLabel?: T;
+  headline?: T;
+  probingText?: T;
+  title?: T;
+  description?: T;
+  retryLabel?: T;
+  secondaryLabel?: T;
+  secondaryLink?: T;
+  digestLabel?: T;
+  cards?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        link?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ops_select".
  */
 export interface OpsSelect<T extends boolean = true> {
   queryRevalidation?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "revalidator_select".
+ */
+export interface RevalidatorSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

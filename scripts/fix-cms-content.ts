@@ -23,7 +23,7 @@ const RULES: { find: string; replace: string; whole?: boolean; note: string }[] 
   {
     find: 'Copyright',
     whole: true,
-    replace: '© Ternary Solutions, Inc. All Rights Reserved.',
+    replace: '© Ternary Limited. All Rights Reserved.',
     note: 'copyright placeholder',
   },
   { find: 'Solution', whole: true, replace: 'Solutions', note: 'nav label singular→plural' },

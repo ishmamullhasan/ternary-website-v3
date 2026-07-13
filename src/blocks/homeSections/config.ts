@@ -1,5 +1,6 @@
-import type { Block } from 'payload'
+import type { Block, Field } from 'payload'
 
+import { DEFAULT_LANE_COLOR, LANE_COLORS } from '@/components/sections/laneColors'
 import { imageField } from '@/fields/image'
 import { rowLabelAdmin } from '@/fields/rowLabel'
 import { sectionHeader } from '@/fields/sectionHeader'
@@ -19,16 +20,16 @@ export const AboutSection: Block = {
       localized: true,
       admin: {
         description:
-          'Section intro rendered above the bento grid. Use a Heading (H2/H3) for the title line(s) and normal paragraphs for the supporting copy — headings get the display style, paragraphs the body style.',
+          'Section intro rendered above the card grid. Use a Heading (H2/H3) for the title line(s) and normal paragraphs for the supporting copy — headings get the display style, paragraphs the body style.',
       },
     },
     {
       name: 'items',
-      label: 'Bento Cards',
+      label: 'Cards',
       type: 'array',
       admin: {
         description:
-          'Cards in the bento grid, in display order. The grid is 4 columns on desktop, 2 on tablet, 1 on mobile; cards pack densely, so mix sizes freely — smaller cards flow into the gaps left by larger ones.',
+          'Cards in the grid, in display order. Every card is the same size: a uniform 4-column grid on desktop, and a swipeable carousel below that.',
       },
       fields: [
         {
@@ -40,22 +41,6 @@ export const AboutSection: Block = {
           admin: {
             description:
               'The record (capability, solution, industry, scale, model, story, insight or press release) this card features. The card shows its content-type label and links to it.',
-          },
-        },
-        {
-          name: 'size',
-          label: 'Card Size',
-          type: 'select',
-          defaultValue: 'standard',
-          options: [
-            { label: 'Standard (1×1)', value: 'standard' },
-            { label: 'Wide (2 columns)', value: 'wide' },
-            { label: 'Tall (2 rows)', value: 'tall' },
-            { label: 'Large (2×2)', value: 'large' },
-          ],
-          admin: {
-            description:
-              'Footprint in the bento grid. Wide/Large span 2 columns (from tablet up); Tall/Large span 2 rows.',
           },
         },
       ],
@@ -194,30 +179,89 @@ export const EngagementSection: Block = {
   ],
 }
 
+/**
+ * One end of a shipping lane. `label` is what a screen reader announces (so it is localized);
+ * the coordinates are geography, identical in every locale, so they are not.
+ */
+const lanePoint = (name: 'from' | 'to', label: string): Field => ({
+  name,
+  label,
+  type: 'group',
+  fields: [
+    {
+      name: 'label',
+      label: 'Place name',
+      type: 'text',
+      required: true,
+      localized: true,
+      admin: { description: 'e.g. Dhaka. Announced to screen readers; never drawn on the globe.' },
+    },
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'lat',
+          label: 'Latitude',
+          type: 'number',
+          required: true,
+          min: -90,
+          max: 90,
+          admin: { width: '50%', step: 0.0001 },
+        },
+        {
+          name: 'lng',
+          label: 'Longitude',
+          type: 'number',
+          required: true,
+          min: -180,
+          max: 180,
+          admin: { width: '50%', step: 0.0001 },
+        },
+      ],
+    },
+  ],
+})
+
 export const GlobalDeliverySection: Block = {
   slug: 'globalDeliverySection',
   interfaceName: 'GlobalDeliverySectionBlock',
   labels: { singular: 'Global Delivery Section', plural: 'Global Delivery Sections' },
   fields: [
     ...sectionHeader(),
-    imageField({ name: 'image' }),
     {
-      name: 'title',
-      label: 'Title',
-      type: 'text',
-      localized: true,
+      // The map itself stores nothing — it is a picker over the `lanes` array below, which is the
+      // single source of truth. See LaneMapField.
+      name: 'map',
+      type: 'ui',
       admin: {
-        description: 'Title rendered alongside the image in the global delivery callout.',
+        components: { Field: '@/components/admin/globe/LaneMapField' },
       },
     },
     {
-      name: 'excerpt',
-      label: 'Excerpt',
-      type: 'textarea',
-      localized: true,
+      name: 'lanes',
+      label: 'Shipping Lanes',
+      type: 'array',
+      maxRows: 6,
       admin: {
-        description: 'Short supporting copy shown under the title.',
+        description:
+          'Each row is one lane the 3D globe draws, from one point to another. Add a row, then pin both ends on the map above (or type the coordinates). With no lanes the globe falls back to its built-in Dhaka → US routes.',
+        components: { RowLabel: '@/blocks/_ui/LaneRowLabel#LaneRowLabel' },
       },
+      fields: [
+        lanePoint('from', 'From'),
+        lanePoint('to', 'To'),
+        {
+          name: 'color',
+          label: 'Flare Colour',
+          type: 'select',
+          defaultValue: DEFAULT_LANE_COLOR,
+          options: LANE_COLORS.map((c) => ({ label: c.label, value: c.value })),
+          admin: {
+            description:
+              'Tint of this lane and of the comet that travels it. The map above previews it. Muted pastels only — a saturated hue fights the globe.',
+          },
+        },
+      ],
     },
   ],
 }

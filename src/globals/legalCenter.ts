@@ -11,8 +11,8 @@ const LegalCenter: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('legal-center', 'max')
-        revalidateTag('legal', 'max')
+        revalidateTag('legal-center', { expire: 0 })
+        revalidateTag('legal', { expire: 0 })
       },
     ],
   },

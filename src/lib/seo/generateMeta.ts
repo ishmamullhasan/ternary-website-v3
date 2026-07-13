@@ -76,7 +76,7 @@ function dynamicOgImageUrl(title: string, subtitle: string): string {
  * `pathname` is locale-LESS ("/insights/foo"); the locale prefix is applied here so canonical,
  * og:url, and the hreflang alternates all stay in lockstep with the route + sitemap.
  *
- * The title template ('%s | Ternary Solutions') lives on the layout's metadata export, so the
+ * The title template ('%s | Ternary') lives on the layout's metadata export, so the
  * `title` returned here is the bare page title — Next composes the suffix.
  */
 export async function generateMeta({

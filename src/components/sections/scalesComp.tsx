@@ -24,7 +24,7 @@ function ScaleCard({ item, index }: { item: Scale; index: number }): JSX.Element
 
   return (
     <Link href={`/scales`} className="group block h-full">
-      <div className="relative h-full overflow-hidden rounded-md border border-line bg-ink aspect-[268/296]">
+      <div className="relative h-full overflow-hidden rounded-md border border-line bg-ink aspect-[3/5]">
         <GradientPanel tone={toneFor(undefined, index)} interactive />
 
         {mediaUrl ? (

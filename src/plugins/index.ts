@@ -10,9 +10,11 @@ import { seoPlugin } from '@payloadcms/plugin-seo'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { Field, Plugin } from 'payload'
 import { authjsPlugin } from 'payload-authjs'
+import { activityLogPlugin } from './activityLog'
+import { liveRefreshPlugin } from './liveRefresh'
 
 const generateTitle = ({ doc }: { doc?: { title?: string | null } }) => {
-  return doc?.title ? `${doc.title} | Ternary Solutions` : 'Ternary Solutions'
+  return doc?.title ? `${doc.title} | Ternary` : 'Ternary'
 }
 
 const generateURL = ({ doc }: { doc?: { slug?: string | null } }) => {
@@ -193,6 +195,16 @@ const plugins: Plugin[] = [
   // appears once AUTH_GOOGLE_ID/SECRET enable the provider in auth.config.ts. Email/password
   // login is unaffected. See docs/claude/google-admin-sso.md.
   authjsPlugin({ authjsConfig: authConfig }),
+  // Audit trail. Like liveRefresh below, it walks config.collections/globals and hangs a hook off
+  // every one, so it has to run after every plugin that ADDS a collection — `forms` and
+  // `form-submissions` (formBuilderPlugin), `search` (searchPlugin), and the Auth.js session fields
+  // authjsPlugin grafts onto `users`, which are what make an SSO sign-in visible at all. Ordering it
+  // before those would silently leave their writes unaudited.
+  activityLogPlugin,
+  // Live refresh (WEB-490). MUST stay last: it walks config.collections/globals appending the
+  // content-version bump hook, so it has to run after every other plugin has finished adding its own
+  // collections — otherwise `forms` (formBuilderPlugin) and friends are invisible to it.
+  liveRefreshPlugin,
 ]
 
 export default plugins

@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-If you believe you have found a security vulnerability in the Ternary Solutions website,
+If you believe you have found a security vulnerability in the Ternary website,
 please report it privately. **Do not open a public GitHub issue for security reports.**
 
 - Email **security@ternary.solutions** with a description of the issue, steps to reproduce,

@@ -2,7 +2,8 @@ import Motion from '@/components/animation/motion'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Section from '@/components/layout/section'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import type { SolutionsEngageBlock } from '@/payload-types'
+import type { Media, Model, SolutionsEngageBlock } from '@/payload-types'
+import Image from 'next/image'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -26,9 +27,17 @@ function toLabels(subtitle?: string | null): string[] {
     .filter(Boolean)
 }
 
-// Signature noise-gradient panel — the one bold moment per card. Rendered inline so each
-// card can place it at a different vertical position (Figma: Frame bottom, Flow middle, Orchestra top).
-function GradientPanel({ tone }: { tone: string }): JSX.Element {
+// Signature panel — the one bold moment per card. Rendered inline so each card can place it at a
+// different vertical position (Figma: Frame bottom, Flow middle, Orchestra top).
+//
+// The image comes from the linked Model's `thumbnail`. The gradient is always painted underneath, so
+// it doubles as the skeleton and as the fallback when a card has no model (or the model has no
+// thumbnail) — same approach as IndustryPanels' GradientField.
+//
+// alt="" is deliberate: the panel is an abstract ornament sitting directly above/below the card's own
+// visible <h3> title, so it carries no information a screen-reader user is missing. Passing the Media
+// `alt` through would announce the pattern's filename-ish alt text as if it meant something.
+function GradientPanel({ tone, image }: { tone: string; image?: Media }): JSX.Element {
   return (
     <div className="relative h-[120px] w-full shrink-0 overflow-hidden rounded-md">
       <span
@@ -41,6 +50,16 @@ function GradientPanel({ tone }: { tone: string }): JSX.Element {
         className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:200px] opacity-[0.16] mix-blend-overlay"
       />
       <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45" />
+
+      {image?.url ? (
+        <Image
+          src={image.url}
+          alt=""
+          fill
+          sizes="(max-width: 640px) 280px, (max-width: 1024px) 50vw, 30vw"
+          className="relative object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+        />
+      ) : null}
     </div>
   )
 }
@@ -53,6 +72,12 @@ function EngageCard({ card, index }: { card: EngageCardItem; index: number }): J
   const labels = toLabels(card?.subtitle)
   const panelPosition = index === 1 ? 'middle' : index === 2 ? 'top' : 'bottom'
   const tone = engageGradients[index % engageGradients.length]
+
+  // depth:2 on the page query populates the model (depth 1) and its thumbnail (depth 2). Guard the
+  // object shape anyway: at depth 0/1 these come back as bare ids, and rendering must not throw.
+  const model = typeof card?.model === 'object' ? (card.model as Model) : undefined
+  const image = typeof model?.thumbnail === 'object' ? (model.thumbnail as Media) : undefined
+  const panel = <GradientPanel tone={tone} image={image} />
 
   const titleBlock = (
     <div className="flex flex-col gap-2">
@@ -92,11 +117,11 @@ function EngageCard({ card, index }: { card: EngageCardItem; index: number }): J
 
   return (
     <article className="group flex h-full flex-col gap-6 rounded-md bg-ink p-6">
-      {panelPosition === 'top' && <GradientPanel tone={tone} />}
+      {panelPosition === 'top' && panel}
       {titleBlock}
-      {panelPosition === 'middle' && <GradientPanel tone={tone} />}
+      {panelPosition === 'middle' && panel}
       {idealForBlock}
-      {panelPosition === 'bottom' && <GradientPanel tone={tone} />}
+      {panelPosition === 'bottom' && panel}
     </article>
   )
 }
