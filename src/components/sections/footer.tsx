@@ -336,25 +336,34 @@ export default function Footer({ footerData }: FooterProps) {
             </nav>
           )}
 
-          {/* Legal links — inline, dot-separated (Figma 5px ellipse), Inter Regular 14px cream. */}
+          {/* Legal links — inline, dot-separated (Figma 5px ellipse), Inter Regular 14px cream.
+              The separator trails its link rather than leading the next one, so a line that wraps on
+              a narrow viewport never opens with an orphaned dot. */}
           {legalLinks.length > 0 && (
-            <nav className="flex flex-wrap items-center gap-x-4 gap-y-2" aria-label="Legal">
+            <nav
+              className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:justify-start"
+              aria-label="Legal"
+            >
               {legalLinks.map((item, idx) => (
                 <span className="flex items-center gap-x-4" key={`legal-link-${idx}`}>
-                  {idx > 0 && <span aria-hidden className="size-[5px] shrink-0 rounded-full bg-cream/90" />}
                   <Link
                     href={item.link ?? '#'}
                     className="text-[14px] font-normal leading-[1.15] tracking-[-0.05em] text-cream transition-colors duration-150 hover:text-cream/80 focus-visible:text-cream/80"
                   >
                     {item.label}
                   </Link>
+                  {idx < legalLinks.length - 1 && (
+                    <span aria-hidden className="size-[5px] shrink-0 rounded-full bg-cream/90" />
+                  )}
                 </span>
               ))}
             </nav>
           )}
 
           {/* Copyright line */}
-          <span className="text-[14px] font-normal leading-[1.15] tracking-[-0.05em] text-cream/90">{legal}</span>
+          <span className="text-center text-[14px] font-normal leading-[1.15] tracking-[-0.05em] text-cream/90 lg:text-left">
+            {legal}
+          </span>
         </div>
 
         {/* Partner badges — white pills (168px, drop shadow) each wrapping an 88×44 logo, optional link. */}

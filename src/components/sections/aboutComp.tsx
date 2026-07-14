@@ -223,7 +223,7 @@ function AboutCarousel({ cards }: { cards: MultiRelation[] }): JSX.Element {
       whileInView="shown"
       viewport={{ once: true, amount: 0.2 }}
       variants={carouselStripVariants}
-      className="mt-10 w-full md:hidden"
+      className="mt-8 w-full md:hidden lg:mt-9"
     >
       {/* overflow-y-hidden pins the strip to one axis (`overflow-x: auto` alone computes
           `overflow-y: auto`, letting the slides drag/scroll vertically). The pb-6/-mb-5 pair gives
@@ -287,7 +287,7 @@ export default function AboutComp({
 
   return (
     <section className="w-full">
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center space-y-16">
         {/* section intro — ONE richText: heading nodes take the display style, paragraphs the body
             style. Arbitrary clamp values mirror .text-section (globals.css) — the plain class has
             no generated prose-headings: variants, so it can't be used here. */}
@@ -297,21 +297,25 @@ export default function AboutComp({
             tag="div"
             {...motionIntroProps}
             transition={{ duration: 0.7, ease: EASE }}
-            className="flex max-w-2xl flex-col items-center gap-4 text-center xl:gap-6"
+            className="flex w-full max-w-[800px] flex-col items-center gap-4 text-center xl:gap-6"
           >
             {content ? (
-              /* Headings stay flush to each other (mb-0) so a multi-line title reads as one block; the
-                 gap below the title comes from the paragraphs' top margin — 16px, 24px from xl. */
+              /* Headings stay flush to each other (mt-0/mb-0) so a multi-line title reads as one block; the
+                 gap below the title comes from the paragraphs' top margin — 16px, 24px from xl.
+                 mt-0 also kills prose's default 2em heading top margin on the leading heading: the
+                 Lexical converter nests output in a `.payload-richtext` div, so typography's
+                 `.prose > :first-child` reset lands on that div and never reaches the heading —
+                 leaving 128px of dead space above the title at the xl 64px size. */
               <RichTextComp
                 content={content}
-                className="prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-4 xl:prose-p:mt-6 prose-p:mb-0 prose-p:text-base prose-p:text-body"
+                className="prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-4 xl:prose-p:mt-6 prose-p:mb-0 prose-p:text-base prose-p:text-body"
               />
             ) : (
               <>
                 {heading && (
                   <RichTextComp
                     content={heading as RichText}
-                    className="prose-p:mb-0 prose-p:text-2xl xl:prose-p:text-[64px] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
+                    className="prose-p:mt-0 prose-p:mb-0 prose-p:text-2xl xl:prose-p:text-[64px] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
                   />
                 )}
                 {description && (

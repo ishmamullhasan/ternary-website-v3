@@ -3,7 +3,7 @@
 import { NavIcon } from '@/components/nav/megaIcons'
 import { localizedHref } from '@/lib/i18n/locales'
 import { cn } from '@/utilities/ui'
-import { ArrowUpRight, ChevronDown, X } from 'lucide-react'
+import { ArrowUpRight, ChevronDown } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -52,7 +52,6 @@ interface Props {
   onActiveIndex: (i: number) => void
   onClose: () => void
   reduce: boolean
-  logo?: React.ReactNode
 }
 
 const hasPanel = (e: NavEntry) => e.type === 'mega' && !!e.panel
@@ -69,7 +68,6 @@ export default function MegaMenuOverlay({
   onActiveIndex,
   onClose,
   reduce,
-  logo,
 }: Props) {
   // Mobile accordion open-state, keyed by menu index.
   const [expanded, setExpanded] = useState<Record<number, boolean>>({})
@@ -101,18 +99,12 @@ export default function MegaMenuOverlay({
           transition={{ duration: reduce ? 0 : 0.2 }}
           style={{ WebkitBackdropFilter: 'blur(28px) saturate(160%)', backdropFilter: 'blur(28px) saturate(160%)' }}
         >
-          {/* Top bar: logo + close. Mirrors the collapsed pill so closing feels natural. */}
-          <div className="flex shrink-0 items-center justify-between border-b border-cream/10 px-5 py-4 sm:px-8">
-            <div className="flex items-center">{logo}</div>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close menu"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-cream/80 transition-colors hover:bg-white/[0.06] hover:text-cream active:scale-95"
-            >
-              <X className="size-6" />
-            </button>
-          </div>
+          {/* Top bar. Deliberately empty: the logo badge and the burger-turned-close are the header's
+              own fixed badges, floating above this overlay at their unchanged coordinates. The height
+              is what centres them on this divider — 88 = 2 × (top-5 + half of size-12), and 104 =
+              2 × (sm:top-6 + half of sm:size-14). Changing either badge's offset or size means
+              changing these two numbers to match. */}
+          <div className="h-[88px] shrink-0 border-b border-cream/10 sm:h-[104px]" />
 
           {/* ============================ DESKTOP (lg+) ============================ */}
           <div className="hidden min-h-0 flex-1 lg:flex">
@@ -215,7 +207,8 @@ export default function MegaMenuOverlay({
           </div>
 
           {/* ============================ MOBILE (<lg) ============================ */}
-          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-4 lg:hidden sm:px-8">
+          {/* pb clears the close badge, which sits bottom-left over this scroll area below md. */}
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-4 pb-28 lg:hidden sm:px-8">
             {exploreLabel && (
               <h3 className="mb-3 mt-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-subtle">
                 {exploreLabel}

@@ -1,0 +1,52 @@
+/* Capability ledger — the rule under each row is the affordance.
+ *
+ * A row's bottom hairline is drawn in `--color-line`; the active row's rule is a cream line that
+ * WIPES across it from the left. It reads as the ledger ticking over to the entry you selected,
+ * and it is the only movement in the list — the titles themselves just change colour.
+ *
+ * Width, not opacity: a fading rule is a hover state, a drawn rule is a position. */
+.ledger-rule {
+  background: var(--color-cream);
+  bottom: -1px;
+  height: 1px;
+  left: 0;
+  opacity: 0.85;
+  pointer-events: none;
+  position: absolute;
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 0;
+}
+
+[data-state='active'] > .ledger-rule {
+  width: 100%;
+}
+
+/* Mobile rows are a Radix accordion. Radix measures the panel and hands us its height as a custom
+ * property; without these keyframes the row would snap open. `animation-fill-mode` is left at
+ * `none` on purpose, so when globals.css collapses the duration to 0.01ms under
+ * prefers-reduced-motion the panel lands on its natural height rather than a keyframe value. */
+@keyframes ledgerOpen {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes ledgerClose {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+.ledger-panel[data-state='open'] {
+  animation: ledgerOpen 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ledger-panel[data-state='closed'] {
+  animation: ledgerClose 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}

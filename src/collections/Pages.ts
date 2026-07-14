@@ -11,6 +11,7 @@ import { AboutIntro } from '@/blocks/AboutIntro/config'
 import { AboutLeadership } from '@/blocks/AboutLeadership/config'
 import { AboutProofOfScale } from '@/blocks/AboutProofOfScale/config'
 import { AboutThesis } from '@/blocks/AboutThesis/config'
+import { CapabilityLedger } from '@/blocks/CapabilityLedger/config'
 import { CareersGridOne } from '@/blocks/CareersGridOne/config'
 import { CareersGridTwo } from '@/blocks/CareersGridTwo/config'
 import { CareersGrowth } from '@/blocks/CareersGrowth/config'
@@ -161,6 +162,8 @@ export const Pages: CollectionConfig = {
         Jobs,
         IndustriesSection,
         ...homeSectionBlocks,
+        // Capabilities landing: the practice ledger that follows the capabilities grid.
+        CapabilityLedger,
         // Granular redesign blocks (Phase 2 — decomposed from the monolith page blocks).
         ScalesHero,
         QualityBar,

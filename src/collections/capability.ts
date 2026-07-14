@@ -64,6 +64,28 @@ const Capability: CollectionConfig = {
       relationTo: 'media',
     },
     {
+      name: 'animation',
+      label: 'Card Animation',
+      type: 'select',
+      // Deliberately NOT localized. This picks a line drawing, not a string — there is nothing in a
+      // reticle or a mesh to translate, and a per-locale value would let en and bn drift into
+      // showing different figures for the same discipline.
+      options: [
+        { label: '01 · Targeting reticle (Agentic Architecture)', value: 'agentic' },
+        { label: '02 · Neural layers (Artificial Intelligence)', value: 'neuralNet' },
+        { label: '03 · Foundation modules (Platformization)', value: 'platform' },
+        { label: '04 · Data lanes (Data & Analytics)', value: 'dataLanes' },
+        { label: '05 · Pipeline loop (DevOps & Automation)', value: 'pipeline' },
+        { label: '06 · Layered surfaces (Digital Experiences)', value: 'surfaces' },
+        { label: '07 · Telemetry mesh (Internet of Things)', value: 'telemetry' },
+        { label: '08 · Migration (Cloud Transformation)', value: 'migration' },
+      ],
+      admin: {
+        description:
+          'Animated figure drawn on this capability’s card in the Capabilities grid. Decorative — the card still reads from its title and excerpt if left empty, which renders a plain card rather than an arbitrary figure.',
+      },
+    },
+    {
       type: 'tabs',
       tabs: [
         {

@@ -40,34 +40,30 @@ export default function EngagementComp({ heading, description, model }: Engageme
   if (!model?.length) return null
 
   return (
-    <section className="section-card">
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
-        {/* top header */}
-        <Motion className="lg:w-2/5" {...reveal}>
-          <h2 className="text-section font-display font-medium text-cream">{heading}</h2>
-          {description && <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />}
-        </Motion>
+    <section className="section-card flex w-full flex-col gap-8">
+      {/* Header stacked above the grid, left-aligned — the Industries/Capabilities treatment. */}
+      <Motion className="max-w-[544px]" {...reveal}>
+        <h2 className="text-section font-display font-medium text-cream">{heading}</h2>
+        {description && <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />}
+      </Motion>
 
-        {/* lg:flex-1 (not lg:w-auto): the cards are `w-full` inside `1fr` tracks, so a shrink-to-fit
-            wrapper makes the track width depend on the card width and vice versa — it resolves to
-            zero and the cards collapse to their 1px borders. flex-1 gives the tracks a definite width. */}
-        <div className="w-full lg:flex-1">
-          {/* Mobile: horizontal snap carousel with pagination dots. */}
-          <MobileCarousel slideClassName="w-[260px]">
-            {model.map((item, index) => (
-              <EngagementCard key={index} item={item} index={index} />
-            ))}
-          </MobileCarousel>
+      {/* Mobile: horizontal snap carousel with pagination dots. */}
+      <MobileCarousel slideClassName="w-[260px]">
+        {model.map((item, index) => (
+          <EngagementCard key={index} item={item} index={index} />
+        ))}
+      </MobileCarousel>
 
-          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
-          <div className="hidden w-full gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-            {model.map((item, index): JSX.Element => (
-              <Motion key={index} {...revealItem(index)}>
-                <EngagementCard item={item} index={index} />
-              </Motion>
-            ))}
-          </div>
-        </div>
+      {/* sm+ grid — hidden on mobile, where the carousel takes over. Five tracks with an empty left
+          gutter so the cards sit in columns 2–5, i.e. 4 per row (matching Industries). */}
+      <div className="hidden w-full gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-5">
+        <div aria-hidden className="hidden lg:block lg:row-span-2" />
+
+        {model.map((item, index): JSX.Element => (
+          <Motion key={index} {...revealItem(index)}>
+            <EngagementCard item={item} index={index} />
+          </Motion>
+        ))}
       </div>
     </section>
   )

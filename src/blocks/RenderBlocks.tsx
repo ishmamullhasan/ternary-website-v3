@@ -12,6 +12,7 @@ import { AboutIntroComponent } from './AboutIntro/Component'
 import { AboutLeadershipComponent } from './AboutLeadership/Component'
 import { AboutProofOfScaleComponent } from './AboutProofOfScale/Component'
 import { AboutThesisComponent } from './AboutThesis/Component'
+import { CapabilityLedgerComponent } from './CapabilityLedger/Component'
 import { CareersGridOneComponent } from './CareersGridOne/Component'
 import { CareersGridTwoComponent } from './CareersGridTwo/Component'
 import { CareersGrowthComponent } from './CareersGrowth/Component'
@@ -108,6 +109,7 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
   'careersGridTwo',
   'careersGrowth',
   'careersTeam',
+  'capabilityLedger',
 ])
 
 /**
@@ -127,6 +129,8 @@ function renderBlock(block: BlockType): JSX.Element | null {
       return <SolutionsSectionComponent {...block} />
     case 'capabilitiesSection':
       return <CapabilitiesSectionComponent {...block} />
+    case 'capabilityLedger':
+      return <CapabilityLedgerComponent {...block} />
     case 'scalesSection':
       return <ScalesSectionComponent {...block} />
     case 'engagementSection':

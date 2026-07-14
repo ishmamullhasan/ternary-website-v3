@@ -1,0 +1,450 @@
+/* Capability card figures — eight gestures, one per discipline.
+ *
+ * Every figure is under ten marks, and the set is built in PAIRS: 01 diverges / 02 converges,
+ * 05 rotates / 07 radiates. The grid reads as a set, not as eight loose drawings.
+ *
+ * THE MASK IS THE IDEA. Each figure is drawn at full strength (`--cap-ink` is 60% and `--cap-hi` is
+ * opaque — far heavier than a normal decorative weight) and then masked down: a flat 14% base, plus
+ * a soft radial spot that tracks the pointer in SVG user units. The drawing is latent, and resolves
+ * where you look. Turning up the ink and turning down the mask are the same knob; do not "fix" the
+ * ink weights in isolation, or every figure will blow out.
+ *
+ * The pointer variables (--cap-on/px/py/mx/my/lx/ly) are written by the card's pointer handler in
+ * capabilitiesComp.tsx, straight onto the element's style. They are declared with defaults here so
+ * a card that has never been hovered — or that is rendered on the server — still draws correctly.
+ *
+ * RESTING STATE IS THE BASE RULE, NEVER A KEYFRAME. `animation-fill-mode` defaults to `none`, so
+ * when globals.css collapses these to 0.01ms under prefers-reduced-motion, each element reverts to
+ * its base style. A figure whose visibility lives only in its keyframes would vanish. The explicit
+ * `animation: none` block at the bottom is the belt to that braces.
+ */
+
+.cap-card,
+.cap-stage {
+  --cap-ink: rgba(244, 243, 236, 0.8);
+  --cap-hi: rgba(244, 243, 236, 1);
+  --cap-sd: rgba(244, 243, 236, 1);
+
+  /* Pointer state. `--cap-on` is the master gate: 0 until the pointer enters. */
+  --cap-on: 0;
+  --cap-mx: 0;
+  --cap-my: 0;
+  --cap-px: 120px;
+  --cap-py: 95px;
+  --cap-lx: 50%;
+  --cap-ly: 50%;
+}
+
+/* A faint pool of light under the pointer, on the card itself rather than the figure. */
+.cap-lume {
+  background: radial-gradient(
+    180px 180px at var(--cap-lx) var(--cap-ly),
+    rgba(244, 243, 236, 0.04) 0%,
+    transparent 70%
+  );
+  inset: 0;
+  opacity: var(--cap-on);
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 0.6s ease;
+  z-index: 0;
+}
+
+.cap-svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.cap-svg .ink,
+.cap-svg .hi {
+  fill: none;
+  stroke-width: 1;
+  /* Strokes stay hairline however the viewBox is scaled into the card. */
+  vector-effect: non-scaling-stroke;
+}
+
+.cap-svg .ink {
+  stroke: var(--cap-ink);
+}
+
+.cap-svg .hi {
+  stroke: var(--cap-hi);
+}
+
+.cap-svg .solid {
+  fill: var(--cap-sd);
+  stroke: none;
+}
+
+.cap-svg .faint {
+  opacity: 0.45;
+}
+
+.cap-svg .dash {
+  stroke-dasharray: 3 5;
+}
+
+/* --- Latent, and resolving under the pointer ----------------------------------------------------- */
+
+/* The mask base IS the brightness knob for the whole set — every figure's ink is multiplied by it.
+   At rest the figure reads as a clear grey drawing; on hover the base goes to 0.92 and `--cap-hi`
+   is already opaque, so highlighted strokes resolve to effectively pure cream, with the pointer spot
+   taking the last 8% under the cursor. Raising the ink colours instead of this would blow out the
+   `solid` fills, which are opaque by definition. */
+.cap-base {
+  fill-opacity: 0.4;
+  transition: fill-opacity 0.7s ease;
+}
+
+/* Hovering anywhere on the card lifts the whole figure, not just the part under the pointer. */
+.cap-card:hover .cap-base {
+  fill-opacity: 0.92;
+}
+
+/* The ledger panel (CapabilityLedger) is the opposite case: the figure there is the subject, not a
+   latent hover reward — it is the one figure on screen and the row has already been chosen. So the
+   stage carries the card's variables (above) but holds the base lifted, with no pointer spot to
+   chase. The per-figure keyframes still run. */
+.cap-stage .cap-base {
+  fill-opacity: 0.92;
+}
+
+.cap-spot {
+  opacity: var(--cap-on);
+  transform: translate(var(--cap-px), var(--cap-py));
+  transition:
+    opacity 0.5s ease,
+    transform 0.18s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+/* The whole figure leans away from the pointer. Barely — 4px is the entire range. */
+.cap-par {
+  transform: translate(calc(var(--cap-mx) * -4px), calc(var(--cap-my) * -3px));
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 04 — the scope line IS the cursor, and the trace's amplitude answers to the pointer's height. */
+.cap-scope {
+  transform: translateX(calc(var(--cap-px) - 120px));
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.cap-amp {
+  transform: scaleY(calc(1 + var(--cap-my) * -0.4));
+  transform-box: view-box;
+  transform-origin: 120px 95px;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- One gesture each ---------------------------------------------------------------------------- */
+
+/* 01 — one impulse, three agents. It diverges. */
+@keyframes capSend {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8%,
+  84% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes capOrigin {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  6% {
+    opacity: 1;
+    transform: scale(1.7);
+  }
+  30% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+}
+
+/* 02 — many signals in, one answer out. It converges. */
+@keyframes capInfer {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  10%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+/* Holds small until 84% — the answer fires only once the signals have actually arrived. */
+@keyframes capAnswer {
+  0%,
+  84% {
+    opacity: 0.3;
+    transform: scale(0.55);
+  }
+  94% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(0.55);
+  }
+}
+
+/* 03 — it draws itself, bottom up, and holds. */
+@keyframes capDraw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  24%,
+  84% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* 04 — period 60px, scroll 60px. Seamless by construction. */
+@keyframes capScroll {
+  to {
+    transform: translateX(-60px);
+  }
+}
+
+/* 05 — two arcs chasing. Nothing ever completes. */
+@keyframes capTurn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 06 — one surface, every device. The frame and its content share a clock, so the content reflows
+   on exactly the beat the frame changes shape. */
+@keyframes capSurface {
+  0%,
+  14% {
+    x: 104px;
+    y: 34px;
+    width: 32px;
+    height: 122px;
+  }
+  30%,
+  46% {
+    x: 82px;
+    y: 44px;
+    width: 76px;
+    height: 102px;
+  }
+  62%,
+  80% {
+    x: 44px;
+    y: 56px;
+    width: 152px;
+    height: 78px;
+  }
+  96%,
+  100% {
+    x: 104px;
+    y: 34px;
+    width: 32px;
+    height: 122px;
+  }
+}
+
+@keyframes capContent {
+  0%,
+  14% {
+    x: 112px;
+    y: 52px;
+    width: 16px;
+    height: 30px;
+  }
+  30%,
+  46% {
+    x: 92px;
+    y: 58px;
+    width: 56px;
+    height: 26px;
+  }
+  62%,
+  80% {
+    x: 56px;
+    y: 68px;
+    width: 82px;
+    height: 22px;
+  }
+  96%,
+  100% {
+    x: 112px;
+    y: 52px;
+    width: 16px;
+    height: 30px;
+  }
+}
+
+/* 07 — a thing on an edge, reporting. It radiates. */
+@keyframes capRadiate {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.35);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(4.6);
+  }
+}
+
+@keyframes capBeat {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 08 — the block, leaving. */
+@keyframes capLift {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  16%,
+  62% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-34px);
+  }
+}
+
+.cap-send {
+  animation: capSend 3.4s cubic-bezier(0.35, 0, 0.3, 1) infinite;
+}
+
+.cap-origin {
+  animation: capOrigin 3.4s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.cap-infer {
+  animation: capInfer 3s cubic-bezier(0.5, 0, 0.35, 1) infinite;
+}
+
+.cap-answer {
+  animation: capAnswer 3s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.cap-draw {
+  animation: capDraw 7s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.cap-lane-a {
+  animation: capScroll 7s linear infinite;
+}
+
+.cap-lane-b {
+  animation: capScroll 12s linear infinite;
+}
+
+.cap-turn {
+  animation: capTurn 6s linear infinite;
+  transform-box: view-box;
+  transform-origin: 120px 95px;
+}
+
+.cap-turn-b {
+  animation: capTurn 9s linear infinite reverse;
+  transform-box: view-box;
+  transform-origin: 120px 95px;
+}
+
+.cap-surface {
+  animation: capSurface 9s cubic-bezier(0.65, 0, 0.2, 1) infinite;
+}
+
+.cap-content {
+  animation: capContent 9s cubic-bezier(0.65, 0, 0.2, 1) infinite;
+}
+
+.cap-radiate {
+  animation: capRadiate 4.5s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.cap-beat {
+  animation: capBeat 2.2s ease-in-out infinite;
+}
+
+.cap-lift {
+  animation: capLift 7s cubic-bezier(0.4, 0, 0.3, 1) infinite;
+  transform-box: fill-box;
+}
+
+/* Hover deepens the gesture — it never starts one. Paired figures keep their ratio when they speed
+   up, so 01 still reads as the inverse of 02 under the pointer. */
+.cap-card:hover .cap-send,
+.cap-card:hover .cap-origin {
+  animation-duration: 1.9s;
+}
+
+.cap-card:hover .cap-infer,
+.cap-card:hover .cap-answer {
+  animation-duration: 1.7s;
+}
+
+.cap-card:hover .cap-lane-a {
+  animation-duration: 3.2s;
+}
+
+.cap-card:hover .cap-lane-b {
+  animation-duration: 5.5s;
+}
+
+.cap-card:hover .cap-turn {
+  animation-duration: 3s;
+}
+
+.cap-card:hover .cap-turn-b {
+  animation-duration: 4.5s;
+}
+
+.cap-card:hover .cap-radiate {
+  animation-duration: 2.4s;
+}
+
+.cap-card:hover .cap-lift {
+  animation-duration: 3.8s;
+}
+
+/* globals.css already collapses every animation to 0.01ms / 1 iteration under reduce. This also
+   stops the figures running a single compressed cycle on load, and freezes the pointer mask — which
+   is a transition, not an animation, and would otherwise still chase the cursor. */
+@media (prefers-reduced-motion: reduce) {
+  .cap-svg,
+  .cap-svg *,
+  .cap-lume {
+    animation: none !important;
+    transition: none !important;
+  }
+}

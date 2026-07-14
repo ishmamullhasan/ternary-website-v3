@@ -208,6 +208,7 @@ export interface Page {
         | ProcessSectionBlock
         | TeamSectionBlock
         | OpportunitiesSectionBlock
+        | CapabilityLedgerBlock
         | ScalesHeroBlock
         | QualityBarBlock
         | ScaleShowcaseBlock
@@ -1377,6 +1378,11 @@ export interface Capability {
   slug: string;
   excerpts?: string | null;
   thumbnail?: (string | null) | Media;
+  /**
+   * Animated figure drawn on this capability’s card in the Capabilities grid. Decorative — the card still reads from its title and excerpt if left empty, which renders a plain card rather than an arbitrary figure.
+   */
+  animation?:
+    ('agentic' | 'neuralNet' | 'platform' | 'dataLanes' | 'pipeline' | 'surfaces' | 'telemetry' | 'migration') | null;
   heroSection?: {
     /**
      * Pill label shown above the heading (e.g. Digital Experiences).
@@ -2167,6 +2173,43 @@ export interface OpportunitiesSectionBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CapabilityLedgerBlock".
+ */
+export interface CapabilityLedgerBlock {
+  heading?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Disciplines listed in the ledger, in display order. Each row pulls its own excerpt, figure and practice items from the capability — nothing is re-authored here.
+   */
+  capabilities?: (string | Capability)[] | null;
+  /**
+   * Sits above the practice items inside each row, e.g. “How we do it”.
+   */
+  practiceLabel?: string | null;
+  /**
+   * Label on each row’s link through to the capability page, e.g. “Explore”.
+   */
+  linkLabel: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'capabilityLedger';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ScalesHeroBlock".
  */
 export interface ScalesHeroBlock {
@@ -2599,9 +2642,6 @@ export interface Form {
       )[]
     | null;
   submitButtonLabel?: string | null;
-  /**
-   * Choose whether to display an on-page message or redirect to a different page after they submit the form.
-   */
   confirmationType?: ('message' | 'redirect') | null;
   confirmationMessage?: {
     root: {
@@ -2621,9 +2661,6 @@ export interface Form {
   redirect?: {
     url: string;
   };
-  /**
-   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
-   */
   emails?:
     | {
         emailTo?: string | null;
@@ -2632,9 +2669,6 @@ export interface Form {
         replyTo?: string | null;
         emailFrom?: string | null;
         subject: string;
-        /**
-         * Enter the message that should be sent in this email.
-         */
         message?: {
           root: {
             type: string;
@@ -4309,6 +4343,7 @@ export interface PagesSelect<T extends boolean = true> {
         processSection?: T | ProcessSectionBlockSelect<T>;
         teamSection?: T | TeamSectionBlockSelect<T>;
         opportunitiesSection?: T | OpportunitiesSectionBlockSelect<T>;
+        capabilityLedger?: T | CapabilityLedgerBlockSelect<T>;
         scalesHero?: T | ScalesHeroBlockSelect<T>;
         qualityBar?: T | QualityBarBlockSelect<T>;
         scaleShowcase?: T | ScaleShowcaseBlockSelect<T>;
@@ -4549,6 +4584,19 @@ export interface OpportunitiesSectionBlockSelect<T extends boolean = true> {
   heading?: T;
   description?: T;
   limit?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CapabilityLedgerBlock_select".
+ */
+export interface CapabilityLedgerBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  capabilities?: T;
+  practiceLabel?: T;
+  linkLabel?: T;
   id?: T;
   blockName?: T;
 }
@@ -5733,6 +5781,7 @@ export interface CapabilitySelect<T extends boolean = true> {
   slug?: T;
   excerpts?: T;
   thumbnail?: T;
+  animation?: T;
   heroSection?:
     | T
     | {

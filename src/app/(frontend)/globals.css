@@ -2,6 +2,15 @@
 @import 'tw-animate-css';
 @plugin '@tailwindcss/typography';
 
+/* Reserve the scrollbar gutter permanently. The mega menu locks the page with
+   `body { overflow: hidden }`, which removes the classic scrollbar and so widens the layout
+   viewport by its width (~15px). Everything right-anchored — most visibly the fixed burger/close
+   badge at md+ — jumps sideways on open. Reserving the gutter keeps the viewport a fixed width
+   whether or not the scrollbar is showing, so nothing moves. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   /* Two-font system: Inter is the default/body family (body, nav, footer, labels, cards,
      eyebrows); Poppins is reserved for display headlines via --font-display and the h1,h2

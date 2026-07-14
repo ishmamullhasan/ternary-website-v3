@@ -53,31 +53,32 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
   if (!scales || scales.length === 0) return null
 
   return (
-    <section className="section-card flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
-      {/* top header */}
-      <Motion className="lg:w-2/5" {...reveal}>
+    <section className="section-card flex w-full flex-col gap-8">
+      {/* Header stacked above the grid, left-aligned — the Industries/Capabilities treatment. */}
+      <Motion className="max-w-[544px]" {...reveal}>
         {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}
         {description ? (
           <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />
         ) : null}
       </Motion>
 
-      <div className="w-full lg:flex-1">
-        {/* Mobile: horizontal snap carousel with pagination dots. */}
-        <MobileCarousel slideClassName="w-[260px]">
-          {scales.map((item, index) => (
-            <ScaleCard key={index} item={item} index={index} />
-          ))}
-        </MobileCarousel>
+      {/* Mobile: horizontal snap carousel with pagination dots. */}
+      <MobileCarousel slideClassName="w-[260px]">
+        {scales.map((item, index) => (
+          <ScaleCard key={index} item={item} index={index} />
+        ))}
+      </MobileCarousel>
 
-        {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
-        <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-          {scales.map((item, index): JSX.Element => (
-            <Motion key={index} {...revealItem(index)}>
-              <ScaleCard item={item} index={index} />
-            </Motion>
-          ))}
-        </div>
+      {/* sm+ grid — hidden on mobile, where the carousel takes over. Five tracks with an empty left
+          gutter so the cards sit in columns 2–5, i.e. 4 per row (matching Industries). */}
+      <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-5">
+        <div aria-hidden className="hidden lg:block lg:row-span-2" />
+
+        {scales.map((item, index): JSX.Element => (
+          <Motion key={index} {...revealItem(index)}>
+            <ScaleCard item={item} index={index} />
+          </Motion>
+        ))}
       </div>
     </section>
   )

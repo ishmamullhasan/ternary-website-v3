@@ -4,13 +4,11 @@ import MegaMenuOverlay, { type NavEntry, type SecondaryLink } from '@/components
 import { localeFromPath, localizedHref } from '@/lib/i18n/locales'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
-import { Menu } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
-import { useNavState } from './useNavState'
 
 type MediaWithUrl = { url?: string | null }
 
@@ -47,6 +45,34 @@ function TernaryMark({ className }: { className?: string }) {
   )
 }
 
+/**
+ * Burger ⇄ cross, morphed rather than swapped. Three bars share one centre: closed, the outer two
+ * are offset ±6px and the middle is visible; open, the offsets collapse to zero and the outer two
+ * counter-rotate into an X while the middle scales away along its own length.
+ *
+ * Tailwind emits `transform` as translate→rotate→scale, so a bar translates *then* spins about its
+ * own centre — which is what keeps the arms crossing dead centre through the whole tween instead of
+ * pivoting around the box corner.
+ *
+ * Deliberately CSS transitions, not motion/react: `globals.css` already clamps transition-duration
+ * to 0.01ms under both `prefers-reduced-motion` and the site's `data-a11y-motion='reduce'` toggle,
+ * so this honours reduced motion for free. A motion/react tween would need a `useReducedMotion()`
+ * gate to do the same, and would miss the in-app toggle entirely.
+ */
+function MenuCrossIcon({ open }: { open: boolean }) {
+  // -mt-px pulls each 2px bar up by half its height, so `top-1/2` centres its midline rather than
+  // its top edge. Without it every bar sits 1px low and the open arms cross off-centre.
+  const bar = 'absolute left-1/2 top-1/2 -mt-px h-0.5 w-full -translate-x-1/2 rounded-full bg-current ease-out'
+
+  return (
+    <span className="relative block size-5 sm:size-6" aria-hidden>
+      <span className={cn(bar, 'transition-transform duration-300', open ? 'rotate-45' : '-translate-y-1.5')} />
+      <span className={cn(bar, 'transition-[transform,opacity] duration-300', open && 'scale-x-0 opacity-0')} />
+      <span className={cn(bar, 'transition-transform duration-300', open ? '-rotate-45' : 'translate-y-1.5')} />
+    </span>
+  )
+}
+
 export default function Header({ headerData }: HeaderProps) {
   const path = usePathname()
   // CMS links are stored locale-LESS; resolve them for the active locale (derived from the URL).
@@ -54,7 +80,6 @@ export default function Header({ headerData }: HeaderProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const open = openIndex !== null
 
-  const { compact, setInteracting } = useNavState()
   const reduce = useReducedMotion() ?? false
 
   const menu = useMemo(() => (headerData?.menu ?? []).filter((m) => m?.label), [headerData?.menu])
@@ -87,45 +112,22 @@ export default function Header({ headerData }: HeaderProps) {
     }
   }, [open])
 
-  const LogoMark = (
-    <>
-      {logoUrl ? (
-        <Image
-          src={logoUrl}
-          width={30}
-          height={30}
-          alt=""
-          className={cn('h-[30px] w-auto transition-[height] duration-200', reduce && compact && 'h-[26px]')}
-        />
-      ) : (
-        <TernaryMark
-          className={cn('h-[30px] w-auto text-cream transition-[height] duration-200', reduce && compact && 'h-[26px]')}
-        />
-      )}
-    </>
-  )
-
-  const Logo = (
-    <Link
-      href={localizedHref(locale, '/')}
-      className="flex shrink-0 items-center gap-2.5"
-      aria-label={headerData?.siteName || 'Ternary'}
-      onClick={() => setOpenIndex(null)}
-    >
-      {LogoMark}
-    </Link>
-  )
-
   return (
     <>
-      {/* Mobile logo — a fixed badge that mirrors the floating burger (same size, same left inset,
-          opposite corner) and never reacts to scroll. Below md it replaces the header pill entirely. */}
+      {/* There is no header bar at any breakpoint — just two fixed badges over the page. Logo pins to
+          the top-left everywhere; the burger sits bottom-left on mobile (thumb reach) and top-right at
+          md+. Neither reacts to scroll.
+
+          Both badges stay mounted and keep their geometry while the mega menu is open — they simply
+          sit above it (z-[110] vs the overlay's z-[100]) and the burger becomes the close control.
+          The overlay therefore draws no logo/close of its own: rendering a second pair is what used
+          to shift the mark and change the header gaps on open. */}
       <Link
         href={localizedHref(locale, '/')}
         aria-label={headerData?.siteName || 'Ternary'}
         onClick={() => setOpenIndex(null)}
         className={cn(
-          'glass fixed top-5 left-5 z-50 flex size-12 items-center justify-center rounded-2xl text-cream md:hidden',
+          'glass fixed top-5 left-5 z-[110] flex size-12 items-center justify-center rounded-2xl text-cream',
           'sm:top-6 sm:left-6 sm:size-14',
         )}
       >
@@ -136,53 +138,8 @@ export default function Header({ headerData }: HeaderProps) {
         )}
       </Link>
 
-      {/* Outer fixed positioner — centers the floating pill and stays click-through outside it. */}
-      <div className="fixed inset-x-0 top-0 z-50 hidden justify-center px-4 pt-3 sm:pt-4 pointer-events-none md:flex">
-        <motion.header
-          className={cn(
-            'pointer-events-auto w-full max-w-7xl rounded-2xl px-5 md:glass xl:max-w-5xl',
-            reduce && (compact ? 'py-2' : 'py-3.5'),
-          )}
-          initial={false}
-          animate={reduce ? undefined : compact ? 'compact' : 'expanded'}
-          variants={{
-            expanded: { paddingTop: 14, paddingBottom: 14, scale: 1 },
-            compact: { paddingTop: 8, paddingBottom: 8, scale: 0.97 },
-          }}
-          transition={{ type: 'spring', stiffness: 380, damping: 34, mass: 0.7 }}
-          style={{ transformOrigin: 'top center' }}
-          onMouseEnter={() => setInteracting(true)}
-          onMouseLeave={() => setInteracting(false)}
-          onFocus={() => setInteracting(true)}
-          onBlur={(e) => {
-            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setInteracting(false)
-          }}
-        >
-          <div className="flex w-full flex-row items-center justify-between gap-4">
-            <div className="shrink-0">{Logo}</div>
-
-            {/* Desktop (md+) — the whole nav lives in the mega overlay, so the bar carries nothing but
-                the logo and the burger that opens it. Below md the floating FAB does this job. */}
-            <button
-              type="button"
-              aria-label={open ? 'Close menu' : 'Open menu'}
-              aria-haspopup="dialog"
-              aria-expanded={open}
-              onClick={toggleMenu}
-              className={cn(
-                'hidden shrink-0 items-center justify-center rounded-md p-2 text-cream md:flex',
-                'transition-colors duration-200 hover:bg-white/[0.06]',
-                open && 'bg-white/[0.06]',
-              )}
-            >
-              <Menu className="size-5" />
-            </button>
-          </div>
-        </motion.header>
-      </div>
-
-      {/* Floating burger (mobile only) — mirrors the language FAB, pinned to the opposite
-          bottom corner. Toggles the same full-screen mega overlay the desktop nav opens. */}
+      {/* Burger — bottom-left below md (mirrors the language FAB), top-right at md+. Doubles as the
+          menu's close button, so it never moves between the two states. */}
       <button
         type="button"
         aria-label={open ? 'Close menu' : 'Open menu'}
@@ -190,11 +147,13 @@ export default function Header({ headerData }: HeaderProps) {
         aria-expanded={open}
         onClick={toggleMenu}
         className={cn(
-          'glass pointer-events-auto fixed bottom-5 left-5 z-50 flex size-12 items-center justify-center rounded-full text-cream md:hidden',
-          'transition-transform duration-200 motion-safe:hover:scale-105 active:scale-95 sm:bottom-6 sm:left-6 sm:size-14',
+          'glass fixed bottom-5 left-5 z-[110] flex size-12 items-center justify-center rounded-full text-cream',
+          'sm:bottom-6 sm:left-6 sm:size-14',
+          'md:top-6 md:right-6 md:bottom-auto md:left-auto md:rounded-2xl',
+          'transition-transform duration-200 motion-safe:hover:scale-105 active:scale-95',
         )}
       >
-        <Menu className="size-5 sm:size-6" />
+        <MenuCrossIcon open={open} />
       </button>
 
       <MegaMenuOverlay
@@ -207,7 +166,6 @@ export default function Header({ headerData }: HeaderProps) {
         onActiveIndex={setOpenIndex}
         onClose={() => setOpenIndex(null)}
         reduce={reduce}
-        logo={Logo}
       />
     </>
   )
