@@ -213,10 +213,25 @@ const data: Record<string, unknown> = {
 // Loosely-typed handle (mirrors scripts/seed-deck-content.ts) so the block `layout` — whose
 // `blockType` strings widen to `string` — is accepted without per-block casts.
 const db = payload as unknown as {
-  find: (args: Record<string, unknown>) => Promise<{ docs: { id: string | number }[] }>
+  find: (args: Record<string, unknown>) => Promise<{ docs: { id: string | number; email?: string; role?: string }[] }>
   create: (args: Record<string, unknown>) => Promise<unknown>
   update: (args: Record<string, unknown>) => Promise<unknown>
 }
+
+// Attribute the write to a real account so the activity log records an actor, not a 'system' seed.
+const SEED_USER_EMAIL = process.env.SEED_USER ?? 'ashemul@ternary.solutions'
+const foundUser = await db.find({
+  collection: 'users',
+  where: { email: { equals: SEED_USER_EMAIL } },
+  limit: 1,
+  depth: 0,
+})
+const seedUser = foundUser.docs[0]
+if (!seedUser) {
+  payload.logger.error(`  seeding user ${SEED_USER_EMAIL} not found — aborting so the write is not left unattributed`)
+  process.exit(1)
+}
+payload.logger.info(`  attributing write to ${seedUser.email} (id ${seedUser.id})`)
 
 const existing = await db.find({ collection: 'industry', where: { slug: { equals: 'test' } }, limit: 1, depth: 0 })
 
@@ -225,8 +240,8 @@ if (DRY) {
 } else {
   await ignoreRevalidate(() =>
     existing.docs[0]
-      ? db.update({ collection: 'industry', id: existing.docs[0].id, data, context: ctx })
-      : db.create({ collection: 'industry', data: { slug: 'test', ...data }, context: ctx }),
+      ? db.update({ collection: 'industry', id: existing.docs[0].id, data, context: ctx, user: seedUser })
+      : db.create({ collection: 'industry', data: { slug: 'test', ...data }, context: ctx, user: seedUser }),
   )
   const after = await db.find({ collection: 'industry', where: { slug: { equals: 'test' } }, limit: 1, depth: 0 })
   payload.logger.info(`  ${existing.docs[0] ? 'updated' : 'created'} industry "test" (id ${after.docs[0]?.id})`)

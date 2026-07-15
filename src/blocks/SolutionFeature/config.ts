@@ -15,14 +15,17 @@ export const SolutionFeature: Block = {
   interfaceName: 'SolutionFeatureBlock',
   labels: { singular: 'Solution Feature', plural: 'Solution Features' },
   fields: [
-    {
-      name: 'eyebrow',
-      label: 'Eyebrow',
-      type: 'text',
-      localized: true,
-      admin: { description: 'Small pill/badge rendered above the heading.' },
-    },
     ...sectionHeader(),
+    {
+      name: 'headingSolution',
+      label: 'Heading link → Solution',
+      type: 'relationship',
+      relationTo: 'solution',
+      admin: {
+        description:
+          'Optionally link the heading to a solution. The URL is built as /solutions/<slug> and a link icon is shown after the heading.',
+      },
+    },
     imageField({ name: 'image', label: 'Image' }),
     {
       name: 'stat',

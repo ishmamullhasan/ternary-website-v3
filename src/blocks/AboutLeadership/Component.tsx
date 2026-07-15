@@ -1,145 +1,84 @@
-import Corousel from '@/components/animation/corousel'
 import Motion from '@/components/animation/motion'
-import RichTextComp, { type RichText } from '@/components/richtext'
-import type { AboutLeadershipBlock, Media, Team } from '@/payload-types'
-import { sortByTeamOrder } from '@/utilities/teamOrder'
-import { Github, Globe, Linkedin, Twitter } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
+import type { AboutLeadershipBlock, Team } from '@/payload-types'
+import config from '@payload-config'
+import { unstable_cache } from 'next/cache'
+import type { TypedLocale } from 'payload'
+import { getPayload } from 'payload'
 import type { JSX } from 'react'
+import { RosterScroll } from './RosterScroll'
 
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+// Roster sections in display order, keyed by the collection's `category` select — an exact copy of
+// the /team page's grouping. A category with no members disappears entirely (heading included).
+const CATEGORY_SECTIONS = [
+  { category: 'leader', title: 'Leadership' },
+  { category: 'general', title: 'Team' },
+  { category: 'advisor', title: 'Advisors' },
+] as const
+
+// Mirrors the /team page's fetch: the full roster in manual (_order) order, `image` populated.
+const fetchTeam = async (locale: TypedLocale): Promise<Team[]> => {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'team',
+    locale,
+    depth: 1,
+    limit: 200,
+    overrideAccess: true,
+    sort: '_order',
+  })
+  return result.docs as Team[]
+}
+
+// Same tag-based ISR entry the /team page uses (shared cache key, busted by the Team collection's
+// afterChange/afterDelete hooks via the `team` tag), keyed per-locale.
+const getTeam = (locale: TypedLocale): Promise<Team[]> =>
+  unstable_cache(() => fetchTeam(locale), [`team_list_${locale}`], { tags: ['team'] })()
 
 /**
- * Leadership grid — "Team voices. Production stories." (design node 1255:3051). Each card is a
- * grayscale portrait filling a 3:4 frame with the name, a role pill and a LinkedIn link anchored to
- * the bottom over a scrim. Portraits desaturate by default and warm to color on hover. No
- * "Specialization" line (per design). Missing media degrades to a brand-token gradient rather than
- * an empty/broken box; an empty members array collapses the whole block.
+ * Leadership section — an exact clone of the /team page inside the about page's `bg-main` section
+ * box: a sticky left third with the /team page's own intro copy, and the full roster on the right
+ * two-thirds grouped into Leadership / Team / Advisors by the collection's `category` (docs
+ * predating the field count as 'general', matching the field default). Reads the whole team
+ * collection — like /team — rather than the block's picked members.
  */
-export function AboutLeadershipComponent({ heading, description, members }: AboutLeadershipBlock): JSX.Element | null {
-  const motionBlockProps = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: '-60px' as const },
-  }
+export async function AboutLeadershipComponent({
+  locale = 'en',
+}: AboutLeadershipBlock & { locale?: TypedLocale }): Promise<JSX.Element | null> {
+  const members = await getTeam(locale)
 
-  // Each row is { member, wide } (admin picks which cards take the wide column). Keep only rows
-  // whose relationship resolved to a Team doc; the global manual roster order (admin drag-and-drop)
-  // wins over the row order, with each row's `wide` flag traveling with its member.
-  const team = sortByTeamOrder(
-    (members ?? []).flatMap((row) =>
-      row?.member && typeof row.member === 'object' ? [{ ...(row.member as Team), wide: row.wide === true }] : [],
-    ),
-  )
+  const sections = CATEGORY_SECTIONS.map(({ category, title }) => ({
+    category,
+    title,
+    members: members.filter((m) => (m.category ?? 'general') === category),
+  })).filter((s) => s.members.length > 0)
 
-  if (!heading && team.length === 0) return null
+  if (sections.length === 0) return null
 
   return (
-    <section className="rounded-md bg-main p-6 lg:p-12">
-      <Motion className="mb-8 max-w-2xl" {...motionBlockProps} transition={{ duration: 0.6, ease: EASE }}>
-        {heading ? (
-          <h2 className="font-display text-2xl font-medium tracking-[-0.05em] text-cream lg:text-3xl">{heading}</h2>
-        ) : null}
-        {description ? (
-          <RichTextComp
-            content={description as RichText}
-            className="mt-3 prose-p:mb-0 prose-p:text-base prose-p:leading-relaxed prose-p:text-body"
-          />
-        ) : null}
-      </Motion>
+    // Fixed height on lg+ so the roster scrolls inside the panel (with fade masks) while the intro
+    // stays put; below lg the panel grows to its content and the list flows normally.
+    <section className="rounded-md bg-main p-6 lg:h-[640px] lg:p-12">
+      <div className="flex flex-col gap-12 lg:h-full lg:flex-row lg:items-start lg:gap-16">
+        {/* Left third — the fixed intro. Same copy as /team; an <h2> here because the page already
+            owns the single <h1>. */}
+        <Motion
+          tag="div"
+          className="flex flex-col gap-4 lg:w-1/3 lg:shrink-0"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <h2 className="text-display font-display font-medium text-cream">Meet the Team</h2>
+          <p className="text-body">
+            The senior engineers and operators behind Ternary — the specialists already on your team.
+          </p>
+        </Motion>
 
-      {team.length ? (
-        <>
-          {/* Below xl the section is a swipeable quote-card carousel with dot pagination (mobile
-              Figma 1000:5067) — same slides as the careers "Team voices" section. */}
-          <div className="xl:hidden">
-            <Corousel items={team.map((member) => ({ team: member, wide: member.wide }))} navVariant="dots" />
-          </div>
-
-          {/* Mixed card widths per Figma (1018:4153): narrow cards span 3 tracks, wide cards span 4
-              (the design's 358:480 ≈ 3:4 ratio) — which cards are wide is picked per row in the
-              admin panel. An alternating narrow/wide/narrow/wide pick fills the 14-track row
-              exactly. */}
-          <div className="hidden gap-4 xl:grid xl:grid-cols-14">
-            {team.map((member, index) => {
-              const portrait = (member.image as Media | undefined)?.url ?? undefined
-              const socials = [
-                { href: member.linkedin, Icon: Linkedin, label: 'LinkedIn' },
-                { href: member.x, Icon: Twitter, label: 'X' },
-                { href: member.github, Icon: Github, label: 'GitHub' },
-                { href: member.website, Icon: Globe, label: 'Website' },
-              ].filter((s): s is { href: string; Icon: typeof Linkedin; label: string } => Boolean(s.href))
-              return (
-                <Motion
-                  key={member.id ?? index}
-                  className={`group relative h-[520px] overflow-hidden rounded-md ring-1 ring-white/5 transition-transform duration-500 ease-out hover:-translate-y-1 ${member.wide ? 'xl:col-span-4' : 'xl:col-span-3'}`}
-                  {...motionBlockProps}
-                  transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-                >
-                  {portrait ? (
-                    <Image
-                      src={portrait}
-                      alt={member.name ?? 'Team member'}
-                      fill
-                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover grayscale transition-[filter,transform] duration-700 ease-out group-hover:scale-105 group-hover:grayscale-0"
-                    />
-                  ) : (
-                    <span
-                      aria-hidden
-                      className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-                      style={{
-                        backgroundImage: 'radial-gradient(135% 135% at 22% 14%, #4f6bed 0%, #25307e 44%, #0c1030 100%)',
-                      }}
-                    />
-                  )}
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.12] mix-blend-overlay"
-                  />
-                  <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent" />
-
-                  <div className="absolute inset-x-6 bottom-6">
-                    {member.name ? (
-                      <h3 className="font-display text-2xl font-medium tracking-[-0.05em] text-cream">{member.name}</h3>
-                    ) : null}
-                    {member.position ? (
-                      <p className="mt-2 inline-flex w-fit rounded-full border border-[#757571] px-4 py-1 text-xs text-cream/85 backdrop-blur-sm">
-                        {member.position}
-                      </p>
-                    ) : null}
-                    {member.description ? (
-                      <RichTextComp
-                        content={member.description as RichText}
-                        className="mt-3 max-w-none prose-p:mb-0 prose-p:text-sm prose-p:leading-relaxed prose-p:text-cream/75"
-                      />
-                    ) : member.excerpt ? (
-                      <p className="mt-3 text-sm leading-relaxed text-cream/75">{member.excerpt}</p>
-                    ) : null}
-                    {socials.length ? (
-                      <div className="mt-4 flex gap-3">
-                        {socials.map(({ href, Icon, label }) => (
-                          <Link
-                            key={label}
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`${label} — ${member.name ?? 'team member'}`}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-cream transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
-                          >
-                            <Icon aria-hidden className="h-4 w-4" />
-                          </Link>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                </Motion>
-              )
-            })}
-          </div>
-        </>
-      ) : null}
+        {/* Right two-thirds — the roster, grouped by category in manual (_order) order; scrolls
+            inside the fixed-height panel with top/bottom fades on lg+. */}
+        <RosterScroll sections={sections} />
+      </div>
     </section>
   )
 }

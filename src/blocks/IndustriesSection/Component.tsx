@@ -131,7 +131,7 @@ export function IndustriesSectionComponent({
         {/* Default: empty left gutter (desktop) so the 8 cards sit in columns 2–5 — matching the
             Capabilities section. Full-width mode drops the gutter for the flush 4-column benefit grid
             on the industry-detail page (Figma 1283-2668). */}
-        {!fullWidth && <div aria-hidden className="hidden lg:block lg:row-span-2" />}
+        {!fullWidth && <div aria-hidden className="hidden lg:block" />}
 
         {!fullWidth &&
           items.map((item, index) => (

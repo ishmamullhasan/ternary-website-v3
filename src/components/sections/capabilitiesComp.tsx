@@ -2,13 +2,14 @@
 import Motion from '@/components/animation/motion'
 import { EASE, reveal, revealItem } from '@/components/animation/reveal'
 import CapabilityArt from '@/components/capability/CapabilityArt'
+import { usePointerReveal } from '@/components/capability/usePointerReveal'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { Capability, Media } from '@/payload-types'
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
-import { useCallback, useEffect, useRef, useState, type JSX, type PointerEvent as ReactPointerEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type JSX } from 'react'
 
 interface CapabilitiesCompProps {
   heading?: string | null
@@ -138,59 +139,8 @@ function IntroMediaCarousel({ slides }: { slides: Media[] }): JSX.Element {
 // a card must not re-render on mousemove — and coalesces to one write per frame, because
 // pointermove fires far more often than the compositor can use.
 function CapabilityCard({ item, index }: { item: Capability; index: number }): JSX.Element {
-  const cardRef = useRef<HTMLAnchorElement>(null)
-  const frame = useRef(0)
-
-  useEffect(() => () => cancelAnimationFrame(frame.current), [])
-
-  const onPointerMove = useCallback((e: ReactPointerEvent<HTMLAnchorElement>) => {
-    const el = cardRef.current
-    if (!el) return
-
-    // Read the pointer position now; by the time the frame runs, the event is recycled.
-    const { clientX, clientY } = e
-
-    cancelAnimationFrame(frame.current)
-    frame.current = requestAnimationFrame(() => {
-      const svg = el.querySelector('svg')
-      if (!svg) return
-
-      const rect = el.getBoundingClientRect()
-      el.style.setProperty('--cap-lx', `${(((clientX - rect.left) / rect.width) * 100).toFixed(1)}%`)
-      el.style.setProperty('--cap-ly', `${(((clientY - rect.top) / rect.height) * 100).toFixed(1)}%`)
-
-      // The mask spot lives in the SVG's coordinate space, not the card's, so the pointer has to be
-      // projected through the screen CTM. Using the card's percentages here would drift as soon as
-      // the card's aspect ratio stopped matching the 240×190 viewBox — which it does at every
-      // breakpoint.
-      const ctm = svg.getScreenCTM()
-      if (!ctm) return
-      const point = svg.createSVGPoint()
-      point.x = clientX
-      point.y = clientY
-      const local = point.matrixTransform(ctm.inverse())
-
-      el.style.setProperty('--cap-px', `${local.x.toFixed(1)}px`)
-      el.style.setProperty('--cap-py', `${local.y.toFixed(1)}px`)
-      // Normalised to roughly −1…1 about the viewBox centre: the parallax lean and the 04 amplitude
-      // scale read from these.
-      el.style.setProperty('--cap-mx', ((local.x - 120) / 120).toFixed(3))
-      el.style.setProperty('--cap-my', ((local.y - 95) / 95).toFixed(3))
-      el.style.setProperty('--cap-on', '1')
-    })
-  }, [])
-
-  const onPointerLeave = useCallback(() => {
-    const el = cardRef.current
-    if (!el) return
-    // Cancel first: a queued frame would otherwise re-light the card after the pointer had gone.
-    cancelAnimationFrame(frame.current)
-    el.style.setProperty('--cap-on', '0')
-    el.style.setProperty('--cap-mx', '0')
-    el.style.setProperty('--cap-my', '0')
-    el.style.setProperty('--cap-px', '120px')
-    el.style.setProperty('--cap-py', '95px')
-  }, [])
+  // The figure's viewBox is 240×190 (see CapabilityArt); its centre feeds the parallax normalisation.
+  const { ref: cardRef, onPointerMove, onPointerLeave } = usePointerReveal<HTMLAnchorElement>(120, 95)
 
   return (
     <Link

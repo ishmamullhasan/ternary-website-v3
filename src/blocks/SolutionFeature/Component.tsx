@@ -1,8 +1,19 @@
 import Motion from '@/components/animation/motion'
 import ColumnSection from '@/components/layout/sectionColumn'
+import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { SolutionFeatureBlock } from '@/payload-types'
-import { Activity, ArrowDown, Check, Database, GitBranch, GitCommitHorizontal, ShieldCheck, Zap } from 'lucide-react'
+import {
+  Activity,
+  ArrowDown,
+  ArrowUpRight,
+  Check,
+  Database,
+  GitBranch,
+  GitCommitHorizontal,
+  ShieldCheck,
+  Zap,
+} from 'lucide-react'
 import type { JSX, ReactNode } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -404,7 +415,12 @@ const InfoCard = ({ title, description }: { title?: string | null; description?:
 export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Element {
   const who = props?.detail?.[0]
   const shape = props?.detail?.[1]
-  const eyebrow = props?.eyebrow?.trim()
+  // Heading link is derived from the chosen solution (populated at the page's fetch depth): the URL
+  // is always /solutions/<slug>, matching the /solutions/[slug] detail route. Falls back to no link
+  // when unset or (defensively) when the relationship wasn't populated to an object with a slug.
+  const solutionRef = props?.headingSolution
+  const headingHref =
+    solutionRef && typeof solutionRef === 'object' && solutionRef.slug ? `/solutions/${solutionRef.slug}` : undefined
   const widget = props?.widget ?? 'none'
 
   return (
@@ -413,7 +429,7 @@ export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Eleme
       aside={<FeaturePanel block={props} />}
       className="py-[72px]"
     >
-      {/* Header — rendered here (not via ColumnSection) for correct eyebrow scale, eggshell heading and Inter labels. */}
+      {/* Header — rendered here (not via ColumnSection) for correct eggshell heading and Inter labels. */}
       <Motion
         tag="div"
         initial={{ opacity: 0, y: 16 }}
@@ -422,14 +438,24 @@ export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Eleme
         transition={{ duration: 0.55, ease: EASE }}
         className="mb-8"
       >
-        {eyebrow ? (
-          <span className="font-display inline-flex items-center rounded-full border border-line bg-main px-4 py-2 text-[18px] font-normal leading-none text-cream">
-            {eyebrow}
-          </span>
-        ) : null}
         {props?.heading ? (
-          <h2 className="font-display mt-8 max-w-xl text-3xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
-            {props.heading}
+          <h2 className="font-display max-w-xl text-3xl font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+            {headingHref ? (
+              // The whole heading is the link; the arrow is a decorative affordance (aria-hidden).
+              // The global :focus-visible outline supplies the keyboard indicator.
+              <Link
+                href={headingHref}
+                className="group/heading inline-flex items-start gap-1.5 rounded-sm transition-colors hover:text-cream/80"
+              >
+                {props.heading}
+                <ArrowUpRight
+                  aria-hidden
+                  className="mt-1 size-6 shrink-0 text-cream/70 transition-[transform,color] duration-200 group-hover/heading:-translate-y-0.5 group-hover/heading:translate-x-0.5 group-hover/heading:text-cream"
+                />
+              </Link>
+            ) : (
+              props.heading
+            )}
           </h2>
         ) : null}
         {props?.description ? (

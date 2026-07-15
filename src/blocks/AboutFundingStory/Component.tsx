@@ -74,7 +74,7 @@ export function AboutFundingStoryComponent({
         {description ? (
           <RichTextComp
             content={description as RichText}
-            className="max-w-[768px] opacity-90 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
+            className="max-w-[768px] opacity-90 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-cream"
           />
         ) : null}
       </div>

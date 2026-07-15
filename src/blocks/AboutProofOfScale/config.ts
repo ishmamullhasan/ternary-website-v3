@@ -1,6 +1,5 @@
 import type { Block } from 'payload'
 
-import { statsArray, tagsArray } from '@/fields/arrays'
 import { rowLabelAdmin } from '@/fields/rowLabel'
 import { sectionHeader } from '@/fields/sectionHeader'
 
@@ -9,8 +8,9 @@ export const AboutProofOfScale: Block = {
   interfaceName: 'AboutProofOfScaleBlock',
   labels: { singular: 'About Proof of Scale', plural: 'About Proof of Scale' },
   fields: [
-    ...sectionHeader(),
-    statsArray({ name: 'stats', label: 'Metrics' }),
+    // The "Proof at Scale" stats panel was removed (WEB): this block now renders only the
+    // "Companies We Work With" grid. Any legacy top-level heading/description/stats still stored
+    // on existing docs is ignored by Payload on read and stripped on the next save.
     {
       name: 'company',
       label: 'Companies We Work With',
@@ -32,7 +32,6 @@ export const AboutProofOfScale: Block = {
               admin: { description: 'Short supporting copy.' },
             },
             { name: 'logo', label: 'Logo', type: 'upload', relationTo: 'media' },
-            tagsArray({ name: 'stack', label: 'Stack' }),
           ],
         },
       ],

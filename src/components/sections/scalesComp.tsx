@@ -72,7 +72,7 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
       {/* sm+ grid — hidden on mobile, where the carousel takes over. Five tracks with an empty left
           gutter so the cards sit in columns 2–5, i.e. 4 per row (matching Industries). */}
       <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-5">
-        <div aria-hidden className="hidden lg:block lg:row-span-2" />
+        <div aria-hidden className="hidden lg:block" />
 
         {scales.map((item, index): JSX.Element => (
           <Motion key={index} {...revealItem(index)}>

@@ -78,6 +78,16 @@ function EngageCard({ card, index }: { card: EngageCardItem; index: number }): J
   const model = typeof card?.model === 'object' ? (card.model as Model) : undefined
   const image = typeof model?.thumbnail === 'object' ? (model.thumbnail as Media) : undefined
   const panel = <GradientPanel tone={tone} image={image} />
+  const isMiddle = panelPosition === 'middle'
+
+  // Short intro line under the labels (Figma 1275:4491). For the middle card the image panel sits
+  // above this line, so it is pulled out of the title block and rendered after the panel.
+  const descriptionBlock = card?.description ? (
+    <RichTextComp
+      content={card.description as RichText}
+      className="mt-1 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.4] prose-p:text-body"
+    />
+  ) : null
 
   const titleBlock = (
     <div className="flex flex-col gap-2">
@@ -93,13 +103,9 @@ function EngageCard({ card, index }: { card: EngageCardItem; index: number }): J
           ))}
         </div>
       ) : null}
-      {/* Short intro line under the labels (Figma 1275:4491). */}
-      {card?.description ? (
-        <RichTextComp
-          content={card.description as RichText}
-          className="mt-1 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.4] prose-p:text-body"
-        />
-      ) : null}
+      {/* Top/bottom cards keep the intro line inside the title group; the middle card renders it
+          after the panel instead (see below). */}
+      {!isMiddle ? descriptionBlock : null}
     </div>
   )
 
@@ -119,7 +125,14 @@ function EngageCard({ card, index }: { card: EngageCardItem; index: number }): J
     <article className="group flex h-full flex-col gap-6 rounded-md bg-ink p-6">
       {panelPosition === 'top' && panel}
       {titleBlock}
-      {panelPosition === 'middle' && panel}
+      {/* Middle card: image sits above the intro line. Group them with a tight gap so the line hugs
+          the image, matching how the other cards' intro line hugs the labels. */}
+      {isMiddle ? (
+        <div className="flex flex-col gap-2">
+          {panel}
+          {descriptionBlock}
+        </div>
+      ) : null}
       {idealForBlock}
       {panelPosition === 'bottom' && panel}
     </article>

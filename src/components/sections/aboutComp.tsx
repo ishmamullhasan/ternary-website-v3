@@ -154,12 +154,7 @@ function AboutCard({ item, index, imgSizes }: { item: MultiRelation; index: numb
       {/* hover overlay — frosted layer revealing the excerpt with the CTA under it, both pinned to
           the bottom (Figma 2392:2778). Painted below the header block so title/type stay crisp. */}
       <div className="absolute inset-0 flex flex-col justify-end gap-3 overflow-hidden bg-black/[0.32] px-6 pt-40 pb-8 opacity-0 backdrop-blur-[75px] transition-opacity duration-200 ease-out group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">
-        {item.value.excerpts && (
-          <p className="line-clamp-5 translate-x-[120%] text-base leading-[1.15] tracking-[-0.05em] text-body transition-transform duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0 group-focus-visible:translate-x-0 motion-reduce:translate-x-0 motion-reduce:transition-none">
-            {item.value.excerpts}
-          </p>
-        )}
-        <span className="flex translate-x-[120%] items-center justify-end gap-1 text-base leading-[1.15] tracking-[-0.05em] text-cream transition-transform delay-100 duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0 group-focus-visible:translate-x-0 motion-reduce:translate-x-0 motion-reduce:transition-none">
+        <span className="flex translate-x-[120%] items-center justify-end gap-1 text-base leading-[1.15] tracking-[-0.05em] text-cream transition-transform duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0 group-focus-visible:translate-x-0 motion-reduce:translate-x-0 motion-reduce:transition-none">
           {ctaFor(item.relationTo)}
           <ArrowUpRight size={14} strokeWidth={2} aria-hidden />
         </span>
@@ -175,6 +170,11 @@ function AboutCard({ item, index, imgSizes }: { item: MultiRelation; index: numb
           <h3 className="line-clamp-3 font-display text-2xl leading-[1.15] font-medium tracking-[-0.05em] text-cream">
             {item.value.title}
           </h3>
+        )}
+        {item.value.excerpts && (
+          <p className="line-clamp-5 translate-x-[120%] text-base leading-[1.15] tracking-[-0.05em] text-body opacity-0 transition-[transform,opacity] duration-[700ms] ease-[cubic-bezier(0.65,0,0.35,1)] group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:translate-x-0 motion-reduce:opacity-100 motion-reduce:transition-none">
+            {item.value.excerpts}
+          </p>
         )}
       </div>
     </Link>

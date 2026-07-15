@@ -188,8 +188,8 @@ function Pill({ children }: { children: ReactNode }): JSX.Element {
   )
 }
 
-// Reusable section shell: near-black bordered panel with generous editorial padding.
-const SECTION_SHELL = 'rounded-md border border-white/[0.06] bg-ink p-6 lg:p-12'
+// Reusable section shell: card-toned panel with generous editorial padding, no border.
+const SECTION_SHELL = 'rounded-md bg-card p-6 lg:p-12'
 
 // Single related-solution card — shared by the sm+ grid and the mobile carousel. `h-full` on the
 // Motion root lets the flex/grid parent stretch every card to equal height.
@@ -207,7 +207,7 @@ function RelatedSolutionCard({
       <Link
         href={`/${locale}/solutions/${solution.slug}`}
         className={cn(
-          'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-white/[0.015] p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-white/[0.03]',
+          'group flex h-full flex-col gap-2 rounded-md bg-ink p-6 transition-colors duration-300 hover:bg-white/[0.03]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page',
         )}
       >
@@ -363,11 +363,7 @@ export default async function Page({
       )}
 
       {/* CTA — the page's signature noise-gradient moment. */}
-      <Motion
-        tag="section"
-        className="relative overflow-hidden rounded-md border border-white/[0.06] p-8 lg:p-12"
-        {...reveal}
-      >
+      <Motion tag="section" className="relative overflow-hidden rounded-md p-8 lg:p-12" {...reveal}>
         <NoiseGradient tone={CTA_TONE} />
 
         <div className="relative z-10 flex flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">

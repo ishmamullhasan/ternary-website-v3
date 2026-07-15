@@ -58,7 +58,7 @@ export function CtaBlockComponent({
           {description && (
             <RichTextComp
               content={description as RichText}
-              className="mx-auto max-w-lg prose-p:mb-0 prose-p:text-xs md:prose-p:text-sm prose-p:leading-relaxed prose-p:text-body/80 lg:mx-0"
+              className="mx-auto max-w-lg prose-p:mb-0 prose-p:text-xs md:prose-p:text-sm prose-p:leading-relaxed prose-p:text-cream lg:mx-0"
             />
           )}
         </Motion>

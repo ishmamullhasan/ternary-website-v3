@@ -25,6 +25,9 @@ import { getPayload, type Payload } from 'payload'
 const DRY = process.env.SEED_DRY === '1'
 const SLUG = 'test'
 const ctx = { disableRevalidate: true }
+// Attribute every write to this account so the activity log records a real actor (source 'api')
+// rather than an anonymous 'system' seed. Override with SEED_USER=<email> if needed.
+const SEED_USER_EMAIL = process.env.SEED_USER ?? 'ashemul@ternary.solutions'
 
 const payload: Payload = await getPayload({ config })
 payload.logger.info(`Seed "${SLUG}" docs across all collections ${DRY ? '(DRY RUN)' : '(WRITING)'}`)
@@ -81,10 +84,25 @@ const ignoreRevalidate = async <T>(fn: () => Promise<T>): Promise<T | undefined>
 // per-collection data shapes are accepted without a cast at every call site.
 type Id = string | number
 const db = payload as unknown as {
-  find: (args: Record<string, unknown>) => Promise<{ docs: { id: Id }[] }>
+  find: (args: Record<string, unknown>) => Promise<{ docs: { id: Id; email?: string; name?: string; role?: string }[] }>
   create: (args: Record<string, unknown>) => Promise<{ id: Id }>
   update: (args: Record<string, unknown>) => Promise<{ id: Id }>
 }
+
+// Resolve the seeding user so every write is attributed to them in the activity log. Passing `user`
+// on a Local-API write sets req.user, which the activity-log plugin snapshots (email/name/role).
+const foundUser = await db.find({
+  collection: 'users',
+  where: { email: { equals: SEED_USER_EMAIL } },
+  limit: 1,
+  depth: 0,
+})
+const seedUser = foundUser.docs[0]
+if (!seedUser) {
+  payload.logger.error(`  seeding user ${SEED_USER_EMAIL} not found — aborting so writes are not left unattributed`)
+  process.exit(1)
+}
+payload.logger.info(`  attributing writes to ${seedUser.email} (id ${seedUser.id}, role ${seedUser.role})`)
 
 /**
  * Create-or-update the `test`-slugged doc of a collection. `slugField` is the field the slug lives
@@ -101,8 +119,8 @@ const upsert = async (collection: string, data: Record<string, unknown>): Promis
 
   const res = await ignoreRevalidate(() =>
     existing
-      ? db.update({ collection, id: existing.id, data, context: ctx })
-      : db.create({ collection, data: { slug: SLUG, ...data }, context: ctx }),
+      ? db.update({ collection, id: existing.id, data, context: ctx, user: seedUser })
+      : db.create({ collection, data: { slug: SLUG, ...data }, context: ctx, user: seedUser }),
   )
   // When the revalidate hook threw, the write still committed — re-read to recover the id.
   const id =
@@ -170,93 +188,99 @@ const teamId = await upsert('team', {
 // =============================================================================================
 // 2. capability — /capabilities/test
 // =============================================================================================
+// Copy follows the "Individual Capability — Digital Experiences" Figma frame (node 1835-6549).
 await upsert('capability', {
-  title: 'Test Capability — Platform Engineering',
+  title: 'Test Capability — Digital Experiences',
   excerpts:
-    'Test fixture. Distributed platforms that stay observable, auditable, and fast under load — built by pods that stay on after launch.',
+    'Test fixture. Product, design, and frontend engineering for experiences that hold up under private scrutiny — fast, accessible, measurably better.',
   thumbnail: img(),
   heroSection: {
-    badge: 'Platform Engineering',
-    heading: 'Systems that survive their own success.',
+    badge: 'Digital Experiences',
+    heading: 'Interfaces people forgive nothing about.',
     description: rt(
-      'Most platforms fail not at launch but at scale, when the shortcuts taken in month two become the incidents of year two. We build for the second year first.',
+      'Product, design, and frontend engineering for experiences that hold up under private scrutiny — fast, accessible, measurably better.',
     ),
     heroImage: img(),
-    button: { label: 'Talk to a platform lead', link: '/contact' },
+    button: { label: 'Talk to a design engineer', link: '/contact' },
   },
   whatThisMeansToUs: {
     sectionLabel: 'Section 01',
     heading: 'What this means to us',
-    description: rt('Three commitments we make on every platform engagement, written down so you can hold us to them.'),
+    description: rt('The discipline, in our voice. How we practice it differently from the rest of the market.'),
     items: [
       {
-        title: 'Observability is not a phase',
+        title: 'Performance is a design choice.',
         excerpt:
-          'Traces, metrics, and structured logs land in the first sprint — not after the first outage teaches us we needed them.',
+          'We budget weight, latency, and motion before the first wireframe. Slow is a defect, not a phase-two ticket.',
       },
       {
-        title: 'The audit trail is the architecture',
+        title: 'Accessibility is not a checklist.',
         excerpt:
-          'Immutability and traceability are design constraints from commit one, so a regulator request is a query rather than a project.',
+          'We test with assistive tech in the loop. WCAG AA is the floor we ship from, not the ceiling we chase.',
       },
       {
-        title: 'We leave the team stronger',
-        excerpt:
-          'Every pod pairs with your engineers. If we walk out and delivery slows down, we did the engagement wrong.',
+        title: 'Design systems as engineering systems.',
+        excerpt: 'Tokens, components, and content patterns versioned, tested, and adopted — not declared.',
       },
     ],
   },
   howWeDoIt: {
     sectionLabel: 'Section 02',
-    heading: 'How we do it',
-    description: rt('A practice, not a toolchain. The tools change; the sequence does not.'),
+    heading: 'The practice. Not the pitch.',
+    description: rt(
+      'Copy-generic screens turn expensive quickly. We tie experience decisions to instrumentation, so what ships can be measured — not merely admired.',
+    ),
     items: [
       {
-        title: 'Strangle, never rewrite',
+        title: 'Design tokens & primitives',
         excerpt:
-          'We route traffic away from the monolith one bounded context at a time, so there is never a big-bang cutover weekend.',
-        stack: [{ name: 'Kubernetes' }, { name: 'Envoy' }, { name: 'Terraform' }],
+          'One source of truth for colour, type, spacing, and motion — themeable, contrast-checked, and enforced in CI so drift never re-enters the build.',
+        stack: [{ name: 'Figma' }, { name: 'Style Dictionary' }, { name: 'Tailwind' }, { name: 'CSS vars' }],
       },
       {
-        title: 'Event-driven by default',
+        title: 'Component engineering',
         excerpt:
-          'Services publish facts, not commands. Consumers can be added, replayed, or removed without renegotiating the contract.',
-        stack: [{ name: 'Kafka' }, { name: 'Go' }, { name: 'Postgres' }],
+          'Accessible, headless-first components with keyboard, focus, and screen-reader behaviour built in — not bolted on after an audit.',
+        stack: [{ name: 'React' }, { name: 'Radix' }, { name: 'TypeScript' }, { name: 'Storybook' }],
       },
       {
-        title: 'Paved paths, not policies',
+        title: 'Performance as a budget',
         excerpt:
-          'The compliant way to ship becomes the easiest way to ship, so adherence stops depending on anyone remembering.',
-        stack: [{ name: 'GitHub Actions' }, { name: 'OpenTelemetry' }, { name: 'Backstage' }],
+          'Core Web Vitals gated per pull request. Weight, latency, and motion have hard ceilings a regression cannot quietly cross.',
+        stack: [{ name: 'Next.js' }, { name: 'Lighthouse CI' }, { name: 'Playwright' }],
       },
     ],
   },
   caseStudies: {
     sectionLabel: 'Section 03',
-    heading: 'Proof, not promises',
-    description: rt('Two engagements where the platform work paid for itself before the contract ended.'),
+    heading: 'Where this capability has done real work.',
+    description: rt('Proof beats a portfolio. The metric is on each card, next to the constraint it moved.'),
     items: [
       {
         meta: '2025 · Insurance',
-        title: 'Claims platform re-architecture',
-        problem: rt('A 12-year-old claims monolith took six days to price a policy change and nobody dared touch it.'),
-        approach: rt(
-          'We carved pricing out behind an anti-corruption layer, moved it to an event-sourced service, and shadow-ran it against production for six weeks before cutting over.',
+        title: 'Counterfoil Continuum — a revenue operating layer for the experience economy',
+        problem: rt(
+          'Claims triage taking 6 days. Adjuster shortage forcing low-value claims to auto-pay without scrutiny.',
         ),
-        outcome: rt('Pricing changes now ship the same day, and the audit log is a first-class product surface.'),
+        approach: rt(
+          'Multi-step extraction pipeline with document grounding. Confidence-routed to adjusters with full citation trail.',
+        ),
+        outcome: rt('Triage in under 4 hours. Leakage on low-value claims down 38%.'),
         metricValue: '4h',
         metricLabel: 'from 6 days',
       },
       {
-        meta: '2024 · Logistics',
-        title: 'Real-time shipment telemetry',
-        problem: rt('Fleet data landed in a warehouse overnight, so every operational decision was a day stale.'),
-        approach: rt(
-          'A streaming pipeline replaced the nightly batch, with backpressure and replay so a bad deploy never loses an event.',
+        meta: '2024 · Retail',
+        title: 'Storefront rebuild on a strict performance budget',
+        problem: rt(
+          'A checkout flow at 4.1s LCP on mid-tier phones was quietly shedding conversions on every campaign.',
         ),
-        outcome: rt('Dispatchers now act on live positions; exception handling dropped from hours to minutes.'),
-        metricValue: '99.98%',
-        metricLabel: 'pipeline uptime',
+        approach: rt(
+          'Rebuilt on a tokenised component system with streamed rendering, image budgets, and Vitals gated per pull request.',
+        ),
+        outcome: rt('LCP down to 1.6s, accessibility score to 100, and a 12% lift in mobile checkout completion.'),
+        metricValue: '1.6s',
+        metricLabel: 'from 4.1s LCP',
       },
     ],
   },
@@ -264,26 +288,27 @@ await upsert('capability', {
     sectionLabel: 'Section 04',
     member: teamId,
     bio: rt(
-      'Test Rahman has spent fifteen years on systems where downtime is measured in money, and now leads the platform practice at Ternary.',
+      'Twelve years across product, design systems, and frontend platform work — building interfaces that stay fast and accessible under real load.',
     ),
     credentials: [
-      { text: 'CKA — Certified Kubernetes Administrator' },
-      { text: 'AWS Solutions Architect, Professional' },
-      { text: 'Maintainer, two OSS observability tools' },
+      { text: 'MSc, Computer Science — ETH Zürich' },
+      { text: 'Former Staff Frontend Engineer, large-scale search' },
+      { text: 'Maintainer, open-source design-system tooling' },
+      { text: 'Speaker — Smashing Conf, QCon' },
     ],
     writings: [
-      { title: 'Why your event bus became a distributed monolith', category: 'Essay', link: '/insights/test' },
-      { title: 'Strangler-fig migrations in regulated environments', category: 'Talk', link: '/insights/test' },
+      { title: 'Why your design-system adoption is lying to you', category: 'Practice notes', link: '/insights/test' },
+      { title: 'Performance budgets as a deployment strategy', category: 'Smashing Conf ’25', link: '/insights/test' },
     ],
     email: 'test.rahman@example.com',
     github: 'https://github.com/test-rahman',
   },
   relatedCapabilities: {
     sectionLabel: 'Section 05',
-    heading: 'Related capabilities',
+    heading: 'Disciplines that ship together.',
     capabilities: relCapabilities,
   },
-  cta: cta('Skip the six-day pricing change.'),
+  cta: cta('Bring this practice into your org.'),
 })
 
 // =============================================================================================
@@ -366,47 +391,60 @@ const scaleId = await upsert('scale', {
 // =============================================================================================
 // 6. insight — /insights/test  (drafts enabled → must be published explicitly)
 // =============================================================================================
+// Copy follows the "Individual Insight — Cache components" Figma frame (node 1879-4995).
 const insightId = await upsert('insight', {
   _status: 'published',
-  title: 'Test Insight — Why your event bus became a distributed monolith',
+  title: 'Test Insight — Cache components and the shape of agent-ready frontends',
   code: 'CS-014',
   author: teamId,
-  publishedDate: new Date('2026-05-18').toISOString(),
-  readTime: '8 min',
+  publishedDate: new Date('2026-05-22').toISOString(),
+  readTime: '9 min',
   categoryLabel: 'Engineering Studio',
   excerpts:
-    'Test fixture. Microservices that all block on the same topic are a monolith with a network hop in the middle — and worse latency.',
+    'Test fixture. For a decade, rendering has been a backend conversation. Agent-ready frontends make caching a component-level decision — deterministic where it can be, generated where it must be.',
   thumbnail: img(),
-  tags: [{ name: 'Architecture' }, { name: 'Event-driven' }, { name: 'Migration' }],
+  tags: [{ name: 'Agentic' }, { name: 'Frontend' }, { name: 'Architecture' }, { name: 'Evals' }],
   leadParagraph: rt(
-    'The promise of the event bus was decoupling. What most teams get instead is a monolith with a network hop bolted into the middle of it — all the coordination cost of the original system, plus a serialization tax.',
+    'For a decade, the conversation about rendering has been a backend conversation: static, server, client, edge — every new label the same answer to the same question, where does this byte come from, and when? Agentic frontends change the question. The output is no longer a single artefact; part of the screen is generated per request, per role, per viewer, and the rest is deterministic and cached.',
   ),
   content: doc([
-    heading('The tell'),
+    heading('Introduction'),
     para(
-      'You can spot it in the deploy order. If service C must ship before service B, and B before A, the services are not independent — they are modules that happen to be separated by a broker.',
+      'A cache-first frontend used to mean picking a rendering strategy and living with it everywhere. Once a slot on the page is produced by a model, that assumption breaks. The unit of caching is no longer the route — it is the component. Some of it should never go stale; some of it must be fresh on every request.',
     ),
-    heading('How it happens'),
+    heading('Why agentic engineering forces the issue'),
     para(
-      'Almost always the same way: teams publish commands instead of facts. "ChargeCustomer" is a command; it names what the consumer must do, so the producer now owns the consumer\'s behaviour. "PaymentAuthorized" is a fact; the consumer decides what it means.',
-    ),
-    para(
-      'Once commands are on the bus, every new consumer is a negotiation with the producer, and the coupling you were trying to remove has simply moved into the schema registry.',
-    ),
-    heading('The fix is boring'),
-    para(
-      'Publish facts. Version them additively. Make consumers idempotent and replayable, so a bad deploy is recovered by replaying the log rather than by a coordinated rollback across four teams.',
+      'The tell is the deploy order of your own confidence. Deterministic surfaces — headers, navigation, layout — can be cached hard and invalidated on a tag. Generated surfaces cannot: they depend on the viewer, the moment, and a model you do not fully control. Treating both the same way is how a page becomes either always stale or always slow.',
     ),
     para(
-      'None of this is novel. It is just unglamorous enough that it tends to lose the argument to whichever framework is trending that quarter.',
+      'The fix is to split the page by contract, not by framework. Deterministic components render statically and cache aggressively. Agentic slots declare their inputs, their evals, and a deterministic fallback, and stream in when they clear the gate.',
+    ),
+    heading('A reference architecture'),
+    para(
+      'We have converged on three layers. Shell: deterministic chrome, cached hard, invalidated on a tag. Surface: per-entity data, cached with a short TTL. Agentic slot: a typed component whose input is validated and whose output is gated by evals before it is allowed to reach the DOM.',
+    ),
+    para(
+      'The agentic slot is a component, not a page population of one — a deterministic fallback renders first, every time, and the generated output replaces it only after it clears its evals. A bad model day degrades to the fallback rather than to a broken screen.',
+    ),
+    heading('Evals and safety as a build-time concern'),
+    para(
+      'Four gates run before a generated slot is allowed to render. Faithfulness: every claim in the output is supported by a retrieved citation. Non-leaking: output excludes any field marked private at the schema level. On-brand: tone, length, and forbidden phrases pass a deterministic linter. Latency budget: p95 below 600ms, or the slot streams a deterministic fallback.',
+    ),
+    heading('A rollout pattern that actually ships'),
+    para(
+      'The teams who succeed treat the agentic slot like a microservice with a UI contract, not like a prompt with a render target. Ship behind a flag, shadow-run against the deterministic fallback for a week, read the eval scores before the experiment, and only then let it serve real traffic.',
+    ),
+    heading('Closing notes'),
+    para(
+      'The frontend is not getting easier: it is getting more orchestrated. Cache the things that should not change. Gate the things that should. Make the seam between them a contract your real audits understand. That is the whole job.',
     ),
   ]),
   relatedInsights: {
-    heading: 'Related reading',
+    heading: 'Related insights',
     description: rt('More from the engineering studio.'),
     insights: relInsights,
   },
-  cta: cta('Have an event bus that outgrew its design?'),
+  cta: cta('Have a frontend that outgrew its rendering model?'),
 })
 
 // =============================================================================================

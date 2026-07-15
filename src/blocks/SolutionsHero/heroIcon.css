@@ -1,0 +1,157 @@
+/* Solutions-hero discipline icons — the same pointer-reactive latent reveal as the capability
+ * figures (capabilityArt.css), tuned for filled isometric artwork rather than line figures.
+ *
+ * THE MASK IS THE IDEA. Each icon is drawn at full strength and then masked down: a flat, dim base
+ * plus a soft radial spot that tracks the pointer in the icon's own user units. The artwork is
+ * latent — a quiet grey solid — and resolves to full brightness where you look, and lifts as a whole
+ * while its card is hovered. It also leans, barely, away from the pointer.
+ *
+ * The `--cap-*` pointer variables are the shared contract written by usePointerReveal. They are
+ * declared with defaults on `.hi-stage` so a card that has never been hovered — or one rendered on
+ * the server — still draws correctly.
+ */
+
+.hi-stage {
+  /* Pointer state. `--cap-on` is the master gate: 0 until the pointer enters. Defaults hold the spot
+     at the icon centre; usePointerReveal resets to these on leave. */
+  --cap-on: 0;
+  --cap-mx: 0;
+  --cap-my: 0;
+  --cap-px: 60px;
+  --cap-py: 66px;
+  --cap-lx: 50%;
+  --cap-ly: 50%;
+}
+
+/* A faint pool of light under the pointer, on the card itself rather than the icon. */
+.hi-lume {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--cap-on);
+  transition: opacity 0.6s ease;
+  background: radial-gradient(
+    160px 160px at var(--cap-lx) var(--cap-ly),
+    rgba(244, 243, 236, 0.05) 0%,
+    transparent 70%
+  );
+}
+
+.hi-svg {
+  display: block;
+  overflow: visible;
+}
+
+/* The mask base IS the brightness knob for the whole icon — the artwork's opacity is multiplied by
+   it. At rest the icon reads as a quiet grey solid; on card hover the base lifts and the pointer spot
+   takes the last of it to full strength directly under the cursor. */
+.hi-base {
+  fill-opacity: 0.42;
+  transition: fill-opacity 0.7s ease;
+}
+
+.hi-stage:hover .hi-base {
+  fill-opacity: 0.7;
+}
+
+.hi-spot {
+  opacity: var(--cap-on);
+  transform: translate(var(--cap-px), var(--cap-py));
+  transition:
+    opacity 0.5s ease,
+    transform 0.18s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+/* The whole icon leans away from the pointer. Barely — a few px is the entire range. */
+.hi-par {
+  transform: translate(calc(var(--cap-mx) * -3px), calc(var(--cap-my) * -2px));
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Building part by part -----------------------------------------------------------------------
+ * Each face of the isometric object assembles into place in turn: it rises and fades in, the object
+ * holds together, then it releases and rebuilds, on a loop. Same spirit as capabilityArt's capDraw
+ * (draws itself, bottom up, and holds) and capLift (staggered pieces on a per-index delay).
+ *
+ * The stagger is by document order via :nth-child — these figures are authored back-to-front, so the
+ * pieces stack up from the back rather than flashing in all at once. transform-origin sits at the
+ * bottom of each face so the scale reads as a piece settling onto the one below it.
+ */
+@keyframes heroBuild {
+  0% {
+    opacity: 0;
+    transform: translateY(7px) scale(0.94);
+  }
+  16%,
+  84% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(7px) scale(0.94);
+  }
+}
+
+.hi-build > path {
+  animation: heroBuild 5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+/* A short step per face so the object stacks up. Covers the busiest figure (12 faces); extra rules
+   past a given icon's face count simply never match. */
+.hi-build > path:nth-child(1) {
+  animation-delay: 0s;
+}
+.hi-build > path:nth-child(2) {
+  animation-delay: 0.11s;
+}
+.hi-build > path:nth-child(3) {
+  animation-delay: 0.22s;
+}
+.hi-build > path:nth-child(4) {
+  animation-delay: 0.33s;
+}
+.hi-build > path:nth-child(5) {
+  animation-delay: 0.44s;
+}
+.hi-build > path:nth-child(6) {
+  animation-delay: 0.55s;
+}
+.hi-build > path:nth-child(7) {
+  animation-delay: 0.66s;
+}
+.hi-build > path:nth-child(8) {
+  animation-delay: 0.77s;
+}
+.hi-build > path:nth-child(9) {
+  animation-delay: 0.88s;
+}
+.hi-build > path:nth-child(10) {
+  animation-delay: 0.99s;
+}
+.hi-build > path:nth-child(11) {
+  animation-delay: 1.1s;
+}
+.hi-build > path:nth-child(12) {
+  animation-delay: 1.21s;
+}
+
+/* Hover quickens the assembly, the way the capability figures deepen under the pointer. */
+.hi-stage:hover .hi-build > path {
+  animation-duration: 3.2s;
+}
+
+/* globals.css collapses animations under reduce; this also freezes the pointer mask and the base
+   lift, which are transitions rather than animations and would otherwise still chase the cursor.
+   With the build animation gone the faces revert to their base style — fully assembled, opaque. */
+@media (prefers-reduced-motion: reduce) {
+  .hi-svg,
+  .hi-svg *,
+  .hi-lume {
+    transition: none !important;
+    animation: none !important;
+  }
+}

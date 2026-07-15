@@ -1,4 +1,5 @@
 import type { Page } from '@/payload-types'
+import type { TypedLocale } from 'payload'
 
 import type { JSX } from 'react'
 import { Fragment } from 'react'
@@ -115,7 +116,7 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
  * union, so each component gets fully-typed props (no casts). New blocks: register the config
  * on the Pages collection and add a case here.
  */
-function renderBlock(block: BlockType): JSX.Element | null {
+function renderBlock(block: BlockType, locale?: TypedLocale): JSX.Element | null {
   switch (block.blockType) {
     case 'hero':
       return <HeroComponent {...block} />
@@ -203,7 +204,7 @@ function renderBlock(block: BlockType): JSX.Element | null {
     case 'aboutProofOfScale':
       return <AboutProofOfScaleComponent {...block} />
     case 'aboutLeadership':
-      return <AboutLeadershipComponent {...block} />
+      return <AboutLeadershipComponent {...block} locale={locale} />
     case 'careersHero':
       return <CareersHeroComponent {...block} />
     case 'careersGridOne':
@@ -224,13 +225,19 @@ function renderBlock(block: BlockType): JSX.Element | null {
  * are full-bleed by design and rely on this wrapper for max-width, centering, the 20px gutter
  * and the vertical rhythm between sections (matching the bespoke homepage layout).
  */
-export function RenderBlocks({ blocks }: { blocks?: Page['layout'] }): JSX.Element | null {
+export function RenderBlocks({
+  blocks,
+  locale,
+}: {
+  blocks?: Page['layout']
+  locale?: TypedLocale
+}): JSX.Element | null {
   if (!blocks?.length) return null
 
   return (
     <div className="flex flex-col gap-16 lg:gap-[72px] text-cream max-w-7xl mx-auto w-full px-5 pt-20 lg:pt-40 lg:pb-24 pb-10">
       {blocks.map((block, i) => {
-        const el = renderBlock(block)
+        const el = renderBlock(block, locale)
         if (!el) return null
         // Self-wrapping granular blocks already render their own Motion section — render directly.
         if (SELF_WRAPPED_BLOCKS.has(block.blockType)) {

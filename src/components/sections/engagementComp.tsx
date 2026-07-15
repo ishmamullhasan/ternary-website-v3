@@ -17,12 +17,20 @@ interface EngagementCompProps {
 
 // Single engagement-model card — shared by the sm+ grid and the mobile carousel. Gradient base IS
 // the fallback (always rendered); an optional CMS image layers on top.
-function EngagementCard({ item, index }: { item: Scale; index: number }): JSX.Element {
+function EngagementCard({
+  item,
+  index,
+  aspect = 'aspect-[3/5]',
+}: {
+  item: Scale
+  index: number
+  aspect?: string
+}): JSX.Element {
   const thumbnail = item.thumbnail as Media | undefined
   const url = thumbnail?.url
 
   return (
-    <div className="group relative aspect-[3/5] w-full overflow-hidden rounded-md border border-line bg-ink">
+    <div className={`group relative w-full overflow-hidden rounded-md border border-line bg-ink ${aspect}`}>
       <GradientPanel tone={toneFor(undefined, index)} interactive />
 
       {url && <Image src={url} alt={item.title || 'engagement model'} fill className="relative object-cover" />}
@@ -54,16 +62,22 @@ export default function EngagementComp({ heading, description, model }: Engageme
         ))}
       </MobileCarousel>
 
-      {/* sm+ grid — hidden on mobile, where the carousel takes over. Five tracks with an empty left
-          gutter so the cards sit in columns 2–5, i.e. 4 per row (matching Industries). */}
+      {/* sm+ grid — hidden on mobile, where the carousel takes over. An empty left gutter (col 1 of
+          5) leaves the cards in the remaining four tracks, but with only three items those split the
+          right region into three columns so it fills without a trailing gap. */}
       <div className="hidden w-full gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-5">
-        <div aria-hidden className="hidden lg:block lg:row-span-2" />
+        <div aria-hidden className="hidden lg:block" />
 
-        {model.map((item, index): JSX.Element => (
-          <Motion key={index} {...revealItem(index)}>
-            <EngagementCard item={item} index={index} />
-          </Motion>
-        ))}
+        <div className="grid gap-5 sm:col-span-2 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-3">
+          {model.map((item, index): JSX.Element => (
+            <Motion key={index} {...revealItem(index)}>
+              {/* Three tiles fill four tracks' worth of width, so they run wider than the 1-track
+                  Industries/Scales tiles. Widen the aspect ratio at lg (3/5 → 4/5) so their rendered
+                  height matches those blocks; sm keeps 3/5 since the tiles are the same width there. */}
+              <EngagementCard item={item} index={index} aspect="aspect-[3/5] lg:aspect-[4/5]" />
+            </Motion>
+          ))}
+        </div>
       </div>
     </section>
   )

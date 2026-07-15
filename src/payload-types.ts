@@ -2991,10 +2991,6 @@ export interface SolutionsHeroBlock {
  * via the `definition` "SolutionFeatureBlock".
  */
 export interface SolutionFeatureBlock {
-  /**
-   * Small pill/badge rendered above the heading.
-   */
-  eyebrow?: string | null;
   heading?: string | null;
   description?: {
     root: {
@@ -3011,6 +3007,10 @@ export interface SolutionFeatureBlock {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Optionally link the heading to a solution. The URL is built as /solutions/<slug> and a link icon is shown after the heading.
+   */
+  headingSolution?: (string | null) | Solution;
   image?: (string | null) | Media;
   /**
    * Large stat shown inside the aside rings, e.g. 10x.
@@ -3440,33 +3440,6 @@ export interface AboutApproachBlock {
  * via the `definition` "AboutProofOfScaleBlock".
  */
 export interface AboutProofOfScaleBlock {
-  heading?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Headline metrics. Use real figures only.
-   */
-  stats?:
-    | {
-        value: string;
-        label: string;
-        detail?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   company?: {
     heading?: string | null;
     description?: {
@@ -3492,12 +3465,6 @@ export interface AboutProofOfScaleBlock {
            */
           excerpt?: string | null;
           logo?: (string | null) | Media;
-          stack?:
-            | {
-                name: string;
-                id?: string | null;
-              }[]
-            | null;
           id?: string | null;
         }[]
       | null;
@@ -4945,9 +4912,9 @@ export interface SolutionsHeroBlockSelect<T extends boolean = true> {
  * via the `definition` "SolutionFeatureBlock_select".
  */
 export interface SolutionFeatureBlockSelect<T extends boolean = true> {
-  eyebrow?: T;
   heading?: T;
   description?: T;
+  headingSolution?: T;
   image?: T;
   stat?:
     | T
@@ -5219,16 +5186,6 @@ export interface AboutApproachBlockSelect<T extends boolean = true> {
  * via the `definition` "AboutProofOfScaleBlock_select".
  */
 export interface AboutProofOfScaleBlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
-  stats?:
-    | T
-    | {
-        value?: T;
-        label?: T;
-        detail?: T;
-        id?: T;
-      };
   company?:
     | T
     | {
@@ -5240,12 +5197,6 @@ export interface AboutProofOfScaleBlockSelect<T extends boolean = true> {
               name?: T;
               excerpt?: T;
               logo?: T;
-              stack?:
-                | T
-                | {
-                    name?: T;
-                    id?: T;
-                  };
               id?: T;
             };
       };
