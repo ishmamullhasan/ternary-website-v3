@@ -95,26 +95,94 @@ function Agentic(): JSX.Element {
   )
 }
 
-/* 02 · Artificial Intelligence — many signals in, one answer out. It converges. The deliberate
-   inverse of 01: same arc language, run the other way. */
+/* 02 · Artificial Intelligence — the canonical feed-forward net: three fully-connected layers of
+   nodes, with signals propagating left→right through the graph. Still reads as convergence toward
+   the output, the deliberate inverse of 01's divergence — just drawn as a network, not lone arcs.
+
+   This is the one figure that runs past the set's "under ten marks" budget: a neural net only reads
+   as one once the edges actually mesh, so the fully-connected lattice is the whole point here. */
 function NeuralNet(): JSX.Element {
-  const arcs = [34, 56, 78, 100, 122, 144, 166].map((y) => `M40,${y} C104,${y} 124,95 194,95`)
+  const uid = useId()
+  const hotGrad = `cap-nn-g-${uid}`
+  const hotMask = `cap-nn-m-${uid}`
+
+  // Node layers, laid left → right and kept symmetric around y=95.
+  const layers = [
+    { x: 50, ys: [44, 78, 112, 146] },
+    { x: 120, ys: [39, 67, 95, 123, 151] },
+    { x: 190, ys: [69, 121] },
+  ]
+
+  // Every edge between adjacent layers — the dense mesh is what makes it read as a network.
+  const edges: string[] = []
+  for (let l = 0; l < layers.length - 1; l += 1) {
+    for (const ay of layers[l].ys)
+      for (const by of layers[l + 1].ys) edges.push(`M${layers[l].x},${ay} L${layers[l + 1].x},${by}`)
+  }
+  const nodes = layers.flatMap((layer) => layer.ys.map((y) => ({ x: layer.x, y })))
+
+  // Ambient propagation: full input→hidden→output routes carry a travelling pulse so the net reads
+  // as firing even before the pointer arrives. offset-distance is a percentage, so every route
+  // takes the same time regardless of its length.
+  const routes = [
+    'M50,44 L120,39 L190,69',
+    'M50,78 L120,67 L190,69',
+    'M50,112 L120,95 L190,121',
+    'M50,146 L120,123 L190,121',
+    'M50,78 L120,95 L190,69',
+  ]
 
   return (
     <Fig>
-      {arcs.map((d) => (
+      <defs>
+        {/* A tight spot, brighter and smaller than Fig's own — this is the activation the cursor
+            carries, not the latent reveal. */}
+        <radialGradient id={hotGrad}>
+          <stop offset="0%" stopColor="#fff" stopOpacity="1" />
+          <stop offset="55%" stopColor="#fff" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
+        <mask id={hotMask} maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="190">
+          <circle cx="0" cy="0" r="50" fill={`url(#${hotGrad})`} className="cap-hot" />
+        </mask>
+      </defs>
+
+      {/* Base net — faint edges + nodes, always present. */}
+      {edges.map((d) => (
         <path key={d} d={d} className="ink faint" />
       ))}
 
-      {arcs.map((d) => (
-        <g key={`in-${d}`} className="cap-infer" style={{ offsetPath: `path("${d}")` }}>
-          <circle r="2.2" className="solid" />
+      {routes.map((d, i) => (
+        <g
+          key={`sig-${d}`}
+          className="cap-infer"
+          style={{ offsetPath: `path("${d}")`, animationDelay: `${i * -0.5}s` }}
+        >
+          <circle r="2.1" className="solid" />
         </g>
       ))}
 
-      {/* The answer pulses only once the signals have arrived — see plAnswer's 84% hold. */}
-      <g className="cap-answer">
-        <circle cx="194" cy="95" r="4" className="solid" />
+      {nodes.map((n) => (
+        <circle key={`n-${n.x}-${n.y}`} cx={n.x} cy={n.y} r="3" className="solid" />
+      ))}
+
+      {/* Cursor activation — a bright copy of the whole net, revealed only in the tight spot that
+          tracks the pointer directly. Moving the cursor drags the live activation across the graph:
+          the neurons and edges you point at fire, in real time, following the cursor rather than a
+          clock. Snappy transition (see .cap-hot) so it reads as direct control. */}
+      <g mask={`url(#${hotMask})`}>
+        {edges.map((d) => (
+          <path key={`hot-${d}`} d={d} className="hi" />
+        ))}
+        {nodes.map((n) => (
+          <circle key={`hot-n-${n.x}-${n.y}`} cx={n.x} cy={n.y} r="3.6" className="solid" />
+        ))}
+      </g>
+
+      {/* The probe rides the cursor exactly — the input you are holding over the network, pulsing. */}
+      <g className="cap-probe">
+        <circle r="3.2" className="solid" />
+        <circle r="3.2" className="cap-probe-ring" />
       </g>
     </Fig>
   )

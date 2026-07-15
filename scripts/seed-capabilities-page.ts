@@ -137,7 +137,7 @@ const capabilityIds: string[] = (homeSection.en.capability ?? []).map((c: any) =
 
 const layoutEn = [
   {
-    blockType: 'storiesHero',
+    blockType: 'hero',
     heading: COPY.en.heroHeading,
     description: para(COPY.en.heroDescription),
   },

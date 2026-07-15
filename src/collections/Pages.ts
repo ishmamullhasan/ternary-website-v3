@@ -6,7 +6,6 @@ import { authenticated } from '@/access/authenticated'
 import { AboutApproach } from '@/blocks/AboutApproach/config'
 import { AboutBeliefs } from '@/blocks/AboutBeliefs/config'
 import { AboutFundingStory } from '@/blocks/AboutFundingStory/config'
-import { AboutHero } from '@/blocks/AboutHero/config'
 import { AboutIntro } from '@/blocks/AboutIntro/config'
 import { AboutLeadership } from '@/blocks/AboutLeadership/config'
 import { AboutProofOfScale } from '@/blocks/AboutProofOfScale/config'
@@ -26,13 +25,14 @@ import { ContactStats } from '@/blocks/ContactStats/config'
 import { CrossIndustryPatterns } from '@/blocks/CrossIndustryPatterns/config'
 import { Cta } from '@/blocks/Cta/config'
 import { FeatureCaseStudy } from '@/blocks/FeatureCaseStudy/config'
+import { Hero } from '@/blocks/Hero/config'
 import { HeroFeatured } from '@/blocks/HeroFeatured/config'
 import { homeSectionBlocks } from '@/blocks/homeSections/config'
 import { IndustriesDetails } from '@/blocks/IndustriesDetails/config'
-import { IndustriesHero } from '@/blocks/IndustriesHero/config'
 import { IndustriesSection } from '@/blocks/IndustriesSection/config'
 import { IndustryList } from '@/blocks/IndustryList/config'
 import { IndustryPanels } from '@/blocks/IndustryPanels/config'
+import { InsightsList } from '@/blocks/InsightsList/config'
 import { Jobs } from '@/blocks/Jobs/config'
 import { QualityBar } from '@/blocks/QualityBar/config'
 import { RegulatoryPosture } from '@/blocks/RegulatoryPosture/config'
@@ -42,7 +42,6 @@ import { SolutionFeature } from '@/blocks/SolutionFeature/config'
 import { SolutionsEngage } from '@/blocks/SolutionsEngage/config'
 import { SolutionsHero } from '@/blocks/SolutionsHero/config'
 import { StoriesArchive } from '@/blocks/StoriesArchive/config'
-import { StoriesHero } from '@/blocks/StoriesHero/config'
 import { Subscribe } from '@/blocks/Subscribe/config'
 import { DEFAULT_LOCALE, localizedPath } from '@/lib/i18n/locales'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -158,6 +157,7 @@ export const Pages: CollectionConfig = {
       label: 'Layout',
       type: 'blocks',
       blocks: [
+        Hero,
         HeroFeatured,
         Jobs,
         IndustriesSection,
@@ -174,12 +174,11 @@ export const Pages: CollectionConfig = {
         ContactRoutes,
         ContactOffices,
         ContactForm,
-        StoriesHero,
         FeatureCaseStudy,
         StoriesArchive,
+        InsightsList,
         CategoryLanding,
         Subscribe,
-        IndustriesHero,
         IndustryList,
         IndustriesDetails,
         IndustryPanels,
@@ -188,7 +187,6 @@ export const Pages: CollectionConfig = {
         SolutionsHero,
         SolutionFeature,
         SolutionsEngage,
-        AboutHero,
         AboutFundingStory,
         AboutIntro,
         AboutThesis,

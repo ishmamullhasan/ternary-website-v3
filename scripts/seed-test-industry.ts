@@ -64,7 +64,7 @@ payload.logger.info(`  benefit grid → ${industryIds.length} related industries
 const layout = [
   // Intro (1279:4891) — centered headline + description.
   {
-    blockType: 'industriesHero',
+    blockType: 'hero',
     heading: "Industries we've helped rewrite.",
     description:
       "Deep category expertise paired with institutional engineering velocity. We don't just write code; we solve existential business problems.",

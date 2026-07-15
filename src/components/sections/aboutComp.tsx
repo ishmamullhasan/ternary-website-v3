@@ -168,7 +168,7 @@ function AboutCard({ item, index, imgSizes }: { item: MultiRelation; index: numb
       {/* header — title + content-type chip, always visible (Figma 2392:2742). The chip is the
           glass pill from the redesign build: 6% white fill behind an 8px blur, hairline border. */}
       <div className="absolute inset-x-6 top-8 flex flex-col items-start gap-2">
-        <span className="inline-flex items-center rounded-md border border-white/15 bg-white/[0.06] px-2.5 py-1 text-[11px] font-semibold tracking-[0.12em] text-cream uppercase backdrop-blur-sm">
+        <span className="inline-flex items-center rounded-md border border-white/15 bg-white/[0.06] px-2 py-0.5 text-[9px] font-semibold tracking-[0.1em] text-cream uppercase backdrop-blur-sm">
           {CONTENT_TYPE_LABEL[item.relationTo]}
         </span>
         {item.value.title && (

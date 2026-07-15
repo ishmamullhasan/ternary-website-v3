@@ -58,7 +58,7 @@ const BACKGROUNDS = ['page', 'ink', 'button-dark', 'card', 'badge'] as const
  * Foreground text tokens and the floor each must clear on EVERY background.
  *
  * `subtle` is held to AA, not AAA: reaching 7:1 requires ~#ababa5, which collapses it into
- * `body` (#d5d5d5) and erases the muted tier. Documented exception to the AAA-for-body-text target.
+ * `body` (#aaaaaa) and erases the muted tier. Documented exception to the AAA-for-body-text target.
  */
 const TEXT_TOKENS: ReadonlyArray<{ token: string; floor: number }> = [
   { token: 'cream', floor: AAA_NORMAL },

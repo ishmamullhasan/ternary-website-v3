@@ -45,12 +45,13 @@ is the lightest, so it yields the lowest ratio. Always check against it, not aga
 Current state (all verified by `tests/int/contrast.int.spec.ts`, which fails the build if a token
 regresses):
 
-| Token                           | Floor    | Note                                                                                                                   |
-| ------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `--color-cream`, `--color-body` | AAA 7:1  | Pass comfortably (11–18:1)                                                                                             |
-| `--color-subtle` `#8a8a86`      | AA 4.5:1 | **Documented AAA exception.** 7:1 needs `#ababa5`, which collapses it into `--color-body` and destroys the muted tier. |
-| `text-cream/70`                 | AAA 7:1  | Lowest opacity step allowed for real text                                                                              |
-| `text-cream/50`, `/60`          | —        | **Banned for text.** `/60` is 6.13:1 on badge — AA but not AAA.                                                        |
+| Token                      | Floor    | Note                                                                                                                   |
+| -------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `--color-cream`            | AAA 7:1  | Passes comfortably (11–18:1)                                                                                           |
+| `--color-body` `#aaaaaa`   | AAA 7:1  | **At the floor** — 7.01:1 on `--color-badge`. Lightening any background token needs a re-check against the guard.      |
+| `--color-subtle` `#8a8a86` | AA 4.5:1 | **Documented AAA exception.** 7:1 needs `#ababa5`, which collapses it into `--color-body` and destroys the muted tier. |
+| `text-cream/70`            | AAA 7:1  | Lowest opacity step allowed for real text                                                                              |
+| `text-cream/50`, `/60`     | —        | **Banned for text.** `/60` is 6.13:1 on badge — AA but not AAA.                                                        |
 
 **Decorative `aria-hidden` icons are exempt from contrast requirements entirely.** Do not "fix"
 their colour. `MegaMenuOverlay.tsx` and `header.tsx` each have an `aria-hidden` chevron at a low

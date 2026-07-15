@@ -2,8 +2,8 @@ import type { CollectionConfig } from 'payload'
 
 import { CrossIndustryPatterns } from '@/blocks/CrossIndustryPatterns/config'
 import { Cta } from '@/blocks/Cta/config'
+import { Hero } from '@/blocks/Hero/config'
 import { IndustriesDetails } from '@/blocks/IndustriesDetails/config'
-import { IndustriesHero } from '@/blocks/IndustriesHero/config'
 import { IndustriesSection } from '@/blocks/IndustriesSection/config'
 import { IndustryPanels } from '@/blocks/IndustryPanels/config'
 import { RegulatoryPosture } from '@/blocks/RegulatoryPosture/config'
@@ -29,7 +29,7 @@ const industry: CollectionConfig = {
       label: 'Layout',
       type: 'blocks',
       blocks: [
-        IndustriesHero,
+        Hero,
         IndustriesSection,
         IndustriesDetails,
         IndustryPanels,

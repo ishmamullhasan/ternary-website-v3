@@ -322,7 +322,7 @@ export default function Footer({ footerData }: FooterProps) {
         <div className="flex flex-col gap-6">
           {/* Social icons: 44px squares (12px pad + 20px glyph), white/10 fill, 5px radius, 12px gap */}
           {socials.length > 0 && (
-            <nav className="flex flex-wrap gap-3" aria-label="Social media">
+            <nav className="flex flex-wrap justify-center gap-3 lg:justify-start" aria-label="Social media">
               {socials.map((s, idx) => (
                 <Link
                   href={s.link || '#'}
@@ -366,25 +366,26 @@ export default function Footer({ footerData }: FooterProps) {
           </span>
         </div>
 
-        {/* Partner badges — white pills (168px, drop shadow) each wrapping an 88×44 logo, optional link. */}
+        {/* Partner badges — white circular pills each wrapping a logo, optional link. Sized down and
+            kept on a single line (flex-nowrap) so the row never breaks onto a second line. */}
         {partners.length > 0 && (
-          <div className="flex flex-wrap items-center gap-6">
+          <div className="flex flex-nowrap items-center justify-center gap-3 lg:justify-start">
             {partners.map((partner, idx) => {
               const partnerLogo = getLogoUrl(partner?.logo)
               const partnerName = partner?.name?.trim() || `Partner ${idx + 1}`
               const badge = partnerLogo ? (
-                <span className="block size-[120px] overflow-hidden rounded-full shadow-[0px_8px_12px_rgba(0,0,0,0.12)] lg:size-[168px]">
+                <span className="block size-[60px] shrink-0 overflow-hidden rounded-full shadow-[0px_8px_12px_rgba(0,0,0,0.12)] lg:size-[80px]">
                   <Image
                     src={partnerLogo}
-                    width={168}
-                    height={168}
+                    width={96}
+                    height={96}
                     alt={partnerName}
                     className="size-full object-cover"
                   />
                 </span>
               ) : (
-                <span className="flex size-[120px] items-center justify-center overflow-hidden rounded-full bg-white p-[10px] shadow-[0px_8px_12px_rgba(0,0,0,0.12)] lg:size-[168px]">
-                  <span className="text-center text-[14px] font-medium leading-[1.15] tracking-[-0.05em] text-[#050505]">
+                <span className="flex size-[60px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-white p-2 shadow-[0px_8px_12px_rgba(0,0,0,0.12)] lg:size-[80px]">
+                  <span className="text-center text-[10px] font-medium leading-[1.15] tracking-[-0.05em] text-[#050505]">
                     {partnerName}
                   </span>
                 </span>

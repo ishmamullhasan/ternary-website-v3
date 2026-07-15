@@ -196,6 +196,7 @@ export interface Page {
   slug: string;
   layout?:
     | (
+        | HeroBlock
         | HeroFeaturedBlock
         | JobsBlockType
         | IndustriesSectionBlock
@@ -217,12 +218,11 @@ export interface Page {
         | ContactRoutesBlock
         | ContactOfficesBlock
         | ContactFormBlock
-        | StoriesHeroBlock
         | FeatureCaseStudyBlock
         | StoriesArchiveBlock
+        | InsightsListBlock
         | CategoryLandingBlock
         | SubscribeBlock
-        | IndustriesHeroBlock
         | IndustryListBlock
         | IndustriesDetailsBlock
         | IndustryPanelsBlock
@@ -231,7 +231,6 @@ export interface Page {
         | SolutionsHeroBlock
         | SolutionFeatureBlock
         | SolutionsEngageBlock
-        | AboutHeroBlock
         | AboutFundingStoryBlock
         | AboutIntroBlock
         | AboutThesisBlock
@@ -276,6 +275,31 @@ export interface Page {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock".
+ */
+export interface HeroBlock {
+  heading?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hero';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -990,7 +1014,7 @@ export interface Industry {
   } | null;
   layout?:
     | (
-        | IndustriesHeroBlock
+        | HeroBlock
         | IndustriesSectionBlock
         | IndustriesDetailsBlock
         | IndustryPanelsBlock
@@ -1018,31 +1042,6 @@ export interface Industry {
   };
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IndustriesHeroBlock".
- */
-export interface IndustriesHeroBlock {
-  heading?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'industriesHero';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2692,31 +2691,6 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "StoriesHeroBlock".
- */
-export interface StoriesHeroBlock {
-  heading?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'storiesHero';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FeatureCaseStudyBlock".
  */
 export interface FeatureCaseStudyBlock {
@@ -2810,6 +2784,35 @@ export interface StoriesArchiveBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'storiesArchive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InsightsListBlock".
+ */
+export interface InsightsListBlock {
+  heading?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Insights shown in the grid, in order. Every fifth card widens to a two-column accent.
+   */
+  items?: (string | Insight)[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'insightsList';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3239,31 +3242,6 @@ export interface SolutionsEngageBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'solutionsEngage';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "AboutHeroBlock".
- */
-export interface AboutHeroBlock {
-  heading?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'aboutHero';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4331,6 +4309,7 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        hero?: T | HeroBlockSelect<T>;
         heroFeatured?: T | HeroFeaturedBlockSelect<T>;
         jobsBlock?: T | JobsBlockTypeSelect<T>;
         industriesSection?: T | IndustriesSectionBlockSelect<T>;
@@ -4352,12 +4331,11 @@ export interface PagesSelect<T extends boolean = true> {
         contactRoutes?: T | ContactRoutesBlockSelect<T>;
         contactOffices?: T | ContactOfficesBlockSelect<T>;
         contactForm?: T | ContactFormBlockSelect<T>;
-        storiesHero?: T | StoriesHeroBlockSelect<T>;
         featureCaseStudy?: T | FeatureCaseStudyBlockSelect<T>;
         storiesArchive?: T | StoriesArchiveBlockSelect<T>;
+        insightsList?: T | InsightsListBlockSelect<T>;
         categoryLanding?: T | CategoryLandingBlockSelect<T>;
         subscribe?: T | SubscribeBlockSelect<T>;
-        industriesHero?: T | IndustriesHeroBlockSelect<T>;
         industryList?: T | IndustryListBlockSelect<T>;
         industriesDetails?: T | IndustriesDetailsBlockSelect<T>;
         industryPanels?: T | IndustryPanelsBlockSelect<T>;
@@ -4366,7 +4344,6 @@ export interface PagesSelect<T extends boolean = true> {
         solutionsHero?: T | SolutionsHeroBlockSelect<T>;
         solutionFeature?: T | SolutionFeatureBlockSelect<T>;
         solutionsEngage?: T | SolutionsEngageBlockSelect<T>;
-        aboutHero?: T | AboutHeroBlockSelect<T>;
         aboutFundingStory?: T | AboutFundingStoryBlockSelect<T>;
         aboutIntro?: T | AboutIntroBlockSelect<T>;
         aboutThesis?: T | AboutThesisBlockSelect<T>;
@@ -4403,6 +4380,16 @@ export interface PagesSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock_select".
+ */
+export interface HeroBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -4747,16 +4734,6 @@ export interface ContactFormBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "StoriesHeroBlock_select".
- */
-export interface StoriesHeroBlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "FeatureCaseStudyBlock_select".
  */
 export interface FeatureCaseStudyBlockSelect<T extends boolean = true> {
@@ -4792,6 +4769,17 @@ export interface StoriesArchiveBlockSelect<T extends boolean = true> {
   description?: T;
   items?: T;
   pressRelease?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InsightsListBlock_select".
+ */
+export interface InsightsListBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  items?: T;
   id?: T;
   blockName?: T;
 }
@@ -4848,16 +4836,6 @@ export interface SubscribeBlockSelect<T extends boolean = true> {
         readTimeLabel?: T;
         backgroundImage?: T;
       };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "IndustriesHeroBlock_select".
- */
-export interface IndustriesHeroBlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
   id?: T;
   blockName?: T;
 }
@@ -5148,16 +5126,6 @@ export interface SolutionsEngageBlockSelect<T extends boolean = true> {
         idealFor?: T;
         id?: T;
       };
-  id?: T;
-  blockName?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "AboutHeroBlock_select".
- */
-export interface AboutHeroBlockSelect<T extends boolean = true> {
-  heading?: T;
-  description?: T;
   id?: T;
   blockName?: T;
 }
@@ -5949,7 +5917,7 @@ export interface IndustrySelect<T extends boolean = true> {
   layout?:
     | T
     | {
-        industriesHero?: T | IndustriesHeroBlockSelect<T>;
+        hero?: T | HeroBlockSelect<T>;
         industriesSection?: T | IndustriesSectionBlockSelect<T>;
         industriesDetails?: T | IndustriesDetailsBlockSelect<T>;
         industryPanels?: T | IndustryPanelsBlockSelect<T>;

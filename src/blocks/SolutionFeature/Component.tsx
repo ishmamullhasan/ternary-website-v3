@@ -408,7 +408,11 @@ export function SolutionFeatureComponent(props: SolutionFeatureBlock): JSX.Eleme
   const widget = props?.widget ?? 'none'
 
   return (
-    <ColumnSection mainSide={props?.mainSide === 'right' ? 'right' : 'left'} aside={<FeaturePanel block={props} />}>
+    <ColumnSection
+      mainSide={props?.mainSide === 'right' ? 'right' : 'left'}
+      aside={<FeaturePanel block={props} />}
+      className="py-[72px]"
+    >
       {/* Header — rendered here (not via ColumnSection) for correct eyebrow scale, eggshell heading and Inter labels. */}
       <Motion
         tag="div"

@@ -124,6 +124,46 @@
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 02 — the cursor IS the input probe. A tight bright spot rides the pointer and drags the net's
+   activation with it (the neurons you point at fire), and a probe dot tracks the pointer exactly.
+   Both transition fast — ~0.09s — so they read as direct control, not the slower parallax float. */
+.cap-hot {
+  opacity: var(--cap-on);
+  transform: translate(var(--cap-px), var(--cap-py));
+  transition:
+    opacity 0.35s ease,
+    transform 0.09s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.cap-probe {
+  opacity: var(--cap-on);
+  transform: translate(var(--cap-px), var(--cap-py));
+  transition:
+    opacity 0.3s ease,
+    transform 0.08s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.cap-probe-ring {
+  fill: none;
+  stroke: var(--cap-hi);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: capProbe 1.6s ease-out infinite;
+}
+
+@keyframes capProbe {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+
 /* 04 — the scope line IS the cursor, and the trace's amplitude answers to the pointer's height. */
 .cap-scope {
   transform: translateX(calc(var(--cap-px) - 120px));

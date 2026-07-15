@@ -66,7 +66,9 @@ export default function ColumnSection({
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
       >
-        <div className="grid lg:grid-cols-2 gap-4 items-start lg:items-stretch">
+        {/* 32px gutter between the two columns at lg (Figma 1468:4251: left ends 732, right starts 764);
+            tighter 16px vertical gap while stacked on mobile. */}
+        <div className="grid lg:grid-cols-2 gap-4 lg:gap-8 items-start lg:items-stretch">
           <div className={primaryColClass}>
             {headerBlock}
             {children}

@@ -1,14 +1,16 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import type { StoriesHeroBlock } from '@/payload-types'
+import type { HeroBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
-export const StoriesHeroComponent = (data: StoriesHeroBlock): JSX.Element => {
+export const HeroComponent = (data: HeroBlock): JSX.Element => {
+  // Top padding trimmed on lg so the gap above the title is ~2× the section gap below it, instead
+  // of the container's pt-40 stacking on the hero's own top padding into an oversized band.
   return (
-    <section className="w-full py-12 lg:py-[72px]">
-      <div className="mx-auto flex max-w-[1288px] flex-col items-center gap-6 text-center">
+    <section className="w-full py-12 lg:pb-[72px] lg:pt-0">
+      <div className="mx-auto flex max-w-[1288px] flex-col items-center gap-4 text-center">
         <Motion
           tag="h1"
           initial={{ opacity: 0, y: 16 }}
@@ -37,4 +39,4 @@ export const StoriesHeroComponent = (data: StoriesHeroBlock): JSX.Element => {
   )
 }
 
-export default StoriesHeroComponent
+export default HeroComponent

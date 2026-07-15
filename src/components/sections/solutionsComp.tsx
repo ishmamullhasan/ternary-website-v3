@@ -23,33 +23,16 @@ const motionGridItemProps = {
   transition: { duration: 0.4, ease: 'easeOut' as const },
 }
 
-// Single solution card — shared by the sm+ grid and the mobile carousel. Two layouts share one DOM
-// via flex `order` (see the grid comment below); the reflow lives inside the card so it works in both.
-function SolutionCard({ item, index }: { item: Solution; index: number }): JSX.Element {
+// Single solution card — shared by the sm+ grid and the mobile carousel. The whole card is the link
+// (was the "Learn More" link). No resting background; hover fills with bg-ink. Title above excerpt.
+// Keyboard focus uses the global :focus-visible cream outline (globals.css) — no ring needed here.
+function SolutionCard({ item }: { item: Solution }): JSX.Element {
   return (
-    <div className="flex h-full flex-col">
-      {/* Mobile-only separator between items (skipped on the first). Cream line (Figma). */}
-      {index > 0 && <hr className="order-1 mb-4 border-cream lg:hidden" />}
+    <Link href="/solutions" className="flex h-full flex-col rounded-md p-4 transition-colors duration-200 hover:bg-ink">
+      <h3 className="font-display text-2xl font-medium text-cream lg:mt-2 lg:text-lg">{item.title}</h3>
 
-      <h3 className="order-2 font-display text-xl font-medium text-cream lg:order-3 lg:mt-2 lg:text-base">
-        {item.title}
-      </h3>
-
-      {item.excerpts && (
-        <p className="order-3 mt-3 text-base leading-[1.15] text-body lg:order-1 lg:mt-0 lg:text-sm">{item.excerpts}</p>
-      )}
-
-      {/* Desktop-only cream divider directly under the excerpt (columns are top-aligned). */}
-      <hr className="order-4 hidden border-cream lg:order-2 lg:mt-2 lg:block" />
-
-      {/* Plain cream text link — no arrow (Figma 890:7313). */}
-      <Link
-        href="/solutions"
-        className="order-5 mt-3 inline-flex w-fit items-center text-sm font-medium text-cream transition-opacity hover:opacity-70 lg:order-4 lg:mt-2"
-      >
-        Learn More
-      </Link>
-    </div>
+      {item.excerpts && <p className="mt-3 text-base leading-[1.15] text-body lg:mt-2 lg:text-sm">{item.excerpts}</p>}
+    </Link>
   )
 }
 
@@ -87,14 +70,11 @@ export default function SolutionsComp({ heading, description, image, items }: So
       </Motion>
 
       <div className="w-full">
-        {/* Two layouts share one DOM via flex `order`. Mobile (Figma 888:4122): title → excerpt →
-            Learn More, with a full-width divider BETWEEN items. Desktop (Figma 339:8087): excerpt →
-            divider → title → Learn More, each column top-aligned with a uniform 8px gap (NOT pinned
-            to the bottom — the divider floats directly under each excerpt). */}
+        {/* Title above excerpt, then Learn More — same order in both layouts. */}
         {/* Mobile: horizontal snap carousel with pagination dots. */}
         <MobileCarousel slideClassName="w-[280px]">
           {solutions.map((item, index) => (
-            <SolutionCard key={item.id ?? index} item={item} index={index} />
+            <SolutionCard key={item.id ?? index} item={item} />
           ))}
         </MobileCarousel>
 
@@ -112,7 +92,7 @@ export default function SolutionsComp({ heading, description, image, items }: So
                   delay: index * 0.05,
                 }}
               >
-                <SolutionCard item={item} index={index} />
+                <SolutionCard item={item} />
               </Motion>
             )
           })}

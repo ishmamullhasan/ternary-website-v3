@@ -7,7 +7,6 @@ import Motion from '@/components/animation/motion'
 import { AboutApproachComponent } from './AboutApproach/Component'
 import { AboutBeliefsComponent } from './AboutBeliefs/Component'
 import { AboutFundingStoryComponent } from './AboutFundingStory/Component'
-import { AboutHeroComponent } from './AboutHero/Component'
 import { AboutIntroComponent } from './AboutIntro/Component'
 import { AboutLeadershipComponent } from './AboutLeadership/Component'
 import { AboutProofOfScaleComponent } from './AboutProofOfScale/Component'
@@ -27,6 +26,7 @@ import { ContactStatsComponent } from './ContactStats/Component'
 import { CrossIndustryPatternsComponent } from './CrossIndustryPatterns/Component'
 import { CtaBlockComponent } from './Cta/Component'
 import { FeatureCaseStudyComponent } from './FeatureCaseStudy/Component'
+import { HeroComponent } from './Hero/Component'
 import { HeroFeaturedComponent } from './HeroFeatured/Component'
 import {
   AboutSectionComponent,
@@ -40,10 +40,10 @@ import {
   TeamSectionComponent,
 } from './homeSections/Component'
 import { IndustriesDetailsComponent } from './IndustriesDetails/Component'
-import { IndustriesHeroComponent } from './IndustriesHero/Component'
 import { IndustriesSectionComponent } from './IndustriesSection/Component'
 import { IndustryListComponent } from './IndustryList/Component'
 import { IndustryPanelsComponent } from './IndustryPanels/Component'
+import { InsightsListComponent } from './InsightsList/Component'
 import { JobsBlockComponent } from './Jobs/Component'
 import { QualityBarComponent } from './QualityBar/Component'
 import { RegulatoryPostureComponent } from './RegulatoryPosture/Component'
@@ -53,7 +53,6 @@ import { SolutionFeatureComponent } from './SolutionFeature/Component'
 import { SolutionsEngageComponent } from './SolutionsEngage/Component'
 import { SolutionsHeroComponent } from './SolutionsHero/Component'
 import { StoriesArchiveComponent } from './StoriesArchive/Component'
-import { StoriesHeroComponent } from './StoriesHero/Component'
 import { SubscribeComponent } from './Subscribe/Component'
 
 type BlockType = NonNullable<Page['layout']>[number]
@@ -70,6 +69,7 @@ const motionSectionProps = {
 // verbatim from the monolith Components). Render them directly so RenderBlocks does not add a
 // second section/fade wrapper around them — keeping the rendered structure identical.
 const SELF_WRAPPED_BLOCKS = new Set<string>([
+  'hero',
   'heroFeatured',
   'industriesSection',
   'scalesHero',
@@ -82,12 +82,11 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
   'contactRoutes',
   'contactOffices',
   'contactForm',
-  'storiesHero',
   'featureCaseStudy',
   'storiesArchive',
+  'insightsList',
   'categoryLanding',
   'subscribe',
-  'industriesHero',
   'industryList',
   'industriesDetails',
   'industryPanels',
@@ -96,7 +95,6 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
   'solutionsHero',
   'solutionFeature',
   'solutionsEngage',
-  'aboutHero',
   'aboutFundingStory',
   'aboutIntro',
   'aboutThesis',
@@ -119,6 +117,8 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
  */
 function renderBlock(block: BlockType): JSX.Element | null {
   switch (block.blockType) {
+    case 'hero':
+      return <HeroComponent {...block} />
     case 'heroFeatured':
       return <HeroFeaturedComponent {...block} />
     case 'industriesSection':
@@ -164,18 +164,16 @@ function renderBlock(block: BlockType): JSX.Element | null {
       return <ContactOfficesComponent {...block} />
     case 'contactForm':
       return <ContactFormComponent {...block} />
-    case 'storiesHero':
-      return <StoriesHeroComponent {...block} />
     case 'featureCaseStudy':
       return <FeatureCaseStudyComponent {...block} />
     case 'storiesArchive':
       return <StoriesArchiveComponent {...block} />
+    case 'insightsList':
+      return <InsightsListComponent {...block} />
     case 'categoryLanding':
       return <CategoryLandingComponent {...block} />
     case 'subscribe':
       return <SubscribeComponent {...block} />
-    case 'industriesHero':
-      return <IndustriesHeroComponent {...block} />
     case 'industryList':
       return <IndustryListComponent {...block} />
     case 'industriesDetails':
@@ -192,8 +190,6 @@ function renderBlock(block: BlockType): JSX.Element | null {
       return <SolutionFeatureComponent {...block} />
     case 'solutionsEngage':
       return <SolutionsEngageComponent {...block} />
-    case 'aboutHero':
-      return <AboutHeroComponent {...block} />
     case 'aboutFundingStory':
       return <AboutFundingStoryComponent {...block} />
     case 'aboutIntro':

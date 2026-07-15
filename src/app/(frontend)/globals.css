@@ -223,7 +223,10 @@ html[data-a11y-links='underline'] footer a {
   --color-card: #1b1a17;
   --color-cream: #f4f3ec;
   --color-cream-hover: #e8e7df;
-  --color-body: #d5d5d5;
+  /* Description / body copy across every page. #aaaaaa sits right at the AAA floor: 7.01:1 on the
+     lightest surface (--color-badge #202020). It clears SC 1.4.6 but has almost no headroom, so any
+     change that lightens a background token must be re-checked against tests/int/contrast.int.spec.ts. */
+  --color-body: #aaaaaa;
   /* Was #757571 — 4.41:1 on --color-page and 3.52:1 on --color-badge, below the 4.5:1 WCAG AA
      floor for normal text (SC 1.4.3). It styles 11px uppercase eyebrow labels, so the large-text
      exemption does not apply. #8a8a86 clears AA on every surface (5.65:1 page, 4.51:1 badge) with

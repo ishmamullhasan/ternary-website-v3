@@ -7,9 +7,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 
-// Short badge (shown on the circle) + full endonym (shown in the popover). Endonyms — each language
-// names itself — read better than translated names in a switcher.
-const LOCALE_SHORT: Record<Locale, string> = { en: 'EN', bn: 'বাং' }
+// Full endonym (shown in the popover). Endonyms — each language names itself — read better than
+// translated names in a switcher. The circle itself is icon-only; the active locale is conveyed by
+// the button's aria-label and the checked entry in the popover.
 const LOCALE_NAME: Record<Locale, string> = { en: 'English', bn: 'বাংলা' }
 
 /**
@@ -90,13 +90,12 @@ export default function LocaleFab() {
         aria-label={`Change language — current: ${LOCALE_NAME[current]}`}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'glass pointer-events-auto flex size-12 items-center justify-center gap-1 rounded-full text-cream',
+          'glass pointer-events-auto flex size-12 items-center justify-center rounded-full text-cream',
           'transition-transform duration-200 motion-safe:hover:scale-105 active:scale-95 sm:size-14',
           open && 'scale-105',
         )}
       >
-        <Languages aria-hidden className="size-4 text-cream/70 sm:size-[18px]" />
-        <span className="text-[13px] font-semibold leading-none tracking-normal">{LOCALE_SHORT[current]}</span>
+        <Languages aria-hidden className="size-5 sm:size-6" />
       </button>
     </div>
   )
