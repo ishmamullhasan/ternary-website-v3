@@ -49,12 +49,7 @@ const ROWS: { label: string; cells: Cell[] }[] = [
   },
   {
     label: 'Roadmap owner',
-    cells: [
-      { node: 'Shared' },
-      { node: 'Shared' },
-      { node: 'You' },
-      { node: 'We propose, you approve' },
-    ],
+    cells: [{ node: 'Shared' }, { node: 'Shared' }, { node: 'You' }, { node: 'We propose, you approve' }],
   },
   {
     label: 'What we hand over',
@@ -71,19 +66,19 @@ const ROWS: { label: string; cells: Cell[] }[] = [
       {
         node: (
           <>
-            <b>Frame™</b> or <b>Flow™</b>
+            <b>Frame℠</b> or <b>Flow℠</b>
           </>
         ),
       },
       {
         node: (
           <>
-            <b>Flow™</b> or <b>Orchestra™</b>
+            <b>Flow℠</b> or <b>Orchestra℠</b>
           </>
         ),
       },
-      { node: <b>Orchestra™</b> },
-      { node: <b>Flow™</b> },
+      { node: <b>Orchestra℠</b> },
+      { node: <b>Flow℠</b> },
     ],
   },
 ]
@@ -105,12 +100,7 @@ export default function SolutionsCompare() {
           <tr>
             <th></th>
             {COLUMNS.map((col, i) => (
-              <th
-                key={col.n}
-                className={cellClass(i + 1)}
-                data-col={i + 1}
-                onMouseEnter={() => setHotCol(i + 1)}
-              >
+              <th key={col.n} className={cellClass(i + 1)} data-col={i + 1} onMouseEnter={() => setHotCol(i + 1)}>
                 <span className="thn">{col.n}</span>
                 {col.name}
               </th>

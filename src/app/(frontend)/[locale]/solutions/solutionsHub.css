@@ -567,12 +567,47 @@ html[data-a11y-motion='reduce'] .hub .rv.big {
   margin-top: 40px;
 }
 
+/* Quiet single-line careers note between the CTA and the footer. No card, no
+   heading — deliberately the lightest element on the page. Uses --t2 rather
+   than --t3 because this is real body copy, and --t3 (--color-subtle) is an
+   AA-only exception reserved for the muted label tier. */
+.hub .careers-strip {
+  padding: 0 0 clamp(60px, 8vw, 100px);
+  text-align: center;
+}
+.hub .careers-strip p {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--t2);
+  margin: 0;
+}
+.hub .careers-strip a {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  color: var(--color-cream);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid var(--brd2);
+}
+.hub .careers-strip a:hover {
+  border-bottom-color: var(--color-cream);
+}
+.hub .careers-strip a i {
+  font-style: normal;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+.hub .careers-strip a:hover i {
+  transform: translateX(3px);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .hub .careers-strip a:hover i,
   .hub .model:hover,
   .hub .sol:hover * {
     transform: none;
   }
 }
+html[data-a11y-motion='reduce'] .hub .careers-strip a:hover i,
 html[data-a11y-motion='reduce'] .hub .model:hover,
 html[data-a11y-motion='reduce'] .hub .sol:hover * {
   transform: none;

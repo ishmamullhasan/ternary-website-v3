@@ -9,14 +9,10 @@ import { notFound } from 'next/navigation'
 import type { CSSProperties } from 'react'
 
 import '@/components/hub/hub.css'
-import './solutionsHub.css'
 import SolutionsCompare from './SolutionsCompare'
+import './solutionsHub.css'
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   if (!asTypedLocale(locale)) return {}
   return {
@@ -28,20 +24,20 @@ export async function generateMetadata({
 
 // At-a-glance index rows — anchor to the four solution scenes below.
 const GLANCE = [
-  { id: 's1', n: '01', name: 'Product Development', one: 'Take an idea to a real product, then scale it.' },
+  { id: 's1', n: '01', name: 'Product Development', one: 'From rough idea to a product your users depend on.' },
   {
     id: 's2',
     n: '02',
     name: 'Enterprise Transformation',
-    one: 'Upgrade an aging system — or take a manual one digital — without stopping the business.',
+    one: 'Modernize the system holding you back — without pausing the business.',
   },
   {
     id: 's3',
     n: '03',
     name: 'Engineering Augmentation',
-    one: 'Senior engineers inside your team and your process.',
+    one: 'Senior engineers who join your team, not just your headcount.',
   },
-  { id: 's4', n: '04', name: 'Managed Systems', one: 'We run what we build.' },
+  { id: 's4', n: '04', name: 'Managed Systems', one: 'We built it. We’ll keep it running.' },
 ]
 
 export default async function SolutionsHubPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -54,13 +50,13 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
       <section className="hero">
         <HeroNodeField className="hero-net" />
         <div className="wrap">
-          <Reveal className="eyebrow">Solutions / Four ways in</Reveal>
+          <Reveal className="eyebrow">Solutions — Four ways in</Reveal>
           <Reveal className="big" i={1}>
-            <Heading level={1}>Built to outlast.</Heading>
+            <Heading level={1}>Whatever stage you&rsquo;re at, we plug in.</Heading>
           </Reveal>
           <Reveal as="p" className="hero-sub" i={2}>
-            Four ways to work with us — build something new, modernize what you have, extend your team, or hand us the
-            keys to production.
+            Launch something new. Modernize the system you&rsquo;ve outgrown. Borrow senior engineers. Or hand us the
+            keys and let us run it. Four ways to work with Ternary — one engineering standard behind all of them.
           </Reveal>
         </div>
       </section>
@@ -71,10 +67,11 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
           <Reveal className="sec-head">
             <div>
               <span className="eyebrow">At a glance</span>
-              <Heading level={2}>Four doors in</Heading>
+              <Heading level={2}>Find your starting point</Heading>
             </div>
             <p className="sec-sub">
-              Pick the shape that fits where you are. Each opens onto the same standard of engineering.
+              You don&rsquo;t need to know what to call it. Tell us where you are and we&rsquo;ll tell you which door to
+              walk through.
             </p>
           </Reveal>
           <Reveal className="glance" i={1}>
@@ -104,36 +101,70 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
             </Reveal>
             <Reveal className="big" i={1}>
               <Heading level={2} className="sol-name">
-                Take an idea to a real product.
+                Turn the idea into a product.
               </Heading>
             </Reveal>
             <Reveal className="sol-panel" i={2} aria-hidden="true">
               <svg className="g" viewBox="0 0 360 240" fill="none">
                 <rect className="st" x="150" y="90" width="60" height="60" rx="3" opacity=".26" />
-                <rect className="st m-piece" style={{ '--dx': '-16px', '--dy': '-14px' } as CSSProperties} x="152" y="92" width="26" height="26" rx="2" />
-                <rect className="ac m-piece" style={{ '--dx': '16px', '--dy': '-14px' } as CSSProperties} x="182" y="92" width="26" height="26" rx="2" />
-                <rect className="st m-piece" style={{ '--dx': '-16px', '--dy': '14px' } as CSSProperties} x="152" y="122" width="26" height="26" rx="2" />
-                <rect className="st m-piece" style={{ '--dx': '16px', '--dy': '14px' } as CSSProperties} x="182" y="122" width="26" height="26" rx="2" />
+                <rect
+                  className="st m-piece"
+                  style={{ '--dx': '-16px', '--dy': '-14px' } as CSSProperties}
+                  x="152"
+                  y="92"
+                  width="26"
+                  height="26"
+                  rx="2"
+                />
+                <rect
+                  className="ac m-piece"
+                  style={{ '--dx': '16px', '--dy': '-14px' } as CSSProperties}
+                  x="182"
+                  y="92"
+                  width="26"
+                  height="26"
+                  rx="2"
+                />
+                <rect
+                  className="st m-piece"
+                  style={{ '--dx': '-16px', '--dy': '14px' } as CSSProperties}
+                  x="152"
+                  y="122"
+                  width="26"
+                  height="26"
+                  rx="2"
+                />
+                <rect
+                  className="st m-piece"
+                  style={{ '--dx': '16px', '--dy': '14px' } as CSSProperties}
+                  x="182"
+                  y="122"
+                  width="26"
+                  height="26"
+                  rx="2"
+                />
               </svg>
             </Reveal>
           </div>
           <div className="facts">
             <Reveal className="fact">
               <Heading level={3}>Who it&rsquo;s for</Heading>
-              <p>You have something to build and no team — or a team that&rsquo;s already full.</p>
+              <p>
+                Founders with a clear vision and no engineering team yet — or a team already stretched past its limit.
+              </p>
             </Reveal>
             <Reveal className="fact" i={1}>
               <Heading level={3}>What we do</Heading>
               <p>
-                We take it from a rough idea to a launched system. Discovery, architecture, design, build, release. One
-                senior team, shipping continuously, with you in the room.
+                We take you from concept to launch: discovery, architecture, design, build, release. One senior team,
+                shipping every week, in the room with you.
               </p>
             </Reveal>
             <Reveal className="fact get" i={2}>
               <Heading level={3}>What you get</Heading>
               <p>
-                A launched product with the pipelines, tests, and documentation to grow on — and the team that built it,
-                still on call.
+                A live product with the tests, pipelines, and documentation clean enough for your own team to take over
+                on day one.
               </p>
             </Reveal>
             <Reveal className="fact proof" i={3}>
@@ -168,7 +199,10 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
             <Reveal className="sol-panel" i={2} aria-hidden="true">
               <svg className="g" viewBox="0 0 360 240" fill="none">
                 <g className="m-old">
-                  <path className="st" d="M120 70 H240 M120 120 H240 M120 170 H240 M150 60 V180 M180 60 V180 M210 60 V180" />
+                  <path
+                    className="st"
+                    d="M120 70 H240 M120 120 H240 M120 170 H240 M150 60 V180 M180 60 V180 M210 60 V180"
+                  />
                 </g>
                 <g className="m-new" transform="rotate(6 180 120)">
                   <path className="st" d="M124 76 H236 M124 120 H236 M124 164 H236 M156 66 V174 M186 66 V174" />
@@ -181,28 +215,26 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
             <Reveal className="fact">
               <Heading level={3}>Who it&rsquo;s for</Heading>
               <p>
-                You&rsquo;re running something critical that&rsquo;s getting expensive, fragile, or impossible to hire
-                for. Or the &ldquo;system&rdquo; is still paper, phone calls, and spreadsheets — and the business has
-                outgrown it.
+                Teams running on something critical, expensive, and fragile — a legacy platform nobody wants to touch,
+                or a &ldquo;system&rdquo; that&rsquo;s really a stack of spreadsheets.
               </p>
             </Reveal>
             <Reveal className="fact" i={1}>
               <Heading level={3}>What we do</Heading>
               <p>
-                We map how the work actually happens today — in the old software or in the spreadsheets — then move it
-                across piece by piece. Sometimes that means replacing legacy systems. Sometimes it means building your
-                first real one. Either way, nothing switches off until its replacement has proven itself.
+                We map how the work actually happens today, then move it across piece by piece. Nothing gets switched
+                off until its replacement has earned it.
               </p>
             </Reveal>
             <Reveal className="fact get" i={2}>
               <Heading level={3}>What you get</Heading>
-              <p>New platform live. Old ways retired. Business uninterrupted.</p>
+              <p>A new platform live, the old one retired, and a business that never stopped running.</p>
             </Reveal>
             <Reveal className="fact proof" i={3}>
               <Heading level={3}>Proof</Heading>
               <p>
-                <span className="pf">FAROGL</span> — an oil and gas operation taken from manual workflows to one
-                governed ERP, in phases people actually adopted.{' '}
+                <span className="pf">FarOGL</span> — an oil and gas operation moved from manual workflows to a governed
+                ERP, adopted in phases.{' '}
                 <Link className="story" href="/case-studies">
                   Read the story <i aria-hidden="true">→</i>
                 </Link>
@@ -241,13 +273,13 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
           <div className="facts">
             <Reveal className="fact">
               <Heading level={3}>Who it&rsquo;s for</Heading>
-              <p>You know exactly what to build. You need more senior hands building it.</p>
+              <p>You know exactly what to build. You need experienced hands to build it faster.</p>
             </Reveal>
             <Reveal className="fact" i={1}>
               <Heading level={3}>What we do</Heading>
               <p>
-                We place experienced engineers inside your team — your process, your tooling, your rituals. Named
-                people, not rotating resources.
+                We place senior engineers inside your team — your process, your tooling, your rituals. Named people, not
+                a rotating bench.
               </p>
             </Reveal>
             <Reveal className="fact get" i={2}>
@@ -257,8 +289,8 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
             <Reveal className="fact proof" i={3}>
               <Heading level={3}>Proof</Heading>
               <p className="hold">
-                [ Named client, with written permission — or hold this slot until you have one. An empty proof line is
-                better than a vague one. ]
+                [ Named client, with permission — or hold this slot until you have one. An empty proof line is better
+                than a vague one. ]
               </p>
             </Reveal>
           </div>
@@ -305,8 +337,8 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
             <Reveal className="fact" i={1}>
               <Heading level={3}>What we do</Heading>
               <p>
-                Monitoring, patching, incident response — and the unglamorous roadmap of keeping software current, so it
-                never becomes next year&rsquo;s legacy problem.
+                Monitoring, patching, incident response — plus the unglamorous work of keeping software current, so
+                today&rsquo;s platform never becomes next year&rsquo;s legacy problem.
               </p>
             </Reveal>
             <Reveal className="fact get" i={2}>
@@ -332,17 +364,18 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
           <Reveal className="sec-head">
             <div>
               <span className="eyebrow">Engagement models</span>
-              <Heading level={2}>How the work is structured</Heading>
+              <Heading level={2}>Pick how you want to work</Heading>
             </div>
             <p className="sec-sub">
-              Three shapes of engagement. Every solution runs on one — or moves between them as the work changes.
+              Three shapes of engagement. Every solution runs on one — and you can move between them as the work
+              changes.
             </p>
           </Reveal>
           <div className="models">
             <Reveal className="model">
               <div className="mk">01</div>
               <Heading level={3}>
-                Frame<sup>™</sup>
+                Frame<sup>℠</sup>
               </Heading>
               <div className="tag">Fixed scope · timeline · price</div>
               <p>For work with a clear finish line.</p>
@@ -353,7 +386,7 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
             <Reveal className="model" i={1}>
               <div className="mk">02</div>
               <Heading level={3}>
-                Flow<sup>™</sup>
+                Flow<sup>℠</sup>
               </Heading>
               <div className="tag">Dedicated team · continuous</div>
               <p>For products that keep evolving.</p>
@@ -364,12 +397,12 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
             <Reveal className="model" i={2}>
               <div className="mk">03</div>
               <Heading level={3}>
-                Orchestra<sup>™</sup>
+                Orchestra<sup>℠</sup>
               </Heading>
               <div className="tag">Senior capacity · on demand</div>
-              <p>For teams that need depth without the headcount.</p>
+              <p>For teams that need real depth without the headcount.</p>
               <div className="ideal">
-                <b>Ideal for</b>Filling skill gaps, scaling delivery.
+                <b>Ideal for</b>Filling skill gaps, scaling delivery fast.
               </div>
             </Reveal>
           </div>
@@ -384,9 +417,7 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
               <span className="eyebrow">Compare</span>
               <Heading level={2}>Four columns. Six honest answers.</Heading>
             </div>
-            <p className="sec-sub">
-              No winner. Hover a column — the right one is whichever matches your situation.
-            </p>
+            <p className="sec-sub">No winner. Hover a column — the right one is whichever matches your situation.</p>
           </Reveal>
           <Reveal i={1}>
             <SolutionsCompare />
@@ -399,11 +430,11 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
         <div className="wrap">
           <Reveal className="eyebrow">Start here</Reveal>
           <Reveal i={1}>
-            <Heading level={2}>Still not sure which one you need?</Heading>
+            <Heading level={2}>Not sure which one you need?</Heading>
           </Reveal>
           <Reveal as="p" i={2}>
-            Neither are most people at this stage — that&rsquo;s our job, not yours. Tell us the problem. We&rsquo;ll
-            tell you the shape.
+            Most people aren&rsquo;t at this stage — and figuring that out is our job, not yours. Tell us the problem
+            and we&rsquo;ll tell you the shape.
           </Reveal>
           <Reveal className="btns" i={3}>
             <Link className="btn btn-primary" href="/contact">
@@ -412,6 +443,18 @@ export default async function SolutionsHubPage({ params }: { params: Promise<{ l
             </Link>
             <Link className="btn btn-ghost" href="/case-studies">
               See our work
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* CAREERS STRIP */}
+      <section className="careers-strip">
+        <div className="wrap">
+          <Reveal as="p">
+            Engineers: we&rsquo;re usually hiring.{' '}
+            <Link href="/careers">
+              See open roles <i aria-hidden="true">→</i>
             </Link>
           </Reveal>
         </div>
