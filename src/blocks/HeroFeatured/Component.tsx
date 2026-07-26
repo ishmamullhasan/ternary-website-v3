@@ -1,5 +1,4 @@
 import Link from '@/components/LocalizedLink'
-import LiquidHeadline from '@/components/animation/LiquidHeadline'
 import Motion from '@/components/animation/motion'
 import type { HeroFeaturedBlock, Insight, PressRelease, Story } from '@/payload-types'
 import type { JSX } from 'react'
@@ -101,10 +100,19 @@ export function HeroFeaturedComponent({ thesis, headline, items }: HeroFeaturedB
     <section className="w-full">
       <div className="flex flex-col items-center gap-6 pt-16 pb-4 text-center lg:pt-[72px]">
         {headlineLines.length > 0 && (
-          <LiquidHeadline
-            lines={headlineLines}
+          <Motion
+            tag="h1"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: EASE }}
             className="font-display text-[clamp(2rem,5vw,2.5rem)] font-medium leading-[1.15] text-cream"
-          />
+          >
+            {headlineLines.map((line, i) => (
+              <span key={i} className="block">
+                {line}
+              </span>
+            ))}
+          </Motion>
         )}
         {thesis && (
           <Motion

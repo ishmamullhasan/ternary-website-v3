@@ -1,4 +1,5 @@
 'use client'
+import LiquidText from '@/components/animation/LiquidText'
 import Motion from '@/components/animation/motion'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
@@ -306,17 +307,21 @@ export default function AboutComp({
                  Lexical converter nests output in a `.payload-richtext` div, so typography's
                  `.prose > :first-child` reset lands on that div and never reaches the heading —
                  leaving 128px of dead space above the title at the xl 64px size. */
-              <RichTextComp
-                content={content}
-                className="prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-4 xl:prose-p:mt-6 prose-p:mb-0 prose-p:text-base prose-p:text-body"
-              />
+              <LiquidText>
+                <RichTextComp
+                  content={content}
+                  className="prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-4 xl:prose-p:mt-6 prose-p:mb-0 prose-p:text-base prose-p:text-body"
+                />
+              </LiquidText>
             ) : (
               <>
                 {heading && (
-                  <RichTextComp
-                    content={heading as RichText}
-                    className="prose-p:mt-0 prose-p:mb-0 prose-p:text-2xl xl:prose-p:text-[64px] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
-                  />
+                  <LiquidText>
+                    <RichTextComp
+                      content={heading as RichText}
+                      className="prose-p:mt-0 prose-p:mb-0 prose-p:text-2xl xl:prose-p:text-[64px] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
+                    />
+                  </LiquidText>
                 )}
                 {description && (
                   <RichTextComp
