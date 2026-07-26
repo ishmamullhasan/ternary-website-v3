@@ -312,32 +312,41 @@ export default function Footer({ footerData }: FooterProps) {
         />
       </div>
 
-      {/* Design previews — direct links to the redesign hub mockups served statically from /public/hub.
-          Plain <a> (not LocalizedLink) so they resolve to the static HTML files, not a locale-prefixed
-          Next route. These are self-contained design explorations, intentionally in the warm theme. */}
+      {/* Design previews — quick links to the redesigned hub pages. The four named buttons now point
+          at the REAL redesigned routes (LocalizedLink, so they get locale-prefixed client nav); the
+          "All previews" button still opens the raw static mockup gallery under /public/hub, so it
+          stays a plain <a>. */}
       <div className="mt-12 flex flex-col gap-4">
         <span className="text-[13px] font-medium uppercase leading-[1.15] tracking-[0.12em] text-cream/60">
           Design previews
         </span>
         <div className="flex flex-wrap gap-3">
           {[
-            { label: 'Capabilities', href: '/hub/capabilities-hub-bold.html' },
-            { label: 'Solutions', href: '/hub/solutions-hub-bold.html' },
-            { label: 'Industries', href: '/hub/industries-hub-bold.html' },
-            { label: 'Scales', href: '/hub/scales-hub-iso.html' },
-            { label: 'All previews', href: '/hub/index.html' },
+            { label: 'Capabilities', href: '/capabilities' },
+            { label: 'Solutions', href: '/solutions' },
+            { label: 'Industries', href: '/industries' },
+            { label: 'Scales', href: '/scales' },
           ].map((item) => (
-            <a
+            <Link
               key={item.href}
               href={item.href}
               className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-2 text-[14px] font-medium leading-none tracking-[-0.03em] text-cream transition-colors duration-150 hover:border-cream/60 hover:bg-cream/5 focus-visible:border-cream/60 focus-visible:bg-cream/5"
             >
               {item.label}
               <span aria-hidden className="text-cream/50">
-                &#8599;
+                &#8594;
               </span>
-            </a>
+            </Link>
           ))}
+          <a
+            href="/hub/index.html"
+            className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-2 text-[14px] font-medium leading-none tracking-[-0.03em] text-cream transition-colors duration-150 hover:border-cream/60 hover:bg-cream/5 focus-visible:border-cream/60 focus-visible:bg-cream/5"
+          >
+            All previews
+            <span aria-hidden className="text-cream/50">
+              &#8599;
+            </span>
+          </a>
         </div>
       </div>
 

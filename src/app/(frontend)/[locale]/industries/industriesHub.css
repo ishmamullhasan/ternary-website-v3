@@ -1,52 +1,419 @@
-/* Industries hub — ambient hero field.
-   A thin neutral line-lattice that drifts slowly behind the headline. Decorative only
-   (aria-hidden), rendered in the brand neutral ramp at very low opacity so it never competes
-   with the type. The drift is a single transform on one group; the globals reduced-motion media
-   query already caps CSS animation, and this file re-states the guard for clarity. */
-.ih-ambient {
+/* Industries hub — page-specific layout. Ported from public/hub/industries-hub-bold.html and
+   re-skinned to the real token system (cream accent, no amber, no Geist Mono). Shared primitives
+   (eyebrow, reveal, graphic strokes/motion, buttons) live in components/hub/hub.css. Everything is
+   scoped under `.hub` so it stays contained. */
+
+/* HERO — oversized type over the ambient node-field. No 100vh grab: the layout already offsets the
+   floating header, so the hero fills the remaining viewport rather than a full one. */
+.hub .hero {
+  position: relative;
+  min-height: calc(100svh - 140px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(32px, 6vh, 72px) 0 clamp(48px, 7vh, 80px);
+  overflow: hidden;
+  border-bottom: 1px solid var(--brd);
+}
+.hub .hero-net {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.75;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 28%, #000 62%, #000 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, transparent 28%, #000 62%, #000 100%);
+  -webkit-mask-image: radial-gradient(120% 92% at 66% 46%, #000 26%, transparent 80%);
+  mask-image: radial-gradient(120% 92% at 66% 46%, #000 26%, transparent 80%);
 }
-.ih-ambient svg {
+.hub .hero .wrap {
+  position: relative;
+  z-index: 1;
+}
+.hub .hero h1 {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(3rem, 10vw, 7.5rem);
+  line-height: 0.98;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  margin: 26px 0;
+  max-width: 15ch;
+  text-wrap: balance;
+}
+.hub .hero-sub {
+  font-size: clamp(17px, 1.7vw, 21px);
+  color: var(--t2);
+  max-width: 56ch;
+  line-height: 1.6;
+}
+
+/* Section frame */
+.hub .sec-b {
+  padding: clamp(88px, 11vw, 150px) 0;
+  border-bottom: 1px solid var(--brd);
+}
+.hub .sec-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+.hub .sec-head h2 {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  margin-top: 16px;
+}
+.hub .sec-sub {
+  color: var(--t2);
+  max-width: 44ch;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* SECTOR INDEX — signature accordion. The proof line is always visible; a named client (cream) is
+   the star. Row titles are spans; the whole header is the button. */
+.hub .sectors {
+  border-top: 1px solid var(--brd2);
+}
+.hub .sector {
+  position: relative;
+  border-bottom: 1px solid var(--brd);
+}
+.hub .sector-head {
+  position: relative;
+  display: grid;
+  grid-template-columns: clamp(2.4ch, 5vw, 3.4ch) 1fr auto;
+  align-items: start;
+  gap: clamp(16px, 3vw, 42px);
+  width: 100%;
+  background: none;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  padding: clamp(24px, 3.4vw, 40px) 4px;
+  transition: background 0.4s var(--ease);
+}
+.hub .sector.open .sector-head {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent 72%);
+}
+.hub .sector-num {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  color: var(--t3);
+  padding-top: 0.55em;
+  transition: color 0.4s;
+}
+.hub .sector.open .sector-num {
+  color: var(--color-cream);
+}
+.hub .sector-mid {
+  min-width: 0;
+}
+.hub .sector-name {
+  display: block;
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(1.7rem, 4.4vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  transition: transform 0.5s var(--ease);
+}
+.hub .sector.open .sector-name {
+  transform: translateX(3px);
+}
+.hub .sector-proof {
+  margin-top: 14px;
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: baseline;
+  color: var(--t3);
+}
+.hub .sector-proof .lab {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11px;
+  color: var(--t3);
+  border: 1px solid var(--brd2);
+  border-radius: 2px;
+  padding: 3px 8px;
+}
+.hub .sector-proof .cli {
+  color: var(--color-cream);
+}
+.hub .sector-proof .none {
+  color: var(--dim);
+}
+.hub .sector-chev {
+  font-size: 20px;
+  color: var(--t3);
+  padding-top: 0.35em;
+  transition:
+    transform 0.5s var(--ease),
+    color 0.4s;
+}
+.hub .sector.open .sector-chev {
+  transform: rotate(90deg);
+  color: var(--color-cream);
+}
+
+.hub .sector-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.6s var(--ease);
+}
+.hub .sector.open .sector-body {
+  grid-template-rows: 1fr;
+}
+.hub .sector-body-in {
+  overflow: hidden;
+  min-height: 0;
+}
+.hub .sector-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  padding: 2px 4px clamp(30px, 4vw, 48px);
+  padding-left: calc(clamp(2.4ch, 5vw, 3.4ch) + clamp(16px, 3vw, 42px));
+}
+.hub .sector-desc {
+  color: var(--t2);
+  font-size: 16.5px;
+  line-height: 1.6;
+  max-width: 44ch;
+}
+.hub .sector-panel {
+  position: relative;
+  height: clamp(160px, 18vw, 210px);
+  border: 1px solid var(--brd);
+  border-radius: 4px;
+  overflow: hidden;
+  background: radial-gradient(120% 130% at 70% 8%, var(--accent-soft), transparent 58%), var(--panel);
+}
+.hub .sector-panel svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
-.ih-drift {
-  animation: ih-drift 28s ease-in-out infinite alternate;
-  transform-box: fill-box;
-  transform-origin: center;
+/* Pause a sector's idle graphic motion while it is collapsed. */
+.hub .sector:not(.open) .g * {
+  animation-play-state: paused;
 }
-.ih-pulse {
-  animation: ih-pulse 6s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-@keyframes ih-drift {
-  from {
-    transform: translate3d(0, 0, 0);
+@media (max-width: 820px) {
+  .hub .sector-head {
+    grid-template-columns: clamp(2.4ch, 8vw, 3.4ch) 1fr;
+    gap: 6px 16px;
   }
-  to {
-    transform: translate3d(-20px, -12px, 0);
+  .hub .sector-chev {
+    display: none;
+  }
+  .hub .sector-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding-left: 4px;
+  }
+  .hub .sector-panel {
+    order: -1;
+    height: 170px;
   }
 }
-@keyframes ih-pulse {
+
+/* Sector-glyph idle motion — page-specific animations (uniquely named so they never collide with
+   the shared graphic motion in hub.css). The `ac`/`acf` accent still resolves to cream. Reduced
+   motion is honoured by hub.css, which stops every `.hub .g *` animation. */
+@keyframes ig-bar {
   0%,
   100% {
-    opacity: 0.25;
+    transform: scaleY(0.7);
   }
   50% {
-    opacity: 0.6;
+    transform: scaleY(1);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .ih-drift,
-  .ih-pulse {
-    animation: none;
+@keyframes ig-tilt {
+  0%,
+  100% {
+    transform: rotate(-4deg);
   }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+@keyframes ig-dash {
+  to {
+    stroke-dashoffset: -260;
+  }
+}
+@keyframes ig-rot {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ig-draw {
+  0% {
+    stroke-dashoffset: 200;
+    opacity: 0.3;
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+@keyframes ig-bre {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 0.95;
+  }
+}
+@keyframes ig-rise {
+  0%,
+  100% {
+    transform: translateY(3px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+.hub .ig-bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: ig-bar 3.4s ease-in-out infinite;
+}
+.hub .ig-tilt {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-tilt 5.2s ease-in-out infinite;
+}
+.hub .ig-dash {
+  stroke-dasharray: 26 200;
+  animation: ig-dash 3.4s linear infinite;
+}
+.hub .ig-rot {
+  transform-box: view-box;
+  animation: ig-rot 22s linear infinite;
+}
+.hub .ig-orb {
+  transform-box: view-box;
+  animation: ig-rot 9s linear infinite;
+}
+.hub .ig-draw {
+  stroke-dasharray: 200;
+  animation: ig-draw 4.6s ease-in-out infinite;
+}
+.hub .ig-bre {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-bre 5.5s ease-in-out infinite;
+}
+.hub .ig-rise {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-rise 4.6s ease-in-out infinite;
+}
+
+/* HOW WE ENTER / REGULATORY POSTURE — split layout with a lettered/numbered ladder */
+.hub .split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: clamp(40px, 6vw, 80px);
+  align-items: start;
+}
+.hub .split-lead {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(1.6rem, 2.8vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  max-width: 14ch;
+  margin-top: 16px;
+}
+.hub .step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 22px;
+  padding: 26px 0;
+  border-top: 1px solid var(--brd);
+}
+.hub .step:last-child {
+  border-bottom: 1px solid var(--brd);
+}
+.hub .step .k {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-weight: 600;
+  font-size: clamp(2rem, 3.4vw, 2.75rem);
+  color: var(--t3);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+.hub .step h3 {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 7px;
+  letter-spacing: -0.01em;
+}
+.hub .step p {
+  color: var(--t2);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 48ch;
+}
+@media (max-width: 860px) {
+  .hub .split {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+}
+
+/* CTA — bold full-width statement */
+.hub .cta {
+  padding: clamp(100px, 14vw, 200px) 0;
+  text-align: center;
+}
+.hub .cta .eyebrow {
+  margin-bottom: 30px;
+}
+.hub .cta h2 {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(2.4rem, 7.5vw, 5.75rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  max-width: 15ch;
+  margin: 0 auto;
+}
+.hub .cta p {
+  color: var(--t2);
+  max-width: 54ch;
+  margin: 26px auto 0;
+  font-size: 17px;
+  line-height: 1.7;
+}
+.hub .btns {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 40px;
 }
