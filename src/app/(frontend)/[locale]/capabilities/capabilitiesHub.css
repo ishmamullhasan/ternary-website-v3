@@ -56,20 +56,12 @@
   max-width: 920px;
 }
 .hub .hero-idx a {
-  font-size: 12px;
-  color: var(--dim);
-  letter-spacing: 0.04em;
-  font-variant-numeric: tabular-nums;
-  transition: color 0.2s;
-}
-.hub .hero-idx a b {
+  font-size: 13px;
   color: var(--t3);
-  font-weight: 500;
-  margin-right: 6px;
+  letter-spacing: 0.01em;
   transition: color 0.2s;
 }
-.hub .hero-idx a:hover,
-.hub .hero-idx a:hover b {
+.hub .hero-idx a:hover {
   color: var(--color-cream);
 }
 
@@ -134,7 +126,7 @@
 .hub .cap-head {
   position: relative;
   display: grid;
-  grid-template-columns: clamp(2.6ch, 7vw, 4ch) 1fr auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: clamp(18px, 3vw, 44px);
   width: 100%;
@@ -144,37 +136,40 @@
   text-align: left;
   cursor: pointer;
   font: inherit;
-  padding: clamp(22px, 3.4vw, 40px) 4px;
+  padding: clamp(22px, 3.4vw, 40px) 4px clamp(22px, 3.4vw, 40px) clamp(18px, 2.6vw, 34px);
   transition: background 0.4s var(--ease);
+}
+/* Open/active affordance that replaces the old leading number: a cream accent rule that grows in
+   from the left edge — where the number used to anchor the row — on hover/open. */
+.hub .cap-head::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: clamp(26px, 3.4vw, 46px);
+  border-radius: 2px;
+  background: var(--accent);
+  transform: translateY(-50%) scaleY(0);
+  transform-origin: center;
+  opacity: 0;
+  transition:
+    transform 0.5s var(--ease),
+    opacity 0.35s;
+}
+.hub .cap.open .cap-head::before {
+  transform: translateY(-50%) scaleY(1);
+  opacity: 1;
 }
 .hub .cap.open .cap-head {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.02), transparent 70%);
-}
-.hub .cap-num {
-  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
-  font-weight: 600;
-  font-size: clamp(2rem, 5.4vw, 3.6rem);
-  line-height: 1;
-  letter-spacing: -0.05em;
-  color: var(--t3);
-  opacity: 0.4;
-  font-variant-numeric: tabular-nums;
-  transition:
-    opacity 0.45s,
-    color 0.45s,
-    transform 0.55s var(--ease);
-}
-.hub .cap.open .cap-num {
-  opacity: 1;
-  color: var(--color-cream);
-  transform: translateX(2px);
 }
 .hub .cap-titles {
   min-width: 0;
 }
 .hub .cap-name {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;
-  font-size: clamp(1.35rem, 2.9vw, 2.35rem);
+  font-size: clamp(1.5rem, 3.1vw, 2.6rem);
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.06;
@@ -219,26 +214,7 @@
   grid-template-columns: 1fr 1fr;
   gap: clamp(28px, 4vw, 56px);
   align-items: center;
-  padding: 6px 4px clamp(32px, 4vw, 52px);
-}
-.hub .cap-ghost {
-  position: absolute;
-  right: -1%;
-  top: 44%;
-  transform: translateY(-50%);
-  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
-  font-weight: 700;
-  font-size: clamp(9rem, 26vw, 22rem);
-  line-height: 1;
-  letter-spacing: -0.07em;
-  color: var(--color-cream);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 0;
-  transition: opacity 0.8s ease;
-}
-.hub .cap.open .cap-ghost {
-  opacity: 0.035;
+  padding: 6px 4px clamp(32px, 4vw, 52px) clamp(18px, 2.6vw, 34px);
 }
 .hub .cap-copy {
   position: relative;
@@ -360,23 +336,30 @@
   line-height: 1.6;
   flex: 1;
 }
-.hub .combo-nums {
+/* Disciplines drawn on in each engagement — short name tags (replacing the old numeric refs). */
+.hub .combo-discs {
   margin-top: 22px;
   padding-top: 18px;
   border-top: 1px solid var(--brd);
   display: flex;
-  gap: 14px;
-}
-.hub .combo-nums span {
-  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
-  font-weight: 600;
-  font-size: 22px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 13px;
   color: var(--t3);
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
 }
-.hub .combo-nums span.hl {
+.hub .combo-discs span {
+  display: inline-flex;
+  align-items: center;
+}
+.hub .combo-discs span:not(:first-child)::before {
+  content: '·';
+  margin: 0 9px;
+  color: var(--t3);
+  opacity: 0.7;
+}
+.hub .combo-discs .hl {
   color: var(--color-cream);
+  font-weight: 500;
 }
 @media (max-width: 900px) {
   .hub .combos {

@@ -63,7 +63,6 @@ export default async function CapabilitiesHubPage({ params }: { params: Promise<
             <nav className="hero-idx" aria-label="Capability index">
               {HERO_INDEX.map((item) => (
                 <a href={`#c${item.n}`} key={item.n}>
-                  <b>{item.n}</b>
                   {item.label}
                 </a>
               ))}
@@ -87,12 +86,12 @@ export default async function CapabilitiesHubPage({ params }: { params: Promise<
         <div className="wrap">
           <Reveal className="sec-head">
             <div>
-              <span className="eyebrow">The index · base 3</span>
+              <span className="eyebrow">The index</span>
               <Heading level={2}>What we practice</Heading>
             </div>
             <p className="sec-sub">
-              Numbered in base three — it&rsquo;s in the name. Open a discipline for the methods, the standards, and
-              the work behind it.
+              Eight disciplines we run in production. Open one for the methods, the standards, and the work behind
+              each.
             </p>
           </Reveal>
           <Reveal i={1}>
@@ -130,10 +129,10 @@ export default async function CapabilitiesHubPage({ params }: { params: Promise<
                   A national exchange&rsquo;s public platform, rebuilt from the ground up — modern, bilingual,
                   accessible — without touching the trading core.
                 </p>
-                <div className="combo-nums mono">
-                  <span className="hl">12</span>
-                  <span>02</span>
-                  <span>10</span>
+                <div className="combo-discs">
+                  <span className="hl">Digital Experiences</span>
+                  <span>Data &amp; Analytics</span>
+                  <span>Cloud</span>
                 </div>
               </div>
             </Reveal>
@@ -168,10 +167,10 @@ export default async function CapabilitiesHubPage({ params }: { params: Promise<
                   A governed, air-gapped AI layer letting brokerage advisors query market and portfolio data in plain
                   language — production systems never exposed.
                 </p>
-                <div className="combo-nums mono">
-                  <span className="hl">00</span>
-                  <span>01</span>
-                  <span>02</span>
+                <div className="combo-discs">
+                  <span className="hl">Agentic Architecture</span>
+                  <span>Artificial Intelligence</span>
+                  <span>Data</span>
                 </div>
               </div>
             </Reveal>
@@ -210,10 +209,10 @@ export default async function CapabilitiesHubPage({ params }: { params: Promise<
                   A booking monolith rebuilt as an event-driven platform — while the original stayed live and taking
                   bookings the whole time.
                 </p>
-                <div className="combo-nums mono">
-                  <span className="hl">11</span>
-                  <span>20</span>
-                  <span>12</span>
+                <div className="combo-discs">
+                  <span className="hl">Platformization</span>
+                  <span>DevOps</span>
+                  <span>Digital Experiences</span>
                 </div>
               </div>
             </Reveal>

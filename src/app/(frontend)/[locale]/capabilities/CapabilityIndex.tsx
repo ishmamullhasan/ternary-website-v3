@@ -224,7 +224,6 @@ export default function CapabilityIndex() {
                 if (!canHover) setOpenIdx(open ? -1 : i)
               }}
             >
-              <span className="cap-num">{cap.num}</span>
               <span className="cap-titles">
                 <span className="cap-name">{cap.name}</span>
                 <span className="cap-tag">{cap.tag}</span>
@@ -236,9 +235,6 @@ export default function CapabilityIndex() {
             <div className="cap-body" id={`b${cap.num}`}>
               <div className="cap-body-in">
                 <div className="cap-grid">
-                  <span className="cap-ghost" aria-hidden="true">
-                    {cap.num}
-                  </span>
                   <div className="cap-copy">
                     <p className="cap-desc">{cap.desc}</p>
                     <div className="cap-chips">
