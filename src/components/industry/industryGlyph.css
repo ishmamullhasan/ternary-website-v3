@@ -1,0 +1,214 @@
+/* Per-industry abstract glyphs for the Industries hub index (redesign/v2).
+   Minimal, monochrome (currentColor + cream emphasis), one calm idle gesture each. All motion is
+   CSS transform/opacity/dashoffset, so the globals `prefers-reduced-motion` guard already stills
+   them; the explicit reduce block below re-states it. Decorative — the SVGs are aria-hidden. */
+
+.ig {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+.ig .st {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ig .fp {
+  fill: currentColor;
+  stroke: none;
+}
+.ig .em {
+  stroke: var(--color-cream);
+}
+.ig .fp.em {
+  fill: var(--color-cream);
+  stroke: none;
+}
+.ig .gsp {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes ig-bar {
+  0%,
+  100% {
+    transform: scaleY(0.72);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@keyframes ig-tilt {
+  0%,
+  100% {
+    transform: rotate(-3.5deg);
+  }
+  50% {
+    transform: rotate(3.5deg);
+  }
+}
+@keyframes ig-dash {
+  to {
+    stroke-dashoffset: -162;
+  }
+}
+@keyframes ig-rot {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ig-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.9;
+  }
+}
+@keyframes ig-rise {
+  0%,
+  100% {
+    transform: translateY(2.4px);
+  }
+  50% {
+    transform: translateY(-2.4px);
+  }
+}
+@keyframes ig-draw {
+  0% {
+    stroke-dashoffset: 118;
+    opacity: 0.3;
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+
+/* market — ticker bars breathe in a slow wave */
+.v-market .bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: ig-bar 3.4s ease-in-out infinite;
+}
+.v-market .bar:nth-of-type(2) {
+  animation-delay: 0.35s;
+}
+.v-market .bar:nth-of-type(3) {
+  animation-delay: 0.7s;
+}
+.v-market .bar:nth-of-type(4) {
+  animation-delay: 1.05s;
+}
+.v-market .bar:nth-of-type(5) {
+  animation-delay: 1.4s;
+}
+
+/* balance — the beam seesaws gently (risk/insurance) */
+.v-balance .beam {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-tilt 5.2s ease-in-out infinite;
+}
+
+/* pulse — a lit segment travels the ECG trace (vitals) */
+.v-pulse .trace {
+  stroke-dasharray: 22 140;
+  animation: ig-dash 3.2s linear infinite;
+}
+
+/* assembly — a slow-turning gear (plant/process) */
+.v-assembly .gear {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-rot 20s linear infinite;
+}
+
+/* orbit — a mote circles a node (play/energy) */
+.v-orbit .orb {
+  transform-box: view-box;
+  transform-origin: 32px 32px;
+  animation: ig-rot 7.5s linear infinite;
+}
+
+/* route — an arc draws and redraws (journey/booking) */
+.v-route .path {
+  stroke-dasharray: 118;
+  animation: ig-draw 4.6s ease-in-out infinite;
+}
+
+/* network — outer nodes breathe in sequence (distribution/last mile) */
+.v-network .np {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-breathe 3.6s ease-in-out infinite;
+}
+.v-network .np:nth-of-type(2) {
+  animation-delay: 0.4s;
+}
+.v-network .np:nth-of-type(3) {
+  animation-delay: 0.8s;
+}
+.v-network .np:nth-of-type(4) {
+  animation-delay: 1.2s;
+}
+.v-network .np:nth-of-type(5) {
+  animation-delay: 1.6s;
+}
+
+/* institution — concentric frames breathe, settled (governance) */
+.v-institution .frame {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-breathe 7.5s ease-in-out infinite;
+}
+.v-institution .frame:nth-of-type(2) {
+  animation-delay: 0.6s;
+}
+.v-institution .frame:nth-of-type(3) {
+  animation-delay: 1.2s;
+}
+
+/* layers — stacked planes drift (platform) */
+.v-layers .layer {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-rise 4.6s ease-in-out infinite;
+}
+.v-layers .layer:nth-of-type(2) {
+  animation-delay: 0.4s;
+}
+.v-layers .layer:nth-of-type(3) {
+  animation-delay: 0.8s;
+}
+
+/* lattice — default: nodes breathe (a neutral system) */
+.v-lattice .node {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ig-breathe 5.6s ease-in-out infinite;
+}
+.v-lattice .node:nth-of-type(2) {
+  animation-delay: 0.5s;
+}
+.v-lattice .node:nth-of-type(3) {
+  animation-delay: 1s;
+}
+.v-lattice .node:nth-of-type(4) {
+  animation-delay: 1.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig * {
+    animation: none !important;
+  }
+}

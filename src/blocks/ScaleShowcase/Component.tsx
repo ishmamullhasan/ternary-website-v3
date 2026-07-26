@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import ScaleGraphic from './ScaleGraphic'
 import type { Scale, ScaleShowcaseBlock } from '@/payload-types'
 import { Building2, Landmark, Rocket, ShieldCheck, TrendingUp } from 'lucide-react'
 import type { JSX } from 'react'
@@ -405,6 +406,9 @@ export function ScaleShowcaseComponent(props: ScaleShowcaseBlock): JSX.Element {
         const panelType = item.panelType ?? 'generic'
         const keyBase = String(item.id ?? scaleIndex)
         const hasGenericContent = tagsList.length > 0 || metrics.length > 0
+        // Show the motion graphic on the FIRST scale only for now, so it can be judged before
+        // rolling out to 02/03. When enabled, the card becomes two-column (content | graphic).
+        const showGraphic = scaleIndex === 0
 
         return (
           <Motion
@@ -417,7 +421,15 @@ export function ScaleShowcaseComponent(props: ScaleShowcaseBlock): JSX.Element {
             className="flex w-full flex-col"
           >
             {/* Panel wrapper — Figma surface/card (#1b1a17); holds header + data box + metrics */}
-            <div className="flex w-full flex-col gap-8 rounded-md border border-line bg-card p-5 sm:p-8 lg:p-10">
+            <div className="w-full rounded-md border border-line bg-card p-5 sm:p-8 lg:p-10">
+              <div
+                className={
+                  showGraphic
+                    ? 'grid grid-cols-1 gap-8 lg:grid-cols-[1.5fr_1fr] lg:items-stretch'
+                    : 'flex flex-col gap-8'
+                }
+              >
+                <div className="flex min-w-0 flex-col gap-8">
               {/* Header — sits on the card */}
               <div className="flex max-w-3xl flex-col items-start text-left">
                 {item.subTitle && (
@@ -482,6 +494,9 @@ export function ScaleShowcaseComponent(props: ScaleShowcaseBlock): JSX.Element {
                   </div>
                 )
               )}
+                </div>
+                {showGraphic && <ScaleGraphic variant="tracks" />}
+              </div>
             </div>
           </Motion>
         )

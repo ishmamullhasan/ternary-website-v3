@@ -1,0 +1,52 @@
+/* Industries hub — ambient hero field.
+   A thin neutral line-lattice that drifts slowly behind the headline. Decorative only
+   (aria-hidden), rendered in the brand neutral ramp at very low opacity so it never competes
+   with the type. The drift is a single transform on one group; the globals reduced-motion media
+   query already caps CSS animation, and this file re-states the guard for clarity. */
+.ih-ambient {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 28%, #000 62%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, transparent 28%, #000 62%, #000 100%);
+}
+.ih-ambient svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ih-drift {
+  animation: ih-drift 28s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.ih-pulse {
+  animation: ih-pulse 6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes ih-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-20px, -12px, 0);
+  }
+}
+@keyframes ih-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ih-drift,
+  .ih-pulse {
+    animation: none;
+  }
+}

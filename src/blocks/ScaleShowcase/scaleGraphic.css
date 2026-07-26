@@ -1,0 +1,39 @@
+/* Ambient pulse for the pod anchor and node halos. transform-box/​origin keep the scale centered
+   on the SVG element's own box. The globals reduced-motion media query already caps animation
+   duration; ScaleGraphic additionally omits these classes when useReducedMotion() is true, so the
+   figure renders as a still diagram for motion-sensitive users. */
+.sg-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sg-pulse 6.5s ease-in-out infinite;
+}
+
+@keyframes sg-pulse {
+  0%,
+  100% {
+    opacity: 0.16;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.42;
+    transform: scale(1.14);
+  }
+}
+
+/* Node breathe — a slower, subtler pulse offset from the halo so the cluster never reads as a
+   single synchronized blink. */
+.sg-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sg-node 7.5s ease-in-out infinite;
+}
+
+@keyframes sg-node {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
