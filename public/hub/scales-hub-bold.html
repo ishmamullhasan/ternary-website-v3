@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scales | Ternary</title>
+<meta name="description" content="Engineering that scales with you — from a startup's first MVP to a public-sector mission program, one standard held at every scale.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#141208; --card:#1B1810; --elevated:#232012;
+    --text:#F4F3EC; --text-2:#B4B0A0; --text-3:#8B8774; --dim:#6C6957;
+    --border:#2B2718; --border-2:#3C3724;
+    --inverse:#141208;
+    --max:1280px; --pad:clamp(20px,4vw,56px);
+    --display:'Poppins',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'Geist Mono',ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--page);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--text);color:var(--inverse)}
+  :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:2px}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--text-3);text-transform:uppercase;display:inline-flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--text-3)}
+
+  .rv{opacity:0;transform:translateY(24px);transition:opacity .85s var(--ease),transform .85s var(--ease);transition-delay:calc(var(--i,0)*90ms)}
+  .rv.lx{transform:translateX(-28px)}
+  .rv.in{opacity:1;transform:none}
+  /* monumental name mask-rise */
+  .maskrise{overflow:hidden;display:block;padding-bottom:.08em}
+  .maskrise>*{transform:translateY(106%);opacity:0;transition:transform 1s var(--ease),opacity 1s var(--ease)}
+  .maskrise.in>*{transform:none;opacity:1}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.maskrise>*{transform:none;opacity:1;transition:none}}
+
+  .site-nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(20,18,8,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-in{max-width:var(--max);margin:0 auto;padding:0 var(--pad);height:66px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:var(--display);font-weight:600;font-size:17px;display:flex;align-items:center;gap:10px}
+  .brand .trit{display:inline-flex;gap:3px}
+  .brand .trit i{width:5px;height:5px;display:block;background:var(--text)}
+  .brand .trit i:nth-child(2){background:var(--text-3)}
+  .brand .trit i:nth-child(3){background:var(--border-2)}
+  .nav-links{display:flex;gap:30px;font-size:14.5px;color:var(--text-2)}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);position:relative}
+  .nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:2px;background:var(--text)}
+  .nav-cta{font-family:var(--display);font-size:13.5px;font-weight:500;border:1px solid var(--border-2);padding:9px 18px;transition:.2s}
+  .nav-cta:hover{border-color:var(--text-3);background:rgba(255,255,255,.03)}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* HERO */
+  header{position:relative;min-height:96vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 60px;overflow:hidden;border-bottom:1px solid var(--border)}
+  .hero-net{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.5;pointer-events:none;
+    -webkit-mask-image:radial-gradient(120% 92% at 68% 48%,#000 28%,transparent 80%);mask-image:radial-gradient(120% 92% at 68% 48%,#000 28%,transparent 80%)}
+  header .wrap{position:relative;z-index:1}
+  h1{font-family:var(--display);font-size:clamp(3rem,10vw,7.5rem);line-height:.98;font-weight:600;letter-spacing:-.045em;margin:26px 0;max-width:15ch;text-wrap:balance}
+  .hero-sub{font-size:clamp(17px,1.7vw,21px);color:var(--text-2);max-width:58ch;line-height:1.65}
+
+  /* SCALE SECTIONS */
+  .scale{padding:clamp(84px,11vw,150px) 0;border-bottom:1px solid var(--border)}
+  .scale .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,5vw,80px);align-items:stretch}
+  .content{order:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+  .panel{order:2}
+  .scale.alt .content{order:2}
+  .scale.alt .panel{order:1}
+  .s-num{font-family:var(--mono);font-size:clamp(2.6rem,7vw,5.5rem);line-height:1;letter-spacing:-.03em;color:var(--text-3);opacity:.5}
+  .s-name{font-family:var(--display);font-size:clamp(2.4rem,7vw,6rem);font-weight:600;letter-spacing:-.045em;line-height:.96;margin:6px 0 22px}
+  .s-pos{font-family:var(--display);font-size:clamp(1.25rem,2.2vw,1.75rem);font-weight:500;letter-spacing:-.015em;line-height:1.25;color:var(--text);max-width:20ch;margin-bottom:24px}
+  .s-prose p{color:var(--text-2);font-size:16.5px;line-height:1.72;max-width:46ch}
+  .s-prose p+p{margin-top:18px}
+  .s-stats{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px 0;font-family:var(--mono);font-size:12px;letter-spacing:.03em;color:var(--text-3)}
+  .s-stats span{padding:0 16px;border-left:1px solid var(--border-2)}
+  .s-stats span:first-child{padding-left:0;border-left:0}
+
+  .panel{position:relative;overflow:hidden;border-radius:8px;min-height:clamp(360px,46vw,620px);background:#0a0812;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 0 60px 120px -60px rgba(0,0,0,.7)}
+  .panel canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .panel::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.055;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E")}
+  @media(max-width:900px){
+    .scale .wrap{grid-template-columns:1fr;gap:30px}
+    .content,.scale.alt .content{order:2}
+    .panel,.scale.alt .panel{order:1}
+    .panel{min-height:clamp(240px,56vw,360px)}
+  }
+
+  /* THE CONSTANT */
+  .constant{padding:clamp(84px,11vw,150px) 0;border-bottom:1px solid var(--border)}
+  .const-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(36px,6vw,80px);align-items:start;margin-bottom:clamp(40px,6vw,70px)}
+  .const-h{font-family:var(--display);font-size:clamp(2rem,4.4vw,3.25rem);font-weight:600;letter-spacing:-.03em;line-height:1.04;max-width:14ch}
+  .const-p{color:var(--text-2);font-size:17px;line-height:1.75;max-width:52ch}
+  .const-list{display:grid;grid-template-columns:repeat(2,1fr);gap:0 clamp(40px,6vw,80px)}
+  .cl{display:grid;grid-template-columns:auto 1fr;gap:20px;padding:26px 0;border-top:1px solid var(--border)}
+  .cl .cn{font-family:var(--mono);font-size:12px;color:var(--text-3);padding-top:5px}
+  .cl h4{font-family:var(--display);font-size:18px;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+  .cl p{color:var(--text-2);font-size:15px;line-height:1.65;max-width:42ch}
+  @media(max-width:860px){.const-top{grid-template-columns:1fr;gap:24px}.const-list{grid-template-columns:1fr;gap:0}}
+
+  /* CTA */
+  .cta{padding:clamp(100px,14vw,200px) 0;text-align:center;border-bottom:none}
+  .cta .eyebrow{margin-bottom:30px}
+  .cta h2{font-family:var(--display);font-size:clamp(2.4rem,7.5vw,5.75rem);font-weight:600;letter-spacing:-.04em;line-height:1;max-width:15ch;margin:0 auto}
+  .cta p{color:var(--text-2);max-width:52ch;margin:26px auto 0;font-size:17px;line-height:1.7}
+  .btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:40px}
+  .btn{font-family:var(--display);font-size:15px;font-weight:500;padding:15px 32px;border:1px solid var(--border-2);border-radius:3px;transition:transform .2s,background .2s,border-color .2s}
+  .btn-primary{background:var(--text);color:var(--inverse);border-color:var(--text)}
+  .btn-primary:hover{background:#fff;transform:translateY(-2px)}
+  .btn-ghost:hover{border-color:var(--text-3);background:rgba(255,255,255,.04);transform:translateY(-2px)}
+
+  footer{border-top:1px solid var(--border);padding:48px 0}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:baseline}
+  .foot .mono{font-size:12px;letter-spacing:.06em;color:var(--text-3)}
+  .foot .legal{font-size:13px;color:var(--dim)}
+  @media(prefers-reduced-motion:reduce){.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="site-nav"><div class="nav-in">
+  <a class="brand" href="#"><span class="trit"><i></i><i></i><i></i></span>Ternary</a>
+  <div class="nav-links"><a href="#">Capabilities</a><a href="#">Solutions</a><a href="#">Industries</a><a href="#">Stories</a><a href="#">About</a></div>
+  <a class="nav-cta" href="#">Start a conversation</a>
+</div></nav>
+
+<!-- HERO -->
+<header>
+  <canvas class="hero-net" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="eyebrow rv">Scales</div>
+    <h1 class="rv" style="--i:1">Engineering that scales with you.</h1>
+    <p class="hero-sub rv" style="--i:2">From a startup's first MVP to a public-sector mission program — one engineering standard, held at every scale. We meet you where you are, and we hold the same bar the whole way up.</p>
+  </div>
+</header>
+
+<!-- SCALE 01 -->
+<section class="scale" id="s1"><div class="wrap">
+  <div class="content">
+    <div class="s-num rv">01</div>
+    <span class="maskrise"><h2 class="s-name">Startups &amp; Scale-ups</h2></span>
+    <p class="s-pos rv" style="--i:1">One pod. Daily ship cadence.</p>
+    <div class="s-prose rv" style="--i:2">
+      <p>A single senior pod, embedded in your world and shipping every day. Async-first, at agentic velocity — the smallest team that can carry the whole problem, from the first architecture call to a product in real users' hands in weeks.</p>
+      <p>We build beside you, not behind a wall. And when it's time, we hand over something clean: the code, the pipelines, the context, and the confidence to run it yourselves.</p>
+    </div>
+    <div class="s-stats rv" style="--i:3"><span>3–6 engineers</span><span>MVP in weeks</span><span>Async-first</span><span>Clean handover</span></div>
+  </div>
+  <div class="panel"><canvas class="grad" data-scale="1" aria-hidden="true"></canvas></div>
+</div></section>
+
+<!-- SCALE 02 -->
+<section class="scale alt" id="s2"><div class="wrap">
+  <div class="content">
+    <div class="s-num rv">02</div>
+    <span class="maskrise"><h2 class="s-name">Mid-Market &amp; Enterprise</h2></span>
+    <p class="s-pos rv" style="--i:1">Programs measured in quarters, not sprints.</p>
+    <div class="s-prose rv" style="--i:2">
+      <p>Coordinated pods running in parallel, paired with your domain experts and governed by joint steering. We modernize the strangler-fig way — the new grows up alongside the old, and nothing is switched off until its replacement has earned it.</p>
+      <p>The point isn't only the platform we leave behind. It's that your own engineers come out of the program stronger than they went in — with the patterns, the tooling, and the judgment to keep going.</p>
+    </div>
+    <div class="s-stats rv" style="--i:3"><span>Multiple pods</span><span>12+ months</span><span>Joint steering</span><span>Strangler-fig</span></div>
+  </div>
+  <div class="panel"><canvas class="grad" data-scale="2" aria-hidden="true"></canvas></div>
+</div></section>
+
+<!-- SCALE 03 -->
+<section class="scale" id="s3"><div class="wrap">
+  <div class="content">
+    <div class="s-num rv">03</div>
+    <span class="maskrise"><h2 class="s-name">Public Sector</h2></span>
+    <p class="s-pos rv" style="--i:1">Cleared engineers. Mission-ready from kickoff.</p>
+    <div class="s-prose rv" style="--i:2">
+      <p>Prime or sub on established vehicles, with cleared engineers who are mission-ready from day one. Compliance here isn't a phase bolted on at the end — it's a continuous evidence pipeline running the whole way through.</p>
+      <p>CMMI-disciplined delivery against real mission deadlines, ATO-ready by design. The same engineering bar you'd get for a startup MVP — held to the standard a public trust demands.</p>
+    </div>
+    <div class="s-stats rv" style="--i:3"><span>Cleared talent</span><span>ATO-ready</span><span>CMMI discipline</span><span>Continuous compliance</span></div>
+  </div>
+  <div class="panel"><canvas class="grad" data-scale="3" aria-hidden="true"></canvas></div>
+</div></section>
+
+<!-- THE CONSTANT -->
+<section class="constant"><div class="wrap">
+  <div class="const-top">
+    <div class="rv lx">
+      <div class="eyebrow" style="margin-bottom:18px">The constant</div>
+      <h2 class="const-h">One bar for quality, at every scale.</h2>
+    </div>
+    <p class="const-p rv" style="--i:1">The engagement changes shape as you grow — the standard does not. Every pod, at every scale, draws on the same centralized standards, the same review discipline, and the same people who hold the line across our global delivery hubs. A startup MVP and a mission program are built to the one bar.</p>
+  </div>
+  <div class="const-list">
+    <div class="cl rv"><span class="cn">i</span><div><h4>Centralized standards</h4><p>One review bar and one definition of done, held consistently across New York and the Dhaka delivery hub.</p></div></div>
+    <div class="cl rv" style="--i:1"><span class="cn">ii</span><div><h4>Certified &amp; compliant delivery</h4><p>Security, auditability, and evidence built in — packaged the way review boards actually ask for them.</p></div></div>
+    <div class="cl rv" style="--i:2"><span class="cn">iii</span><div><h4>Disciplined execution</h4><p>The same senior hands, rituals, and rigor whether the invoice is a seed round or a program of record.</p></div></div>
+    <div class="cl rv" style="--i:3"><span class="cn">iv</span><div><h4>Long-term ownership</h4><p>We stay accountable past launch — monitoring, maintaining, and modernizing so today's build never becomes tomorrow's legacy.</p></div></div>
+  </div>
+</div></section>
+
+<!-- CTA -->
+<section class="cta"><div class="wrap">
+  <div class="eyebrow rv">Start here</div>
+  <h2 class="rv" style="--i:1">Wherever you are, we meet you there.</h2>
+  <p class="rv" style="--i:2">Tell us the stage you're at and the problem in front of you. We'll show up shaped for it — and held to the same bar all the way up.</p>
+  <div class="btns rv" style="--i:3"><a class="btn btn-primary" href="#">Start a conversation</a><a class="btn btn-ghost" href="#">See our work</a></div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <span class="brand"><span class="trit" style="display:inline-flex;gap:3px;margin-right:8px"></span>Ternary</span>
+  <span class="mono">Agentic Engineering. Human Orchestration.</span>
+  <span class="legal">© Ternary Limited and its subsidiaries.</span>
+</div></footer>
+
+<script>
+  /* reveal + mask-rise */
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.16});
+  document.querySelectorAll('.rv,.maskrise').forEach(el=>io.observe(el));
+
+  /* immersive gradient panels — soft liquid colour masses drifting on near-black.
+     The ONLY colour on the page. One still frame under reduced-motion; offscreen panels skipped. */
+  (function(){
+    const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const PAL={
+      '1':{base:[12,8,18], cols:[[150,60,235],[224,80,239],[40,205,238],[176,70,240]], n:6, spd:1.35, r:.58, a:.34},
+      '2':{base:[8,10,22], cols:[[40,100,236],[110,52,222],[26,58,168]],               n:5, spd:0.8,  r:.66, a:.32},
+      '3':{base:[8,14,18], cols:[[70,62,200],[20,184,166],[52,46,160]],                n:4, spd:0.5,  r:.72, a:.30},
+    };
+    const scenes=[];
+    document.querySelectorAll('canvas.grad').forEach(cv=>{
+      const s={cv,ctx:cv.getContext('2d'),cfg:PAL[cv.dataset.scale]||PAL['1'],W:0,H:0,blobs:[],vis:true};
+      scenes.push(s); size(s); initBlobs(s); if(reduce) render(s,4000);
+    });
+    if(!scenes.length) return;
+    if('IntersectionObserver' in window){ const iov=new IntersectionObserver(es=>es.forEach(e=>{const s=scenes.find(x=>x.cv===e.target); if(s)s.vis=e.isIntersecting;}),{threshold:.01}); scenes.forEach(s=>iov.observe(s.cv)); }
+
+    function size(s){
+      const r=s.cv.getBoundingClientRect();
+      s.W=Math.max(1,r.width); s.H=Math.max(1,r.height);
+      // cap internal buffer — soft gradients hide the upscale, keeps it cheap
+      const q=Math.min(1, 540/s.W) * Math.min(window.devicePixelRatio||1,1.5);
+      s.cv.width=Math.max(1,Math.round(s.W*q)); s.cv.height=Math.max(1,Math.round(s.H*q));
+      s.ctx.setTransform(s.cv.width/s.W,0,0,s.cv.height/s.H,0,0);
+    }
+    function initBlobs(s){
+      const c=s.cfg,b=[];
+      for(let i=0;i<c.n;i++){ b.push({col:c.cols[i%c.cols.length],
+        ox:.15+Math.random()*.7, oy:.15+Math.random()*.7, ax:.08+Math.random()*.12, ay:.08+Math.random()*.12,
+        fx:.15+Math.random()*.3, fy:.15+Math.random()*.3, ph:Math.random()*6.28, r:c.r*(.65+Math.random()*.6) }); }
+      s.blobs=b;
+    }
+    function render(s,t){
+      const {ctx,W,H,cfg}=s, T=t*0.001*cfg.spd, R=Math.hypot(W,H);
+      ctx.globalCompositeOperation='source-over';
+      ctx.fillStyle='rgb('+cfg.base[0]+','+cfg.base[1]+','+cfg.base[2]+')'; ctx.fillRect(0,0,W,H);
+      ctx.globalCompositeOperation='lighter';
+      for(const bl of s.blobs){
+        const x=(bl.ox+bl.ax*Math.sin(T*bl.fx+bl.ph))*W, y=(bl.oy+bl.ay*Math.cos(T*bl.fy+bl.ph*1.3))*H, rad=bl.r*R*.5;
+        const g=ctx.createRadialGradient(x,y,0,x,y,rad), c=bl.col;
+        g.addColorStop(0,'rgba('+c[0]+','+c[1]+','+c[2]+','+cfg.a+')');
+        g.addColorStop(.5,'rgba('+c[0]+','+c[1]+','+c[2]+','+(cfg.a*0.32)+')');
+        g.addColorStop(1,'rgba('+c[0]+','+c[1]+','+c[2]+',0)');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,rad,0,6.283); ctx.fill();
+      }
+      ctx.globalCompositeOperation='source-over';
+    }
+    let raf; function loop(ts){ for(const s of scenes){ if(s.vis) render(s,ts); } raf=requestAnimationFrame(loop); }
+    if(!reduce) raf=requestAnimationFrame(loop);
+    let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{for(const s of scenes){size(s);initBlobs(s);if(reduce)render(s,4000);}},180);});
+  })();
+
+  /* hero ambient — warm-neutral node field (no colour); still under reduced-motion */
+  (function(){
+    const cv=document.querySelector('.hero-net'); if(!cv) return;
+    const ctx=cv.getContext('2d'); const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    let W=0,H=0,DPR=1,nodes=[],raf=0;
+    function size(){DPR=Math.min(window.devicePixelRatio||1,2);const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.max(1,W*DPR);cv.height=Math.max(1,H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
+    function init(){size();const N=W<720?12:22;nodes=[];for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.13,vy:(Math.random()-.5)*.13});}
+    function md(){return W<720?160:220;}
+    function draw(){ctx.clearRect(0,0,W,H);const m=md();for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<m){ctx.strokeStyle='rgba(180,176,160,'+((1-d/m)*.14)+')';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}for(const n of nodes){ctx.fillStyle='rgba(180,176,160,.4)';ctx.beginPath();ctx.arc(n.x,n.y,1.6,0,7);ctx.fill();}}
+    function step(){for(const n of nodes){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;}draw();raf=requestAnimationFrame(step);}
+    function start(){cancelAnimationFrame(raf);init();if(reduce){draw();}else{raf=requestAnimationFrame(step);}}
+    start();let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(start,180);});
+  })();
+</script>
+</body>
+</html>

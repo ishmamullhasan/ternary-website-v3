@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solutions | Ternary</title>
+<meta name="description" content="Four ways to work with Ternary — build something new, modernize what you have, extend your team, or hand us the keys to production.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#141208; --card:#1B1810; --elevated:#232012;
+    --text:#F4F3EC; --text-2:#B4B0A0; --text-3:#8B8774; --dim:#6C6957;
+    --border:#2B2718; --border-2:#3C3724;
+    --accent:#D9C79A; --accent-soft:rgba(217,199,154,.09); --inverse:#141208;
+    --max:1200px; --pad:clamp(20px,4vw,48px); --sec:clamp(92px,10.5vw,150px);
+    --display:'Poppins',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'Geist Mono',ui-monospace,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--page);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:var(--inverse)}
+  :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:2px}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--text-3);text-transform:uppercase;display:flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:inline-block}
+
+  .rv{opacity:0;transform:translateY(16px);transition:opacity .65s ease,transform .65s ease;transition-delay:calc(var(--i,0)*55ms)}
+  .rv.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+  /* nav */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(20,18,8,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-in{max-width:var(--max);margin:0 auto;padding:0 var(--pad);height:66px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:var(--display);font-weight:600;font-size:17px;display:flex;align-items:center;gap:10px}
+  .brand .trit{display:inline-flex;gap:3px}
+  .brand .trit i{width:5px;height:5px;display:block;background:var(--accent)}
+  .brand .trit i:nth-child(2){background:var(--text-3)}
+  .brand .trit i:nth-child(3){background:var(--border-2)}
+  .nav-links{display:flex;gap:30px;font-size:14.5px;color:var(--text-2)}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);position:relative}
+  .nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:2px;background:var(--accent)}
+  .nav-cta{font-family:var(--display);font-size:13.5px;font-weight:500;border:1px solid var(--border-2);padding:9px 18px;transition:border-color .2s,background .2s}
+  .nav-cta:hover{border-color:var(--accent);background:var(--accent-soft)}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* hero */
+  header{min-height:82vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding-top:66px;overflow:hidden;border-bottom:1px solid var(--border);
+    background:repeating-linear-gradient(90deg, rgba(244,243,236,.018) 0 1px, transparent 1px 128px)}
+  .hero-net{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.55;pointer-events:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 34%,#000 66%,#000 100%);
+            mask-image:linear-gradient(90deg,transparent 0%,transparent 34%,#000 66%,#000 100%)}
+  header .wrap{position:relative;z-index:1}
+  h1{font-family:var(--display);font-size:clamp(2.5rem,6vw,4.75rem);line-height:1.02;font-weight:600;letter-spacing:-.025em;margin:24px 0 26px;text-wrap:balance}
+  .hero-sub{font-family:var(--body);font-size:clamp(17px,1.7vw,21px);color:var(--text-2);max-width:56ch;line-height:1.6}
+  @media(max-width:720px){.hero-net{opacity:.32}}
+
+  section{padding:var(--sec) 0;border-bottom:1px solid var(--border)}
+  .sec-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(36px,5vw,60px)}
+  h2{font-family:var(--display);font-size:clamp(28px,3.4vw,30px);font-weight:600;letter-spacing:-.015em;line-height:1.12;margin-top:16px;text-wrap:balance}
+  .sec-sub{color:var(--text-2);max-width:50ch;font-size:16px;line-height:1.7}
+
+  /* four at a glance */
+  .glance a.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr) 44px;gap:28px;align-items:center;
+    padding:clamp(24px,3vw,34px) clamp(12px,1.5vw,18px);border-top:1px solid var(--border);position:relative;transition:background .3s}
+  .glance a.row:last-of-type{border-bottom:1px solid var(--border)}
+  .glance .row::after{content:"";position:absolute;left:0;top:-1px;height:1px;width:0;background:var(--accent);opacity:.5;transition:width .4s ease}
+  .glance .row:hover{background:var(--card)}
+  .glance .row:hover::after{width:100%}
+  .row-h{display:flex;align-items:baseline;gap:14px}
+  .row-num{font-family:var(--mono);font-size:12px;color:var(--text-3);transition:color .3s}
+  .row-h h3{font-family:var(--display);font-size:clamp(20px,2.1vw,25px);font-weight:600;letter-spacing:-.01em}
+  .glance .row p{color:var(--text-2);font-size:15.5px;line-height:1.55}
+  .glance .arr{justify-self:end;color:var(--dim);font-size:20px;transition:transform .3s,color .3s}
+  .glance .row:hover .arr{transform:translateX(6px);color:var(--text)}
+  .glance .row:hover .row-num{color:var(--accent)}
+  @media(max-width:760px){.glance a.row{grid-template-columns:1fr;gap:8px}.glance .arr{display:none}}
+
+  /* solution sections */
+  .sol .wrap{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.4fr);gap:clamp(36px,6vw,80px);align-items:start}
+  .sol-rail{position:sticky;top:100px;display:flex;flex-direction:column;gap:22px}
+  .sol-mark{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--text-3);text-transform:uppercase}
+  .sol-mark b{color:var(--accent);font-weight:500}
+  .sol-rail h2{margin:0;max-width:14ch;font-size:clamp(26px,3vw,34px)}
+  .sol-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px 40px}
+  .sol-item h4{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
+  .sol-item p{color:var(--text-2);font-size:15.5px;line-height:1.6}
+  .sol-item.get p{color:var(--text);font-size:16.5px;font-weight:500;line-height:1.5}
+  .sol-proof{grid-column:1/-1;border-top:1px solid var(--border);padding-top:24px}
+  .sol-proof p{color:var(--text-2)}
+  .sol-proof .pf{color:var(--text)}
+  .sol-proof a{font-family:var(--display);color:var(--text);font-size:14px;font-weight:500;white-space:nowrap}
+  .sol-proof a i{font-style:normal;color:var(--accent);margin-left:5px;transition:margin .25s}
+  .sol-proof a:hover i{margin-left:9px}
+  @media(max-width:900px){
+    .sol .wrap{grid-template-columns:1fr;gap:36px}
+    .sol-rail{position:static}
+  }
+  @media(max-width:560px){.sol-grid{grid-template-columns:1fr;gap:28px}}
+
+  /* motif figure */
+  .motif{width:100%;max-width:220px;height:150px;border:1px solid var(--border);border-radius:3px;overflow:hidden;position:relative;
+    background:radial-gradient(120% 130% at 50% 0%,var(--accent-soft),transparent 60%),var(--elevated)}
+  .motif svg{position:absolute;inset:0;width:100%;height:100%}
+  .motif .st{fill:none;stroke:var(--text-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .motif .ac{stroke:var(--accent)}
+  .motif .fp{fill:var(--text-3);stroke:none}
+  .motif .acf{fill:var(--accent);stroke:none}
+
+  @keyframes m-assemble{0%,100%{transform:translate(var(--dx),var(--dy));opacity:.75}50%{transform:translate(0,0);opacity:1}}
+  @keyframes m-fadeOld{0%,42%{opacity:.55}58%,100%{opacity:.12}}
+  @keyframes m-fadeNew{0%,42%{opacity:.12}58%,100%{opacity:.85}}
+  @keyframes m-integrate{0%{transform:translate(-16px,7px);opacity:.35}48%,60%{transform:translate(0,0);opacity:1}100%{transform:translate(-16px,7px);opacity:.35}}
+  @keyframes m-orbit{to{transform:rotate(360deg)}}
+  @keyframes m-pulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
+  .m-piece{transform-box:fill-box;transform-origin:center;animation:m-assemble 7s ease-in-out infinite}
+  .m-old{animation:m-fadeOld 9s ease-in-out infinite}
+  .m-new{animation:m-fadeNew 9s ease-in-out infinite}
+  .m-int{transform-box:fill-box;animation:m-integrate 6.5s ease-in-out infinite}
+  .m-orbit{transform-box:view-box;transform-origin:75px 60px;animation:m-orbit 14s linear infinite}
+  .m-core{transform-box:fill-box;transform-origin:center;animation:m-pulse 5.5s ease-in-out infinite}
+
+  /* engagement models */
+  .models{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .model{border:1px solid var(--border);background:var(--card);border-radius:3px;padding:32px 28px;display:flex;flex-direction:column;
+    transition:border-color .3s ease,transform .3s ease,box-shadow .3s ease}
+  .model:hover{border-color:var(--border-2);transform:translateY(-4px);box-shadow:0 28px 64px -34px rgba(0,0,0,.7)}
+  .model h3{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-.01em}
+  .model h3 sup{font-size:11px;font-weight:500;color:var(--text-3);vertical-align:super;margin-left:1px}
+  .model .tag{font-family:var(--mono);font-size:11px;letter-spacing:.09em;color:var(--accent);text-transform:uppercase;margin:12px 0 16px}
+  .model p{color:var(--text-2);font-size:15px;flex:1}
+  .model .ideal{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:13.5px;color:var(--text-3);line-height:1.6}
+  .model .ideal b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);font-weight:400;display:block;margin-bottom:4px}
+  @media(max-width:860px){.models{grid-template-columns:1fr;max-width:460px}}
+
+  /* compare table — the signature element */
+  .cmp{overflow-x:auto;border:1px solid var(--border);border-radius:4px}
+  table{border-collapse:collapse;width:100%;min-width:920px}
+  thead th{font-family:var(--display);font-weight:600;font-size:15px;color:var(--text);text-align:left;padding:20px 22px;background:var(--elevated);
+    border-bottom:1px solid var(--border-2);white-space:nowrap}
+  thead th:first-child{background:var(--elevated)}
+  tbody td{padding:18px 22px;font-size:14.5px;color:var(--text-2);border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+  tbody tr:last-child td{border-bottom:none}
+  tbody td:first-child{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3);white-space:nowrap;background:var(--card)}
+  tbody tr{transition:background .2s}
+  tbody tr:hover td{background:var(--card)}
+  tbody tr:hover td:first-child{color:var(--text-2)}
+  tbody td b{color:var(--text);font-weight:500}
+  .num-note{font-variant-numeric:tabular-nums}
+
+  /* buttons + cta */
+  .btns{display:flex;gap:14px;flex-wrap:wrap;margin-top:34px}
+  .btn{font-family:var(--display);font-size:15px;font-weight:500;padding:14px 28px;border:1px solid var(--border-2);border-radius:3px;transition:transform .2s,background .2s,border-color .2s}
+  .btn-primary{background:var(--text);color:var(--inverse);border-color:var(--text)}
+  .btn-primary:hover{background:#fff;border-color:#fff;transform:translateY(-2px)}
+  .btn-ghost:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
+  .cta{border-bottom:none}
+  .cta h2{max-width:18ch;font-size:clamp(28px,3.6vw,34px)}
+  .cta p{color:var(--text-2);max-width:52ch;margin-top:20px;font-size:17px;line-height:1.7}
+
+  footer{border-top:1px solid var(--border);padding:48px 0}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:baseline}
+  .foot .brand{font-size:15px}
+  .foot .mono{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--text-3)}
+  .foot .legal{font-size:13px;color:var(--dim)}
+
+  @media(prefers-reduced-motion:reduce){
+    .m-piece,.m-old,.m-new,.m-int,.m-orbit,.m-core{animation:none}
+    .m-piece{transform:none;opacity:1}
+    .m-old,.m-new{opacity:.4}
+    .m-int{transform:none;opacity:1}
+    .model:hover,.btn-primary:hover,.btn-ghost:hover{transform:none}
+    .glance .row::after{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<nav><div class="nav-in">
+  <a class="brand" href="#"><span class="trit"><i></i><i></i><i></i></span>Ternary</a>
+  <div class="nav-links"><a href="#">Capabilities</a><a href="#" class="active">Solutions</a><a href="#">Industries</a><a href="#">Stories</a><a href="#">About</a></div>
+  <a class="nav-cta" href="#">Start a conversation</a>
+</div></nav>
+
+<!-- HERO -->
+<header>
+  <canvas class="hero-net" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="eyebrow rv">Solutions</div>
+    <h1 class="rv" style="--i:1">Built to outlast.</h1>
+    <p class="hero-sub rv" style="--i:2">Four ways to work with us — build something new, modernize what you have, extend your team, or hand us the keys to production.</p>
+  </div>
+</header>
+
+<!-- FOUR AT A GLANCE -->
+<section class="glance"><div class="wrap">
+  <div class="sec-head rv">
+    <div><div class="eyebrow">At a glance</div><h2>Four doors in</h2></div>
+    <p class="sec-sub">Pick the shape that fits where you are. Each opens onto the same standard of engineering.</p>
+  </div>
+  <a class="row rv" href="#pd" style="--i:0">
+    <div class="row-h"><span class="row-num">01</span><h3>Product Development</h3></div>
+    <p>Take an idea to a real product, then scale it.</p><span class="arr">→</span>
+  </a>
+  <a class="row rv" href="#et" style="--i:1">
+    <div class="row-h"><span class="row-num">02</span><h3>Enterprise Transformation</h3></div>
+    <p>Upgrade an aging system — or take a manual one digital — without stopping the business.</p><span class="arr">→</span>
+  </a>
+  <a class="row rv" href="#ea" style="--i:2">
+    <div class="row-h"><span class="row-num">03</span><h3>Engineering Augmentation</h3></div>
+    <p>Senior engineers inside your team and your process.</p><span class="arr">→</span>
+  </a>
+  <a class="row rv" href="#ms" style="--i:3">
+    <div class="row-h"><span class="row-num">04</span><h3>Managed Systems</h3></div>
+    <p>We run what we build.</p><span class="arr">→</span>
+  </a>
+</div></section>
+
+<!-- SOLUTION 1 — PRODUCT DEVELOPMENT -->
+<section class="sol" id="pd"><div class="wrap">
+  <div class="sol-rail rv">
+    <div class="sol-mark">Solution 1 of 4 · <b>Product Development</b></div>
+    <h2>Take an idea to a real product.</h2>
+    <div class="motif" aria-hidden="true"><svg viewBox="0 0 150 120">
+      <rect class="st" x="45" y="30" width="60" height="60" rx="3" opacity=".28"/>
+      <rect class="st m-piece" style="--dx:-14px;--dy:-12px" x="47" y="32" width="26" height="26" rx="2"/>
+      <rect class="st ac m-piece" style="--dx:14px;--dy:-12px" x="77" y="32" width="26" height="26" rx="2"/>
+      <rect class="st m-piece" style="--dx:-14px;--dy:12px" x="47" y="62" width="26" height="26" rx="2"/>
+      <rect class="st m-piece" style="--dx:14px;--dy:12px" x="77" y="62" width="26" height="26" rx="2"/>
+    </svg></div>
+  </div>
+  <div class="sol-grid">
+    <div class="sol-item rv"><h4>Who it's for</h4><p>You have something to build and no team — or a team that's already full.</p></div>
+    <div class="sol-item rv" style="--i:1"><h4>What we do</h4><p>We take it from a rough idea to a launched system. Discovery, architecture, design, build, release. One senior team, shipping continuously, with you in the room.</p></div>
+    <div class="sol-item get rv" style="--i:2"><h4>What you get</h4><p>A launched product with the pipelines, tests, and documentation to grow on — and the team that built it, still on call.</p></div>
+    <div class="sol-proof rv" style="--i:3"><h4>Proof</h4><p><span class="pf">Alley Analytix</span> — sensor hardware, real-time motion processing, and coaching dashboards, built end to end. <a href="#">Read the story <i>→</i></a></p></div>
+  </div>
+</div></section>
+
+<!-- SOLUTION 2 — ENTERPRISE TRANSFORMATION -->
+<section class="sol" id="et"><div class="wrap">
+  <div class="sol-rail rv">
+    <div class="sol-mark">Solution 2 of 4 · <b>Enterprise Transformation</b></div>
+    <h2>Replace what you've outgrown.</h2>
+    <div class="motif" aria-hidden="true"><svg viewBox="0 0 150 120">
+      <g class="m-old">
+        <path class="st" d="M40 35 H110 M40 60 H110 M40 85 H110 M55 30 V90 M75 30 V90 M95 30 V90"/>
+      </g>
+      <g class="m-new" transform="rotate(6 75 60)">
+        <path class="st" d="M42 38 H108 M42 62 H108 M42 86 H108 M58 33 V91 M78 33 V91"/>
+        <path class="st ac" d="M98 33 V91"/>
+      </g>
+    </svg></div>
+  </div>
+  <div class="sol-grid">
+    <div class="sol-item rv"><h4>Who it's for</h4><p>You're running something critical that's getting expensive, fragile, or impossible to hire for. Or the "system" is still paper, phone calls, and spreadsheets — and the business has outgrown it.</p></div>
+    <div class="sol-item rv" style="--i:1"><h4>What we do</h4><p>We map how the work actually happens today — in the old software or in the spreadsheets — then move it across piece by piece. Sometimes that means replacing legacy systems. Sometimes it means building your first real one. Either way, nothing switches off until its replacement has proven itself.</p></div>
+    <div class="sol-item get rv" style="--i:2"><h4>What you get</h4><p>New platform live. Old ways retired. Business uninterrupted.</p></div>
+    <div class="sol-proof rv" style="--i:3"><h4>Proof</h4><p><span class="pf">FAROGL</span> — an oil and gas operation taken from manual workflows to one governed ERP, in phases people actually adopted. <a href="#">Read the story <i>→</i></a></p></div>
+  </div>
+</div></section>
+
+<!-- SOLUTION 3 — ENGINEERING AUGMENTATION -->
+<section class="sol" id="ea"><div class="wrap">
+  <div class="sol-rail rv">
+    <div class="sol-mark">Solution 3 of 4 · <b>Engineering Augmentation</b></div>
+    <h2>Add senior engineers to your team.</h2>
+    <div class="motif" aria-hidden="true"><svg viewBox="0 0 150 120">
+      <rect class="st" x="68" y="30" width="60" height="60" rx="3"/>
+      <path class="st" d="M98 30 V90 M68 60 H128" opacity=".55"/>
+      <rect class="st" x="72" y="64" width="22" height="22" rx="2" opacity=".5"/>
+      <rect class="st" x="102" y="34" width="22" height="22" rx="2" opacity=".5"/>
+      <rect class="st" x="102" y="64" width="22" height="22" rx="2" opacity=".5"/>
+      <rect class="acf m-int" x="73" y="35" width="20" height="20" rx="2"/>
+    </svg></div>
+  </div>
+  <div class="sol-grid">
+    <div class="sol-item rv"><h4>Who it's for</h4><p>You know exactly what to build. You need more senior hands building it.</p></div>
+    <div class="sol-item rv" style="--i:1"><h4>What we do</h4><p>We place experienced engineers inside your team — your process, your tooling, your rituals. Named people, not rotating resources.</p></div>
+    <div class="sol-item get rv" style="--i:2"><h4>What you get</h4><p>Delivery speed you can measure, from engineers you'd have hired yourself.</p></div>
+    <div class="sol-proof rv" style="--i:3"><h4>Proof</h4><p style="color:var(--text-3)">[ Named client, with written permission — or hold this slot until you have one. An empty proof line is better than a vague one. ]</p></div>
+  </div>
+</div></section>
+
+<!-- SOLUTION 4 — MANAGED SYSTEMS -->
+<section class="sol" id="ms"><div class="wrap">
+  <div class="sol-rail rv">
+    <div class="sol-mark">Solution 4 of 4 · <b>Managed Systems</b></div>
+    <h2>We run what we build.</h2>
+    <div class="motif" aria-hidden="true"><svg viewBox="0 0 150 120">
+      <circle class="st" cx="75" cy="60" r="32" opacity=".4"/>
+      <circle class="st" cx="75" cy="60" r="20" opacity=".22"/>
+      <circle class="acf m-core" cx="75" cy="60" r="5"/>
+      <g class="m-orbit"><circle class="fp" cx="75" cy="28" r="3.4"/></g>
+      <g class="m-orbit" style="animation-duration:22s;animation-direction:reverse"><circle class="acf" cx="95" cy="60" r="2.6"/></g>
+    </svg></div>
+  </div>
+  <div class="sol-grid">
+    <div class="sol-item rv"><h4>Who it's for</h4><p>You have systems in production and nobody whose actual job is keeping them healthy.</p></div>
+    <div class="sol-item rv" style="--i:1"><h4>What we do</h4><p>Monitoring, patching, incident response — and the unglamorous roadmap of keeping software current, so it never becomes next year's legacy problem.</p></div>
+    <div class="sol-item get rv" style="--i:2"><h4>What you get</h4><p>Uptime you stop thinking about.</p></div>
+    <div class="sol-proof rv" style="--i:3"><h4>Proof</h4><p><span class="pf">Counterfoil</span> — a platform Ternary builds and runs. <a href="#">Read the story <i>→</i></a></p></div>
+  </div>
+</div></section>
+
+<!-- ENGAGEMENT MODELS -->
+<section><div class="wrap">
+  <div class="sec-head rv">
+    <div><div class="eyebrow">Engagement models</div><h2>How the work is structured</h2></div>
+    <p class="sec-sub">Three shapes of engagement. Every solution runs on one — or moves between them as the work changes.</p>
+  </div>
+  <div class="models">
+    <div class="model rv">
+      <h3>Frame<sup>™</sup></h3>
+      <div class="tag">Fixed scope · timeline · price</div>
+      <p>For work with a clear finish line.</p>
+      <div class="ideal"><b>Ideal for</b>Launches, migrations, proofs of concept.</div>
+    </div>
+    <div class="model rv" style="--i:1">
+      <h3>Flow<sup>™</sup></h3>
+      <div class="tag">Dedicated team · continuous</div>
+      <p>For products that keep evolving.</p>
+      <div class="ideal"><b>Ideal for</b>Long-term product development, continuous delivery.</div>
+    </div>
+    <div class="model rv" style="--i:2">
+      <h3>Orchestra<sup>™</sup></h3>
+      <div class="tag">Senior capacity · on demand</div>
+      <p>For teams that need depth without the headcount.</p>
+      <div class="ideal"><b>Ideal for</b>Filling skill gaps, scaling delivery.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- COMPARE TABLE -->
+<section><div class="wrap">
+  <div class="sec-head rv">
+    <div><div class="eyebrow">Compare</div><h2>Four columns. Six honest answers.</h2></div>
+    <p class="sec-sub">No winner. The right column is the one that matches your situation.</p>
+  </div>
+  <div class="cmp rv">
+    <table>
+      <thead>
+        <tr><th></th><th>Product Development</th><th>Enterprise Transformation</th><th>Engineering Augmentation</th><th>Managed Systems</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Best when</td><td>You're building something new</td><td>A critical system is aging out — or still runs on paper</td><td>Your roadmap outruns your team</td><td>Your systems need an owner</td></tr>
+        <tr><td>Typical duration</td><td class="num-note">3–9 months</td><td class="num-note">12+ months</td><td>Rolling, quarterly</td><td>Ongoing</td></tr>
+        <tr><td>Team shape</td><td>One senior pod</td><td>Coordinated workstreams</td><td>Embedded engineers</td><td>Dedicated ops coverage</td></tr>
+        <tr><td>Roadmap owner</td><td>Shared</td><td>Shared</td><td>You</td><td>We propose, you approve</td></tr>
+        <tr><td>What we hand over</td><td>A launched product + docs</td><td>A retired legacy + a live platform</td><td>Merged code, every week</td><td>Reports, uptime, a healthy system</td></tr>
+        <tr><td>Engagement model</td><td><b>Frame™</b> or <b>Flow™</b></td><td><b>Flow™</b> or <b>Orchestra™</b></td><td><b>Orchestra™</b></td><td><b>Flow™</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></section>
+
+<!-- CLOSING CTA -->
+<section class="cta"><div class="wrap">
+  <div class="eyebrow rv">Start here</div>
+  <h2 class="rv" style="--i:1">Still not sure which one you need?</h2>
+  <p class="rv" style="--i:2">Neither are most people at this stage — that's our job, not yours. Tell us the problem. We'll tell you the shape.</p>
+  <div class="btns rv" style="--i:3">
+    <a class="btn btn-primary" href="#">Start a conversation</a>
+    <a class="btn btn-ghost" href="#">See our work</a>
+  </div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <span class="brand"><span class="trit" style="display:inline-flex;gap:3px;margin-right:8px"></span>Ternary</span>
+  <span class="mono">Agentic Engineering. Human Orchestration.</span>
+  <span class="legal">© Ternary Limited and its subsidiaries.</span>
+</div></footer>
+
+<script>
+  /* scroll reveal — fade + rise, staggered by --i, once */
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  /* hero ambient lattice — slow warm-neutral drift, one faint tan node, still under reduced-motion */
+  (function(){
+    const cv = document.querySelector('.hero-net');
+    if(!cv) return;
+    const ctx = cv.getContext('2d');
+    const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    let W=0,H=0,DPR=1,nodes=[],accentIdx=0,raf=0,t=0;
+    function size(){
+      DPR = Math.min(window.devicePixelRatio||1, 2);
+      const r = cv.getBoundingClientRect(); W=r.width; H=r.height;
+      cv.width=Math.max(1,W*DPR); cv.height=Math.max(1,H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0);
+    }
+    function init(){
+      size();
+      const N = W<720 ? 9 : 15; nodes=[];
+      for(let i=0;i<N;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12});
+      accentIdx = Math.floor(N*0.5);
+    }
+    function linkDist(){ return W<720 ? 150 : 200; }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      const max=linkDist();
+      for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(d<max){ ctx.strokeStyle='rgba(180,176,160,'+((1-d/max)*0.14)+')';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke(); }
+      }
+      for(let i=0;i<nodes.length;i++){
+        const n=nodes[i];
+        if(i===accentIdx){
+          const p=0.5+0.5*Math.sin(t*0.0015);
+          ctx.fillStyle='rgba(217,199,154,'+(0.08+0.09*p)+')';ctx.beginPath();ctx.arc(n.x,n.y,13,0,7);ctx.fill();
+          ctx.fillStyle='rgba(217,199,154,'+(0.5+0.35*p)+')';ctx.beginPath();ctx.arc(n.x,n.y,2.6,0,7);ctx.fill();
+        } else { ctx.fillStyle='rgba(180,176,160,.42)';ctx.beginPath();ctx.arc(n.x,n.y,1.6,0,7);ctx.fill(); }
+      }
+    }
+    function step(ts){ t=ts; for(const n of nodes){ n.x+=n.vx;n.y+=n.vy; if(n.x<0||n.x>W)n.vx*=-1; if(n.y<0||n.y>H)n.vy*=-1; } draw(); raf=requestAnimationFrame(step); }
+    function start(){ cancelAnimationFrame(raf); init(); if(reduce){draw();}else{raf=requestAnimationFrame(step);} }
+    start();
+    let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(start,180);});
+  })();
+</script>
+</body>
+</html>

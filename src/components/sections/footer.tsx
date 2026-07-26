@@ -312,8 +312,37 @@ export default function Footer({ footerData }: FooterProps) {
         />
       </div>
 
+      {/* Design previews — direct links to the redesign hub mockups served statically from /public/hub.
+          Plain <a> (not LocalizedLink) so they resolve to the static HTML files, not a locale-prefixed
+          Next route. These are self-contained design explorations, intentionally in the warm theme. */}
+      <div className="mt-12 flex flex-col gap-4">
+        <span className="text-[13px] font-medium uppercase leading-[1.15] tracking-[0.12em] text-cream/60">
+          Design previews
+        </span>
+        <div className="flex flex-wrap gap-3">
+          {[
+            { label: 'Capabilities', href: '/hub/capabilities-hub-bold.html' },
+            { label: 'Solutions', href: '/hub/solutions-hub-bold.html' },
+            { label: 'Industries', href: '/hub/industries-hub-bold.html' },
+            { label: 'Scales', href: '/hub/scales-hub-iso.html' },
+            { label: 'All previews', href: '/hub/index.html' },
+          ].map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-2 text-[14px] font-medium leading-none tracking-[-0.03em] text-cream transition-colors duration-150 hover:border-cream/60 hover:bg-cream/5 focus-visible:border-cream/60 focus-visible:bg-cream/5"
+            >
+              {item.label}
+              <span aria-hidden className="text-cream/50">
+                &#8599;
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+
       {/* Hairline divider (Figma Line 4) between the link columns and the bottom bar. */}
-      <div className="mt-4 h-px w-full bg-cream/15" />
+      <div className="mt-12 h-px w-full bg-cream/15" />
 
       {/* Bottom bar — social + legal + copyright on the left, partner badges on the right.
           space-between on desktop; stacks (badges first) on smaller screens. */}

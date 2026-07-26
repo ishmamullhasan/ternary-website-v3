@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capabilities | Ternary</title>
+<meta name="description" content="The eight technical practices behind everything Ternary builds and runs — each with a named lead, house standards, and work in production.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0E11;
+    --ink-2:#10141A;
+    --ink-3:#151B22;
+    --line:#212933;
+    --line-soft:#1A212A;
+    --text:#E9EAE3;
+    --muted:#99A1AA;
+    --dim:#5F6871;
+    --amber:#FFB224;
+    --amber-soft:rgba(255,178,36,.10);
+    --max:1240px;
+    --pad:clamp(20px,4vw,48px);
+    --sec:clamp(96px,11vw,160px);
+    --display:'Schibsted Grotesk',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ink);color:var(--text);font-family:var(--display);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--amber);color:var(--ink)}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:2px}
+
+  .wrap{max-width:var(--max);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--amber);text-transform:uppercase;display:flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--amber);display:inline-block}
+  .mono{font-family:var(--mono)}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+  .rv.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+  /* ---------- nav ---------- */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(11,14,17,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+  .nav-in{max-width:var(--max);margin:0 auto;padding:0 var(--pad);height:68px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-weight:700;font-size:17px;letter-spacing:.02em;display:flex;align-items:center;gap:10px}
+  .brand .trit{display:inline-flex;gap:3px}
+  .brand .trit i{width:5px;height:5px;background:var(--amber);display:block}
+  .brand .trit i:nth-child(2){background:var(--dim)}
+  .brand .trit i:nth-child(3){background:var(--line)}
+  .nav-links{display:flex;gap:32px;font-size:14.5px;color:var(--muted)}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);position:relative}
+  .nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:-25px;height:2px;background:var(--amber)}
+  .nav-cta{font-size:13.5px;font-weight:600;border:1px solid var(--line);padding:9px 18px;transition:border-color .2s,background .2s}
+  .nav-cta:hover{border-color:var(--amber);background:var(--amber-soft)}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* ---------- hero ---------- */
+  header{min-height:92vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding-top:68px;overflow:hidden;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.022) 0 1px, transparent 1px 120px);
+  }
+  header::after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:var(--line-soft);z-index:2}
+  /* ambient node-network canvas — thin drifting system behind the headline, faded out on the left
+     so it never competes with the type. ~25s slow drift, one pulsing amber node. */
+  .hero-net{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.68;pointer-events:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 30%,#000 62%,#000 100%);
+            mask-image:linear-gradient(90deg,transparent 0%,transparent 30%,#000 62%,#000 100%)}
+  header .wrap{position:relative;z-index:1}
+  h1{font-size:clamp(44px,7.2vw,96px);line-height:1.02;font-weight:600;letter-spacing:-.025em;margin:28px 0 30px;max-width:14ch;text-wrap:balance}
+  .hero-sub{font-size:clamp(17px,1.6vw,21px);color:var(--muted);max-width:56ch;line-height:1.65}
+  .hero-index{margin-top:clamp(48px,7vh,88px);padding-top:28px;border-top:1px solid var(--line-soft);display:flex;flex-wrap:wrap;gap:10px 28px}
+  .hero-index a{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--dim);transition:color .2s;white-space:nowrap}
+  .hero-index a b{color:var(--muted);font-weight:500;margin-right:7px}
+  .hero-index a:hover{color:var(--amber)}
+  .hero-index a:hover b{color:var(--amber)}
+  @media(max-width:720px){.hero-net{opacity:.4}}
+
+  /* ---------- framing ---------- */
+  .framing{padding:var(--sec) 0;border-bottom:1px solid var(--line-soft)}
+  .framing-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:64px}
+  .framing p{font-size:clamp(21px,2.4vw,30px);line-height:1.45;font-weight:500;letter-spacing:-.01em;color:var(--text);max-width:30ch}
+  .framing p em{font-style:normal;color:var(--amber)}
+  .framing-note{align-self:end;color:var(--muted);font-size:16px;max-width:44ch;line-height:1.7}
+  @media(max-width:860px){.framing-grid{grid-template-columns:1fr;gap:36px}}
+
+  /* ---------- index rows ---------- */
+  .index{padding:var(--sec) 0}
+  .sec-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:clamp(40px,6vw,72px);gap:24px;flex-wrap:wrap}
+  h2{font-size:clamp(30px,4vw,52px);font-weight:600;letter-spacing:-.02em;line-height:1.08;margin-top:22px;text-wrap:balance}
+  .sec-sub{color:var(--muted);max-width:46ch;font-size:16.5px;line-height:1.7}
+
+  .row{display:grid;grid-template-columns:96px minmax(0,1fr) minmax(0,1.42fr) 92px 40px;gap:32px;align-items:center;
+    padding:clamp(30px,4vw,46px) 0;border-top:1px solid var(--line);position:relative;transition:background .25s}
+  .row:last-of-type{border-bottom:1px solid var(--line)}
+  .row:hover{background:linear-gradient(90deg,var(--ink-2),transparent 85%)}
+  .row-ix{font-family:var(--mono);font-size:15px;color:var(--dim);align-self:start;padding-top:6px;transition:color .25s}
+  .row:hover .row-ix{color:var(--amber)}
+  .row-name{font-size:clamp(22px,2.4vw,30px);font-weight:600;letter-spacing:-.015em;line-height:1.15;align-self:start}
+  .row-body{align-self:start}
+  .row-body p{color:var(--muted);font-size:16.5px;line-height:1.65;max-width:56ch}
+  .row-tags{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .row-tags span{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--dim);border:1px solid var(--line-soft);padding:5px 10px;transition:color .25s,border-color .25s}
+  .row:hover .row-tags span{color:var(--muted);border-color:var(--line)}
+  .row-glyph{width:84px;height:84px;justify-self:center;color:var(--dim);transition:color .4s ease}
+  .row:hover .row-glyph{color:var(--muted)}
+  .row-arrow{justify-self:end;color:var(--dim);font-size:22px;line-height:1;transition:transform .25s,color .25s}
+  .row:hover .row-arrow{transform:translateX(6px);color:var(--amber)}
+  @media(max-width:860px){
+    .row{grid-template-columns:60px minmax(0,1fr);gap:12px 18px}
+    .row-body{grid-column:2}
+    .row-glyph,.row-arrow{display:none}
+  }
+
+  /* glyph primitives */
+  .glyph{width:100%;height:100%;overflow:visible;display:block}
+  .glyph .st{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .glyph .ac{stroke:var(--amber)}
+  .glyph .fp{fill:currentColor;stroke:none}
+  .glyph .acf{fill:var(--amber);stroke:none}
+  .gsp{transform-box:fill-box;transform-origin:center}
+
+  /* hover choreography — one calm gesture per capability, triggered by its row */
+  @keyframes g-draw{from{stroke-dashoffset:64}to{stroke-dashoffset:0}}
+  @keyframes g-pop{0%{transform:scale(.55)}60%{transform:scale(1.28)}100%{transform:scale(1)}}
+  @keyframes g-spin{to{transform:rotate(360deg)}}
+  @keyframes g-rise{0%{transform:scaleY(.55)}60%{transform:scaleY(1.12)}100%{transform:scaleY(1)}}
+  @keyframes g-out{0%{transform:scale(.4);opacity:.3}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+  @keyframes g-float{from{transform:translateY(4px)}to{transform:translateY(0)}}
+
+  .g-agentic .edge{stroke-dasharray:64}
+  .row:hover .g-agentic .edge{animation:g-draw .7s ease both}
+  .row:hover .g-agentic .leaf{animation:g-pop .6s ease both}
+  .row:hover .g-agentic .leaf:nth-of-type(2){animation-delay:.06s}
+  .row:hover .g-agentic .leaf:nth-of-type(3){animation-delay:.12s}
+
+  .g-ai .conv{stroke-dasharray:64}
+  .row:hover .g-ai .conv{animation:g-draw .65s ease both}
+  .row:hover .g-ai .core{animation:g-pop .6s .25s ease both}
+
+  .row:hover .g-data .bar{animation:g-rise .6s ease both;transform-box:fill-box;transform-origin:50% 100%}
+  .row:hover .g-data .bar:nth-of-type(2){animation-delay:.07s}
+  .row:hover .g-data .bar:nth-of-type(3){animation-delay:.14s}
+  .row:hover .g-data .bar:nth-of-type(4){animation-delay:.21s}
+
+  .g-cloud .plane{transition:transform .5s ease}
+  .row:hover .g-cloud .p1{transform:translate(-3px,2px)}
+  .row:hover .g-cloud .p3{transform:translate(3px,-2px)}
+
+  .g-platform .blk{transition:transform .5s cubic-bezier(.22,1,.36,1)}
+  .g-platform .b-top{transform:translateY(-6px);opacity:.55}
+  .row:hover .g-platform .b-top{transform:translateY(0);opacity:1}
+  .g-platform .b-mid{transform:translateY(-3px)}
+  .row:hover .g-platform .b-mid{transform:translateY(0)}
+
+  .g-dx .frame{transition:transform .5s ease}
+  .row:hover .g-dx .f2{transform:scale(.92)}
+  .row:hover .g-dx .f3{transform:scale(.84)}
+
+  .row:hover .g-devops .loop{animation:g-spin 3.2s linear infinite}
+
+  .row:hover .g-iot .edgept{animation:g-out .6s ease both}
+  .row:hover .g-iot .edgept:nth-of-type(2){animation-delay:.05s}
+  .row:hover .g-iot .edgept:nth-of-type(3){animation-delay:.1s}
+  .row:hover .g-iot .edgept:nth-of-type(4){animation-delay:.15s}
+  .row:hover .g-iot .edgept:nth-of-type(5){animation-delay:.2s}
+  .row:hover .g-iot .edgept:nth-of-type(6){animation-delay:.25s}
+
+  /* ---------- combinations ---------- */
+  .combos{padding:var(--sec) 0;border-top:1px solid var(--line-soft)}
+  .combo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+  .combo{border:1px solid var(--line);background:var(--ink-2);display:flex;flex-direction:column;min-height:400px;overflow:hidden;position:relative;
+    transition:border-color .3s ease,transform .3s ease,box-shadow .3s ease}
+  .combo:hover{border-color:#37414d;transform:translateY(-5px);box-shadow:0 30px 70px -34px rgba(0,0,0,.85),0 0 0 1px var(--amber-soft),inset 0 1px 0 0 rgba(255,255,255,.03)}
+  .combo-viz{height:138px;position:relative;border-bottom:1px solid var(--line-soft);overflow:hidden;
+    background:radial-gradient(120% 130% at 82% 0%,rgba(255,178,36,.05),transparent 60%),var(--ink-3)}
+  .combo-viz svg{position:absolute;inset:0;width:100%;height:100%}
+  .combo-viz .st{fill:none;stroke:var(--dim);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+  .combo-viz .ac{stroke:var(--amber)}
+  .combo-viz .acf{fill:var(--amber);stroke:none}
+  .combo:hover .combo-viz .st{stroke:var(--muted)}
+  .combo:hover .combo-viz .ac{stroke:var(--amber)}
+  .combo-viz .travel{opacity:0;transition:opacity .3s}
+  .combo:hover .combo-viz .travel{opacity:1;animation:c-travel 2.4s linear infinite}
+  @keyframes c-travel{from{offset-distance:0%}to{offset-distance:100%}}
+  .combo-inner{padding:30px 30px 32px;display:flex;flex-direction:column;flex:1}
+  .combo-tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+  .combo h3{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:14px 0 10px;line-height:1.25}
+  .combo p{color:var(--muted);font-size:15px;line-height:1.65;flex:1}
+  .combo-caps{margin-top:24px;padding-top:20px;border-top:1px solid var(--line-soft);display:flex;flex-direction:column;gap:9px}
+  .combo-caps span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .combo-caps b{color:var(--amber);font-weight:500;margin-right:9px}
+  .combo-link{margin-top:22px;font-size:13.5px;font-weight:600;color:var(--text)}
+  .combo-link i{font-style:normal;color:var(--amber);margin-left:6px;transition:margin .25s}
+  .combo:hover .combo-link i{margin-left:11px}
+  @media(max-width:960px){.combo-grid{grid-template-columns:1fr;max-width:560px}}
+
+  /* ---------- standard ---------- */
+  .standard{padding:var(--sec) 0;border-top:1px solid var(--line-soft)}
+  .standard-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:72px;align-items:start}
+  .standard-grid h2{max-width:12ch}
+  .std-item{padding:30px 0;border-top:1px solid var(--line)}
+  .std-item:last-child{border-bottom:1px solid var(--line)}
+  .std-item h4{font-size:18px;font-weight:600;margin-bottom:8px;display:flex;gap:14px;align-items:baseline}
+  .std-item h4 span{font-family:var(--mono);font-size:12px;color:var(--amber);font-weight:500}
+  .std-item p{color:var(--muted);font-size:15.5px;line-height:1.7;max-width:48ch}
+  @media(max-width:860px){.standard-grid{grid-template-columns:1fr;gap:40px}}
+
+  /* ---------- cta ---------- */
+  .cta{padding:var(--sec) 0;border-top:1px solid var(--line-soft);text-align:left}
+  .cta h2{max-width:16ch}
+  .cta p{color:var(--muted);max-width:52ch;margin:24px 0 40px;font-size:17px;line-height:1.7}
+  .btns{display:flex;gap:16px;flex-wrap:wrap}
+  .btn{font-size:15px;font-weight:600;padding:15px 30px;border:1px solid var(--line);transition:transform .2s ease,background .2s ease,border-color .2s ease,box-shadow .3s ease}
+  .btn-primary{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+  .btn-primary:hover{background:#ffc251;border-color:#ffc251;transform:translateY(-2px);box-shadow:0 16px 34px -18px rgba(255,178,36,.6)}
+  .btn-ghost:hover{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-2px)}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line-soft);padding:56px 0 48px;margin-top:var(--sec)}
+  .foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:baseline}
+  .foot-tag{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--dim)}
+  .foot-legal{font-size:13px;color:var(--dim)}
+
+  @media (prefers-reduced-motion:reduce){
+    .glyph *,.combo-viz *,.row-arrow,.btn{animation:none!important;transition:none!important}
+    .combo:hover{transform:none}
+    .btn-primary:hover,.btn-ghost:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <a class="brand" href="#"><span class="trit"><i></i><i></i><i></i></span>Ternary</a>
+    <div class="nav-links">
+      <a href="#" class="active">Capabilities</a>
+      <a href="#">Solutions</a>
+      <a href="#">Industries</a>
+      <a href="#">Stories</a>
+      <a href="#">About</a>
+    </div>
+    <a class="nav-cta" href="#">Start a conversation</a>
+  </div>
+</nav>
+
+<header>
+  <canvas class="hero-net" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="eyebrow rv">Capability index · 00–21 · base&nbsp;3</div>
+    <h1 class="rv">Eight disciplines. One&nbsp;standard.</h1>
+    <p class="hero-sub rv">The technical practices behind everything we build and run. Each has a named lead, house standards, and work in production to show for it.</p>
+    <div class="hero-index rv">
+      <a href="#c00"><b>00</b>Agentic Architecture</a>
+      <a href="#c01"><b>01</b>Artificial Intelligence</a>
+      <a href="#c02"><b>02</b>Data &amp; Analytics</a>
+      <a href="#c10"><b>10</b>Cloud Transformation</a>
+      <a href="#c11"><b>11</b>Platformization</a>
+      <a href="#c12"><b>12</b>Digital Experiences</a>
+      <a href="#c20"><b>20</b>DevOps &amp; Automation</a>
+      <a href="#c21"><b>21</b>Internet of Things</a>
+    </div>
+  </div>
+</header>
+
+<section class="framing">
+  <div class="wrap framing-grid">
+    <p class="rv">A capability, to us, is not a keyword on a services page. <em>It's a practice we run in production.</em></p>
+    <div class="framing-note rv">
+      Each of the eight below has people who own it, methods we can defend, and clients who can vouch for it. We only list what we currently run for clients — nothing aspirational, nothing outsourced to a slide.
+    </div>
+  </div>
+</section>
+
+<section class="index">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">The index</div>
+        <h2>What we practice</h2>
+      </div>
+      <p class="sec-sub">Numbered in base three — it's in the name. Open any practice for the methods, the standards, and the work behind it.</p>
+    </div>
+
+    <a class="row rv" id="c00" href="#">
+      <div class="row-ix">00</div>
+      <div class="row-name">Agentic Architecture</div>
+      <div class="row-body">
+        <p>AI that does real work — and answers for it. Systems that plan, act, and verify, with people in command of anything that matters.</p>
+        <div class="row-tags"><span>Multi-agent systems</span><span>Tool use &amp; permissions</span><span>Evals &amp; guardrails</span><span>Human oversight</span></div>
+      </div>
+      <div class="row-glyph"><svg class="glyph g-agentic" viewBox="0 0 84 84" aria-hidden="true">
+        <path class="st edge" d="M20 42 H38"/><path class="st edge" d="M38 42 L64 20"/><path class="st edge" d="M38 42 H64"/><path class="st edge" d="M38 42 L64 64"/>
+        <circle class="acf gsp" cx="20" cy="42" r="4"/><circle class="fp" cx="38" cy="42" r="2.6"/>
+        <circle class="fp gsp leaf" cx="64" cy="20" r="3.4"/><circle class="fp gsp leaf" cx="64" cy="42" r="3.4"/><circle class="fp gsp leaf" cx="64" cy="64" r="3.4"/>
+      </svg></div>
+      <div class="row-arrow">→</div>
+    </a>
+
+    <a class="row rv" id="c01" href="#">
+      <div class="row-ix">01</div>
+      <div class="row-name">Artificial Intelligence</div>
+      <div class="row-body">
+        <p>LLM applications and machine learning built for production, not demos. Shipped, monitored, and owned after launch.</p>
+        <div class="row-tags"><span>LLM applications</span><span>ML pipelines</span><span>Retrieval &amp; search</span><span>Model operations</span></div>
+      </div>
+      <div class="row-glyph"><svg class="glyph g-ai" viewBox="0 0 84 84" aria-hidden="true">
+        <path class="st conv" d="M16 20 L58 42"/><path class="st conv" d="M16 42 L58 42"/><path class="st conv" d="M16 64 L58 42"/><path class="st conv" d="M30 28 L58 42"/><path class="st conv" d="M30 56 L58 42"/>
+        <circle class="acf gsp core" cx="58" cy="42" r="4.4"/>
+        <circle class="fp" cx="16" cy="20" r="2.4"/><circle class="fp" cx="16" cy="42" r="2.4"/><circle class="fp" cx="16" cy="64" r="2.4"/>
+      </svg></div>
+      <div class="row-arrow">→</div>
+    </a>
+
+    <a class="row rv" id="c02" href="#">
+      <div class="row-ix">02</div>
+      <div class="row-name">Data &amp; Analytics</div>
+      <div class="row-body">
+        <p>One source of truth. Pipelines, warehouses, and numbers your teams can actually act on.</p>
+        <div class="row-tags"><span>Data pipelines</span><span>Warehousing</span><span>Decision analytics</span><span>Governance</span></div>
+      </div>
+      <div class="row-glyph"><svg class="glyph g-data" viewBox="0 0 84 84" aria-hidden="true">
+        <path class="st" d="M14 66 H70"/>
+        <line class="st bar" x1="24" y1="66" x2="24" y2="46"/>
+        <line class="st bar" x1="38" y1="66" x2="38" y2="32"/>
+        <line class="st bar ac" x1="52" y1="66" x2="52" y2="20"/>
+        <line class="st bar" x1="66" y1="66" x2="66" y2="40"/>
+      </svg></div>
+      <div class="row-arrow">→</div>
+    </a>
+
+    <a class="row rv" id="c10" href="#">
+      <div class="row-ix">10</div>
+      <div class="row-name">Cloud Transformation</div>
+      <div class="row-body">
+        <p>Move to the cloud without betting the business on the move. Architecture, migration, and operations — governed for regulated environments.</p>
+        <div class="row-tags"><span>Migration</span><span>Cloud-native architecture</span><span>Platform operations</span><span>Compliance</span></div>
+      </div>
+      <div class="row-glyph"><svg class="glyph g-cloud" viewBox="0 0 84 84" aria-hidden="true">
+        <rect class="st plane p1 gsp" x="14" y="46" width="40" height="16" rx="3"/>
+        <rect class="st plane p2 gsp" x="22" y="34" width="40" height="16" rx="3"/>
+        <rect class="st plane p3 ac gsp" x="30" y="22" width="40" height="16" rx="3"/>
+      </svg></div>
+      <div class="row-arrow">→</div>
+    </a>
+
+    <a class="row rv" id="c11" href="#">
+      <div class="row-ix">11</div>
+      <div class="row-name">Platformization</div>
+      <div class="row-body">
+        <p>Turn one-off builds into shared platforms, so every next project starts further ahead instead of from zero.</p>
+        <div class="row-tags"><span>Internal platforms</span><span>Reusable services</span><span>APIs &amp; SDKs</span><span>Developer experience</span></div>
+      </div>
+      <div class="row-glyph"><svg class="glyph g-platform" viewBox="0 0 84 84" aria-hidden="true">
+        <rect class="st blk" x="16" y="52" width="16" height="14" rx="2"/>
+        <rect class="st blk" x="35" y="52" width="16" height="14" rx="2"/>
+        <rect class="st blk" x="54" y="52" width="14" height="14" rx="2"/>
+        <rect class="st blk b-mid gsp" x="26" y="36" width="16" height="14" rx="2"/>
+        <rect class="st blk b-mid gsp" x="45" y="36" width="16" height="14" rx="2"/>
+        <rect class="st blk b-top ac gsp" x="35" y="20" width="16" height="14" rx="2"/>
+      </svg></div>
+      <div class="row-arrow">→</div>
+    </a>
+
+    <a class="row rv" id="c12" href="#">
+      <div class="row-ix">12</div>
+      <div class="row-name">Digital Experiences</div>
+      <div class="row-body">
+        <p>Web, mobile, and product interfaces people trust at first use — clear, fast, and dependable on every device.</p>
+        <div class="row-tags"><span>Web &amp; mobile</span><span>Product design</span><span>Accessibility</span><span>Performance</span></div>
+      </div>
+      <div class="row-glyph"><svg class="glyph g-dx" viewBox="0 0 84 84" aria-hidden="true">
+        <rect class="st frame f1" x="14" y="14" width="56" height="56" rx="5"/>
+        <rect class="st frame f2 gsp" x="24" y="24" width="36" height="36" rx="4"/>
+        <rect class="st frame f3 ac gsp" x="34" y="34" width="16" height="16" rx="3"/>
+      </svg></div>
+      <div class="row-arrow">→</div>
+    </a>
+
+    <a class="row rv" id="c20" href="#">
+      <div class="row-ix">20</div>
+      <div class="row-name">DevOps &amp; Automation</div>
+      <div class="row-body">
+        <p>We make shipping boring. More releases, fewer incidents, and no two-a.m. surprises.</p>
+        <div class="row-tags"><span>CI/CD</span><span>Observability</span><span>Reliability</span><span>Release automation</span></div>
+      </div>
+      <div class="row-glyph"><svg class="glyph g-devops" viewBox="0 0 84 84" aria-hidden="true">
+        <g class="loop gsp">
+          <path class="st" d="M42 16 A26 26 0 1 1 20 30"/>
+          <path class="st ac" d="M20 18 L20 30 L32 30"/>
+        </g>
+      </svg></div>
+      <div class="row-arrow">→</div>
+    </a>
+
+    <a class="row rv" id="c21" href="#">
+      <div class="row-ix">21</div>
+      <div class="row-name">Internet of Things</div>
+      <div class="row-body">
+        <p>From the sensor to the dashboard — devices, firmware, and the data they send home.</p>
+        <div class="row-tags"><span>Firmware</span><span>Edge computing</span><span>Telemetry</span><span>Device fleets</span></div>
+      </div>
+      <div class="row-glyph"><svg class="glyph g-iot" viewBox="0 0 84 84" aria-hidden="true">
+        <path class="st" d="M42 42 L42 18"/><path class="st" d="M42 42 L63 30"/><path class="st" d="M42 42 L63 54"/><path class="st" d="M42 42 L42 66"/><path class="st" d="M42 42 L21 54"/><path class="st" d="M42 42 L21 30"/>
+        <circle class="acf" cx="42" cy="42" r="4.4"/>
+        <circle class="fp gsp edgept" cx="42" cy="18" r="3"/><circle class="fp gsp edgept" cx="63" cy="30" r="3"/><circle class="fp gsp edgept" cx="63" cy="54" r="3"/><circle class="fp gsp edgept" cx="42" cy="66" r="3"/><circle class="fp gsp edgept" cx="21" cy="54" r="3"/><circle class="fp gsp edgept" cx="21" cy="30" r="3"/>
+      </svg></div>
+      <div class="row-arrow">→</div>
+    </a>
+  </div>
+</section>
+
+<section class="combos">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div>
+        <div class="eyebrow">In practice</div>
+        <h2>They ship together</h2>
+      </div>
+      <p class="sec-sub">Most engagements draw on three or four capabilities at once. A modernization is never just cloud. A product is never just interface.</p>
+    </div>
+    <div class="combo-grid">
+
+      <div class="combo rv">
+        <div class="combo-viz">
+          <svg viewBox="0 0 320 138" aria-hidden="true">
+            <!-- DX nested frames + data bars + cloud layers, overlapping -->
+            <rect class="st" x="196" y="30" width="86" height="78" rx="6"/>
+            <rect class="st" x="212" y="46" width="54" height="46" rx="4"/>
+            <path class="st" d="M40 104 H128"/>
+            <line class="st" x1="54" y1="104" x2="54" y2="80"/>
+            <line class="st" x1="74" y1="104" x2="74" y2="62"/>
+            <line class="st ac" x1="94" y1="104" x2="94" y2="48"/>
+            <line class="st" x1="114" y1="104" x2="114" y2="72"/>
+            <rect class="st" x="128" y="40" width="60" height="18" rx="3"/>
+            <rect class="st" x="140" y="56" width="60" height="18" rx="3"/>
+            <path class="st ac" id="dse-path" d="M40 24 H280" opacity="0"/>
+            <circle class="acf travel" r="3.2" style="offset-path:path('M40 24 H280')"/>
+          </svg>
+        </div>
+        <div class="combo-inner">
+          <div class="combo-tag">Capital markets</div>
+          <h3>Dhaka Stock Exchange</h3>
+          <p>A national exchange's public platform, rebuilt from the ground up — modern, bilingual, and accessible — without touching the trading core.</p>
+          <div class="combo-caps">
+            <span><b>12</b>Digital Experiences</span>
+            <span><b>02</b>Data &amp; Analytics</span>
+            <span><b>10</b>Cloud Transformation</span>
+          </div>
+          <div class="combo-link">Read the case study<i>→</i></div>
+        </div>
+      </div>
+
+      <div class="combo rv">
+        <div class="combo-viz">
+          <svg viewBox="0 0 320 138" aria-hidden="true">
+            <!-- Agentic branching + AI converge, inside an air-gapped dashed boundary + data bars -->
+            <rect class="st" x="150" y="20" width="150" height="98" rx="6" stroke-dasharray="5 6"/>
+            <path class="st" d="M170 69 H190"/><path class="st" d="M190 69 L224 44"/><path class="st" d="M190 69 H224"/><path class="st" d="M190 69 L224 94"/>
+            <circle class="acf" cx="170" cy="69" r="4"/>
+            <circle class="fp" cx="224" cy="44" r="3.2"/><circle class="fp" cx="224" cy="69" r="3.2"/><circle class="fp" cx="224" cy="94" r="3.2"/>
+            <path class="st" d="M40 30 L96 69"/><path class="st" d="M40 69 L96 69"/><path class="st" d="M40 108 L96 69"/>
+            <circle class="acf" cx="96" cy="69" r="4"/>
+            <circle class="fp" cx="40" cy="30" r="2.4"/><circle class="fp" cx="40" cy="69" r="2.4"/><circle class="fp" cx="40" cy="108" r="2.4"/>
+            <circle class="acf travel" r="3.2" style="offset-path:path('M96 69 H170')"/>
+          </svg>
+        </div>
+        <div class="combo-inner">
+          <div class="combo-tag">Capital markets · AI</div>
+          <h3>LankaBangla Securities</h3>
+          <p>A governed, air-gapped AI layer that lets brokerage advisors query market and portfolio data in plain language — production systems never exposed.</p>
+          <div class="combo-caps">
+            <span><b>00</b>Agentic Architecture</span>
+            <span><b>01</b>Artificial Intelligence</span>
+            <span><b>02</b>Data &amp; Analytics</span>
+          </div>
+          <div class="combo-link">Read the case study<i>→</i></div>
+        </div>
+      </div>
+
+      <div class="combo rv">
+        <div class="combo-viz">
+          <svg viewBox="0 0 320 138" aria-hidden="true">
+            <!-- Platform blocks + DevOps loop + DX frame -->
+            <rect class="st" x="34" y="86" width="20" height="16" rx="2"/>
+            <rect class="st" x="58" y="86" width="20" height="16" rx="2"/>
+            <rect class="st" x="82" y="86" width="20" height="16" rx="2"/>
+            <rect class="st" x="46" y="66" width="20" height="16" rx="2"/>
+            <rect class="st" x="70" y="66" width="20" height="16" rx="2"/>
+            <rect class="st ac" x="58" y="46" width="20" height="16" rx="2"/>
+            <g>
+              <path class="st" d="M170 44 A28 28 0 1 1 146 58"/>
+              <path class="st ac" d="M146 46 L146 58 L158 58"/>
+            </g>
+            <rect class="st" x="236" y="40" width="64" height="58" rx="5"/>
+            <rect class="st" x="250" y="54" width="36" height="30" rx="3"/>
+            <circle class="acf travel" r="3.2" style="offset-path:path('M102 70 H150')"/>
+          </svg>
+        </div>
+        <div class="combo-inner">
+          <div class="combo-tag">Experience economy</div>
+          <h3>Counterfoil</h3>
+          <p>A booking monolith rebuilt as an event-driven platform — while the original stayed live and taking bookings the whole time.</p>
+          <div class="combo-caps">
+            <span><b>11</b>Platformization</span>
+            <span><b>20</b>DevOps &amp; Automation</span>
+            <span><b>12</b>Digital Experiences</span>
+          </div>
+          <div class="combo-link">Read the case study<i>→</i></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="standard">
+  <div class="wrap standard-grid">
+    <div class="rv">
+      <div class="eyebrow">The bar</div>
+      <h2>One standard across all eight</h2>
+    </div>
+    <div>
+      <div class="std-item rv">
+        <h4><span>a.</span>Led by a practitioner</h4>
+        <p>Every capability has a named lead who still builds. You can meet them before you sign anything.</p>
+      </div>
+      <div class="std-item rv">
+        <h4><span>b.</span>Proven in production</h4>
+        <p>We list only what we currently run for clients. If it isn't live somewhere, it isn't on this page.</p>
+      </div>
+      <div class="std-item rv">
+        <h4><span>c.</span>Owned past launch</h4>
+        <p>Capability work ships with monitoring, documentation, and a handover we stand behind — or we keep running it ourselves.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="eyebrow rv">Start here</div>
+    <h2 class="rv">Not sure which capability you need?</h2>
+    <p class="rv">Most people aren't — that's our job. Describe the problem in your own words, and we'll bring the right practices to the first call.</p>
+    <div class="btns rv">
+      <a class="btn btn-primary" href="#">Start a conversation</a>
+      <a class="btn btn-ghost" href="#">See our work</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a class="brand" href="#"><span class="trit"><i></i><i></i><i></i></span>Ternary</a>
+    <div class="foot-tag">Agentic Engineering. Human Orchestration.</div>
+    <div class="foot-legal">© Ternary Limited and its subsidiaries.</div>
+  </div>
+</footer>
+
+<script>
+  /* scroll reveal (unchanged) */
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  /* hero ambient node-network — slow drift, one pulsing amber node, stilled under reduced-motion */
+  (function(){
+    const cv = document.querySelector('.hero-net');
+    if(!cv) return;
+    const ctx = cv.getContext('2d');
+    const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    let W=0,H=0,DPR=1,nodes=[],amberIdx=0,raf=0,t=0;
+
+    function size(){
+      DPR = Math.min(window.devicePixelRatio||1, 2);
+      const r = cv.getBoundingClientRect();
+      W = r.width; H = r.height;
+      cv.width = Math.max(1, W*DPR); cv.height = Math.max(1, H*DPR);
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+    }
+    function init(){
+      size();
+      const N = W<720 ? 9 : 16;
+      nodes = [];
+      for(let i=0;i<N;i++){
+        nodes.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*.14, vy:(Math.random()-.5)*.14 });
+      }
+      amberIdx = Math.floor(N*0.5);
+    }
+    function linkDist(){ return W<720 ? 150 : 195; }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      const max = linkDist();
+      for(let i=0;i<nodes.length;i++){
+        for(let j=i+1;j<nodes.length;j++){
+          const a=nodes[i], b=nodes[j];
+          const d = Math.hypot(a.x-b.x, a.y-b.y);
+          if(d<max){
+            ctx.strokeStyle = 'rgba(153,161,170,'+((1-d/max)*0.15)+')';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+          }
+        }
+      }
+      for(let i=0;i<nodes.length;i++){
+        const n = nodes[i];
+        if(i===amberIdx){
+          const pulse = 0.5 + 0.5*Math.sin(t*0.0016);
+          ctx.fillStyle = 'rgba(255,178,36,'+(0.10+0.10*pulse)+')';
+          ctx.beginPath(); ctx.arc(n.x,n.y,14,0,7); ctx.fill();
+          ctx.fillStyle = 'rgba(255,178,36,'+(0.55+0.4*pulse)+')';
+          ctx.beginPath(); ctx.arc(n.x,n.y,2.7,0,7); ctx.fill();
+        } else {
+          ctx.fillStyle = 'rgba(153,161,170,.5)';
+          ctx.beginPath(); ctx.arc(n.x,n.y,1.7,0,7); ctx.fill();
+        }
+      }
+    }
+    function step(ts){
+      t = ts;
+      for(const n of nodes){
+        n.x += n.vx; n.y += n.vy;
+        if(n.x<0||n.x>W) n.vx*=-1;
+        if(n.y<0||n.y>H) n.vy*=-1;
+      }
+      draw();
+      raf = requestAnimationFrame(step);
+    }
+    function start(){ cancelAnimationFrame(raf); init(); if(reduce){ draw(); } else { raf = requestAnimationFrame(step); } }
+    start();
+    let rt; window.addEventListener('resize', ()=>{ clearTimeout(rt); rt=setTimeout(start,180); });
+  })();
+</script>
+</body>
+</html>

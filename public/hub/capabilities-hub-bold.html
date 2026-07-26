@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capabilities | Ternary</title>
+<meta name="description" content="Eight disciplines. One standard. The technical practices behind everything Ternary builds and runs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#141208; --card:#1B1810; --elevated:#232012;
+    --text:#F4F3EC; --text-2:#B4B0A0; --text-3:#8B8774; --dim:#6C6957;
+    --border:#2B2718; --border-2:#3C3724;
+    --accent:#D9C79A; --accent-soft:rgba(217,199,154,.09); --inverse:#141208;
+    --max:1280px; --pad:clamp(20px,4vw,56px);
+    --display:'Poppins',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'Geist Mono',ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--page);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:var(--inverse)}
+  :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:2px}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--text-3);text-transform:uppercase;display:inline-flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--accent)}
+
+  /* choreographed reveal — directional, staggered, once */
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:calc(var(--i,0)*70ms)}
+  .rv.lx{transform:translateX(-26px)}
+  .rv.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+  /* nav — scoped to .site-nav so the rule never leaks to the in-hero index <nav> */
+  .site-nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(20,18,8,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-in{max-width:var(--max);margin:0 auto;padding:0 var(--pad);height:66px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:var(--display);font-weight:600;font-size:17px;display:flex;align-items:center;gap:10px}
+  .brand .trit{display:inline-flex;gap:3px}
+  .brand .trit i{width:5px;height:5px;display:block;background:var(--accent)}
+  .brand .trit i:nth-child(2){background:var(--text-3)}
+  .brand .trit i:nth-child(3){background:var(--border-2)}
+  .nav-links{display:flex;gap:30px;font-size:14.5px;color:var(--text-2)}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);position:relative}
+  .nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:2px;background:var(--accent)}
+  .nav-cta{font-family:var(--display);font-size:13.5px;font-weight:500;border:1px solid var(--border-2);padding:9px 18px;transition:.2s}
+  .nav-cta:hover{border-color:var(--accent);background:var(--accent-soft)}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* HERO — oversized type + present ambient field */
+  header{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 60px;overflow:hidden;border-bottom:1px solid var(--border)}
+  .hero-net{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.7;pointer-events:none;
+    -webkit-mask-image:radial-gradient(120% 90% at 70% 45%,#000 30%,transparent 78%);mask-image:radial-gradient(120% 90% at 70% 45%,#000 30%,transparent 78%)}
+  header .wrap{position:relative;z-index:1}
+  h1{font-family:var(--display);font-size:clamp(3rem,11vw,8.5rem);line-height:.96;font-weight:600;letter-spacing:-.045em;margin:26px 0;max-width:16ch;text-wrap:balance}
+  .hero-sub{font-size:clamp(17px,1.7vw,21px);color:var(--text-2);max-width:52ch;line-height:1.6}
+  .hero-idx{margin-top:clamp(40px,6vh,72px);display:flex;flex-wrap:wrap;gap:8px 22px;border-top:1px solid var(--border);padding-top:24px;max-width:920px}
+  .hero-idx a{font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.04em;transition:color .2s}
+  .hero-idx a b{color:var(--text-3);font-weight:500;margin-right:6px;transition:color .2s}
+  .hero-idx a:hover,.hero-idx a:hover b{color:var(--accent)}
+
+  /* FRAMING — big editorial statement break */
+  .framing{padding:clamp(90px,12vw,170px) 0;border-bottom:1px solid var(--border)}
+  .framing .lab{margin-bottom:34px}
+  .framing p{font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,5vw,4rem);line-height:1.08;letter-spacing:-.03em;max-width:20ch;color:var(--text-3)}
+  .framing p em{font-style:normal;color:var(--text)}
+
+  /* section heads */
+  .sec{padding:clamp(90px,11vw,160px) 0;border-bottom:1px solid var(--border)}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(20px,4vw,48px)}
+  h2{font-family:var(--display);font-size:clamp(2rem,4.4vw,3.25rem);font-weight:600;letter-spacing:-.03em;line-height:1.04;margin-top:16px}
+  .sec-sub{color:var(--text-2);max-width:44ch;font-size:16px;line-height:1.7}
+
+  /* THE INDEX — signature accordion */
+  .index{border-top:1px solid var(--border-2)}
+  .cap{position:relative;border-bottom:1px solid var(--border)}
+  .cap-head{position:relative;display:grid;grid-template-columns:clamp(2.6ch,7vw,4ch) 1fr auto;align-items:center;gap:clamp(18px,3vw,44px);width:100%;background:none;border:0;color:inherit;text-align:left;cursor:pointer;font:inherit;
+    padding:clamp(22px,3.4vw,40px) 4px;transition:background .4s var(--ease)}
+  .cap.open .cap-head{background:linear-gradient(90deg,rgba(255,255,255,.02),transparent 70%)}
+  .cap-num{font-family:var(--display);font-weight:600;font-size:clamp(2rem,5.4vw,3.6rem);line-height:1;letter-spacing:-.05em;color:var(--text-3);opacity:.4;font-variant-numeric:tabular-nums;transition:opacity .45s,color .45s,transform .55s var(--ease)}
+  .cap.open .cap-num{opacity:1;color:var(--accent);transform:translateX(2px)}
+  .cap-titles{min-width:0}
+  .cap-name{font-family:var(--display);font-size:clamp(1.35rem,2.9vw,2.35rem);font-weight:600;letter-spacing:-.02em;line-height:1.06}
+  .cap-tag{color:var(--text-3);font-size:14.5px;margin-top:6px;transition:color .4s}
+  .cap.open .cap-tag{color:var(--text-2)}
+  .cap-chev{color:var(--text-3);font-size:20px;transition:transform .5s var(--ease),color .4s;justify-self:end}
+  .cap.open .cap-chev{transform:rotate(90deg);color:var(--text)}
+
+  .cap-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
+  .cap.open .cap-body{grid-template-rows:1fr}
+  .cap-body-in{overflow:hidden;min-height:0}
+  .cap-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,56px);align-items:center;padding:6px 4px clamp(32px,4vw,52px)}
+  .cap-ghost{position:absolute;right:-1%;top:44%;transform:translateY(-50%);font-family:var(--display);font-weight:700;font-size:clamp(9rem,26vw,22rem);line-height:1;letter-spacing:-.07em;color:var(--text);opacity:0;pointer-events:none;z-index:0;transition:opacity .8s ease}
+  .cap.open .cap-ghost{opacity:.035}
+  .cap-copy{position:relative;z-index:1}
+  .cap-desc{color:var(--text-2);font-size:16.5px;line-height:1.62;max-width:46ch}
+  .cap-chips{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+  .cap-chips span{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--text-3);border:1px solid var(--border-2);border-radius:2px;padding:6px 11px}
+  .cap-panel{position:relative;z-index:1;height:clamp(220px,26vw,320px);border:1px solid var(--border);border-radius:4px;overflow:hidden;
+    background:radial-gradient(120% 130% at 70% 10%,var(--accent-soft),transparent 58%),var(--elevated)}
+  .cap-panel svg{position:absolute;inset:0;width:100%;height:100%}
+  @media(max-width:820px){
+    .cap-grid{grid-template-columns:1fr;gap:24px}
+    .cap-panel{order:-1;height:200px}
+    .cap-chev{display:none}
+  }
+
+  /* graphic primitives + idle motion */
+  .g .st{fill:none;stroke:var(--text-3);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+  .g .ac{stroke:var(--accent)} .g .fp{fill:var(--text-3)} .g .acf{fill:var(--accent)}
+  .cap:not(.open) .g *{animation-play-state:paused}
+  @keyframes gp{0%,100%{opacity:.4}50%{opacity:1}}
+  @keyframes gp2{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+  @keyframes grot{to{transform:rotate(360deg)}}
+  @keyframes gdash{to{stroke-dashoffset:-220}}
+  @keyframes gdrift{0%,100%{transform:translate(0,0)}50%{transform:translate(7px,-5px)}}
+  @keyframes gwave{to{transform:translateX(-60px)}}
+  @keyframes gbre{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.05);opacity:.85}}
+  .sp{transform-box:fill-box;transform-origin:center}
+  .a-node{transform-box:fill-box;transform-origin:center;animation:gp2 4.5s ease-in-out infinite}
+  .a-flow{stroke-dasharray:6 12;animation:gdash 6s linear infinite}
+  .a-orbit{transform-box:view-box;animation:grot 12s linear infinite}
+  .a-rot{transform-box:view-box;animation:grot 26s linear infinite}
+  .a-drift{transform-box:fill-box;transform-origin:center;animation:gdrift 9s ease-in-out infinite}
+  .a-wave{animation:gwave 7s linear infinite}
+  .a-bre{transform-box:fill-box;transform-origin:center;animation:gbre 6s ease-in-out infinite}
+  @media(prefers-reduced-motion:reduce){.g *{animation:none!important}}
+
+  /* IN PRACTICE */
+  .combos{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .combo{position:relative;border:1px solid var(--border);border-radius:4px;background:var(--card);overflow:hidden;display:flex;flex-direction:column;min-height:420px;
+    transition:transform .4s var(--ease),border-color .4s,box-shadow .4s}
+  .combo:hover{transform:translateY(-6px);border-color:var(--border-2);box-shadow:0 34px 80px -40px rgba(0,0,0,.8)}
+  .combo-viz{height:150px;position:relative;overflow:hidden;border-bottom:1px solid var(--border);background:radial-gradient(120% 130% at 50% 0%,var(--accent-soft),transparent 60%),var(--elevated)}
+  .combo-viz svg{position:absolute;inset:0;width:100%;height:100%}
+  .combo-in{padding:26px 26px 28px;display:flex;flex-direction:column;flex:1}
+  .combo-tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3)}
+  .combo h3{font-family:var(--display);font-size:20px;font-weight:600;margin:12px 0 10px;letter-spacing:-.01em}
+  .combo p{color:var(--text-2);font-size:14.5px;line-height:1.6;flex:1}
+  .combo-nums{margin-top:22px;padding-top:18px;border-top:1px solid var(--border);display:flex;gap:14px}
+  .combo-nums span{font-family:var(--display);font-weight:600;font-size:22px;color:var(--text-3);letter-spacing:-.03em}
+  .combo-nums span.hl{color:var(--accent)}
+  @media(max-width:900px){.combos{grid-template-columns:1fr;max-width:520px}}
+
+  /* THE BAR */
+  .bar-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:clamp(40px,6vw,80px);align-items:start}
+  .bar-lead{font-family:var(--display);font-size:clamp(1.6rem,2.8vw,2.25rem);font-weight:600;letter-spacing:-.02em;line-height:1.18;max-width:14ch}
+  .std{display:grid;grid-template-columns:auto 1fr;gap:22px;padding:26px 0;border-top:1px solid var(--border)}
+  .std:last-child{border-bottom:1px solid var(--border)}
+  .std .k{font-family:var(--display);font-weight:600;font-size:clamp(2rem,3.4vw,2.75rem);color:var(--text-3);line-height:.9;letter-spacing:-.04em}
+  .std h4{font-family:var(--display);font-size:19px;font-weight:600;margin-bottom:7px;letter-spacing:-.01em}
+  .std p{color:var(--text-2);font-size:15px;line-height:1.65;max-width:46ch}
+  @media(max-width:860px){.bar-grid{grid-template-columns:1fr;gap:36px}}
+
+  /* CTA — bold full-width statement */
+  .cta{padding:clamp(100px,14vw,200px) 0;text-align:center;border-bottom:none}
+  .cta .eyebrow{margin-bottom:30px}
+  .cta h2{font-family:var(--display);font-size:clamp(2.4rem,7vw,5.5rem);font-weight:600;letter-spacing:-.04em;line-height:1;max-width:16ch;margin:0 auto}
+  .cta p{color:var(--text-2);max-width:50ch;margin:26px auto 0;font-size:17px;line-height:1.7}
+  .btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:40px}
+  .btn{font-family:var(--display);font-size:15px;font-weight:500;padding:15px 32px;border:1px solid var(--border-2);border-radius:3px;transition:transform .2s,background .2s,border-color .2s}
+  .btn-primary{background:var(--text);color:var(--inverse);border-color:var(--text)}
+  .btn-primary:hover{background:#fff;transform:translateY(-2px)}
+  .btn-ghost:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
+
+  footer{border-top:1px solid var(--border);padding:48px 0}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:baseline}
+  .foot .mono{font-size:12px;letter-spacing:.06em;color:var(--text-3)}
+  .foot .legal{font-size:13px;color:var(--dim)}
+  @media(prefers-reduced-motion:reduce){.combo:hover,.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="site-nav"><div class="nav-in">
+  <a class="brand" href="index.html"><span class="trit"><i></i><i></i><i></i></span>Ternary</a>
+  <div class="nav-links"><a href="capabilities-hub-bold.html" class="active">Capabilities</a><a href="solutions-hub-bold.html">Solutions</a><a href="industries-hub-bold.html">Industries</a><a href="scales-hub-iso.html">Scales</a><a href="#">Stories</a><a href="#">About</a></div>
+  <a class="nav-cta" href="#">Start a conversation</a>
+</div></nav>
+
+<!-- HERO -->
+<header>
+  <canvas class="hero-net" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="eyebrow rv">Capability index / 8 disciplines</div>
+    <h1 class="rv" style="--i:1">Eight disciplines.<br>One standard.</h1>
+    <p class="hero-sub rv" style="--i:2">The technical practices behind everything we build and run. Each has a named lead, house standards, and work in production to show for it.</p>
+    <nav class="hero-idx rv" style="--i:3" aria-label="Capability index">
+      <a href="#c00"><b>00</b>Agentic Architecture</a>
+      <a href="#c01"><b>01</b>Artificial Intelligence</a>
+      <a href="#c02"><b>02</b>Data &amp; Analytics</a>
+      <a href="#c10"><b>10</b>Cloud Transformation</a>
+      <a href="#c11"><b>11</b>Platformization</a>
+      <a href="#c12"><b>12</b>Digital Experiences</a>
+      <a href="#c20"><b>20</b>DevOps &amp; Automation</a>
+      <a href="#c21"><b>21</b>Internet of Things</a>
+    </nav>
+  </div>
+</header>
+
+<!-- FRAMING -->
+<section class="framing"><div class="wrap">
+  <div class="eyebrow lab rv">What a capability is</div>
+  <p class="rv" style="--i:1">A capability, to us, is <em>a practice we run in production</em> — not a keyword on a services page.</p>
+</div></section>
+
+<!-- THE INDEX -->
+<section class="sec"><div class="wrap">
+  <div class="sec-head rv">
+    <div><div class="eyebrow">The index · base 3</div><h2>What we practice</h2></div>
+    <p class="sec-sub">Numbered in base three — it's in the name. Open a discipline for the methods, the standards, and the work behind it.</p>
+  </div>
+
+  <div class="index rv" style="--i:1">
+
+    <!-- 00 -->
+    <div class="cap" id="c00">
+      <button class="cap-head" aria-expanded="true" aria-controls="b00">
+        <span class="cap-num">00</span>
+        <span class="cap-titles"><span class="cap-name">Agentic Architecture</span><span class="cap-tag">AI that does real work — and answers for it.</span></span>
+        <span class="cap-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="cap-body" id="b00"><div class="cap-body-in"><div class="cap-grid">
+        <span class="cap-ghost" aria-hidden="true">00</span>
+        <div class="cap-copy">
+          <p class="cap-desc">Systems that plan, act, and verify — with people in command of anything that matters. Autonomy designed in as structure and bounded authority, not coaxed from a prompt.</p>
+          <div class="cap-chips"><span>Multi-agent systems</span><span>Tool use &amp; permissions</span><span>Evals &amp; guardrails</span><span>Human oversight</span></div>
+        </div>
+        <div class="cap-panel"><svg class="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+          <g class="st ac"><path class="a-flow" d="M60 130 H150"/><path class="a-flow" d="M150 130 L280 70"/><path class="a-flow" d="M150 130 H280"/><path class="a-flow" d="M150 130 L280 190"/></g>
+          <circle class="acf a-node sp" cx="60" cy="130" r="7"/>
+          <circle class="fp" cx="150" cy="130" r="4"/>
+          <circle class="fp a-node sp" cx="280" cy="70" r="6"/><circle class="fp a-node sp" cx="280" cy="130" r="6"/><circle class="fp a-node sp" cx="280" cy="190" r="6"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 01 -->
+    <div class="cap" id="c01">
+      <button class="cap-head" aria-expanded="false" aria-controls="b01">
+        <span class="cap-num">01</span>
+        <span class="cap-titles"><span class="cap-name">Artificial Intelligence</span><span class="cap-tag">Production ML, not demos.</span></span>
+        <span class="cap-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="cap-body" id="b01"><div class="cap-body-in"><div class="cap-grid">
+        <span class="cap-ghost" aria-hidden="true">01</span>
+        <div class="cap-copy">
+          <p class="cap-desc">LLM applications and machine learning built for production — shipped, monitored, and owned after launch, not handed over as a notebook.</p>
+          <div class="cap-chips"><span>LLM applications</span><span>ML pipelines</span><span>Retrieval &amp; search</span><span>Model operations</span></div>
+        </div>
+        <div class="cap-panel"><svg class="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+          <g class="st"><path class="a-flow" d="M60 60 L250 130"/><path class="a-flow" d="M60 110 L250 130"/><path class="a-flow" d="M60 160 L250 130"/><path class="a-flow" d="M60 210 L250 130"/><path class="a-flow" d="M110 90 L250 130"/><path class="a-flow" d="M110 175 L250 130"/></g>
+          <circle class="acf a-node sp" cx="250" cy="130" r="9"/>
+          <g class="fp"><circle cx="60" cy="60" r="3.4"/><circle cx="60" cy="110" r="3.4"/><circle cx="60" cy="160" r="3.4"/><circle cx="60" cy="210" r="3.4"/></g>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 02 -->
+    <div class="cap" id="c02">
+      <button class="cap-head" aria-expanded="false" aria-controls="b02">
+        <span class="cap-num">02</span>
+        <span class="cap-titles"><span class="cap-name">Data &amp; Analytics</span><span class="cap-tag">One source of truth.</span></span>
+        <span class="cap-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="cap-body" id="b02"><div class="cap-body-in"><div class="cap-grid">
+        <span class="cap-ghost" aria-hidden="true">02</span>
+        <div class="cap-copy">
+          <p class="cap-desc">Pipelines, warehouses, and numbers your teams can actually act on — governed, documented, and trusted enough to make decisions from.</p>
+          <div class="cap-chips"><span>Data pipelines</span><span>Warehousing</span><span>Decision analytics</span><span>Governance</span></div>
+        </div>
+        <div class="cap-panel"><svg class="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+          <g class="a-wave"><path class="st ac" d="M-60 90 Q0 60 60 90 T180 90 T300 90 T420 90"/></g>
+          <g class="a-wave" style="animation-duration:9s"><path class="st" d="M-60 135 Q0 108 60 135 T180 135 T300 135 T420 135" stroke-opacity=".5"/></g>
+          <g class="a-wave" style="animation-duration:11s"><path class="st" d="M-60 180 Q0 156 60 180 T180 180 T300 180 T420 180" stroke-opacity=".28"/></g>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 10 -->
+    <div class="cap" id="c10">
+      <button class="cap-head" aria-expanded="false" aria-controls="b10">
+        <span class="cap-num">10</span>
+        <span class="cap-titles"><span class="cap-name">Cloud Transformation</span><span class="cap-tag">Move without betting the business.</span></span>
+        <span class="cap-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="cap-body" id="b10"><div class="cap-body-in"><div class="cap-grid">
+        <span class="cap-ghost" aria-hidden="true">10</span>
+        <div class="cap-copy">
+          <p class="cap-desc">Architecture, migration, and operations — governed for regulated environments. Nothing switches off until its replacement has proven itself.</p>
+          <div class="cap-chips"><span>Migration</span><span>Cloud-native architecture</span><span>Platform operations</span><span>Compliance</span></div>
+        </div>
+        <div class="cap-panel"><svg class="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+          <g class="a-drift"><path class="st" d="M110 180 L180 150 L250 180 L180 210 Z" stroke-opacity=".3"/></g>
+          <g class="a-drift" style="animation-duration:11s"><path class="st" d="M110 140 L180 110 L250 140 L180 170 Z" stroke-opacity=".5"/></g>
+          <g class="a-drift" style="animation-duration:8s"><path class="st ac" d="M110 100 L180 70 L250 100 L180 130 Z"/></g>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 11 -->
+    <div class="cap" id="c11">
+      <button class="cap-head" aria-expanded="false" aria-controls="b11">
+        <span class="cap-num">11</span>
+        <span class="cap-titles"><span class="cap-name">Platformization</span><span class="cap-tag">From one-off to platform.</span></span>
+        <span class="cap-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="cap-body" id="b11"><div class="cap-body-in"><div class="cap-grid">
+        <span class="cap-ghost" aria-hidden="true">11</span>
+        <div class="cap-copy">
+          <p class="cap-desc">Turn one-off builds into shared platforms, so every next project starts further ahead instead of from zero.</p>
+          <div class="cap-chips"><span>Internal platforms</span><span>Reusable services</span><span>APIs &amp; SDKs</span><span>Developer experience</span></div>
+        </div>
+        <div class="cap-panel"><svg class="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+          <g class="st">
+            <rect class="a-bre sp" x="120" y="150" width="40" height="40" rx="3"/>
+            <rect class="a-bre sp" x="168" y="150" width="40" height="40" rx="3" style="animation-delay:.4s"/>
+            <rect class="a-bre sp" x="216" y="150" width="40" height="40" rx="3" style="animation-delay:.8s"/>
+            <rect class="a-bre sp" x="144" y="102" width="40" height="40" rx="3" style="animation-delay:.6s"/>
+            <rect class="a-bre sp" x="192" y="102" width="40" height="40" rx="3" style="animation-delay:1s"/>
+          </g>
+          <rect class="ac a-bre sp" x="168" y="56" width="40" height="40" rx="3" style="animation-delay:1.2s"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 12 -->
+    <div class="cap" id="c12">
+      <button class="cap-head" aria-expanded="false" aria-controls="b12">
+        <span class="cap-num">12</span>
+        <span class="cap-titles"><span class="cap-name">Digital Experiences</span><span class="cap-tag">Trusted at first use.</span></span>
+        <span class="cap-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="cap-body" id="b12"><div class="cap-body-in"><div class="cap-grid">
+        <span class="cap-ghost" aria-hidden="true">12</span>
+        <div class="cap-copy">
+          <p class="cap-desc">Web, mobile, and product interfaces people trust at first use — clear, fast, and dependable on every device.</p>
+          <div class="cap-chips"><span>Web &amp; mobile</span><span>Product design</span><span>Accessibility</span><span>Performance</span></div>
+        </div>
+        <div class="cap-panel"><svg class="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+          <rect class="st a-bre sp" x="100" y="70" width="160" height="120" rx="6" stroke-opacity=".3"/>
+          <rect class="st a-bre sp" x="122" y="92" width="116" height="76" rx="5" stroke-opacity=".5" style="animation-delay:.5s"/>
+          <rect class="ac a-bre sp" x="150" y="116" width="60" height="28" rx="4" style="animation-delay:1s"/>
+          <path class="fp" d="M232 150 l14 6 -6 2 -2 6 z"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 20 -->
+    <div class="cap" id="c20">
+      <button class="cap-head" aria-expanded="false" aria-controls="b20">
+        <span class="cap-num">20</span>
+        <span class="cap-titles"><span class="cap-name">DevOps &amp; Automation</span><span class="cap-tag">Make shipping boring.</span></span>
+        <span class="cap-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="cap-body" id="b20"><div class="cap-body-in"><div class="cap-grid">
+        <span class="cap-ghost" aria-hidden="true">20</span>
+        <div class="cap-copy">
+          <p class="cap-desc">More releases, fewer incidents, and no two-a.m. surprises — the pipeline that turns shipping from an event into a habit.</p>
+          <div class="cap-chips"><span>CI/CD</span><span>Observability</span><span>Reliability</span><span>Release automation</span></div>
+        </div>
+        <div class="cap-panel"><svg class="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+          <circle class="st" cx="180" cy="130" r="60" stroke-opacity=".4"/>
+          <g class="a-orbit" style="transform-origin:180px 130px"><circle class="acf a-node sp" cx="180" cy="70" r="7"/></g>
+          <g class="a-orbit" style="transform-origin:180px 130px;animation-duration:18s;animation-direction:reverse"><circle class="fp" cx="240" cy="130" r="4.5"/></g>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 21 -->
+    <div class="cap" id="c21">
+      <button class="cap-head" aria-expanded="false" aria-controls="b21">
+        <span class="cap-num">21</span>
+        <span class="cap-titles"><span class="cap-name">Internet of Things</span><span class="cap-tag">Sensor to dashboard.</span></span>
+        <span class="cap-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="cap-body" id="b21"><div class="cap-body-in"><div class="cap-grid">
+        <span class="cap-ghost" aria-hidden="true">21</span>
+        <div class="cap-copy">
+          <p class="cap-desc">Devices, firmware, and the data they send home — from the sensor on the floor to the dashboard on the wall.</p>
+          <div class="cap-chips"><span>Firmware</span><span>Edge computing</span><span>Telemetry</span><span>Device fleets</span></div>
+        </div>
+        <div class="cap-panel"><svg class="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+          <g class="st" stroke-opacity=".4"><line x1="180" y1="130" x2="180" y2="66"/><line x1="180" y1="130" x2="236" y2="98"/><line x1="180" y1="130" x2="236" y2="162"/><line x1="180" y1="130" x2="180" y2="194"/><line x1="180" y1="130" x2="124" y2="162"/><line x1="180" y1="130" x2="124" y2="98"/></g>
+          <circle class="acf a-node sp" cx="180" cy="130" r="8"/>
+          <circle class="fp a-node sp" cx="180" cy="66" r="4"/><circle class="fp a-node sp" cx="236" cy="98" r="4" style="animation-delay:.3s"/><circle class="fp a-node sp" cx="236" cy="162" r="4" style="animation-delay:.6s"/><circle class="fp a-node sp" cx="180" cy="194" r="4" style="animation-delay:.9s"/><circle class="fp a-node sp" cx="124" cy="162" r="4" style="animation-delay:1.2s"/><circle class="fp a-node sp" cx="124" cy="98" r="4" style="animation-delay:1.5s"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+  </div>
+</div></section>
+
+<!-- IN PRACTICE -->
+<section class="sec"><div class="wrap">
+  <div class="sec-head rv">
+    <div><div class="eyebrow">In practice</div><h2>They ship together</h2></div>
+    <p class="sec-sub">Most engagements draw on three or four disciplines at once. A modernization is never just cloud.</p>
+  </div>
+  <div class="combos">
+    <div class="combo rv">
+      <div class="combo-viz"><svg class="g" viewBox="0 0 320 150" fill="none" aria-hidden="true">
+        <g class="a-rot" style="transform-origin:160px 75px"><rect class="st" x="120" y="35" width="80" height="80" rx="4" stroke-opacity=".4"/><rect class="st ac" x="134" y="49" width="52" height="52" rx="3" transform="rotate(18 160 75)"/></g>
+      </svg></div>
+      <div class="combo-in"><div class="combo-tag">Capital markets</div><h3>Dhaka Stock Exchange</h3>
+        <p>A national exchange's public platform, rebuilt from the ground up — modern, bilingual, accessible — without touching the trading core.</p>
+        <div class="combo-nums"><span class="hl">12</span><span>02</span><span>10</span></div>
+      </div>
+    </div>
+    <div class="combo rv" style="--i:1">
+      <div class="combo-viz"><svg class="g" viewBox="0 0 320 150" fill="none" aria-hidden="true">
+        <rect class="st" x="176" y="30" width="120" height="90" rx="4" stroke-dasharray="5 6" stroke-opacity=".5"/>
+        <g class="a-orbit" style="transform-origin:110px 75px"><circle class="acf" cx="110" cy="40" r="5"/></g>
+        <circle class="fp" cx="110" cy="75" r="5"/>
+        <g class="st" stroke-opacity=".4"><line x1="110" y1="75" x2="230" y2="60"/><line x1="110" y1="75" x2="230" y2="90"/></g>
+      </svg></div>
+      <div class="combo-in"><div class="combo-tag">Capital markets · AI</div><h3>LankaBangla Securities</h3>
+        <p>A governed, air-gapped AI layer letting brokerage advisors query market and portfolio data in plain language — production systems never exposed.</p>
+        <div class="combo-nums"><span class="hl">00</span><span>01</span><span>02</span></div>
+      </div>
+    </div>
+    <div class="combo rv" style="--i:2">
+      <div class="combo-viz"><svg class="g" viewBox="0 0 320 150" fill="none" aria-hidden="true">
+        <g class="st"><rect class="a-bre sp" x="70" y="66" width="34" height="34" rx="3"/><rect class="a-bre sp" x="96" y="52" width="34" height="34" rx="3" style="animation-delay:.5s"/><rect class="ac a-bre sp" x="122" y="38" width="34" height="34" rx="3" style="animation-delay:1s"/></g>
+        <circle class="st a-rot" cx="230" cy="75" r="30" style="transform-origin:230px 75px" stroke-dasharray="3 8" stroke-opacity=".5"/>
+      </svg></div>
+      <div class="combo-in"><div class="combo-tag">Experience economy</div><h3>Counterfoil</h3>
+        <p>A booking monolith rebuilt as an event-driven platform — while the original stayed live and taking bookings the whole time.</p>
+        <div class="combo-nums"><span class="hl">11</span><span>20</span><span>12</span></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- THE BAR -->
+<section class="sec"><div class="wrap bar-grid">
+  <div class="rv lx">
+    <div class="eyebrow">The bar</div>
+    <p class="bar-lead" style="margin-top:16px">One standard across all eight.</p>
+  </div>
+  <div>
+    <div class="std rv"><span class="k">a</span><div><h4>Led by a practitioner</h4><p>Every capability has a named lead who still builds. You can meet them before you sign anything.</p></div></div>
+    <div class="std rv" style="--i:1"><span class="k">b</span><div><h4>Proven in production</h4><p>We list only what we currently run for clients. If it isn't live somewhere, it isn't on this page.</p></div></div>
+    <div class="std rv" style="--i:2"><span class="k">c</span><div><h4>Owned past launch</h4><p>Capability work ships with monitoring, documentation, and a handover we stand behind — or we keep running it ourselves.</p></div></div>
+  </div>
+</div></section>
+
+<!-- CTA -->
+<section class="cta"><div class="wrap">
+  <div class="eyebrow rv">Start here</div>
+  <h2 class="rv" style="--i:1">Not sure which capability you need?</h2>
+  <p class="rv" style="--i:2">Most people aren't — that's our job. Describe the problem in your own words, and we'll bring the right practices to the first call.</p>
+  <div class="btns rv" style="--i:3"><a class="btn btn-primary" href="#">Start a conversation</a><a class="btn btn-ghost" href="#">See our work</a></div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <span class="brand"><span class="trit" style="display:inline-flex;gap:3px;margin-right:8px"></span>Ternary</span>
+  <span class="mono">Agentic Engineering. Human Orchestration.</span>
+  <span class="legal">© Ternary Limited and its subsidiaries.</span>
+</div></footer>
+
+<script>
+  /* choreographed reveal */
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.14});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  /* signature accordion — hover-open on pointers, tap-toggle on touch, keyboard-open on focus */
+  (function(){
+    const caps=[...document.querySelectorAll('.cap')];
+    const canHover=matchMedia('(hover:hover) and (pointer:fine)').matches;
+    function open(i){ caps.forEach((c,idx)=>{ const on=idx===i; c.classList.toggle('open',on); c.querySelector('.cap-head').setAttribute('aria-expanded',on?'true':'false'); }); }
+    open(0);
+    caps.forEach((c,i)=>{
+      const head=c.querySelector('.cap-head');
+      if(canHover) head.addEventListener('mouseenter',()=>open(i));
+      head.addEventListener('focus',()=>open(i));
+      head.addEventListener('click',()=>{ if(!canHover){ const isOpen=c.classList.contains('open'); open(isOpen?-1:i);} });
+    });
+  })();
+
+  /* hero ambient node-field — present but never competing; still under reduced-motion */
+  (function(){
+    const cv=document.querySelector('.hero-net'); if(!cv) return;
+    const ctx=cv.getContext('2d'); const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    let W=0,H=0,DPR=1,nodes=[],ai=0,raf=0,t=0;
+    function size(){DPR=Math.min(window.devicePixelRatio||1,2);const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.max(1,W*DPR);cv.height=Math.max(1,H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
+    function init(){size();const N=W<720?14:26;nodes=[];for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.16,vy:(Math.random()-.5)*.16});ai=Math.floor(N*.5);}
+    function md(){return W<720?150:210;}
+    function draw(){ctx.clearRect(0,0,W,H);const m=md();for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<m){ctx.strokeStyle='rgba(180,176,160,'+((1-d/m)*.16)+')';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}for(let i=0;i<nodes.length;i++){const n=nodes[i];if(i===ai){const p=.5+.5*Math.sin(t*.0015);ctx.fillStyle='rgba(217,199,154,'+(.09+.1*p)+')';ctx.beginPath();ctx.arc(n.x,n.y,15,0,7);ctx.fill();ctx.fillStyle='rgba(217,199,154,'+(.55+.35*p)+')';ctx.beginPath();ctx.arc(n.x,n.y,2.8,0,7);ctx.fill();}else{ctx.fillStyle='rgba(180,176,160,.45)';ctx.beginPath();ctx.arc(n.x,n.y,1.7,0,7);ctx.fill();}}}
+    function step(ts){t=ts;for(const n of nodes){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;}draw();raf=requestAnimationFrame(step);}
+    function start(){cancelAnimationFrame(raf);init();if(reduce){draw();}else{raf=requestAnimationFrame(step);}}
+    start();let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(start,180);});
+  })();
+</script>
+</body>
+</html>

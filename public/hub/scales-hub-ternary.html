@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scales | Ternary</title>
+<meta name="description" content="From founding teams to national institutions. Our quality bar doesn't change with your size — the shape of the engagement does.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#141208; --card:#1B1810; --elevated:#232012;
+    --text:#F4F3EC; --text-2:#B4B0A0; --text-3:#8B8774; --dim:#6C6957;
+    --border:#2B2718; --border-2:#3C3724;
+    --accent:#D9C79A; --accent-soft:rgba(217,199,154,.09); --inverse:#141208;
+    --max:1200px; --pad:clamp(20px,4vw,48px); --sec:clamp(92px,10.5vw,150px);
+    --display:'Poppins',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'Geist Mono',ui-monospace,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--page);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:var(--inverse)}
+  :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:2px}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--text-3);text-transform:uppercase;display:flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--accent);display:inline-block}
+
+  .rv{opacity:0;transform:translateY(16px);transition:opacity .65s ease,transform .65s ease;transition-delay:calc(var(--i,0)*55ms)}
+  .rv.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+  /* nav */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(20,18,8,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-in{max-width:var(--max);margin:0 auto;padding:0 var(--pad);height:66px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:var(--display);font-weight:600;font-size:17px;display:flex;align-items:center;gap:10px}
+  .brand .trit{display:inline-flex;gap:3px}
+  .brand .trit i{width:5px;height:5px;display:block;background:var(--accent)}
+  .brand .trit i:nth-child(2){background:var(--text-3)}
+  .brand .trit i:nth-child(3){background:var(--border-2)}
+  .nav-links{display:flex;gap:30px;font-size:14.5px;color:var(--text-2)}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);position:relative}
+  .nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:2px;background:var(--accent)}
+  .nav-cta{font-family:var(--display);font-size:13.5px;font-weight:500;border:1px solid var(--border-2);padding:9px 18px;transition:border-color .2s,background .2s}
+  .nav-cta:hover{border-color:var(--accent);background:var(--accent-soft)}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* hero */
+  header{min-height:78vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding-top:66px;overflow:hidden;border-bottom:1px solid var(--border);
+    background:repeating-linear-gradient(90deg, rgba(244,243,236,.018) 0 1px, transparent 1px 128px)}
+  .hero-net{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.5;pointer-events:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 36%,#000 68%,#000 100%);
+            mask-image:linear-gradient(90deg,transparent 0%,transparent 36%,#000 68%,#000 100%)}
+  header .wrap{position:relative;z-index:1}
+  h1{font-family:var(--display);font-size:clamp(2.4rem,5.6vw,4.4rem);line-height:1.03;font-weight:600;letter-spacing:-.025em;margin:24px 0 24px;max-width:18ch;text-wrap:balance}
+  .hero-sub{font-family:var(--body);font-size:clamp(17px,1.7vw,21px);color:var(--text-2);max-width:52ch;line-height:1.6}
+  @media(max-width:720px){.hero-net{opacity:.3}}
+
+  section{padding:var(--sec) 0;border-bottom:1px solid var(--border)}
+  .sec-head{margin-bottom:clamp(32px,4.5vw,52px)}
+  h2{font-family:var(--display);font-size:clamp(28px,3.4vw,30px);font-weight:600;letter-spacing:-.015em;line-height:1.12;margin-top:16px;text-wrap:balance}
+  .sec-sub{color:var(--text-2);max-width:50ch;font-size:16px;line-height:1.7;margin-top:14px}
+
+  /* scale sections */
+  .scale .wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,0.85fr);gap:clamp(36px,6vw,72px);align-items:stretch}
+  .scale.alt .content{order:2}
+  .scale.alt .panel{order:1}
+  .content{display:flex;flex-direction:column;justify-content:center}
+  .scale-mark{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--text-3);text-transform:uppercase}
+  .scale-mark b{color:var(--accent);font-weight:500}
+  .scale-name{font-family:var(--display);font-size:clamp(2.25rem,5vw,3.75rem);font-weight:600;letter-spacing:-.03em;line-height:1.04;margin:18px 0 22px;max-width:15ch;text-wrap:balance}
+  .lede{color:var(--text-2);font-size:clamp(17px,1.5vw,19px);line-height:1.6;max-width:48ch;margin-bottom:40px}
+  .facts{display:flex;flex-direction:column;gap:26px;max-width:52ch}
+  .fact{display:grid;grid-template-columns:minmax(0,140px) minmax(0,1fr);gap:8px 28px}
+  .fact h4{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);padding-top:2px}
+  .fact p{color:var(--text-2);font-size:15.5px;line-height:1.55}
+  .fact.week p{color:var(--text);font-weight:500}
+  .scale-proof{margin-top:36px;font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:var(--text-3);display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+  .scale-proof b{color:var(--accent);font-weight:500;text-transform:uppercase;letter-spacing:.09em}
+  @media(max-width:900px){
+    .scale .wrap{grid-template-columns:1fr;gap:32px}
+    .scale.alt .content{order:1}.scale.alt .panel{order:2}
+    .fact{grid-template-columns:1fr;gap:4px}
+  }
+
+  /* graphic panels */
+  .panel{position:relative;min-height:26rem;border:1px solid var(--border);border-radius:4px;overflow:hidden;
+    background:radial-gradient(120% 130% at 50% 0%,var(--accent-soft),transparent 60%),var(--elevated)}
+  .panel canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  @media(max-width:900px){.panel{min-height:22rem}}
+
+  /* the point */
+  .point .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.15fr);gap:clamp(36px,6vw,72px);align-items:start}
+  .pull{font-family:var(--display);font-size:clamp(28px,3.6vw,44px);font-weight:600;line-height:1.18;letter-spacing:-.02em;max-width:16ch}
+  .pull em{font-style:normal;color:var(--accent)}
+  .note p{color:var(--text-2);line-height:1.75;max-width:56ch;font-size:16px}
+  .note p+p{margin-top:18px}
+  .note strong{color:var(--text);font-weight:600}
+  @media(max-width:860px){.point .wrap{grid-template-columns:1fr;gap:28px}}
+
+  /* moves / never split */
+  .swap{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .swap-col{border:1px solid var(--border);border-radius:4px;padding:30px 28px;background:var(--card)}
+  .swap-col.no{background:var(--elevated);border-color:var(--border-2)}
+  .swap-col h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:9px}
+  .swap-col.no h4{color:var(--accent)}
+  .swap-col.yes h4{color:var(--text-3)}
+  .swap-col .h-note{font-size:13px;color:var(--text-3);margin-bottom:14px}
+  .swap-col ul{list-style:none}
+  .swap-col li{padding:14px 0;border-top:1px solid var(--border);font-size:15.5px;display:flex;align-items:baseline;gap:12px}
+  .swap-col li::before{content:"";width:5px;height:5px;flex:0 0 5px;margin-top:8px;border-radius:1px;background:var(--text-3)}
+  .swap-col.no li{color:var(--text)}
+  .swap-col.no li::before{background:var(--accent)}
+  .swap-col.yes li{color:var(--text-2)}
+  @media(max-width:760px){.swap{grid-template-columns:1fr}}
+
+  /* router */
+  .router{border:1px solid var(--border);background:var(--card);border-radius:4px;padding:clamp(30px,4.5vw,48px);max-width:820px}
+  .router-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .router label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);margin-bottom:9px}
+  .router select{width:100%;background:var(--page);border:1px solid var(--border-2);color:var(--text);font-family:var(--body);font-size:15px;padding:13px 14px;border-radius:3px;appearance:none;
+    background-image:linear-gradient(45deg,transparent 50%,var(--text-3) 50%),linear-gradient(135deg,var(--text-3) 50%,transparent 50%);
+    background-position:calc(100% - 18px) 20px,calc(100% - 12px) 20px;background-size:6px 6px,6px 6px;background-repeat:no-repeat;cursor:pointer;transition:border-color .2s}
+  .router select:hover{border-color:var(--text-3)}
+  .router select:focus-visible{outline:2px solid var(--text);outline-offset:2px;border-color:var(--text-3)}
+  .router-actions{margin-top:28px;display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+  .router-result{font-size:15px;color:var(--text-2);min-height:1.4em}
+  .router-result b{font-family:var(--display);color:var(--text);font-weight:600}
+  .router-result .rk{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-right:8px}
+  @media(max-width:720px){.router-grid{grid-template-columns:1fr}}
+
+  /* buttons + cta */
+  .btns{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{font-family:var(--display);font-size:15px;font-weight:500;padding:14px 28px;border:1px solid var(--border-2);border-radius:3px;background:none;color:var(--text);cursor:pointer;transition:transform .2s,background .2s,border-color .2s}
+  .btn-primary{background:var(--text);color:var(--inverse);border-color:var(--text)}
+  .btn-primary:hover{background:#fff;border-color:#fff;transform:translateY(-2px)}
+  .btn-ghost:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
+  .cta{border-bottom:none}
+  .cta h2{max-width:18ch;font-size:clamp(28px,3.6vw,34px)}
+  .cta p{color:var(--text-2);max-width:52ch;margin-top:20px;font-size:17px;line-height:1.7}
+  .cta .btns{margin-top:34px}
+
+  footer{border-top:1px solid var(--border);padding:48px 0}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:baseline}
+  .foot .brand{font-size:15px}
+  .foot .mono{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--text-3)}
+  .foot .legal{font-size:13px;color:var(--dim)}
+
+  @media(prefers-reduced-motion:reduce){
+    .btn-primary:hover,.btn-ghost:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<nav><div class="nav-in">
+  <a class="brand" href="#"><span class="trit"><i></i><i></i><i></i></span>Ternary</a>
+  <div class="nav-links"><a href="#">Capabilities</a><a href="#">Solutions</a><a href="#">Industries</a><a href="#">Stories</a><a href="#">About</a></div>
+  <a class="nav-cta" href="#">Start a conversation</a>
+</div></nav>
+
+<!-- HERO -->
+<header>
+  <canvas class="hero-net" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="eyebrow rv">Scales</div>
+    <h1 class="rv" style="--i:1">From founding teams to national institutions.</h1>
+    <p class="hero-sub rv" style="--i:2">Our quality bar doesn't change with your size. The shape of the engagement does.</p>
+  </div>
+</header>
+
+<!-- SCALE 1 — STARTUPS & SCALE-UPS -->
+<section class="scale"><div class="wrap">
+  <div class="content rv">
+    <div class="scale-mark">Scale 1 of 3 · <b>Startups &amp; Scale-ups</b></div>
+    <h2 class="scale-name">Move fast without building your own mess.</h2>
+    <p class="lede">Founders and early CTOs with more roadmap than team.</p>
+    <div class="facts">
+      <div class="fact"><h4>How we show up</h4><p>One senior pod, shipping daily, with direct access to the people writing the code.</p></div>
+      <div class="fact"><h4>Typical shape</h4><p>Frame™ or Flow™ · 3–9 months · 3–6 engineers.</p></div>
+      <div class="fact week"><h4>Week one</h4><p>Architecture decided. Environments live. First increment in review.</p></div>
+    </div>
+    <p class="scale-proof"><b>Recently at this scale</b><span>Alley Analytix · Flex5 by Reality Meets Science</span></p>
+  </div>
+  <div class="panel rv" style="--i:1" aria-hidden="true">
+    <!-- Scale 1 · momentum — flowing particle field (canvas): streaks glide up-and-right from depth -->
+    <canvas class="scene" data-scene="momentum"></canvas>
+  </div>
+</div></section>
+
+<!-- SCALE 2 — MID-MARKET & ENTERPRISE -->
+<section class="scale alt"><div class="wrap">
+  <div class="content rv">
+    <div class="scale-mark">Scale 2 of 3 · <b>Mid-Market &amp; Enterprise</b></div>
+    <h2 class="scale-name">Modernize without a hard stop.</h2>
+    <p class="lede">CTOs and transformation leads replacing something that can't afford to pause.</p>
+    <div class="facts">
+      <div class="fact"><h4>How we show up</h4><p>Multi-quarter programs, coordinated workstreams, governance your board will recognize.</p></div>
+      <div class="fact"><h4>Typical shape</h4><p>Flow™ or Orchestra™ · 12+ months · multiple pods.</p></div>
+      <div class="fact week"><h4>Week one</h4><p>Current state mapped. Sequencing drafted. Risks named out loud.</p></div>
+    </div>
+    <p class="scale-proof"><b>Recently at this scale</b><span>FAROGL · Hissho Sushi</span></p>
+  </div>
+  <div class="panel rv" style="--i:1" aria-hidden="true">
+    <!-- Scale 2 · steady phased structure — node grid with a slow diagonal wave of activation (canvas) -->
+    <canvas class="scene" data-scene="phases"></canvas>
+  </div>
+</div></section>
+
+<!-- SCALE 3 — GOVERNMENT & PUBLIC INSTITUTIONS -->
+<section class="scale"><div class="wrap">
+  <div class="content rv">
+    <div class="scale-mark">Scale 3 of 3 · <b>Government &amp; Public Institutions</b></div>
+    <h2 class="scale-name">Mission timelines. Audit obligations. No surprises.</h2>
+    <p class="lede">Agencies and public bodies where "trust us" is not an acceptable answer.</p>
+    <div class="facts">
+      <div class="fact"><h4>How we show up</h4><p>Security and auditability designed in from day one. Documentation built for review boards, not just developers.</p></div>
+      <div class="fact"><h4>Typical shape</h4><p>Frame™ · procurement-dependent · scoped teams.</p></div>
+      <div class="fact week"><h4>Week one</h4><p>Compliance requirements mapped before a single line of code.</p></div>
+    </div>
+    <p class="scale-proof"><b>Recently at this scale</b><span>Dhaka Stock Exchange</span></p>
+  </div>
+  <div class="panel rv" style="--i:1" aria-hidden="true">
+    <!-- Scale 3 · secure/settled — concentric frames barely rotating, breathing core, slow audit sweep (canvas) -->
+    <canvas class="scene" data-scene="perimeter"></canvas>
+  </div>
+</div></section>
+
+<!-- THE POINT -->
+<section class="point"><div class="wrap">
+  <p class="pull rv">A startup and a stock exchange get <em>the same engineers.</em></p>
+  <div class="note">
+    <p class="rv">They don't get the same process, governance, or reporting cadence — those should differ. But the hiring bar, the review standard, and the people in the room don't move with the size of the invoice.</p>
+    <p class="rv" style="--i:1"><strong>And scales aren't silos.</strong> The startup we build for today becomes the enterprise program in three years — with the same people in the room who remember why every decision was made.</p>
+  </div>
+</div></section>
+
+<!-- WHAT MOVES / WHAT NEVER DOES -->
+<section><div class="wrap">
+  <div class="sec-head rv"><div class="eyebrow">In practice</div><h2>What moves with your size — and what never does</h2></div>
+  <div class="swap">
+    <div class="swap-col no rv">
+      <h4>Never moves</h4>
+      <div class="h-note">Constant at every scale.</div>
+      <ul><li>The hiring bar</li><li>The code review standard</li><li>The definition of done</li><li>Senior people on the work</li></ul>
+    </div>
+    <div class="swap-col yes rv" style="--i:1">
+      <h4>Shaped to you</h4>
+      <div class="h-note">Fitted to your size and stakes.</div>
+      <ul><li>Process weight and ceremony</li><li>Governance and reporting cadence</li><li>Team size and structure</li><li>Documentation depth</li></ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- ROUTER -->
+<section><div class="wrap">
+  <div class="sec-head rv"><div class="eyebrow">Find your fit</div><h2>Three questions. Thirty seconds.</h2><p class="sec-sub">Answer three and we'll point you at the scale we'd shape around you — a starting read, not a commitment.</p></div>
+  <div class="router rv">
+    <div class="router-grid">
+      <div><label for="q-size">How big is your organization?</label>
+        <select id="q-size"><option value="s">Under 50 people</option><option value="m">50–500 people</option><option value="l">500+ people</option><option value="g">Government / public body</option></select></div>
+      <div><label for="q-goal">What are you trying to do?</label>
+        <select id="q-goal"><option>Build something new</option><option>Modernize a system</option><option>Extend our team</option><option>Run our systems</option><option>Not sure yet</option></select></div>
+      <div><label for="q-when">When does it need to happen?</label>
+        <select id="q-when"><option>Now</option><option>This quarter</option><option>This year</option><option>Exploring</option></select></div>
+    </div>
+    <div class="router-actions">
+      <button class="btn btn-primary" id="q-match" type="button">Match me to my scale →</button>
+      <p class="router-result" id="q-result" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</div></section>
+
+<!-- CLOSING -->
+<section class="cta"><div class="wrap">
+  <div class="eyebrow rv">Start here</div>
+  <h2 class="rv" style="--i:1">Whatever your size, the standard is the point.</h2>
+  <p class="rv" style="--i:2">Tell us where you are. We'll show up shaped for it.</p>
+  <div class="btns rv" style="--i:3"><a class="btn btn-primary" href="#">Start a conversation</a><a class="btn btn-ghost" href="#">See our work</a></div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <span class="brand"><span class="trit" style="display:inline-flex;gap:3px;margin-right:8px"></span>Ternary</span>
+  <span class="mono">Agentic Engineering. Human Orchestration.</span>
+  <span class="legal">© Ternary Limited and its subsidiaries.</span>
+</div></footer>
+
+<script>
+  /* scroll reveal — fade + rise, staggered by --i, once */
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  /* ── scale motion graphics — a unified canvas family, warm-neutral, slow, sine-eased ──────────
+     momentum (flowing streaks) · phases (diagonal activation wave) · perimeter (settled frames).
+     Under prefers-reduced-motion each renders a single composed still. Offscreen panels are skipped. */
+  (function(){
+    const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const grey=(a)=>'rgba(180,176,160,'+a+')', egg=(a)=>'rgba(244,243,236,'+a+')', tan=(a)=>'rgba(217,199,154,'+a+')';
+    const smooth=(t)=> t<=0?0 : t>=1?1 : t*t*(3-2*t);
+    const scenes=[];
+
+    document.querySelectorAll('canvas.scene').forEach(cv=>{
+      const s={cv, ctx:cv.getContext('2d'), kind:cv.dataset.scene, W:0,H:0,DPR:1, state:null, visible:true};
+      scenes.push(s); size(s); init(s); if(reduce) render(s, 9000);
+    });
+    if(!scenes.length) return;
+
+    if('IntersectionObserver' in window){
+      const io=new IntersectionObserver(es=>es.forEach(e=>{ const s=scenes.find(x=>x.cv===e.target); if(s) s.visible=e.isIntersecting; }),{threshold:0.02});
+      scenes.forEach(s=>io.observe(s.cv));
+    }
+
+    function size(s){
+      s.DPR=Math.min(window.devicePixelRatio||1,2);
+      const r=s.cv.getBoundingClientRect(); s.W=Math.max(1,r.width); s.H=Math.max(1,r.height);
+      s.cv.width=Math.round(s.W*s.DPR); s.cv.height=Math.round(s.H*s.DPR); s.ctx.setTransform(s.DPR,0,0,s.DPR,0,0);
+    }
+    function init(s){
+      if(s.kind==='momentum'){
+        const n=s.W<520?18:32, ps=[];
+        for(let i=0;i<n;i++) ps.push({x:Math.random()*s.W, y:Math.random()*s.H, z:Math.random(), ph:Math.random()*6.28, tan:i%10===0});
+        s.state={ps};
+      } else if(s.kind==='phases'){
+        s.state={cols:s.W<520?5:7, rows:5};
+      } else s.state={};
+    }
+    function render(s,t){
+      const {ctx,W,H}=s; ctx.clearRect(0,0,W,H);
+      if(s.kind==='momentum') momentum(s,t);
+      else if(s.kind==='phases') phases(s,t);
+      else perimeter(s,t);
+    }
+    function momentum(s,t){
+      const {ctx,W,H}=s, ps=s.state.ps, T=t*0.001;
+      for(const p of ps){
+        const spd=6+p.z*15, vx=spd, vy=-spd*0.5;
+        p.x+=vx*0.016; p.y+=vy*0.016 + Math.sin(T*0.5+p.ph)*0.22;
+        if(p.x>W+24){p.x=-24; p.y=Math.random()*H;}
+        if(p.y<-24){p.y=H+24; p.x=Math.random()*W;}
+        const depth=0.32+p.z*0.68, len=12+p.z*30, ang=Math.atan2(vy,vx);
+        const tx=p.x-Math.cos(ang)*len, ty=p.y-Math.sin(ang)*len;
+        const col=p.tan?tan:(p.z>0.62?egg:grey);
+        const g=ctx.createLinearGradient(tx,ty,p.x,p.y); g.addColorStop(0,col(0)); g.addColorStop(1,col(0.05+depth*0.3));
+        ctx.strokeStyle=g; ctx.lineWidth=0.6+p.z*1.5; ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(p.x,p.y); ctx.stroke();
+        ctx.fillStyle=col(0.18+depth*0.5); ctx.beginPath(); ctx.arc(p.x,p.y,0.7+p.z*1.7,0,6.28); ctx.fill();
+      }
+    }
+    function phases(s,t){
+      const {ctx,W,H}=s, {cols,rows}=s.state, T=t*0.001;
+      const mx=W*0.13, my=H*0.12, gw=(W-2*mx)/(cols-1), gh=(H-2*my)/(rows-1);
+      const wave=(T*0.09)%2.4;
+      const act=(i,j)=>{const diag=(i/(cols-1)+j/(rows-1))/2; return smooth(1-Math.min(1,Math.abs(diag-(wave-0.7))*2.6));};
+      const nx=i=>mx+i*gw, ny=j=>my+j*gh;
+      for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){
+        const a=act(i,j);
+        if(i<cols-1){const a2=act(i+1,j),e=Math.max(a,a2); ctx.strokeStyle=grey(0.05+e*0.28); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(nx(i),ny(j)); ctx.lineTo(nx(i+1),ny(j)); ctx.stroke();}
+        if(j<rows-1){const a2=act(i,j+1),e=Math.max(a,a2); ctx.strokeStyle=grey(0.05+e*0.28); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(nx(i),ny(j)); ctx.lineTo(nx(i),ny(j+1)); ctx.stroke();}
+      }
+      const mid=Math.floor(cols/2);
+      for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){
+        const a=act(i,j), col=(i===mid)?tan:grey;
+        ctx.fillStyle=col(0.12+a*0.6); ctx.beginPath(); ctx.arc(nx(i),ny(j),1.4+a*2.4,0,6.28); ctx.fill();
+      }
+    }
+    function frame4(ctx,cx,cy,r,rot,stroke,dash){ ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot); ctx.strokeStyle=stroke; ctx.lineWidth=1.2; ctx.setLineDash(dash?[3,9]:[]); ctx.beginPath(); ctx.rect(-r,-r,2*r,2*r); ctx.stroke(); ctx.restore(); }
+    function perimeter(s,t){
+      const {ctx,W,H}=s, T=t*0.001, cx=W/2, cy=H/2, base=Math.min(W,H)*0.42;
+      ctx.strokeStyle=grey(0.05); ctx.lineWidth=1; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(cx-base*1.25,cy); ctx.lineTo(cx+base*1.25,cy); ctx.moveTo(cx,cy-base*1.25); ctx.lineTo(cx,cy+base*1.25); ctx.stroke();
+      frame4(ctx,cx,cy,base,        T*0.018, grey(0.2),  false);
+      frame4(ctx,cx,cy,base*0.74,  -T*0.026, grey(0.3),  true);
+      frame4(ctx,cx,cy,base*0.5,    T*0.034, grey(0.42), false);
+      frame4(ctx,cx,cy,base*0.28,  -T*0.05,  tan(0.5),   true);
+      const br=0.5+0.5*Math.sin(T*0.6), cs=base*0.13;
+      ctx.fillStyle=tan(0.22+0.3*br); ctx.beginPath(); ctx.rect(cx-cs,cy-cs,cs*2,cs*2); ctx.fill();
+      const sweep=T*0.22, ex=cx+Math.cos(sweep)*base*1.08, ey=cy+Math.sin(sweep)*base*1.08;
+      const g=ctx.createLinearGradient(cx,cy,ex,ey); g.addColorStop(0,egg(0)); g.addColorStop(1,egg(0.13));
+      ctx.strokeStyle=g; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(ex,ey); ctx.stroke();
+      ctx.fillStyle=grey(0.5); [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(c=>{ctx.beginPath(); ctx.arc(cx+c[0]*base,cy+c[1]*base,1.8,0,6.28); ctx.fill();});
+    }
+
+    let raf;
+    function loop(ts){ for(const s of scenes){ if(s.visible) render(s,ts); } raf=requestAnimationFrame(loop); }
+    if(!reduce) raf=requestAnimationFrame(loop);
+    let rt; window.addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>{ for(const s of scenes){ size(s); init(s); if(reduce) render(s,9000); } },160); });
+  })();
+
+  /* router — maps the three answers to a recommended scale (a starting read only). Government
+     always routes to Scale 3; otherwise org size leads, nudged by goal. */
+  (function(){
+    const SCALES = {
+      1:{k:'Scale 1 of 3',name:'Startups & Scale-ups',line:'A senior pod shipping daily — momentum without the mess.'},
+      2:{k:'Scale 2 of 3',name:'Mid-Market & Enterprise',line:'Coordinated workstreams and governance your board will recognize.'},
+      3:{k:'Scale 3 of 3',name:'Government & Public Institutions',line:'Security, auditability, and documentation built for review boards.'},
+    };
+    const btn=document.getElementById('q-match'), out=document.getElementById('q-result');
+    btn.addEventListener('click',()=>{
+      const size=document.getElementById('q-size').value;
+      const goal=document.getElementById('q-goal').value;
+      let s = size==='g' ? 3 : size==='l' ? 3 : size==='m' ? 2 : 1;
+      if(size==='m' && goal==='Build something new') s=1;      // building new leans lighter
+      if(size==='s' && goal==='Modernize a system') s=2;        // modernization leans heavier
+      const r=SCALES[s];
+      out.innerHTML='<span class="rk">'+r.k+'</span><b>'+r.name+'</b> — '+r.line;
+    });
+  })();
+
+  /* hero ambient lattice — slow warm-neutral drift, one faint tan node, still under reduced-motion */
+  (function(){
+    const cv=document.querySelector('.hero-net'); if(!cv) return;
+    const ctx=cv.getContext('2d'); const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    let W=0,H=0,DPR=1,nodes=[],ai=0,raf=0,t=0;
+    function size(){DPR=Math.min(window.devicePixelRatio||1,2);const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.max(1,W*DPR);cv.height=Math.max(1,H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
+    function init(){size();const N=W<720?9:15;nodes=[];for(let i=0;i<N;i++)nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.12});ai=Math.floor(N*.5);}
+    function md(){return W<720?150:200;}
+    function draw(){ctx.clearRect(0,0,W,H);const m=md();for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<m){ctx.strokeStyle='rgba(180,176,160,'+((1-d/m)*.13)+')';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}for(let i=0;i<nodes.length;i++){const n=nodes[i];if(i===ai){const p=.5+.5*Math.sin(t*.0015);ctx.fillStyle='rgba(217,199,154,'+(.08+.09*p)+')';ctx.beginPath();ctx.arc(n.x,n.y,13,0,7);ctx.fill();ctx.fillStyle='rgba(217,199,154,'+(.5+.35*p)+')';ctx.beginPath();ctx.arc(n.x,n.y,2.6,0,7);ctx.fill();}else{ctx.fillStyle='rgba(180,176,160,.4)';ctx.beginPath();ctx.arc(n.x,n.y,1.6,0,7);ctx.fill();}}}
+    function step(ts){t=ts;for(const n of nodes){n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;}draw();raf=requestAnimationFrame(step);}
+    function start(){cancelAnimationFrame(raf);init();if(reduce){draw();}else{raf=requestAnimationFrame(step);}}
+    start();let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(start,180);});
+  })();
+</script>
+</body>
+</html>

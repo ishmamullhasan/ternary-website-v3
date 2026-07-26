@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Industries | Ternary</title>
+<meta name="description" content="We build where the stakes are specific. Nine sectors where the rules, the risk, and the vocabulary are specific — with named work behind them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#141208; --card:#1B1810; --elevated:#232012;
+    --text:#F4F3EC; --text-2:#B4B0A0; --text-3:#8B8774; --dim:#6C6957;
+    --border:#2B2718; --border-2:#3C3724;
+    --accent:#D9C79A; --accent-soft:rgba(217,199,154,.09); --inverse:#141208;
+    --max:1280px; --pad:clamp(20px,4vw,56px);
+    --display:'Poppins',system-ui,sans-serif;
+    --body:'Inter',system-ui,sans-serif;
+    --mono:'Geist Mono',ui-monospace,monospace;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--page);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:var(--inverse)}
+  :focus-visible{outline:2px solid var(--text);outline-offset:3px;border-radius:2px}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--text-3);text-transform:uppercase;display:inline-flex;align-items:center;gap:12px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--accent)}
+
+  .rv{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:calc(var(--i,0)*70ms)}
+  .rv.lx{transform:translateX(-28px)}
+  .rv.big{transform:translateY(38px)}
+  .rv.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+  .site-nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(20,18,8,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-in{max-width:var(--max);margin:0 auto;padding:0 var(--pad);height:66px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-family:var(--display);font-weight:600;font-size:17px;display:flex;align-items:center;gap:10px}
+  .brand .trit{display:inline-flex;gap:3px}
+  .brand .trit i{width:5px;height:5px;display:block;background:var(--accent)}
+  .brand .trit i:nth-child(2){background:var(--text-3)}
+  .brand .trit i:nth-child(3){background:var(--border-2)}
+  .nav-links{display:flex;gap:30px;font-size:14.5px;color:var(--text-2)}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a.active{color:var(--text);position:relative}
+  .nav-links a.active::after{content:"";position:absolute;left:0;right:0;bottom:-23px;height:2px;background:var(--accent)}
+  .nav-cta{font-family:var(--display);font-size:13.5px;font-weight:500;border:1px solid var(--border-2);padding:9px 18px;transition:.2s}
+  .nav-cta:hover{border-color:var(--accent);background:var(--accent-soft)}
+  @media(max-width:860px){.nav-links{display:none}}
+
+  /* HERO */
+  header{position:relative;min-height:96vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 60px;overflow:hidden;border-bottom:1px solid var(--border)}
+  .hero-grid{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.8;pointer-events:none;
+    -webkit-mask-image:radial-gradient(120% 92% at 66% 46%,#000 26%,transparent 80%);mask-image:radial-gradient(120% 92% at 66% 46%,#000 26%,transparent 80%)}
+  header .wrap{position:relative;z-index:1}
+  h1{font-family:var(--display);font-size:clamp(3rem,10vw,7.5rem);line-height:.98;font-weight:600;letter-spacing:-.045em;margin:26px 0;max-width:15ch;text-wrap:balance}
+  .hero-sub{font-size:clamp(17px,1.7vw,21px);color:var(--text-2);max-width:56ch;line-height:1.6}
+
+  /* section frame */
+  .sec-b{padding:clamp(88px,11vw,150px) 0;border-bottom:1px solid var(--border)}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(28px,4vw,56px)}
+  h2{font-family:var(--display);font-size:clamp(2rem,4.4vw,3.25rem);font-weight:600;letter-spacing:-.03em;line-height:1.04;margin-top:16px}
+  .sec-sub{color:var(--text-2);max-width:44ch;font-size:16px;line-height:1.7}
+
+  /* SECTOR INDEX — signature */
+  .sectors{border-top:1px solid var(--border-2)}
+  .sec{position:relative;border-bottom:1px solid var(--border)}
+  .sec-head-b{position:relative;display:grid;grid-template-columns:clamp(2.4ch,5vw,3.4ch) 1fr auto;align-items:start;gap:clamp(16px,3vw,42px);width:100%;
+    background:none;border:0;color:inherit;text-align:left;cursor:pointer;font:inherit;padding:clamp(24px,3.4vw,40px) 4px;transition:background .4s var(--ease)}
+  .sec.open .sec-head-b{background:linear-gradient(90deg,rgba(255,255,255,.02),transparent 72%)}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--text-3);padding-top:.55em;transition:color .4s}
+  .sec.open .sec-num{color:var(--accent)}
+  .sec-mid{min-width:0}
+  .sec-name{font-family:var(--display);font-size:clamp(1.7rem,4.4vw,3.4rem);font-weight:600;letter-spacing:-.03em;line-height:1.02;transition:transform .5s var(--ease)}
+  .sec.open .sec-name{transform:translateX(3px)}
+  /* the proof — the star. Always visible, mono, precise; clients in warm accent. */
+  .sec-proof{margin-top:14px;font-family:var(--mono);font-size:12.5px;letter-spacing:.02em;line-height:1.5;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;color:var(--text-3)}
+  .sec-proof .lab{text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--text-3);border:1px solid var(--border-2);border-radius:2px;padding:3px 8px}
+  .sec-proof .cli{color:var(--accent)}
+  .sec-proof .none{color:var(--dim)}
+  .sec-chev{font-size:20px;color:var(--text-3);padding-top:.35em;transition:transform .5s var(--ease),color .4s}
+  .sec.open .sec-chev{transform:rotate(90deg);color:var(--text)}
+
+  .sec-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
+  .sec.open .sec-body{grid-template-rows:1fr}
+  .sec-body-in{overflow:hidden;min-height:0}
+  .sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,56px);align-items:center;padding:2px 4px clamp(30px,4vw,48px);
+    padding-left:calc(clamp(2.4ch,5vw,3.4ch) + clamp(16px,3vw,42px))}
+  .sec-desc{color:var(--text-2);font-size:16.5px;line-height:1.6;max-width:44ch}
+  .sec-panel{position:relative;height:clamp(160px,18vw,210px);border:1px solid var(--border);border-radius:4px;overflow:hidden;
+    background:radial-gradient(120% 130% at 70% 8%,var(--accent-soft),transparent 58%),var(--elevated)}
+  .sec-panel svg{position:absolute;inset:0;width:100%;height:100%}
+  @media(max-width:820px){
+    .sec-head-b{grid-template-columns:clamp(2.4ch,8vw,3.4ch) 1fr;gap:6px 16px}
+    .sec-chev{display:none}
+    .sec-grid{grid-template-columns:1fr;gap:22px;padding-left:4px}
+    .sec-panel{order:-1;height:170px}
+  }
+
+  /* glyphs */
+  .g .st{fill:none;stroke:var(--text-3);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .g .ac{stroke:var(--accent)} .g .fp{fill:var(--text-3)} .g .acf{fill:var(--accent);stroke:none}
+  .sec:not(.open) .g *{animation-play-state:paused}
+  @keyframes gg-bar{0%,100%{transform:scaleY(.7)}50%{transform:scaleY(1)}}
+  @keyframes gg-tilt{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+  @keyframes gg-dash{to{stroke-dashoffset:-260}}
+  @keyframes gg-rot{to{transform:rotate(360deg)}}
+  @keyframes gg-draw{0%{stroke-dashoffset:200;opacity:.3}45%{opacity:1}100%{stroke-dashoffset:0;opacity:.3}}
+  @keyframes gg-bre{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.07);opacity:.95}}
+  @keyframes gg-rise{0%,100%{transform:translateY(3px)}50%{transform:translateY(-3px)}}
+  .a-bar{transform-box:fill-box;transform-origin:50% 100%;animation:gg-bar 3.4s ease-in-out infinite}
+  .a-tilt{transform-box:fill-box;transform-origin:center;animation:gg-tilt 5.2s ease-in-out infinite}
+  .a-dash{stroke-dasharray:26 200;animation:gg-dash 3.4s linear infinite}
+  .a-rot{transform-box:view-box;animation:gg-rot 22s linear infinite}
+  .a-orb{transform-box:view-box;animation:gg-rot 9s linear infinite}
+  .a-draw{stroke-dasharray:200;animation:gg-draw 4.6s ease-in-out infinite}
+  .a-bre{transform-box:fill-box;transform-origin:center;animation:gg-bre 5.5s ease-in-out infinite}
+  .a-rise{transform-box:fill-box;transform-origin:center;animation:gg-rise 4.6s ease-in-out infinite}
+  @media(prefers-reduced-motion:reduce){.g *{animation:none!important}}
+
+  /* HOW WE ENTER / POSTURE */
+  .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:clamp(40px,6vw,80px);align-items:start}
+  .split-lead{font-family:var(--display);font-size:clamp(1.6rem,2.8vw,2.25rem);font-weight:600;letter-spacing:-.02em;line-height:1.18;max-width:14ch}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:22px;padding:26px 0;border-top:1px solid var(--border)}
+  .step:last-child{border-bottom:1px solid var(--border)}
+  .step .k{font-family:var(--display);font-weight:600;font-size:clamp(2rem,3.4vw,2.75rem);color:var(--text-3);line-height:.9;letter-spacing:-.04em}
+  .step h4{font-family:var(--display);font-size:19px;font-weight:600;margin-bottom:7px;letter-spacing:-.01em}
+  .step p{color:var(--text-2);font-size:15px;line-height:1.65;max-width:48ch}
+  @media(max-width:860px){.split{grid-template-columns:1fr;gap:34px}}
+
+  /* CTA */
+  .cta{padding:clamp(100px,14vw,200px) 0;text-align:center;border-bottom:none}
+  .cta .eyebrow{margin-bottom:30px}
+  .cta h2{font-family:var(--display);font-size:clamp(2.4rem,7.5vw,5.75rem);font-weight:600;letter-spacing:-.04em;line-height:1;max-width:15ch;margin:0 auto}
+  .cta p{color:var(--text-2);max-width:54ch;margin:26px auto 0;font-size:17px;line-height:1.7}
+  .btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:40px}
+  .btn{font-family:var(--display);font-size:15px;font-weight:500;padding:15px 32px;border:1px solid var(--border-2);border-radius:3px;transition:transform .2s,background .2s,border-color .2s}
+  .btn-primary{background:var(--text);color:var(--inverse);border-color:var(--text)}
+  .btn-primary:hover{background:#fff;transform:translateY(-2px)}
+  .btn-ghost:hover{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
+
+  footer{border-top:1px solid var(--border);padding:48px 0}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:baseline}
+  .foot .mono{font-size:12px;letter-spacing:.06em;color:var(--text-3)}
+  .foot .legal{font-size:13px;color:var(--dim)}
+  @media(prefers-reduced-motion:reduce){.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="site-nav"><div class="nav-in">
+  <a class="brand" href="index.html"><span class="trit"><i></i><i></i><i></i></span>Ternary</a>
+  <div class="nav-links"><a href="capabilities-hub-bold.html">Capabilities</a><a href="solutions-hub-bold.html">Solutions</a><a href="industries-hub-bold.html" class="active">Industries</a><a href="scales-hub-iso.html">Scales</a><a href="#">Stories</a><a href="#">About</a></div>
+  <a class="nav-cta" href="#">Start a conversation</a>
+</div></nav>
+
+<!-- HERO -->
+<header>
+  <canvas class="hero-grid" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="eyebrow rv">Industries</div>
+    <h1 class="rv" style="--i:1">We build where the stakes are specific.</h1>
+    <p class="hero-sub rv" style="--i:2">Every sector has its own rules, risks, and vocabulary. We learn yours before we build — because generic software doesn't survive contact.</p>
+  </div>
+</header>
+
+<!-- THE SECTORS -->
+<section class="sec-b"><div class="wrap">
+  <div class="sec-head rv">
+    <div><div class="eyebrow">The sectors · nine</div><h2>Where we build</h2></div>
+    <p class="sec-sub">Each entry opens into the work behind it. Where a client can be named, they are — proof, not a blurb.</p>
+  </div>
+
+  <div class="sectors rv" style="--i:1">
+
+    <!-- 01 -->
+    <div class="sec" id="banking">
+      <button class="sec-head-b" aria-expanded="true" aria-controls="sb1">
+        <span class="sec-num">01</span>
+        <span class="sec-mid">
+          <span class="sec-name">Banking &amp; Capital Markets</span>
+          <span class="sec-proof"><span class="lab">In the sector</span><span class="cli">Dhaka Stock Exchange</span><span class="cli">LankaBangla Securities</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb1"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">Exchanges, brokerages, and systems that can't be down while markets are open.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <line class="st" x1="50" y1="140" x2="250" y2="140" stroke-opacity=".4"/>
+          <line class="st a-bar" x1="80" y1="140" x2="80" y2="96"/><line class="st a-bar" x1="118" y1="140" x2="118" y2="70" style="animation-delay:.3s"/>
+          <line class="st ac a-bar" x1="156" y1="140" x2="156" y2="48" style="animation-delay:.6s"/><line class="st a-bar" x1="194" y1="140" x2="194" y2="82" style="animation-delay:.9s"/>
+          <line class="st a-bar" x1="232" y1="140" x2="232" y2="60" style="animation-delay:1.2s"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 02 -->
+    <div class="sec" id="financial">
+      <button class="sec-head-b" aria-expanded="false" aria-controls="sb2">
+        <span class="sec-num">02</span>
+        <span class="sec-mid">
+          <span class="sec-name">Financial Services &amp; Insurance</span>
+          <span class="sec-proof"><span class="lab">In the sector</span><span class="none">Named work under NDA</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb2"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">Compliant platforms that scale with the book — and auditors who get real answers.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <line class="st" x1="150" y1="90" x2="150" y2="146" stroke-opacity=".5"/><circle class="st" cx="150" cy="90" r="3"/>
+          <g class="a-tilt"><line class="st" x1="86" y1="90" x2="214" y2="90"/><circle class="fp" cx="86" cy="90" r="5.5"/><circle class="acf" cx="214" cy="90" r="5.5"/></g>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 03 -->
+    <div class="sec" id="health">
+      <button class="sec-head-b" aria-expanded="false" aria-controls="sb3">
+        <span class="sec-num">03</span>
+        <span class="sec-mid">
+          <span class="sec-name">Health Care</span>
+          <span class="sec-proof"><span class="lab">In the sector</span><span class="cli">Flex5 by Reality Meets Science</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb3"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">HIPAA-grade platforms where clinical trust and consumer ease have to live together.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <path class="st" d="M40 92 H110 L128 52 L150 132 L168 92 H260" stroke-opacity=".3"/>
+          <path class="st ac a-dash" d="M40 92 H110 L128 52 L150 132 L168 92 H260"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 04 -->
+    <div class="sec" id="manufacturing">
+      <button class="sec-head-b" aria-expanded="false" aria-controls="sb4">
+        <span class="sec-num">04</span>
+        <span class="sec-mid">
+          <span class="sec-name">Advanced Manufacturing &amp; Energy</span>
+          <span class="sec-proof"><span class="lab">In the sector</span><span class="cli">FAROGL</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb4"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">Connected plants, controlled processes, and operational intelligence from the floor up.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <g class="a-rot" style="transform-origin:150px 90px">
+            <circle class="st" cx="150" cy="90" r="40" stroke-opacity=".55"/>
+            <g class="st"><line x1="150" y1="36" x2="150" y2="50"/><line x1="150" y1="130" x2="150" y2="144"/><line x1="96" y1="90" x2="110" y2="90"/><line x1="190" y1="90" x2="204" y2="90"/><line x1="112" y1="52" x2="122" y2="62"/><line x1="178" y1="118" x2="188" y2="128"/><line x1="112" y1="128" x2="122" y2="118"/><line x1="178" y1="62" x2="188" y2="52"/></g>
+          </g>
+          <circle class="acf" cx="150" cy="90" r="6"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 05 -->
+    <div class="sec" id="sports">
+      <button class="sec-head-b" aria-expanded="false" aria-controls="sb5">
+        <span class="sec-num">05</span>
+        <span class="sec-mid">
+          <span class="sec-name">Sports &amp; Entertainment</span>
+          <span class="sec-proof"><span class="lab">In the sector</span><span class="cli">Alley Analytix</span><span class="cli">Turfly</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb5"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">Booking, performance data, and platforms that survive a matchday spike.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <circle class="st" cx="150" cy="90" r="42" stroke-opacity=".3"/><circle class="fp" cx="150" cy="90" r="6"/>
+          <g class="a-orb" style="transform-origin:150px 90px"><circle class="acf" cx="150" cy="48" r="6"/></g>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 06 -->
+    <div class="sec" id="hospitality">
+      <button class="sec-head-b" aria-expanded="false" aria-controls="sb6">
+        <span class="sec-num">06</span>
+        <span class="sec-mid">
+          <span class="sec-name">Hospitality &amp; Travel</span>
+          <span class="sec-proof"><span class="lab">In the sector</span><span class="cli">Counterfoil — attractions, activities &amp; tours</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb6"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">Booking, inventory, and revenue systems for operators running thin margins against volatile demand.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <path class="st ac a-draw" d="M60 128 C110 44 190 44 240 128"/>
+          <circle class="fp" cx="60" cy="128" r="5.5"/><circle class="fp" cx="240" cy="128" r="5.5"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 07 -->
+    <div class="sec" id="consumer">
+      <button class="sec-head-b" aria-expanded="false" aria-controls="sb7">
+        <span class="sec-num">07</span>
+        <span class="sec-mid">
+          <span class="sec-name">Consumer Goods &amp; Services</span>
+          <span class="sec-proof"><span class="lab">In the sector</span><span class="cli">Hissho Sushi</span><span class="cli">DoYouWork</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb7"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">Field teams, franchise networks, and the last mile between insight and daily action.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <g class="st" stroke-opacity=".4"><line x1="150" y1="90" x2="150" y2="46"/><line x1="150" y1="90" x2="204" y2="64"/><line x1="150" y1="90" x2="204" y2="116"/><line x1="150" y1="90" x2="150" y2="134"/><line x1="150" y1="90" x2="96" y2="116"/><line x1="150" y1="90" x2="96" y2="64"/></g>
+          <circle class="acf" cx="150" cy="90" r="6"/>
+          <circle class="fp a-bre" cx="150" cy="46" r="4"/><circle class="fp a-bre" cx="204" cy="64" r="4" style="animation-delay:.4s"/><circle class="fp a-bre" cx="204" cy="116" r="4" style="animation-delay:.8s"/><circle class="fp a-bre" cx="150" cy="134" r="4" style="animation-delay:1.2s"/><circle class="fp a-bre" cx="96" cy="116" r="4" style="animation-delay:1.6s"/><circle class="fp a-bre" cx="96" cy="64" r="4" style="animation-delay:2s"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 08 -->
+    <div class="sec" id="public">
+      <button class="sec-head-b" aria-expanded="false" aria-controls="sb8">
+        <span class="sec-num">08</span>
+        <span class="sec-mid">
+          <span class="sec-name">Public Sector</span>
+          <span class="sec-proof"><span class="lab">Posture</span><span class="cli">Cleared engineers · ATO-ready · Continuous compliance</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb8"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">Cleared engineers and ATO-ready delivery, with compliance that stays continuous — not a one-time certificate.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <rect class="st a-bre" x="100" y="46" width="100" height="88" rx="3" stroke-opacity=".3"/>
+          <rect class="st a-bre" x="120" y="66" width="60" height="48" rx="2" stroke-opacity=".55" style="animation-delay:.5s"/>
+          <rect class="ac a-bre" x="140" y="86" width="20" height="8" rx="1.5" style="animation-delay:1s"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+    <!-- 09 -->
+    <div class="sec" id="platforms">
+      <button class="sec-head-b" aria-expanded="false" aria-controls="sb9">
+        <span class="sec-num">09</span>
+        <span class="sec-mid">
+          <span class="sec-name">Technology Platforms</span>
+          <span class="sec-proof"><span class="lab">In the sector</span><span class="none">Named work under NDA</span></span>
+        </span>
+        <span class="sec-chev" aria-hidden="true">→</span>
+      </button>
+      <div class="sec-body" id="sb9"><div class="sec-body-in"><div class="sec-grid">
+        <p class="sec-desc">Product companies making the jump from one system to a real platform.</p>
+        <div class="sec-panel"><svg class="g" viewBox="0 0 300 180" fill="none" aria-hidden="true">
+          <rect class="st a-rise" x="110" y="112" width="80" height="16" rx="3"/>
+          <rect class="st a-rise" x="110" y="88" width="80" height="16" rx="3" style="animation-delay:.4s"/>
+          <rect class="ac a-rise" x="110" y="64" width="80" height="16" rx="3" style="animation-delay:.8s"/>
+        </svg></div>
+      </div></div></div>
+    </div>
+
+  </div>
+</div></section>
+
+<!-- HOW WE ENTER -->
+<section class="sec-b"><div class="wrap split">
+  <div class="rv lx">
+    <div class="eyebrow">Our approach</div>
+    <p class="split-lead" style="margin-top:16px">Before we write a line of code.</p>
+  </div>
+  <div>
+    <div class="step rv"><span class="k">1</span><div><h4>Learn the rules</h4><p>Regulation, workflows, vocabulary. We study how your world actually runs before proposing how software should.</p></div></div>
+    <div class="step rv" style="--i:1"><span class="k">2</span><div><h4>Sit with the operators</h4><p>The people doing the work every day know exactly where it breaks. We build from beside them, not from a spec.</p></div></div>
+    <div class="step rv" style="--i:2"><span class="k">3</span><div><h4>Build to the constraints</h4><p>Compliance, uptime windows, audit trails — treated as first-class requirements from day one, not patched in later.</p></div></div>
+  </div>
+</div></section>
+
+<!-- REGULATORY POSTURE -->
+<section class="sec-b"><div class="wrap split">
+  <div class="rv lx">
+    <div class="eyebrow">Regulatory posture</div>
+    <p class="split-lead" style="margin-top:16px">Built to be audited.</p>
+  </div>
+  <div>
+    <div class="step rv"><span class="k">a</span><div><h4>Traceable by default</h4><p>Every consequential action is attributable and replayable.</p></div></div>
+    <div class="step rv" style="--i:1"><span class="k">b</span><div><h4>Deployed inside the boundary</h4><p>On-premises and air-gapped patterns where the data can't leave the building.</p></div></div>
+    <div class="step rv" style="--i:2"><span class="k">c</span><div><h4>Documented for procurement</h4><p>Architecture, controls, and evidence packaged the way review boards actually ask for them.</p></div></div>
+  </div>
+</div></section>
+
+<!-- CTA -->
+<section class="cta"><div class="wrap">
+  <div class="eyebrow rv">Start here</div>
+  <h2 class="rv" style="--i:1">Don't see your industry?</h2>
+  <p class="rv" style="--i:2">The list above grows with the work. If your world has its own rules and real stakes, we're interested — and your first conversation is with someone who's built in a sector like yours, not a generalist.</p>
+  <div class="btns rv" style="--i:3"><a class="btn btn-primary" href="#">Start a conversation</a><a class="btn btn-ghost" href="#">See our work</a></div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <span class="brand"><span class="trit" style="display:inline-flex;gap:3px;margin-right:8px"></span>Ternary</span>
+  <span class="mono">Agentic Engineering. Human Orchestration.</span>
+  <span class="legal">© Ternary Limited and its subsidiaries.</span>
+</div></footer>
+
+<script>
+  /* choreographed reveal */
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  /* sector accordion — hover-open on pointers, tap-toggle on touch, keyboard-open on focus */
+  (function(){
+    const secs=[...document.querySelectorAll('.sec')];
+    const canHover=matchMedia('(hover:hover) and (pointer:fine)').matches;
+    function open(i){ secs.forEach((s,idx)=>{ const on=idx===i; s.classList.toggle('open',on); s.querySelector('.sec-head-b').setAttribute('aria-expanded',on?'true':'false'); }); }
+    open(0);
+    secs.forEach((s,i)=>{ const h=s.querySelector('.sec-head-b');
+      if(canHover) h.addEventListener('mouseenter',()=>open(i));
+      h.addEventListener('focus',()=>open(i));
+      h.addEventListener('click',()=>{ if(!canHover){ open(s.classList.contains('open')?-1:i);} });
+    });
+  })();
+
+  /* hero grid-field — distinct cells sharing one grid; a soft focus wanders and lights cells */
+  (function(){
+    const cv=document.querySelector('.hero-grid'); if(!cv) return;
+    const ctx=cv.getContext('2d'); const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    let W=0,H=0,DPR=1,raf=0;
+    function size(){DPR=Math.min(window.devicePixelRatio||1,2);const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=Math.max(1,W*DPR);cv.height=Math.max(1,H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);}
+    function draw(t){
+      ctx.clearRect(0,0,W,H);
+      const cell = W<720?58:82;
+      const fx = W*(.5+.34*Math.sin(t*0.00013)), fy = H*(.5+.30*Math.cos(t*0.00017));
+      const R = Math.min(W,H)*0.42;
+      // faint grid lines
+      ctx.strokeStyle='rgba(180,176,160,.05)'; ctx.lineWidth=1;
+      for(let x=(-((W/2)%cell))+W/2%cell; x<W; x+=cell){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for(let y=0; y<H; y+=cell){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+      // cell-centre marks — brighten near the wandering focus (distinct cells, one system)
+      let best=1e9, bx=0, by=0;
+      for(let cx=cell/2; cx<W; cx+=cell) for(let cy=cell/2; cy<H; cy+=cell){
+        const d=Math.hypot(cx-fx,cy-fy); const inten=Math.max(0,1-d/R);
+        const a=.05+inten*inten*.5;
+        ctx.fillStyle='rgba(180,176,160,'+a+')';
+        ctx.beginPath(); ctx.arc(cx,cy,1.3+inten*1.6,0,7); ctx.fill();
+        if(d<best){best=d;bx=cx;by=cy;}
+      }
+      // one accent cell at the focus
+      const p=.6+.4*Math.sin(t*0.002);
+      ctx.fillStyle='rgba(217,199,154,'+(.12*p)+')'; ctx.beginPath(); ctx.arc(bx,by,16,0,7); ctx.fill();
+      ctx.fillStyle='rgba(217,199,154,'+(.55+.35*p)+')'; ctx.beginPath(); ctx.arc(bx,by,2.6,0,7); ctx.fill();
+    }
+    let start0=null;
+    function step(ts){ if(start0===null)start0=ts; draw(ts-start0); raf=requestAnimationFrame(step); }
+    function boot(){ cancelAnimationFrame(raf); size(); if(reduce){ draw(8000); } else { start0=null; raf=requestAnimationFrame(step); } }
+    boot(); let rt; window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(boot,180);});
+  })();
+</script>
+</body>
+</html>

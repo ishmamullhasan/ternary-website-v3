@@ -36,3 +36,4 @@ public/sitemap*.xml
 
 # WEB-458 taxonomy reconcile backups (full CMS content snapshots)
 scripts/web458-backup-*.json
+.env*
