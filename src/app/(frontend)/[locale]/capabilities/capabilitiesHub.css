@@ -147,7 +147,7 @@
   left: 0;
   top: 50%;
   width: 3px;
-  height: clamp(26px, 3.4vw, 46px);
+  height: clamp(40px, 5vw, 66px);
   border-radius: 2px;
   background: var(--accent);
   transform: translateY(-50%) scaleY(0);
@@ -166,18 +166,23 @@
 }
 .hub .cap-titles {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .hub .cap-name {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;
   font-size: clamp(1.5rem, 3.1vw, 2.6rem);
   font-weight: 600;
   letter-spacing: -0.02em;
-  line-height: 1.06;
+  line-height: 1.04;
 }
+/* Subtitle sits BELOW the name (both are flex items in the column above), muted. */
 .hub .cap-tag {
   color: var(--t3);
-  font-size: 14.5px;
-  margin-top: 6px;
+  font-size: clamp(14px, 1.4vw, 16px);
+  line-height: 1.4;
+  max-width: 46ch;
   transition: color 0.4s;
 }
 .hub .cap.open .cap-tag {
@@ -211,10 +216,10 @@
 .hub .cap-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(28px, 4vw, 56px);
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(24px, 4vw, 52px);
   align-items: center;
-  padding: 6px 4px clamp(32px, 4vw, 52px) clamp(18px, 2.6vw, 34px);
+  padding: clamp(2px, 0.8vw, 10px) 4px clamp(18px, 2.4vw, 34px) clamp(18px, 2.6vw, 34px);
 }
 .hub .cap-copy {
   position: relative;
@@ -240,20 +245,18 @@
   border-radius: 2px;
   padding: 6px 11px;
 }
+/* Motion graphic floats free — no box, no bed. The line-art sits directly on the page ground. */
 .hub .cap-panel {
   position: relative;
   z-index: 1;
-  height: clamp(220px, 26vw, 320px);
-  border: 1px solid var(--brd);
-  border-radius: 4px;
-  overflow: hidden;
-  background: radial-gradient(120% 130% at 70% 10%, var(--accent-soft), transparent 58%), var(--panel);
+  height: clamp(150px, 17vw, 205px);
 }
 .hub .cap-panel svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  overflow: visible;
 }
 /* Pause a discipline's idle graphic motion while it is collapsed. */
 .hub .cap:not(.open) .g * {
@@ -266,7 +269,7 @@
   }
   .hub .cap-panel {
     order: -1;
-    height: 200px;
+    height: 168px;
   }
   .hub .cap-chev {
     display: none;
