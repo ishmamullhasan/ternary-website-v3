@@ -40,25 +40,29 @@ precision highp float;
 varying vec2 v_uv;
 uniform sampler2D u_tex;
 uniform float u_time;
-uniform float u_amp;      // pointer energy for THIS line, 0..~1, decays to 0 when the pointer leaves
-uniform vec2 u_mouse;     // pointer in texture space, (0,0) = top-left
-uniform float u_aspect;   // width / height, so distance falloff is not stretched
+uniform float u_amp;      // 0..1 presence of the pointer over THIS line; 0 = still
+uniform vec2 u_mouse;     // smoothed pointer position, texture space, (0,0) = top-left
+uniform float u_aspect;   // width / height, so the influence region is circular in screen pixels
+
+// Radius of the deformation, in height-units — kept small so only the glyphs directly under the
+// cursor move, not the whole line.
+const float RADIUS = 0.7;
 
 void main() {
   vec2 uv = v_uv;
 
-  // Ripple emanating from the pointer, pushing texels radially away, decaying with distance and
-  // with the settling pointer energy — this is what makes glyphs "flow away like liquid".
+  // Local Gaussian bump centred on the pointer: near it, texels are displaced; a few letters away,
+  // the influence is ~0, so the rest of the line stays perfectly still.
   vec2 toM = uv - u_mouse;
-  vec2 aspectToM = vec2(toM.x * u_aspect, toM.y);
-  float dist = length(aspectToM);
-  vec2 dir = aspectToM / (dist + 1e-4);
-  float ring = sin(dist * 26.0 - u_time * 4.5);
-  float falloff = exp(-dist * 6.5);
-  vec2 disp = dir * ring * falloff * u_amp * 0.05;
+  vec2 scaled = vec2(toM.x * u_aspect, toM.y);
+  float d = length(scaled);
+  float influence = exp(-(d * d) / (RADIUS * RADIUS));
 
-  // Subtle flow, gated by pointer energy so the text is completely still at rest.
-  disp += u_amp * 0.006 * vec2(sin(uv.y * 9.0 + u_time * 0.9), cos(uv.x * 9.0 + u_time * 0.8));
+  // Push texels away from the pointer with a gentle travelling ripple, all scaled by the local
+  // influence and the pointer presence — so the deformation flows with the cursor and nowhere else.
+  vec2 dir = toM / (length(toM) + 1e-4);
+  float wave = sin(d * 14.0 - u_time * 5.0);
+  vec2 disp = dir * influence * u_amp * (0.05 + 0.02 * wave);
 
   gl_FragColor = texture2D(u_tex, uv - disp);
 }`
@@ -131,9 +135,10 @@ interface Unit {
   buffer: WebGLBuffer | null
   texture: WebGLTexture | null
   u: Record<string, WebGLUniformLocation | null>
-  amp: number
-  mouse: { x: number; y: number }
-  last: { x: number; y: number }
+  amp: number // eased presence of the pointer over this line, 0..1
+  mouse: { x: number; y: number } // smoothed pointer position (what the shader reads)
+  target: { x: number; y: number } // latest pointer position the smoothed value chases
+  over: boolean // is the pointer currently over this line
   started: boolean
 }
 
@@ -179,7 +184,8 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
         u: {},
         amp: 0,
         mouse: { x: 0.5, y: 0.5 },
-        last: { x: 0.5, y: 0.5 },
+        target: { x: 0.5, y: 0.5 },
+        over: false,
         started: false,
       })
     }
@@ -268,8 +274,8 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
       unit.canvas.style.opacity = '1'
     }
 
-    // Pointer energy builds only while the pointer is over a given line, and decays to zero when it
-    // leaves — so each line reacts independently and everything is still at rest.
+    // Track, per line, whether the pointer is over it and where — the render loop eases the presence
+    // and smooths the position so the bump flows with the cursor and is local to it.
     const onPointerMove = (e: PointerEvent) => {
       for (const unit of units) {
         if (!unit.started) continue
@@ -277,15 +283,11 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
         if (!rect.width || !rect.height) continue
         const nx = (e.clientX - rect.left) / rect.width
         const ny = (e.clientY - rect.top) / rect.height
-        const over = nx > -0.1 && nx < 1.1 && ny > -0.3 && ny < 1.3
-        if (over) {
-          const vel = Math.hypot(nx - unit.last.x, ny - unit.last.y)
-          unit.amp = Math.min(1, unit.amp + vel * 12)
-          unit.mouse.x = Math.max(-0.1, Math.min(1.1, nx))
-          unit.mouse.y = Math.max(-0.1, Math.min(1.1, ny))
+        unit.over = nx > -0.1 && nx < 1.1 && ny > -0.4 && ny < 1.4
+        if (unit.over) {
+          unit.target.x = nx
+          unit.target.y = ny
         }
-        unit.last.x = nx
-        unit.last.y = ny
       }
     }
 
@@ -295,7 +297,11 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
       for (const unit of units) {
         if (!unit.started || !unit.program) continue
         const { gl, canvas } = unit
-        unit.amp *= 0.92 // decay toward rest
+        // Ease presence up while the pointer is over the line, down when it leaves; smooth the
+        // position so the deformation flows to follow the cursor rather than snapping.
+        unit.amp += ((unit.over ? 1 : 0) - unit.amp) * 0.12
+        unit.mouse.x += (unit.target.x - unit.mouse.x) * 0.22
+        unit.mouse.y += (unit.target.y - unit.mouse.y) * 0.22
         gl.useProgram(unit.program)
         gl.uniform1f(unit.u.u_time, time)
         gl.uniform1f(unit.u.u_amp, unit.amp)
