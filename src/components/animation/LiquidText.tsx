@@ -7,16 +7,21 @@ import { useEffect, useRef } from 'react'
 /**
  * Cursor-reactive "liquid text" effect (WebGL, zero external dependency).
  *
- * Wraps arbitrary children and, on capable clients, finds the display heading inside (h1–h3),
- * rasterizes it to a texture, and drives a fragment shader that ripples the glyphs away from the
+ * Wraps arbitrary children and, on capable clients, finds every display heading inside (h1–h3),
+ * rasterizes each to a texture, and drives a fragment shader that ripples the glyphs away from the
  * pointer and lets them settle back — an in-house equivalent of the proprietary Framer "liquid text"
- * effect. Built to sit around a CMS RichText heading: it targets the heading element only, leaving
- * paragraphs untouched.
+ * effect. Built to sit around a CMS RichText heading: it targets heading elements only, leaving
+ * paragraphs untouched, and handles a multi-heading title (one canvas per heading).
+ *
+ * The effect is movement-driven and local: energy for a given line only builds while the pointer is
+ * over that line, and decays to zero once you stop — so the text is perfectly still at rest and each
+ * line reacts independently. The subtle idle flow is gated by that same energy, so nothing moves
+ * unless you're interacting with it.
  *
  * Accessibility preserved: the real heading text stays in the DOM (selectable, SEO-indexable,
  * screen-reader-readable). When the effect is live the glyphs are hidden with `color: transparent`
- * (not display/visibility), so the text stays in the accessibility tree; the overlay <canvas> is a
- * decorative aria-hidden child of the heading. Falls back to the untouched heading under
+ * (not display/visibility), so the text stays in the accessibility tree; each overlay <canvas> is a
+ * decorative aria-hidden child of its heading. Falls back to untouched text under
  * prefers-reduced-motion, when WebGL is unavailable, or if anything throws. GL resources are freed
  * on resize-rebuild and unmount.
  */
@@ -35,7 +40,7 @@ precision highp float;
 varying vec2 v_uv;
 uniform sampler2D u_tex;
 uniform float u_time;
-uniform float u_amp;      // pointer energy, 0..~1, decays as the pointer stops (glyphs settle)
+uniform float u_amp;      // pointer energy for THIS line, 0..~1, decays to 0 when the pointer leaves
 uniform vec2 u_mouse;     // pointer in texture space, (0,0) = top-left
 uniform float u_aspect;   // width / height, so distance falloff is not stretched
 
@@ -52,8 +57,8 @@ void main() {
   float falloff = exp(-dist * 6.5);
   vec2 disp = dir * ring * falloff * u_amp * 0.05;
 
-  // Gentle always-on flow so the headline reads as a living liquid surface even at rest.
-  disp += 0.0035 * vec2(sin(uv.y * 9.0 + u_time * 0.9), cos(uv.x * 9.0 + u_time * 0.8));
+  // Subtle flow, gated by pointer energy so the text is completely still at rest.
+  disp += u_amp * 0.006 * vec2(sin(uv.y * 9.0 + u_time * 0.9), cos(uv.x * 9.0 + u_time * 0.8));
 
   gl_FragColor = texture2D(u_tex, uv - disp);
 }`
@@ -90,7 +95,7 @@ function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number
   return lines
 }
 
-/** Rasterize the heading's text into a canvas matched to its box, font, colour, and wrapping. */
+/** Rasterize a heading's text into a canvas matched to its box, font, colour, and wrapping. */
 function paintHeading(heading: HTMLElement, width: number, height: number, dpr: number): HTMLCanvasElement {
   const canvas = document.createElement('canvas')
   canvas.width = Math.ceil(width * dpr)
@@ -103,6 +108,7 @@ function paintHeading(heading: HTMLElement, width: number, height: number, dpr: 
   let lineHeight = parseFloat(cs.lineHeight)
   if (!Number.isFinite(lineHeight)) lineHeight = fontSize * 1.15
 
+  // Once the effect is live the heading's own colour is transparent; fall back to cream then.
   ctx.fillStyle = cs.color && cs.color !== 'rgba(0, 0, 0, 0)' ? cs.color : '#F4F3EC'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
@@ -117,6 +123,20 @@ function paintHeading(heading: HTMLElement, width: number, height: number, dpr: 
   return canvas
 }
 
+interface Unit {
+  heading: HTMLElement
+  canvas: HTMLCanvasElement
+  gl: WebGLRenderingContext
+  program: WebGLProgram | null
+  buffer: WebGLBuffer | null
+  texture: WebGLTexture | null
+  u: Record<string, WebGLUniformLocation | null>
+  amp: number
+  mouse: { x: number; y: number }
+  last: { x: number; y: number }
+  started: boolean
+}
+
 export default function LiquidText({ children }: { children: ReactNode }): JSX.Element {
   const reduce = useReducedMotion()
   const hostRef = useRef<HTMLDivElement>(null)
@@ -124,52 +144,49 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
   useEffect(() => {
     if (reduce) return
     const host = hostRef.current
-    const heading = host?.querySelector('h1, h2, h3') as HTMLElement | null
-    if (!heading) return
-
-    const canvas = document.createElement('canvas')
-    canvas.setAttribute('aria-hidden', 'true')
-    canvas.style.position = 'absolute'
-    canvas.style.left = '0'
-    canvas.style.top = '0'
-    canvas.style.width = '100%'
-    canvas.style.height = '100%'
-    canvas.style.opacity = '0'
-    canvas.style.pointerEvents = 'none'
-
-    const gl = (canvas.getContext('webgl', { premultipliedAlpha: true, antialias: true, alpha: true }) ||
-      canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null
-    if (!gl) return // no WebGL → leave the heading untouched
+    if (!host) return
+    const headings = Array.from(host.querySelectorAll('h1, h2, h3')) as HTMLElement[]
+    if (!headings.length) return
 
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     let raf = 0
+    let time = 0
     let disposed = false
-    let started = false
     let fontsReady = false
 
-    let program: WebGLProgram | null = null
-    let buffer: WebGLBuffer | null = null
-    let texture: WebGLTexture | null = null
-    const u: Record<string, WebGLUniformLocation | null> = {}
-
-    let amp = 0
-    let time = 0
-    const mouse = { x: 0.5, y: 0.5 }
-    const last = { x: 0.5, y: 0.5 }
-
-    const onPointerMove = (e: PointerEvent) => {
-      const rect = heading.getBoundingClientRect()
-      if (!rect.width || !rect.height) return
-      const nx = (e.clientX - rect.left) / rect.width
-      const ny = (e.clientY - rect.top) / rect.height
-      amp = Math.min(1, amp + Math.hypot(nx - last.x, ny - last.y) * 9 + 0.12)
-      last.x = nx
-      last.y = ny
-      mouse.x = nx
-      mouse.y = ny
+    // One WebGL canvas per heading. A heading without a usable context is simply left untouched.
+    const units: Unit[] = []
+    for (const heading of headings) {
+      const canvas = document.createElement('canvas')
+      canvas.setAttribute('aria-hidden', 'true')
+      canvas.style.position = 'absolute'
+      canvas.style.left = '0'
+      canvas.style.top = '0'
+      canvas.style.width = '100%'
+      canvas.style.height = '100%'
+      canvas.style.opacity = '0'
+      canvas.style.pointerEvents = 'none'
+      const gl = (canvas.getContext('webgl', { premultipliedAlpha: true, antialias: true, alpha: true }) ||
+        canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null
+      if (!gl) continue
+      units.push({
+        heading,
+        canvas,
+        gl,
+        program: null,
+        buffer: null,
+        texture: null,
+        u: {},
+        amp: 0,
+        mouse: { x: 0.5, y: 0.5 },
+        last: { x: 0.5, y: 0.5 },
+        started: false,
+      })
     }
+    if (!units.length) return
 
-    const initGL = (): boolean => {
+    const initGL = (unit: Unit): boolean => {
+      const { gl } = unit
       const vs = createShader(gl, gl.VERTEX_SHADER, VERT)
       const fs = createShader(gl, gl.FRAGMENT_SHADER, FRAG)
       if (!vs || !fs) return false
@@ -179,8 +196,8 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
       gl.attachShader(prog, fs)
       gl.linkProgram(prog)
       if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return false
-      program = prog
-      gl.useProgram(program)
+      unit.program = prog
+      gl.useProgram(prog)
 
       // Full-screen quad. a_uv (0,0) = top-left so it lines up with the un-flipped text texture.
       // prettier-ignore
@@ -190,18 +207,18 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
         -1,  1, 0, 0,
          1,  1, 1, 0,
       ])
-      buffer = gl.createBuffer()
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+      unit.buffer = gl.createBuffer()
+      gl.bindBuffer(gl.ARRAY_BUFFER, unit.buffer)
       gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
-      const posLoc = gl.getAttribLocation(program, 'a_pos')
-      const uvLoc = gl.getAttribLocation(program, 'a_uv')
+      const posLoc = gl.getAttribLocation(prog, 'a_pos')
+      const uvLoc = gl.getAttribLocation(prog, 'a_uv')
       gl.enableVertexAttribArray(posLoc)
       gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 16, 0)
       gl.enableVertexAttribArray(uvLoc)
       gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 16, 8)
 
       for (const name of ['u_tex', 'u_time', 'u_amp', 'u_mouse', 'u_aspect']) {
-        u[name] = gl.getUniformLocation(program, name)
+        unit.u[name] = gl.getUniformLocation(prog, name)
       }
 
       gl.enable(gl.BLEND)
@@ -210,16 +227,17 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
       return true
     }
 
-    const uploadTexture = (): boolean => {
+    const uploadTexture = (unit: Unit): boolean => {
+      const { gl, canvas, heading } = unit
       const rect = heading.getBoundingClientRect()
       if (!rect.width || !rect.height) return false
 
       canvas.width = Math.ceil(rect.width * dpr)
       canvas.height = Math.ceil(rect.height * dpr)
 
-      if (texture) gl.deleteTexture(texture)
-      texture = gl.createTexture()
-      gl.bindTexture(gl.TEXTURE_2D, texture)
+      if (unit.texture) gl.deleteTexture(unit.texture)
+      unit.texture = gl.createTexture()
+      gl.bindTexture(gl.TEXTURE_2D, unit.texture)
       // Premultiply on upload so the texture matches the premultipliedAlpha context + (ONE,
       // 1-SRC_ALPHA) blend — otherwise antialiased glyph edges composite as bright halos.
       gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true)
@@ -239,57 +257,89 @@ export default function LiquidText({ children }: { children: ReactNode }): JSX.E
       return true
     }
 
-    const render = () => {
-      if (disposed || !program) return
-      time += 0.016
-      amp *= 0.94
-      gl.uniform1f(u.u_time, time)
-      gl.uniform1f(u.u_amp, amp)
-      gl.uniform2f(u.u_mouse, mouse.x, mouse.y)
-      gl.uniform1f(u.u_aspect, canvas.width / canvas.height)
-      gl.clear(gl.COLOR_BUFFER_BIT)
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-      raf = requestAnimationFrame(render)
+    const startUnit = (unit: Unit) => {
+      if (unit.started || disposed || !fontsReady) return
+      if (!unit.heading.getBoundingClientRect().width) return // not laid out yet; ResizeObserver retries
+      if (!initGL(unit) || !uploadTexture(unit)) return
+      unit.started = true
+      if (getComputedStyle(unit.heading).position === 'static') unit.heading.style.position = 'relative'
+      unit.heading.appendChild(unit.canvas)
+      unit.heading.style.color = 'transparent'
+      unit.canvas.style.opacity = '1'
     }
 
-    const start = () => {
-      if (started || disposed || !fontsReady) return
-      if (!heading.getBoundingClientRect().width) return // not laid out yet; ResizeObserver retries
-      if (!initGL() || !uploadTexture()) return
-      started = true
-      // Effect is live: overlay the canvas and hide the real glyphs (a11y tree intact).
-      if (getComputedStyle(heading).position === 'static') heading.style.position = 'relative'
-      heading.appendChild(canvas)
-      heading.style.color = 'transparent'
-      canvas.style.opacity = '1'
-      window.addEventListener('pointermove', onPointerMove, { passive: true })
+    // Pointer energy builds only while the pointer is over a given line, and decays to zero when it
+    // leaves — so each line reacts independently and everything is still at rest.
+    const onPointerMove = (e: PointerEvent) => {
+      for (const unit of units) {
+        if (!unit.started) continue
+        const rect = unit.heading.getBoundingClientRect()
+        if (!rect.width || !rect.height) continue
+        const nx = (e.clientX - rect.left) / rect.width
+        const ny = (e.clientY - rect.top) / rect.height
+        const over = nx > -0.1 && nx < 1.1 && ny > -0.3 && ny < 1.3
+        if (over) {
+          const vel = Math.hypot(nx - unit.last.x, ny - unit.last.y)
+          unit.amp = Math.min(1, unit.amp + vel * 12)
+          unit.mouse.x = Math.max(-0.1, Math.min(1.1, nx))
+          unit.mouse.y = Math.max(-0.1, Math.min(1.1, ny))
+        }
+        unit.last.x = nx
+        unit.last.y = ny
+      }
+    }
+
+    const render = () => {
+      if (disposed) return
+      time += 0.016
+      for (const unit of units) {
+        if (!unit.started || !unit.program) continue
+        const { gl, canvas } = unit
+        unit.amp *= 0.92 // decay toward rest
+        gl.useProgram(unit.program)
+        gl.uniform1f(unit.u.u_time, time)
+        gl.uniform1f(unit.u.u_amp, unit.amp)
+        gl.uniform2f(unit.u.u_mouse, unit.mouse.x, unit.mouse.y)
+        gl.uniform1f(unit.u.u_aspect, canvas.width / canvas.height)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+      }
       raf = requestAnimationFrame(render)
     }
 
     const fontsPromise = document.fonts?.ready ?? Promise.resolve()
     fontsPromise.then(() => {
       fontsReady = true
-      start()
+      units.forEach(startUnit)
+      window.addEventListener('pointermove', onPointerMove, { passive: true })
+      raf = requestAnimationFrame(render)
     })
 
-    const ro = new ResizeObserver(() => {
+    const ro = new ResizeObserver((entries) => {
       if (disposed) return
-      if (!started) start()
-      else uploadTexture()
+      for (const entry of entries) {
+        const unit = units.find((x) => x.heading === entry.target)
+        if (!unit) continue
+        if (!unit.started) startUnit(unit)
+        else uploadTexture(unit)
+      }
     })
-    ro.observe(heading)
+    units.forEach((unit) => ro.observe(unit.heading))
 
     return () => {
       disposed = true
       cancelAnimationFrame(raf)
       ro.disconnect()
       window.removeEventListener('pointermove', onPointerMove)
-      if (texture) gl.deleteTexture(texture)
-      if (buffer) gl.deleteBuffer(buffer)
-      if (program) gl.deleteProgram(program)
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
-      heading.style.color = ''
-      if (canvas.parentElement) canvas.parentElement.removeChild(canvas)
+      for (const unit of units) {
+        const { gl } = unit
+        if (unit.texture) gl.deleteTexture(unit.texture)
+        if (unit.buffer) gl.deleteBuffer(unit.buffer)
+        if (unit.program) gl.deleteProgram(unit.program)
+        gl.getExtension('WEBGL_lose_context')?.loseContext()
+        unit.heading.style.color = ''
+        if (unit.canvas.parentElement) unit.canvas.parentElement.removeChild(unit.canvas)
+      }
     }
   }, [reduce])
 
