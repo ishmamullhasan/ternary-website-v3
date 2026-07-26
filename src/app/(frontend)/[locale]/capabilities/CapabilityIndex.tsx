@@ -30,7 +30,7 @@ const CAPS: Cap[] = [
     desc: 'Systems that plan, act, and verify — with people in command of anything that matters. Autonomy designed in as structure and bounded authority, not coaxed from a prompt.',
     chips: ['Multi-agent systems', 'Tool use & permissions', 'Evals & guardrails', 'Human oversight'],
     graphic: (
-      <svg className="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+      <svg className="g" viewBox="48 56 244 148" fill="none" aria-hidden="true">
         <g className="st ac">
           <path className="a-flow" d="M60 130 H150" />
           <path className="a-flow" d="M150 130 L280 70" />
@@ -52,7 +52,7 @@ const CAPS: Cap[] = [
     desc: 'LLM applications and machine learning built for production — shipped, monitored, and owned after launch, not handed over as a notebook.',
     chips: ['LLM applications', 'ML pipelines', 'Retrieval & search', 'Model operations'],
     graphic: (
-      <svg className="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+      <svg className="g" viewBox="48 48 214 174" fill="none" aria-hidden="true">
         <g className="st">
           <path className="a-flow" d="M60 60 L250 130" />
           <path className="a-flow" d="M60 110 L250 130" />
@@ -78,7 +78,7 @@ const CAPS: Cap[] = [
     desc: 'Pipelines, warehouses, and numbers your teams can actually act on — governed, documented, and trusted enough to make decisions from.',
     chips: ['Data pipelines', 'Warehousing', 'Decision analytics', 'Governance'],
     graphic: (
-      <svg className="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+      <svg className="g" viewBox="0 52 360 156" fill="none" aria-hidden="true">
         <g className="a-wave">
           <path className="st ac" d="M-60 90 Q0 60 60 90 T180 90 T300 90 T420 90" />
         </g>
@@ -98,7 +98,7 @@ const CAPS: Cap[] = [
     desc: 'Architecture, migration, and operations — governed for regulated environments. Nothing switches off until its replacement has proven itself.',
     chips: ['Migration', 'Cloud-native architecture', 'Platform operations', 'Compliance'],
     graphic: (
-      <svg className="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+      <svg className="g" viewBox="98 58 164 164" fill="none" aria-hidden="true">
         <g className="a-drift">
           <path className="st" d="M110 180 L180 150 L250 180 L180 210 Z" strokeOpacity=".3" />
         </g>
@@ -118,7 +118,7 @@ const CAPS: Cap[] = [
     desc: 'Turn one-off builds into shared platforms, so every next project starts further ahead instead of from zero.',
     chips: ['Internal platforms', 'Reusable services', 'APIs & SDKs', 'Developer experience'],
     graphic: (
-      <svg className="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+      <svg className="g" viewBox="108 46 160 156" fill="none" aria-hidden="true">
         <g className="st">
           <rect className="a-bre sp" x="120" y="150" width="40" height="40" rx="3" />
           <rect className="a-bre sp" x="168" y="150" width="40" height="40" rx="3" style={{ animationDelay: '.4s' }} />
@@ -137,7 +137,7 @@ const CAPS: Cap[] = [
     desc: 'Web, mobile, and product interfaces people trust at first use — clear, fast, and dependable on every device.',
     chips: ['Web & mobile', 'Product design', 'Accessibility', 'Performance'],
     graphic: (
-      <svg className="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+      <svg className="g" viewBox="88 60 184 142" fill="none" aria-hidden="true">
         <rect className="st a-bre sp" x="100" y="70" width="160" height="120" rx="6" strokeOpacity=".3" />
         <rect
           className="st a-bre sp"
@@ -161,15 +161,12 @@ const CAPS: Cap[] = [
     desc: 'More releases, fewer incidents, and no two-a.m. surprises — the pipeline that turns shipping from an event into a habit.',
     chips: ['CI/CD', 'Observability', 'Reliability', 'Release automation'],
     graphic: (
-      <svg className="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+      <svg className="g" viewBox="108 58 144 144" fill="none" aria-hidden="true">
         <circle className="st" cx="180" cy="130" r="60" strokeOpacity=".4" />
-        <g className="a-orbit" style={{ transformOrigin: '180px 130px' }}>
+        <g className="a-orbit" style={{ transformOrigin: 'center' }}>
           <circle className="acf a-node sp" cx="180" cy="70" r="7" />
         </g>
-        <g
-          className="a-orbit"
-          style={{ transformOrigin: '180px 130px', animationDuration: '18s', animationDirection: 'reverse' }}
-        >
+        <g className="a-orbit" style={{ transformOrigin: 'center', animationDuration: '18s', animationDirection: 'reverse' }}>
           <circle className="fp" cx="240" cy="130" r="4.5" />
         </g>
       </svg>
@@ -182,7 +179,7 @@ const CAPS: Cap[] = [
     desc: 'Devices, firmware, and the data they send home — from the sensor on the floor to the dashboard on the wall.',
     chips: ['Firmware', 'Edge computing', 'Telemetry', 'Device fleets'],
     graphic: (
-      <svg className="g" viewBox="0 0 360 260" fill="none" aria-hidden="true">
+      <svg className="g" viewBox="112 54 136 152" fill="none" aria-hidden="true">
         <g className="st" strokeOpacity=".4">
           <line x1="180" y1="130" x2="180" y2="66" />
           <line x1="180" y1="130" x2="236" y2="98" />
