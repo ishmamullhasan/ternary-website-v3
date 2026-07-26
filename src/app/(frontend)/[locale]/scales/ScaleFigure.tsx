@@ -280,7 +280,7 @@ export default function ScaleFigure({ scale, fig }: { scale: 1 | 2 | 3; fig: Fig
         const T = t * 0.001 * cfg.spd
         const R = Math.hypot(W, H)
         ctx.globalCompositeOperation = 'source-over'
-        ctx.fillStyle = 'rgb(8,8,8)' // cold near-black bed (page is #050505); no warm ground
+        ctx.fillStyle = 'rgb(15,14,14)' // Surface·Page #0F0E0E (Ternary DS July 2026), seamless with the page ground
         ctx.fillRect(0, 0, W, H)
         ctx.globalCompositeOperation = 'lighter'
         for (const bl of blobs) {

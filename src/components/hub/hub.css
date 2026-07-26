@@ -12,20 +12,48 @@
    ------------------------------------------------------------------------------------------------ */
 
 .hub {
-  /* Local aliases mapping the previews' vocabulary onto real @theme tokens. No new colours. */
-  --brd: var(--color-line); /* #27272a hairline */
-  --brd2: var(--color-line-strong); /* #3f3f46 stronger hairline */
-  --panel: var(--color-badge); /* #202020 raised graphic bed — the lightest real surface */
-  --surface-card: var(--color-card); /* #1b1a17 content card */
-  --t2: var(--color-body); /* #aaaaaa secondary text (AAA floor — see globals.css) */
-  --t3: var(--color-subtle); /* #8a8a86 tertiary / label text */
-  --dim: color-mix(in oklab, var(--color-subtle) 66%, var(--color-page)); /* dimmer index labels */
+  /* --- Ternary Design System — Color (July 2026) ---------------------------------------------
+     Applied to the redesigned hub pages ONLY, by overriding the site's @theme colour tokens within
+     `.hub` scope. The rest of the site keeps its current palette; nothing here leaks out. Every hub
+     colour resolves to a primitive on the new neutral ramp or a semantic alias of it. */
+
+  /* Primitive neutral ramp */
+  --n-0: #ffffff; /* white — max contrast / Text·On Dark */
+  --n-100: #f4f3ec; /* eggshell — Text·Primary */
+  --n-500: #757571; /* mid neutral — muted labels */
+  --n-850: #1b1a17; /* near-black — Surface·Card */
+  --n-900: #14120b; /* near-black — Surface·Elevated */
+  --n-950: #0f0e0e; /* near-black — Surface·Page */
+
+  /* Semantic tokens — override the global @theme vars for hub descendants only.
+     Surface: Page 950 · Elevated 900 · Card 850.  Text: Primary #F4F3EC · Secondary #D5D5D5. */
+  --color-page: var(--n-950);
+  --color-ink: var(--n-900);
+  --color-card: var(--n-850);
+  --color-badge: var(--n-900); /* the "Elevated" graphic bed */
+  --color-cream: var(--n-100); /* Text/Primary */
+  --color-cream-hover: var(--n-0); /* hover → Text/On Dark (white) */
+  --color-body: #d5d5d5; /* Text/Secondary */
+  --color-subtle: var(--n-500); /* muted labels (Neutral/500) — see contrast note */
+  /* Borders alias Border/Subtle (eggshell) at two opacity steps — visible hairlines on dark. */
+  --color-line: color-mix(in oklab, var(--n-100) 9%, transparent);
+  --color-line-strong: color-mix(in oklab, var(--n-100) 16%, transparent);
+
+  /* Local hub aliases, now derived from the ramp above. */
+  --brd: var(--color-line);
+  --brd2: var(--color-line-strong);
+  --panel: var(--color-badge); /* Elevated #14120B graphic bed */
+  --surface-card: var(--color-card); /* Card #1B1A17 */
+  --t2: var(--color-body); /* Secondary #D5D5D5 */
+  --t3: var(--color-subtle); /* Neutral/500 #757571 */
+  --dim: color-mix(in oklab, var(--n-500) 72%, var(--n-950)); /* faintest index links */
   --accent: var(--color-cream); /* cream IS the accent */
-  --accent-soft: color-mix(in oklab, var(--color-cream) 8%, transparent);
-  --inverse: var(--color-page);
+  --accent-soft: color-mix(in oklab, var(--n-100) 8%, transparent);
+  --inverse: var(--n-950); /* Text/Inverse — dark label on cream surfaces */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   color: var(--color-cream);
+  background: var(--color-page); /* the new Page ground for these routes */
   font-size: 16px;
   line-height: 1.6;
 }
