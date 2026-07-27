@@ -21,3 +21,9 @@ CMS later.
 - **New:** authored `panel` with `eyebrow`, `heading`, `viewAll`, `featured`, and icon-less `columns`
   of items linking to the real detail routes (`/capabilities/*`, `/solutions/*`, `/industries/*`).
   Copy is count-free (base-3 marks stay on the pages). Seeded via `scripts/seed-megamenu.js`.
+
+### Capability detail pages — "What this means to us" (staging)
+`capabilities[8].whatThisMeansToUs` (heading + richText description + items)
+- **Old:** empty → detail pages rendered hero-only.
+- **New:** authored real per-discipline content for all 8 capabilities (no invented clients/metrics).
+  Seeded via `scripts/seed-capability-content.js`. **Production follow-up:** replicate to prod CMS.
