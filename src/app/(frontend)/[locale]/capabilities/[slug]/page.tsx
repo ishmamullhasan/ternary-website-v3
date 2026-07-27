@@ -55,7 +55,9 @@ async function fetchCapabilityBySlug(slug: string, locale: TypedLocale): Promise
 async function getCapabilityBySlug(slug: string, locale: TypedLocale): Promise<Capability | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchCapabilityBySlug(slug, locale)
-  return unstable_cache(() => fetchCapabilityBySlug(slug, locale), [`capability_${slug}_${locale}_v6`], {
+  // _v7: the proof-section seed (scripts/seed-proof-sections.js) fills caseStudies — new data
+  // must surface past any persisted _v6 cache entries.
+  return unstable_cache(() => fetchCapabilityBySlug(slug, locale), [`capability_${slug}_${locale}_v7`], {
     // `team`: the practice-lead section embeds a team doc (depth 2), so editing that team member
     // must bust this page too.
     tags: [`capability_${slug}`, 'capability', 'team'],
@@ -431,9 +433,9 @@ export default async function Page({
           {proofItems.length > 0 && (
             <div className="flex flex-col">
               {proofItems.map((cs, i) => {
-                // Result line: prefer authored metric, otherwise keep an honest placeholder rather
-                // than inventing a number.
-                const result = [cs.metricValue, cs.metricLabel].filter(Boolean).join(' ') || '[metric]'
+                // Result line: authored metric only. When no metric exists the whole line is
+                // omitted — an absent result beats a placeholder, and we never invent a number.
+                const result = [cs.metricValue, cs.metricLabel].filter(Boolean).join(' ')
                 // Per-row brand accent, cycling the TONE palette so rows read as case cards.
                 const tone = toneFor(null, i)
 
@@ -486,14 +488,17 @@ export default async function Page({
                       </div>
 
                       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-5">
-                        <p className="text-[15px] font-medium tracking-[-0.02em] text-cream">
-                          <span className="text-cream/70">Result — </span>
-                          {result}
-                        </p>
+                        {result && (
+                          <p className="text-[15px] font-medium tracking-[-0.02em] text-cream">
+                            <span className="text-cream/70">Result — </span>
+                            {result}
+                          </p>
+                        )}
+                        {/* ml-auto keeps the link right-aligned even when no result line renders */}
                         <Link
                           href="/stories"
                           className={cn(
-                            'group inline-flex items-center gap-1.5 rounded-sm text-[13px] font-medium text-cream transition-colors duration-300 hover:text-cream/70',
+                            'group ml-auto inline-flex items-center gap-1.5 rounded-sm text-[13px] font-medium text-cream transition-colors duration-300 hover:text-cream/70',
                             FOCUS_RING,
                           )}
                         >

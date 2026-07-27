@@ -1357,3 +1357,73 @@ This case demonstrates the value of disciplined platform consolidation in field 
 Role | Organization | Primary Responsibility
 Prime Contractor | Covalent Resource Group | Program governance, client alignment, delivery oversight
 Subcontractor | Ternary Solutions | Architecture leadership, engineering implementation, production hardening
+
+---
+
+# Dhaka Stock Exchange (DSE)
+
+Source: `C:\Users\sajid\Desktop\ternary website\Here's a synthesis of the DSE engag.txt`
+(added 2026-07-28 — synthesis of the DSE engagement drawn from the work itself).
+⚠️ Publication caveat from the source author: parts are client-internal (ticket IDs, feedback
+specifics, the staging URL, named data blockers, the SOW number). Public copy must strip internal
+references and would need DSE's sign-off on what's quotable. Internal identifiers are therefore
+NOT to be used in site copy.
+
+## The engagement in one line
+
+Ternary is rebuilding the Dhaka Stock Exchange's public web platform (`dsebd.org`) as a modern,
+CMS-driven site — replacing a legacy PHP system with a Next.js and Payload CMS build, under SOW
+S00114. [SOW number = internal; hold from public copy]
+
+## What the work actually is
+
+This is a **full platform rebuild of a national financial institution's public presence**, not a
+cosmetic refresh. The legacy site is a large, sprawling PHP application — hundreds of pages
+spanning market data, company and securities information, TREC (broker) directories, disclosures
+and filings, publications, and investor resources. The rebuild reconstructs all of that on a
+contemporary stack while holding to a strict fidelity standard.
+
+The defining feature of the engagement is **disciplined legacy parity**. Because this is a stock
+exchange, the data carries legal and regulatory weight — a mis-transcribed column header or an
+invented figure isn't a cosmetic bug, it's a compliance problem. The project runs under four
+governing rules that shape every decision: no invented pages, no lost information, no invented or
+derived data fields, and verbatim reproduction of table labels. Where the client deliberately
+reduces content, that exception is recorded explicitly for the audit trail rather than made
+silently.
+
+## How it's structured
+
+**Design system first.** A complete DSE design language was established — a navy brand identity,
+typography split between UI and numeric contexts, and a hard convention reserving green and red
+exclusively for market movement, so colour never misleads. Square edges, a dual navy/green theme,
+dark mode, and mobile layouts were all defined as reusable primitives rather than per-page
+decisions.
+
+**Engineering specification.** A comprehensive spec suite documents every component — its data
+source, content, tokens, states, dependencies, and acceptance criteria — page family by page
+family across the whole site.
+
+**Structured delivery through Jira.** Work is decomposed into epics and stories with a
+standardised ticket format, and the client's own engineering feedback is folded back in as
+tracked, individually-scoped tickets. Each piece of feedback is researched against the live legacy
+source before a design or build prompt is written, so nothing ships on assumption.
+
+**A rigorous audit loop.** Every publications and disclosures surface is cross-checked against the
+legacy source and a PDF connection map, with reconciliation evidence attached rather than
+asserted. The recurring failure mode this guards against — pages that look finished but have dead
+document links or silently dropped content — is caught before it reaches production.
+
+## What's distinctive about it (the case-study angle)
+
+The story worth telling publicly is **fidelity at scale**: taking a decade-old, information-dense
+public system for a market regulator and rebuilding it on a modern stack without losing, altering,
+or inventing a single data point. Most "website rebuild" case studies are about visual
+transformation. This one is about the harder, quieter discipline of *preserving institutional
+information exactly* while modernising everything around it — the design system, the CMS, the
+mobile experience, the performance — under audit conditions appropriate to financial
+infrastructure.
+
+That framing also positions Ternary's broader competence: design systems, structured BA and
+engineering process, and a demonstrated ability to work inside a regulated financial-data domain —
+which ties naturally to the LankaBangla engagement for a two-client "financial infrastructure"
+narrative.
