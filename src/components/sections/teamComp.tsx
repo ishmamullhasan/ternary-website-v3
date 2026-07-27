@@ -87,7 +87,6 @@ export default function TeamComp({ heading, description, members: rawMembers }: 
                     })}
                   </div>
 
-                  <p className="text-xs text-subtle lg:text-sm">{remaining}+ Orchestrators</p>
                   <span className="mt-1 inline-flex items-center gap-1 text-sm text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1 lg:text-base">
                     Meet the Team
                     <ArrowUpRight size={16} aria-hidden />

@@ -45,11 +45,11 @@ export function ContactFormComponent(props: ContactFormBlock): JSX.Element {
           className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body md:prose-p:text-[16px]"
         />
         <a
-          href="mailto:engagements@ternary.com"
+          href="mailto:info@ternary.solutions"
           className="inline-flex items-center gap-2 rounded-full border border-line-strong bg-main px-4 py-2 text-[13px] text-body transition-colors hover:border-subtle hover:text-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/80 focus-visible:ring-offset-2 focus-visible:ring-offset-page"
         >
           <Mail size={14} aria-hidden className="text-subtle" />
-          engagements@ternary.com
+          info@ternary.solutions
         </a>
       </div>
 

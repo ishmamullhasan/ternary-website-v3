@@ -53,7 +53,7 @@ const queryPageByPath = (segments: string[], draft: boolean, locale: TypedLocale
   if (draft) return fetchPageByPath(segments, true, locale)
   const slug = segments[segments.length - 1]
   const path = segments.join('/')
-  return unstable_cache(() => fetchPageByPath(segments, false, locale), [`pages_${path}_${locale}`], {
+  return unstable_cache(() => fetchPageByPath(segments, false, locale), [`pages_${path}_${locale}_v2`], {
     tags: [...new Set([`pages_${slug}`, ...PAGES_EMBED_TAGS])],
   })()
 }

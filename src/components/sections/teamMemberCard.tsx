@@ -66,9 +66,10 @@ export function TeamMemberCard({
             {member.position && <span className="text-xs text-subtle lg:text-sm">{member.position}</span>}
             <Linkedin size={13} aria-hidden className="shrink-0 text-subtle transition-colors group-hover:text-cream" />
           </span>
-        ) : (
+        ) : member.position ? (
+          // Guard: a member without a role renders no line at all (no empty <p> gap).
           <p className="mt-1 text-xs text-subtle lg:text-sm">{member.position}</p>
-        )}
+        ) : null}
       </a>
     </Motion>
   )

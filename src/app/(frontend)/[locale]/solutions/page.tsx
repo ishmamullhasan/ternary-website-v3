@@ -320,10 +320,12 @@ export default function SolutionsHubPage(): JSX.Element {
                   {s.get}
                 </Fact>
               </Motion>
-              <Motion {...revealItem(3)}>
-                <div className="grid grid-cols-1 gap-1.5 border-t border-line pt-6 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
-                  <h3 className="pt-0.5 text-[11px] uppercase tracking-[0.1em] text-subtle">Proof</h3>
-                  {s.proof ? (
+              {/* Proof slot: named client with written permission only. With no proof, the slot
+                  hides entirely — an empty proof line is better than a vague one. */}
+              {s.proof && (
+                <Motion {...revealItem(3)}>
+                  <div className="grid grid-cols-1 gap-1.5 border-t border-line pt-6 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
+                    <h3 className="pt-0.5 text-[11px] uppercase tracking-[0.1em] text-subtle">Proof</h3>
                     <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-body">
                       <span className="text-cream">{s.proof.client}</span> — {s.proof.body}{' '}
                       <Link
@@ -342,14 +344,9 @@ export default function SolutionsHubPage(): JSX.Element {
                         />
                       </Link>
                     </p>
-                  ) : (
-                    <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-subtle">
-                      Named client, with written permission — or we hold this slot until we have one. An empty proof
-                      line is better than a vague one.
-                    </p>
-                  )}
-                </div>
-              </Motion>
+                  </div>
+                </Motion>
+              )}
             </div>
           </div>
         </section>
@@ -380,7 +377,7 @@ export default function SolutionsHubPage(): JSX.Element {
                 <span className="text-[11px] font-mono tabular-nums tracking-[0.1em] text-subtle">{m.n}</span>
                 <h3 className="mt-3.5 font-display text-[clamp(1.5rem,2.4vw,2rem)] font-medium tracking-[-0.02em] text-cream">
                   {m.name}
-                  <sup className="ml-0.5 text-[0.5em] align-super font-medium text-subtle">℠</sup>
+                  <sup className="ml-0.5 text-[0.5em] align-super font-medium text-subtle">™</sup>
                 </h3>
                 <span className="mt-3 text-[11px] uppercase tracking-[0.08em] text-cream/70">{m.tag}</span>
                 <p className="mt-4 flex-1 text-[15.5px] leading-relaxed text-body">{m.body}</p>

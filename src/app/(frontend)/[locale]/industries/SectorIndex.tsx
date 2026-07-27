@@ -95,7 +95,7 @@ const SECTORS: Sector[] = [
   },
   {
     num: '04',
-    name: 'Advanced Manufacturing & Energy',
+    name: 'Advanced Manufacturing',
     label: 'In the sector',
     clients: ['FAROGL'],
     desc: 'Connected plants, controlled processes, and operational intelligence from the floor up.',
