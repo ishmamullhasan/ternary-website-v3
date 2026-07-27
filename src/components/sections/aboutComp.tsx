@@ -168,7 +168,7 @@ function AboutCard({ item, index, imgSizes }: { item: MultiRelation; index: numb
           {CONTENT_TYPE_LABEL[item.relationTo]}
         </span>
         {item.value.title && (
-          <h3 className="line-clamp-3 font-display text-2xl leading-[1.15] font-medium tracking-[-0.05em] text-cream">
+          <h3 className="line-clamp-2 min-h-[2.3em] font-display text-2xl leading-[1.15] font-medium tracking-[-0.05em] text-cream">
             {item.value.title}
           </h3>
         )}
