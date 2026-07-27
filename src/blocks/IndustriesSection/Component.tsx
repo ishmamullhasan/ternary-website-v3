@@ -1,5 +1,4 @@
 import Motion from '@/components/animation/motion'
-import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { IndustriesSectionBlock, Industry, Media } from '@/payload-types'
@@ -50,15 +49,13 @@ function iconFor(title: string | null | undefined, index: number): LucideIcon {
 
 // Home tile — the scale / engagement card treatment: the gradient panel IS the fallback (always
 // rendered), the industry's thumbnail layers on top, and the title + excerpt sit over a scrim.
-function IndustryCard({ item, index }: { item: Industry; index: number }): JSX.Element {
+function IndustryCard({ item }: { item: Industry }): JSX.Element {
   const thumb = item.thumbnail as Media | string | null | undefined
   const media = typeof thumb === 'object' && thumb ? thumb : null
 
   return (
     <Link href={item.slug ? `/industries/${item.slug}` : '#'} className={`group block h-full rounded-md ${focusRing}`}>
-      <div className="relative h-full min-h-[397px] overflow-hidden rounded-md border border-line bg-ink">
-        <GradientPanel tone={toneFor(undefined, index)} interactive />
-
+      <div className="relative h-full min-h-[397px] overflow-hidden rounded-md border border-line bg-[#0F0E0E]">
         {media?.url && (
           <Image
             src={media.url}
@@ -69,8 +66,10 @@ function IndustryCard({ item, index }: { item: Industry; index: number }): JSX.E
           />
         )}
 
-        {/* bottom-to-transparent scrim keeps the card text legible over imagery */}
-        <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-black/70" />
+        {/* bottom-to-transparent scrim — only over a thumbnail image, for text legibility. */}
+        {media?.url && (
+          <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-black/70" />
+        )}
 
         <div className="absolute inset-x-4 bottom-4 z-10">
           <h3 className="font-medium text-cream">{item.title}</h3>
@@ -135,7 +134,7 @@ export function IndustriesSectionComponent({
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.36) }}
             >
-              <IndustryCard item={item} index={index} />
+              <IndustryCard item={item} />
             </Motion>
           ))}
 
