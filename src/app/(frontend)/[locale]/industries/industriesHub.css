@@ -452,61 +452,38 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
   max-width: 14ch;
   margin-top: 16px;
 }
-/* ── Ladder — a spine that assembles itself ───────────────────────────────
-   The 1/2/3 and a/b/c glyphs are gone. In their place each item carries a node on
-   a hairline spine. The spine is drawn per-item rather than once down the whole
-   list, so as <Reveal> staggers the items in the line builds itself top to bottom
-   — the motion is the existing stagger, not a new animation. */
+/* ── Ladder — surfaces, not rules ─────────────────────────────────────────
+   No dividers and no spine. Each item is its own soft surface, so the structure
+   comes from the tiles themselves; nothing on this page is separated by a line.
+
+   The two ladders differ the way their content does. "Our approach" is a
+   sequence, so its tiles carry a wash that falls away left-to-right — the eye
+   gets direction without a number or an arrow. "Regulatory posture" is three
+   guarantees that stand equally, so those tiles are lit flat. */
+.hub .ladder {
+  display: grid;
+  gap: 10px;
+}
 .hub .step {
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
-  padding: 26px 0 26px 42px;
-  border-top: 1px solid var(--brd);
+  padding: 24px 26px;
+  border: 0;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--color-cream) 3.5%, transparent);
+  transition: background-color 0.5s var(--ease);
 }
-/* the spine segment through this item, joining node centre to node centre */
-.hub .step::before {
-  content: '';
-  position: absolute;
-  left: 10px;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--brd2);
+.hub .ladder-flow .step {
+  background: linear-gradient(
+    100deg,
+    color-mix(in oklab, var(--color-cream) 7%, transparent) 0%,
+    color-mix(in oklab, var(--color-cream) 2.5%, transparent) 62%
+  );
 }
-.hub .step:first-child::before {
-  top: 36px;
+.hub .ladder-flow .step:hover,
+.hub .ladder-stack .step:hover {
+  background-color: color-mix(in oklab, var(--color-cream) 6%, transparent);
 }
-.hub .step:last-child::before {
-  bottom: auto;
-  height: 36px;
-}
-.hub .step-node {
-  position: absolute;
-  left: 6px;
-  top: 32px;
-  width: 9px;
-  height: 9px;
-  border: 1px solid var(--color-cream);
-  background: var(--color-page);
-  box-sizing: border-box;
-}
-/* a sequence reads as waypoints — turned 45deg, and the last one filled because
-   that is where the process lands */
-.hub .ladder-flow .step-node {
-  transform: rotate(45deg);
-}
-.hub .ladder-flow .step:last-child .step-node {
-  background: var(--color-cream);
-}
-/* standing guarantees are not a sequence: square, all equal, none a destination */
-.hub .ladder-stack .step-node {
-  border-radius: 1px;
-}
-.hub .step:last-child {
-  border-bottom: 1px solid var(--brd);
-}
+
 .hub .step h3 {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;
   font-size: 19px;
