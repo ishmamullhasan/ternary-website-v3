@@ -194,24 +194,127 @@
   line-height: 1.6;
   max-width: 44ch;
 }
+/* Motion-graphic panel — unboxed per the industry motion spec (dark ground, no border, no bed, no
+   gradient). The wireframe sits directly on the page at a uniform height, so every sector's graphic
+   reads as the same family. */
 .hub .sector-panel {
   position: relative;
-  height: clamp(160px, 18vw, 210px);
-  border: 1px solid var(--brd);
-  border-radius: 4px;
-  overflow: hidden;
-  background: radial-gradient(120% 130% at 70% 8%, var(--accent-soft), transparent 58%), var(--panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .hub .sector-panel svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  height: clamp(150px, 17vw, 192px);
+  width: auto;
+  max-width: 100%;
+  overflow: visible;
+  /* Universal style: monoline wireframe, ONE neutral stroke (on-system — derived from the body
+     token toward the page, landing in the spec's #8A8A8A–#B5B5B5 band), no fills, rounded joins so
+     every corner reads as the spec's rounded geometry without per-shape radii. */
+  stroke: color-mix(in oklab, var(--color-body) 78%, var(--color-page));
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-/* Pause a sector's idle graphic motion while it is collapsed. */
-.hub .sector:not(.open) .g * {
+
+/* ── Universal motion language (Linear-style) ─────────────────────────────────────────────────
+   One grammar for all eight industries: line DRAW → components ASSEMBLE (staggered) → MICRO
+   interaction → HOLD → loop. Meaning changes per sector; the system stays identical. Every drawable
+   carries `pathLength="1"` so the draw normalizes regardless of geometry; stagger is set per element
+   via inline `animation-delay`. Reduced motion (OS query or the in-app A11yFab toggle) drops
+   everything to the finished, static blueprint. */
+@keyframes im-draw {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  30% {
+    stroke-dashoffset: 0;
+  }
+  82% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  96% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+}
+@keyframes im-pulse {
+  0%,
+  60% {
+    transform: scale(1);
+  }
+  72% {
+    transform: scale(1.16);
+  }
+  84%,
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes im-turn {
+  0%,
+  58% {
+    transform: rotate(0);
+  }
+  74% {
+    transform: rotate(22deg);
+  }
+  90%,
+  100% {
+    transform: rotate(0);
+  }
+}
+.hub .im-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0; /* rest = fully drawn — also the reduced-motion fallback state */
+  animation: im-draw 5.6s var(--ease) infinite;
+}
+.hub .im-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: im-pulse 5.6s var(--ease) infinite;
+}
+.hub .im-turn {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: im-turn 5.6s var(--ease) infinite;
+}
+/* Pause a sector's graphic while it is collapsed. */
+.hub .sector:not(.open) .sector-panel * {
   animation-play-state: paused;
 }
+/* Reduced motion → the finished, still blueprint (overrides the global 0.01ms clamp for these). */
+@media (prefers-reduced-motion: reduce) {
+  .hub .im-draw,
+  .hub .im-pulse,
+  .hub .im-turn {
+    animation: none !important;
+  }
+  .hub .im-draw {
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+  }
+}
+html[data-a11y-motion='reduce'] .hub .im-draw,
+html[data-a11y-motion='reduce'] .hub .im-pulse,
+html[data-a11y-motion='reduce'] .hub .im-turn {
+  animation: none !important;
+}
+html[data-a11y-motion='reduce'] .hub .im-draw {
+  stroke-dashoffset: 0 !important;
+  opacity: 1 !important;
+}
+
 @media (max-width: 820px) {
   .hub .sector-head {
     grid-template-columns: clamp(2.4ch, 8vw, 3.4ch) 1fr;
@@ -227,109 +330,10 @@
   }
   .hub .sector-panel {
     order: -1;
-    height: 170px;
   }
-}
-
-/* Sector-glyph idle motion — page-specific animations (uniquely named so they never collide with
-   the shared graphic motion in hub.css). The `ac`/`acf` accent still resolves to cream. Reduced
-   motion is honoured by hub.css, which stops every `.hub .g *` animation. */
-@keyframes ig-bar {
-  0%,
-  100% {
-    transform: scaleY(0.7);
+  .hub .sector-panel svg {
+    height: 150px;
   }
-  50% {
-    transform: scaleY(1);
-  }
-}
-@keyframes ig-tilt {
-  0%,
-  100% {
-    transform: rotate(-4deg);
-  }
-  50% {
-    transform: rotate(4deg);
-  }
-}
-@keyframes ig-dash {
-  to {
-    stroke-dashoffset: -260;
-  }
-}
-@keyframes ig-rot {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes ig-draw {
-  0% {
-    stroke-dashoffset: 200;
-    opacity: 0.3;
-  }
-  45% {
-    opacity: 1;
-  }
-  100% {
-    stroke-dashoffset: 0;
-    opacity: 0.3;
-  }
-}
-@keyframes ig-bre {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.55;
-  }
-  50% {
-    transform: scale(1.07);
-    opacity: 0.95;
-  }
-}
-@keyframes ig-rise {
-  0%,
-  100% {
-    transform: translateY(3px);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-.hub .ig-bar {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: ig-bar 3.4s ease-in-out infinite;
-}
-.hub .ig-tilt {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: ig-tilt 5.2s ease-in-out infinite;
-}
-.hub .ig-dash {
-  stroke-dasharray: 26 200;
-  animation: ig-dash 3.4s linear infinite;
-}
-.hub .ig-rot {
-  transform-box: view-box;
-  animation: ig-rot 22s linear infinite;
-}
-.hub .ig-orb {
-  transform-box: view-box;
-  animation: ig-rot 9s linear infinite;
-}
-.hub .ig-draw {
-  stroke-dasharray: 200;
-  animation: ig-draw 4.6s ease-in-out infinite;
-}
-.hub .ig-bre {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: ig-bre 5.5s ease-in-out infinite;
-}
-.hub .ig-rise {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: ig-rise 4.6s ease-in-out infinite;
 }
 
 /* HOW WE ENTER / REGULATORY POSTURE — split layout with a lettered/numbered ladder */
