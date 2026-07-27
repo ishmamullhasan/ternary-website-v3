@@ -4,11 +4,20 @@ import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
-import type { Story } from '@/payload-types'
-import { ArrowLeft, ArrowUpRight, Briefcase, Building2, CalendarDays, Clock, Users } from 'lucide-react'
+import type { Media, Story } from '@/payload-types'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import type { JSX } from 'react'
 
-/** A related-case-study card for the carousel — uses the signature gradient/noise media. */
+/**
+ * Case-study detail — editorial, media-forward presentation (fantasy.co study, see
+ * audit/case-studies/INSPIRATION.md): one large hero media moment, short confident
+ * statements, mono numbered section markers, and a roomy single-idea vertical rhythm.
+ * Every band is guarded on its data; missing media renders a clearly-labeled brand
+ * GradientPanel placeholder structured to accept a client image/video later.
+ */
+
+/** A related-case-study card for the carousel — real thumbnail when present, gradient otherwise. */
 export interface RelatedStoryCardData {
   href: string
   title: string
@@ -17,6 +26,7 @@ export interface RelatedStoryCardData {
   date?: string | null
   readTime?: string | null
   categoryLabel?: string | null
+  image?: string | null
   tone: Tone
 }
 
@@ -38,15 +48,68 @@ function hasText(value?: string | null): value is string {
   return typeof value === 'string' && value.trim().length > 0
 }
 
-function MetaCell({ icon: Icon, label, value }: { icon: typeof Building2; label: string; value: string }): JSX.Element {
+/** Populated media doc (depth ≥ 1) or null — string ids have nothing to render. */
+function asMedia(value: Story['thumbnail']): Media | null {
+  return value && typeof value === 'object' ? value : null
+}
+
+// Mirrors the capability detail's Palantir-style marker: "01 / Label", mono + tabular.
+function SectionMarker({ index, label }: { index: number; label: string }): JSX.Element {
   return (
-    <div className="flex flex-col gap-2 rounded-md border border-badge bg-card p-4">
-      <span className="flex items-center gap-2 text-[12px] tracking-[-0.02em] text-subtle">
-        <Icon size={14} aria-hidden />
-        {label}
+    <p className="flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.14em] text-subtle">
+      <span className="tabular-nums text-cream/70">{String(index).padStart(2, '0')}</span>
+      <span aria-hidden className="text-subtle/50">
+        /
       </span>
-      <span className="text-[15px] tracking-[-0.01em] text-cream">{value}</span>
-    </div>
+      <span>{label}</span>
+    </p>
+  )
+}
+
+/** One gallery cell — image now, `<video>` for video mimeTypes, caption underneath. */
+function ShowcaseCell({
+  media,
+  caption,
+  index,
+}: {
+  media: Media
+  caption?: string | null
+  index: number
+}): JSX.Element | null {
+  const url = getMediaUrl(media.url, media.updatedAt)
+  if (!url) return null
+  const isVideo = typeof media.mimeType === 'string' && media.mimeType.startsWith('video/')
+
+  return (
+    <Motion tag="figure" {...revealItem(index)} className="flex flex-col gap-3">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md ring-1 ring-white/5">
+        {isVideo ? (
+          // Silent product-visual clips; any caption text renders in the adjacent <figcaption>.
+          <video src={url} controls muted playsInline preload="metadata" className="size-full object-cover" />
+        ) : (
+          <img src={url} alt={media.alt || ''} loading="lazy" className="size-full object-cover" />
+        )}
+      </div>
+      {hasText(caption) && (
+        <figcaption className="font-mono text-[12px] tracking-[-0.01em] text-subtle">{caption}</figcaption>
+      )}
+    </Motion>
+  )
+}
+
+/** Placeholder tile for the showcase grid — brand gradient, clearly labeled, awaiting client assets. */
+function ShowcasePlaceholder({ tone, index }: { tone: Tone; index: number }): JSX.Element {
+  return (
+    <Motion tag="div" {...revealItem(index)}>
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md ring-1 ring-white/5">
+        <GradientPanel tone={tone} scrim="none" />
+        <div className="relative flex h-full items-end p-5">
+          <span className="rounded-full bg-black/30 px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-cream/85 backdrop-blur-sm">
+            Product visuals — coming soon
+          </span>
+        </div>
+      </div>
+    </Motion>
   )
 }
 
@@ -54,47 +117,60 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   const heroTone = toneFor('story', 0)
   const tags = cleanList(story.tags, 'name')
 
-  // Hero meta strip — only render cells that carry a value.
+  const heroMedia = asMedia(story.thumbnail)
+  const heroUrl = heroMedia ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : ''
+  const heroIsVideo = typeof heroMedia?.mimeType === 'string' && heroMedia.mimeType.startsWith('video/')
+
+  // Meta strip — only cells that carry a value (empty slots never render).
   const meta = story.caseMeta
-  const metaCells: { icon: typeof Building2; label: string; value: string }[] = []
-  if (hasText(meta?.industry)) metaCells.push({ icon: Building2, label: 'Industry', value: meta!.industry! })
-  if (hasText(meta?.engagement)) metaCells.push({ icon: Briefcase, label: 'Engagement', value: meta!.engagement! })
-  if (hasText(meta?.duration)) metaCells.push({ icon: Clock, label: 'Duration', value: meta!.duration! })
-  if (hasText(meta?.team)) metaCells.push({ icon: Users, label: 'Team', value: meta!.team! })
-  if (hasText(meta?.year)) metaCells.push({ icon: CalendarDays, label: 'Year', value: meta!.year! })
+  const metaCells: { label: string; value: string }[] = []
+  if (hasText(meta?.industry)) metaCells.push({ label: 'Industry', value: meta!.industry! })
+  if (hasText(meta?.engagement)) metaCells.push({ label: 'Engagement', value: meta!.engagement! })
+  if (hasText(meta?.duration)) metaCells.push({ label: 'Duration', value: meta!.duration! })
+  if (hasText(meta?.team)) metaCells.push({ label: 'Team', value: meta!.team! })
+  if (hasText(meta?.year)) metaCells.push({ label: 'Year', value: meta!.year! })
 
   const hasBody = Boolean(story.content)
 
+  // Media showcase — populated gallery rows only; falls back to a labeled placeholder grid.
+  const galleryItems = (story.gallery ?? []).flatMap((row) => {
+    const media = asMedia(row.media ?? null)
+    return media ? [{ media, caption: row.caption ?? null }] : []
+  })
+
   return (
-    <article className="w-full pb-16 lg:pb-24">
+    <article className="w-full pb-24 lg:pb-32">
       {/* Breadcrumb */}
-      <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 pt-6">
+      <div className="mx-auto w-full max-w-7xl px-5 pt-6 md:px-8 lg:px-12">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-2 rounded-md text-[13px] tracking-[-0.01em] text-subtle transition-colors hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+          className="inline-flex items-center gap-2 rounded-md font-mono text-[13px] tracking-[-0.01em] text-subtle transition-colors hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
         >
           <ArrowLeft size={14} aria-hidden />
           All case studies
         </Link>
       </div>
 
-      {/* Hero */}
-      <header className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 pt-10 lg:pt-14">
+      {/* Hero — eyebrow, big statement title, one confident line, chips */}
+      <header className="mx-auto w-full max-w-7xl px-5 pt-12 md:px-8 lg:px-12 lg:pt-20">
         <Motion tag="div" {...reveal} transition={{ duration: 0.7, ease: EASE }} className="max-w-4xl">
-          <h1 className="font-display text-[clamp(2rem,5vw,2.75rem)] font-medium leading-[1.08] tracking-[-0.04em] text-cream">
+          <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-subtle">
+            Case study{hasText(meta?.industry) ? ` · ${meta!.industry!}` : ''}
+          </p>
+          <h1 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,3.75rem)] font-medium leading-[1.04] tracking-[-0.04em] text-cream">
             {story.title}
           </h1>
           {hasText(story.excerpts) && (
-            <p className="mt-5 max-w-2xl text-[15px] leading-[1.55] tracking-[-0.01em] text-body lg:text-base">
+            <p className="mt-6 max-w-2xl text-[clamp(1rem,1.6vw,1.2rem)] leading-relaxed tracking-[-0.01em] text-body">
               {story.excerpts}
             </p>
           )}
           {tags.length > 0 && (
-            <ul className="mt-6 flex flex-wrap gap-2">
+            <ul className="mt-8 flex flex-wrap gap-2">
               {tags.map((tag, i) => (
                 <li
                   key={`${tag.name}-${i}`}
-                  className="rounded-full border border-badge px-3 py-1 text-[13px] tracking-[-0.01em] text-body"
+                  className="rounded-full border border-badge px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-body"
                 >
                   {tag.name}
                 </li>
@@ -102,39 +178,55 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
             </ul>
           )}
         </Motion>
-
-        {metaCells.length > 0 && (
-          <Motion
-            tag="div"
-            {...reveal}
-            transition={{ duration: 0.6, ease: EASE, delay: 0.08 }}
-            className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
-          >
-            {metaCells.map((cell) => (
-              <MetaCell key={cell.label} {...cell} />
-            ))}
-          </Motion>
-        )}
       </header>
 
-      {/* Signature gradient/noise hero panel — the artwork, never a photo. */}
+      {/* Hero media — the story's CMS media leads; labeled gradient placeholder otherwise. */}
       <Motion
         tag="div"
         {...reveal}
-        transition={{ duration: 0.7, ease: EASE, delay: 0.12 }}
-        className="mx-auto mt-10 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-14"
+        transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
+        className="mx-auto mt-12 w-full max-w-7xl px-5 md:px-8 lg:mt-16 lg:px-12"
       >
-        <div className="relative h-[260px] w-full overflow-hidden rounded-md ring-1 ring-white/5 lg:h-[440px]">
-          <GradientPanel tone={heroTone} />
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md ring-1 ring-white/5 sm:aspect-[16/8] lg:aspect-[16/7]">
+          {heroUrl ? (
+            heroIsVideo ? (
+              // Silent hero product clip; the surrounding article carries the narrative.
+              <video src={heroUrl} controls muted playsInline preload="metadata" className="size-full object-cover" />
+            ) : (
+              <img src={heroUrl} alt={heroMedia?.alt || ''} className="size-full object-cover" />
+            )
+          ) : (
+            <>
+              <GradientPanel tone={heroTone} scrim="none" />
+              <div className="relative flex h-full items-end p-6">
+                <span className="rounded-full bg-black/30 px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-cream/85 backdrop-blur-sm">
+                  Feature media — coming soon
+                </span>
+              </div>
+            </>
+          )}
         </div>
+
+        {/* Meta strip — quiet hairline row beneath the media, mono labels, guarded cells. */}
+        {metaCells.length > 0 && (
+          <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-line pt-8 sm:grid-cols-3 lg:grid-cols-5">
+            {metaCells.map((cell) => (
+              <div key={cell.label} className="flex flex-col gap-2">
+                <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">{cell.label}</dt>
+                <dd className="text-[15px] tracking-[-0.01em] text-cream">{cell.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </Motion>
 
+      {/* The story — sticky mono rail + editorial prose */}
       {hasBody ? (
-        <div className="mx-auto mt-16 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-24">
+        <div className="mx-auto w-full max-w-7xl px-5 py-24 md:px-8 lg:px-12 lg:py-32">
           <Motion tag="div" {...reveal} className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-16">
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">The story</p>
-              <p className="mt-3 text-[15px] leading-[1.5] tracking-[-0.01em] text-body">
+              <SectionMarker index={1} label="The story" />
+              <p className="mt-4 text-[15px] leading-[1.5] tracking-[-0.01em] text-body">
                 How we approached the work, what we built, and why it matters.
               </p>
             </div>
@@ -144,7 +236,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
           </Motion>
         </div>
       ) : (
-        <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-16 lg:py-24">
+        <div className="mx-auto w-full max-w-7xl px-5 py-24 md:px-8 lg:px-12 lg:py-32">
           <Motion tag="div" {...reveal} className="rounded-md border border-white/5 bg-ink/40 px-6 py-16 text-center">
             <p className="text-base tracking-[-0.01em] text-cream">The full write-up is on its way.</p>
             <p className="mx-auto mt-2 max-w-md text-sm tracking-[-0.01em] text-subtle">
@@ -154,13 +246,39 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         </div>
       )}
 
+      {/* Media showcase — gallery when authored; a clearly-labeled placeholder grid otherwise. */}
+      <section className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12">
+        <Motion tag="div" {...reveal} className="mb-10 flex max-w-2xl flex-col gap-5">
+          <SectionMarker index={2} label="In the product" />
+          <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
+            The work, up close.
+          </h2>
+        </Motion>
+        {galleryItems.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {galleryItems.map((item, index) => (
+              <ShowcaseCell key={item.media.id ?? index} media={item.media} caption={item.caption} index={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {(['indigo', 'magenta', 'emerald'] as const).map((tone, index) => (
+              <ShowcasePlaceholder key={tone} tone={tone} index={index} />
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Related case studies */}
       {related.length > 0 && (
-        <section className="mx-auto mt-16 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-24">
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium tracking-[-0.04em] text-cream">
-              Related case studies.
-            </h2>
+        <section className="mx-auto w-full max-w-7xl px-5 pt-24 md:px-8 lg:px-12 lg:pt-32">
+          <div className="mb-10 flex items-end justify-between gap-4">
+            <div className="flex flex-col gap-5">
+              <SectionMarker index={3} label="More of the work" />
+              <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium tracking-[-0.04em] text-cream">
+                Related case studies.
+              </h2>
+            </div>
             <Link
               href={backHref}
               className="inline-flex shrink-0 items-center gap-1 rounded-md text-sm tracking-[-0.01em] text-cream transition-colors hover:text-body focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
@@ -185,7 +303,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
       )}
 
       {/* CTA banner */}
-      <section className="mx-auto mt-16 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-24">
+      <section className="mx-auto w-full max-w-7xl px-5 pt-24 md:px-8 lg:px-12 lg:pt-32">
         <div className="relative overflow-hidden rounded-md ring-1 ring-white/10">
           <GradientPanel tone="violet" />
           <div className="relative flex flex-col items-center gap-6 p-8 text-center lg:flex-row lg:items-center lg:justify-between lg:p-12 lg:text-left">
@@ -218,13 +336,25 @@ function RelatedStoryCard({ card, index }: { card: RelatedStoryCardData; index: 
         className="group flex h-full flex-col overflow-hidden rounded-md border border-white/5 bg-main transition-[transform,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:border-white/10 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)] focus-visible:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream motion-reduce:transition-none motion-reduce:hover:translate-y-0"
       >
         <div className="relative h-[200px] w-full overflow-hidden">
-          <GradientPanel tone={card.tone} interactive />
+          {card.image ? (
+            <>
+              <img
+                src={card.image}
+                alt=""
+                loading="lazy"
+                className="absolute inset-0 size-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+              />
+              <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/40 to-transparent to-50%" />
+            </>
+          ) : (
+            <GradientPanel tone={card.tone} interactive />
+          )}
           <div className="relative flex h-full flex-col justify-between p-5">
-            <span className="inline-flex w-fit items-center rounded-full bg-black/30 px-3 py-1 text-[13px] tracking-[-0.01em] text-cream backdrop-blur-sm">
+            <span className="inline-flex w-fit items-center rounded-full bg-black/30 px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-cream backdrop-blur-sm">
               {card.categoryLabel ?? 'Case Study'}
             </span>
             {(card.code || card.date) && (
-              <div className="flex items-center justify-between text-[12px] tracking-[-0.02em] text-cream/85">
+              <div className="flex items-center justify-between font-mono text-[12px] tracking-[-0.02em] text-cream/85">
                 <span>{card.code ?? ''}</span>
                 <span>{card.date ?? ''}</span>
               </div>
@@ -240,9 +370,7 @@ function RelatedStoryCard({ card, index }: { card: RelatedStoryCardData; index: 
             <p className="mt-3 line-clamp-2 text-[15px] leading-[1.5] tracking-[-0.01em] text-body">{card.excerpt}</p>
           )}
           <div className="mt-5 flex items-center justify-between border-t border-subtle/60 pt-4 text-[12px] tracking-[-0.02em] text-body">
-            <span className="truncate">
-              {card.readTime ?? '12 min'} · {card.categoryLabel ?? 'Engineering Studio'}
-            </span>
+            <span className="truncate">{card.categoryLabel ?? 'Case Study'}</span>
             <span className="flex shrink-0 items-center gap-1 text-sm text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1">
               Read <ArrowUpRight size={14} aria-hidden />
             </span>

@@ -24,6 +24,23 @@ export const caseStudyFields: Field[] = [
     fields: [{ name: 'name', label: 'Label', type: 'text' }],
   },
 
+  // Media showcase — product visuals rendered in the detail page's "In the product" band.
+  // Images render as <img>; uploads with a video mimeType render as <video>. When empty the
+  // page shows a clearly-labeled placeholder grid awaiting client-supplied assets.
+  {
+    name: 'gallery',
+    label: 'Media Showcase',
+    type: 'array',
+    admin: {
+      position: 'sidebar',
+      description: 'Product visuals for the detail page. Images now; video uploads render as <video>.',
+    },
+    fields: [
+      { name: 'media', label: 'Media', type: 'upload', relationTo: 'media' },
+      { name: 'caption', label: 'Caption', type: 'text', localized: true },
+    ],
+  },
+
   // 5-cell meta strip beneath the hero.
   {
     name: 'caseMeta',

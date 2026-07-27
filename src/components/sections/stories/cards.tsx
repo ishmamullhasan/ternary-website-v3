@@ -186,6 +186,70 @@ export function GradientTileCard({ item, index }: { item: NormalizedItem; index:
 }
 
 /**
+ * Editorial feature card for case studies (fantasy.co study — audit/case-studies/INSPIRATION.md):
+ * a large media area leads (the story's CMS thumbnail; a labeled brand gradient placeholder when
+ * the client hasn't supplied media yet), with a mono "01 / Case study" eyebrow, a confident
+ * Poppins title, and a single-line excerpt beneath. Motion is transform/opacity only.
+ */
+export function StoryFeatureCard({ item, index }: { item: NormalizedItem; index: number }): JSX.Element {
+  return (
+    <Motion
+      tag="article"
+      {...motionGridItemProps}
+      transition={{ duration: 0.55, ease: EASE, delay: Math.min((index % 2) * 0.08, 0.4) }}
+      className="h-full"
+    >
+      <Link
+        href={item.href}
+        className="group flex h-full flex-col gap-5 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+      >
+        {/* Media leads — structured to accept a client image/video later when missing. */}
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md ring-1 ring-white/5">
+          {item.image ? (
+            <img
+              src={item.image}
+              alt=""
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+            />
+          ) : (
+            <>
+              <GradientPanel tone={item.tone} interactive scrim="none" />
+              <div className="relative flex h-full items-end p-5">
+                <span className="rounded-full bg-black/30 px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-cream/85 backdrop-blur-sm">
+                  Feature media — coming soon
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="flex flex-1 flex-col gap-3">
+          <p className="flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.14em] text-subtle">
+            <span className="tabular-nums text-cream/70">{String(index + 1).padStart(2, '0')}</span>
+            <span aria-hidden className="text-subtle/50">
+              /
+            </span>
+            <span>{item.categoryLabel ?? 'Case Study'}</span>
+          </p>
+          <h3 className="font-display text-[clamp(1.375rem,2.2vw,1.75rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
+            {item.title}
+          </h3>
+          {item.excerpt && (
+            <p className="line-clamp-2 max-w-xl text-[15px] leading-[1.55] tracking-[-0.01em] text-body">
+              {item.excerpt}
+            </p>
+          )}
+          <span className="mt-auto flex items-center gap-1 pt-2 text-sm text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1">
+            Read the story <ArrowUpRight size={14} aria-hidden />
+          </span>
+        </div>
+      </Link>
+    </Motion>
+  )
+}
+
+/**
  * Clean text card (press releases) — ID badge, Poppins title, Inter excerpt, code + date
  * row, divider, meta (read time · studio) and a Read affordance with an arrow nudge on hover.
  */

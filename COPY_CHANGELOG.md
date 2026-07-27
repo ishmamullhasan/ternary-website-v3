@@ -123,3 +123,42 @@ Via `scripts/seed-round3.js` (idempotent). **Prod follow-up: replicate all.**
 - Code (same pass): cache keys bumped — `pages_${path}_${locale}_v2` → `_v3`
   (`[...slug]/page.tsx`) and `pages_home_${locale}_v6` → `_v7` (`[locale]/page.tsx`) so the new
   CMS state surfaces on deploy.
+
+### Stories v2 — Word-doc case-study narratives + de-invented meta (staging)
+`stories[10]` via `scripts/seed-stories-v2.js`. Source: `audit/case-studies/SOURCES.md`
+(extracted from the client's `COMPANY PROFILE_ TERNARY  (1).docx` — the approved source
+writing). **Prod follow-up: run the same script against the production CMS once approved.**
+- `content.en` **rewritten for all 10 stories** to carry the doc narratives, edited to house
+  rules: story arc (context → The challenge → Our approach → What we built → The outcome),
+  plain language, **all quantified achievements from the docs dropped** (MAU/GMV/uptime/%
+  figures etc.), no invented facts, short sections instead of walls of text.
+  - 8 stories map to docs: counterfoil-continuum, turfly, alley-analytix, flex5,
+    farogl-odoo-erp, doyouwork, hissho-sushiops360, lankabangla-securities.
+  - **No doc:** dhaka-stock-exchange (copy kept; third heading → "What we're designing"),
+    holcim (copy kept; "Overview" → "The context"). Flagged for client to supply source
+    material later.
+- `excerpts.en` → one confident grounded sentence per story (fantasy.co pattern; 8 doc-mapped
+  stories only — DSE/Holcim excerpts were already grounded and untouched).
+- `title.en` corrections where the old title contradicted the docs:
+  - "Counterfoil: Event-Driven Booking" → **"Counterfoil: AI Revenue Operations"** (the doc
+    positions Continuum as an AI revenue operating layer, not a booking rebuild).
+  - "AlleyIQ: Lab-Grade Bowling Analytics" → **"Alley Analytix: Bowling Intelligence"**
+    ("AlleyIQ" was drift — the client/product is Alley Analytix / Project Pinpoint).
+- `tags` (en+bn) → per-story chips grounded in each doc. **Old state was one duplicated
+  4-chip set** ("Event-driven architecture / API-first services / Policy engine /
+  Model-assisted recommendations") copy-pasted across all 10 stories — wrong for most.
+- `caseMeta` → **de-invented.** Old state had identical placeholder meta on all 10 stories
+  ("Technology / 14 months / 9 — eng, ML, design, ops / 2025–2026" — fabricated). Now:
+  per-story `industry` + `engagement` grounded in each doc's Type/segment line
+  (e.g. "Oil & gas / Frame — enterprise transformation"); `duration`/`team`/`year` cleared
+  (empty slots don't render — an empty proof slot beats a vague one).
+- Latest `_story_versions` draft synced per story so a republish can't resurrect old copy.
+- **bn follow-up:** narrative content.bn still carries the previous drafts; needs a proper
+  Bangla translation pass of the new en narratives (en fallback rules do not apply here since
+  bn content exists).
+- Schema (code, same pass): `story.gallery` array added (`media` upload + localized
+  `caption`) — powers the new "In the product" media-showcase band on the detail page.
+  Empty today for all stories → the page renders a labeled placeholder grid
+  ("Product visuals — coming soon") until the client supplies product images/videos.
+- Code (same pass): detail cache keys bumped `story_detail_${slug}_${locale}` → `_v2`,
+  `story_related_${slug}_${locale}` → `_v2`.

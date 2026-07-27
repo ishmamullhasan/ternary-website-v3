@@ -4,6 +4,7 @@ import { asTypedLocale, localizedPath } from '@/lib/i18n/locales'
 import type { Story } from '@/payload-types'
 import config from '@/payload.config'
 import { createContentDetailPage } from '@/utilities/contentDetailPage'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
@@ -38,7 +39,7 @@ function getStory(slug: string, locale: TypedLocale) {
       })
       return (result.docs[0] as Story | undefined) ?? null
     },
-    [`story_detail_${slug}_${locale}`],
+    [`story_detail_${slug}_${locale}_v2`],
     // Purely tag-driven: the story afterChange/afterDelete hooks bust these tags. Docs written
     // straight to the DB (seed/ops scripts) must be followed by GET /next/revalidate or the admin
     // "Revalidate site" button — there is no time-based fallback anymore.
@@ -59,7 +60,7 @@ function getRelatedStories(excludeSlug: string, locale: TypedLocale) {
       })
       return result.docs as Story[]
     },
-    [`story_related_${excludeSlug}_${locale}`],
+    [`story_related_${excludeSlug}_${locale}_v2`],
     { tags: ['story'] },
   )
 }
@@ -81,6 +82,10 @@ async function Page({ params }: { params: Promise<{ locale: string; slug: string
     date: formatDate((doc as { publishedDate?: string | null }).publishedDate),
     readTime: null,
     categoryLabel: 'Case Study',
+    image:
+      doc.thumbnail && typeof doc.thumbnail === 'object'
+        ? getMediaUrl(doc.thumbnail.url, doc.thumbnail.updatedAt)
+        : null,
     tone: toneFor('story', index),
   }))
 
