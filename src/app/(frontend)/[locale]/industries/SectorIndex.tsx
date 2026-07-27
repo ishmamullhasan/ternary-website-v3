@@ -1,10 +1,30 @@
 'use client'
 
+import Link from '@/components/LocalizedLink'
 import { useCanHover } from '@/components/hub/useCanHover'
-import { type ReactNode, useState } from 'react'
+import * as Tabs from '@radix-ui/react-tabs'
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 /**
- * The signature sector index — a single-open accordion, ported from
+ * The sector index — a sticky split-view explorer. The left rail lists every sector with the
+ * capabilities it draws on; the right panel is one large preview that crossfades as the selection
+ * changes. One sector is shown at a time and the layout never reflows, so there is no
+ * hover-induced whitespace and nothing jumps.
+ *
+ * Selection follows pointer, keyboard and scroll: hover (fine pointers only) and Radix's own
+ * roving-tabindex arrow keys set it directly, and an IntersectionObserver advances it as the rail
+ * scrolls past the viewport's middle band — pointer and keyboard always win over scroll.
+ *
+ * Built on @radix-ui/react-tabs rather than hand-rolled: it supplies the roving tabindex, arrow-key
+ * semantics and aria-selected/aria-controls wiring this pattern needs and that are easy to get
+ * subtly wrong.
+ *
+ * EVERY WORD HERE IS REAL. Sector names, one-line descriptions and named clients are the authored
+ * copy that shipped with the previous accordion; CAPS maps each sector onto Ternary's eight actual
+ * capabilities. The CMS holds no per-industry overview, challenge list, technology tags or outcome
+ * metric — see the note on CAPS — so none are rendered rather than invented.
+ *
+ * (Originally a single-open accordion, ported from
  * public/hub/industries-hub-bold.html. On fine pointers a sector opens on hover (and on keyboard
  * focus); on touch it toggles on tap. Item 0 is open by default. The expand/collapse is a
  * `grid-template-rows: 0fr → 1fr` transition (see industriesHub.css) so height animates without a
@@ -217,58 +237,142 @@ const SECTORS: Sector[] = [
   },
 ]
 
+// Ternary's eight real capabilities, mapped onto the sectors that draw on them. These are the
+// capability names authored in the CMS — nothing here is invented. The left rail shows the first
+// three; the preview lists them all under "What we build".
+//
+// TO AUTHOR LATER: the brief this replaces also asked for a per-sector 80-120 word overview, a
+// challenges list, technology tags and an outcome metric. None exist in the `industry` collection
+// (every doc has an empty `layout` and a one-line excerpt), so no slot for them is rendered. Add
+// the fields, then render them here — do not backfill with generated copy.
+const CAPS: Record<string, string[]> = {
+  '01': ['Data & Analytics', 'Cloud Transformation', 'DevOps & Automation', 'Platformization', 'Artificial Intelligence'],
+  '02': ['Data & Analytics', 'Artificial Intelligence', 'Cloud Transformation', 'Platformization', 'DevOps & Automation'],
+  '03': ['Digital Experiences', 'Cloud Transformation', 'Data & Analytics', 'Artificial Intelligence', 'Platformization'],
+  '04': ['Internet of Things', 'Data & Analytics', 'Platformization', 'Cloud Transformation', 'DevOps & Automation'],
+  '05': ['Digital Experiences', 'Data & Analytics', 'Cloud Transformation', 'Platformization'],
+  '06': ['Digital Experiences', 'Platformization', 'Data & Analytics', 'Cloud Transformation'],
+  '07': ['Digital Experiences', 'Data & Analytics', 'Artificial Intelligence', 'Platformization'],
+  '08': ['Cloud Transformation', 'DevOps & Automation', 'Data & Analytics', 'Platformization', 'Agentic Architecture'],
+  '09': ['Platformization', 'Agentic Architecture', 'DevOps & Automation', 'Cloud Transformation', 'Artificial Intelligence'],
+}
+
+// Real slugs from the industry collection, so every CTA lands on a page that exists.
+const SLUGS: Record<string, string> = {
+  '01': 'banking-capital-markets',
+  '02': 'financial-services-insurance',
+  '03': 'healthcare',
+  '04': 'advanced-manufacturing',
+  '05': 'sports-entertainment',
+  '06': 'hospitality-travel',
+  '07': 'consumer-goods',
+  '08': 'public-sector',
+  '09': 'technology-platforms',
+}
+
 export default function SectorIndex() {
-  const [openIdx, setOpenIdx] = useState(0)
+  const [active, setActive] = useState(SECTORS[0].num)
   const canHover = useCanHover()
+  const listRef = useRef<HTMLDivElement>(null)
+  // Pointer and keyboard beat scroll: while either is driving, the observer stands down.
+  const held = useRef(false)
+
+  const pick = useCallback((num: string) => {
+    held.current = true
+    setActive(num)
+  }, [])
+
+  // Scroll-sync — whichever rail item crosses the viewport's middle band becomes active.
+  useEffect(() => {
+    const root = listRef.current
+    if (!root) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-sector]'))
+    if (items.length === 0) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (held.current) return
+        const num = entries.find((e) => e.isIntersecting)?.target.getAttribute('data-sector')
+        if (num) setActive(num)
+      },
+      { rootMargin: '-48% 0px -48% 0px', threshold: 0 },
+    )
+    items.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
 
   return (
-    <div className="sectors">
-      {SECTORS.map((sector, i) => {
-        const open = i === openIdx
-        return (
-          <div className={`sector${open ? ' open' : ''}`} id={`s${sector.num}`} key={sector.num}>
-            <button
-              type="button"
-              className="sector-head"
-              aria-expanded={open}
-              aria-controls={`sb${sector.num}`}
-              onMouseEnter={canHover ? () => setOpenIdx(i) : undefined}
-              onFocus={() => setOpenIdx(i)}
-              onClick={() => {
-                if (!canHover) setOpenIdx(open ? -1 : i)
-              }}
-            >
-              <span className="sector-num">{sector.num}</span>
-              <span className="sector-mid">
-                <span className="sector-name">{sector.name}</span>
-                <span className="sector-proof">
-                  <span className="lab">{sector.label}</span>
-                  {sector.none ? (
-                    <span className="none">{sector.none}</span>
-                  ) : (
-                    sector.clients.map((client) => (
-                      <span className="cli" key={client}>
-                        {client}
-                      </span>
-                    ))
-                  )}
-                </span>
-              </span>
-              <span className="sector-chev" aria-hidden="true">
-                →
-              </span>
-            </button>
-            <div className="sector-body" id={`sb${sector.num}`}>
-              <div className="sector-body-in">
-                <div className="sector-grid">
-                  <p className="sector-desc">{sector.desc}</p>
-                  <div className="sector-panel">{sector.graphic}</div>
-                </div>
-              </div>
+    <Tabs.Root
+      value={active}
+      onValueChange={pick}
+      orientation="vertical"
+      className="ix"
+      onPointerLeave={() => {
+        held.current = false
+      }}
+    >
+      <Tabs.List className="ix-rail" aria-label="Sectors" ref={listRef}>
+        {SECTORS.map((sector) => (
+          <Tabs.Trigger
+            key={sector.num}
+            value={sector.num}
+            data-sector={sector.num}
+            className="ix-item"
+            onMouseEnter={canHover ? () => pick(sector.num) : undefined}
+          >
+            {/* the accent line, 0 -> 100% */}
+            <span className="ix-line" aria-hidden="true" />
+            <span className="ix-num" aria-hidden="true">
+              {sector.num}
+            </span>
+            <span className="ix-mid">
+              <span className="ix-name">{sector.name}</span>
+              <span className="ix-caps">{(CAPS[sector.num] ?? []).slice(0, 3).join('  ·  ')}</span>
+            </span>
+          </Tabs.Trigger>
+        ))}
+      </Tabs.List>
+
+      <div className="ix-stage">
+        {SECTORS.map((sector) => (
+          <Tabs.Content key={sector.num} value={sector.num} className="ix-panel">
+            <div className="ix-art" aria-hidden="true">
+              {sector.graphic}
             </div>
-          </div>
-        )
-      })}
-    </div>
+            <div className="ix-copy">
+              <h3 className="ix-title">{sector.name}</h3>
+              <p className="ix-desc">{sector.desc}</p>
+
+              <div className="ix-proof">
+                <span className="ix-lab">{sector.label}</span>
+                {sector.none ? (
+                  <span className="ix-none">{sector.none}</span>
+                ) : (
+                  sector.clients.map((client) => (
+                    <span className="ix-cli" key={client}>
+                      {client}
+                    </span>
+                  ))
+                )}
+              </div>
+
+              <div className="ix-build">
+                <span className="ix-lab">What we build</span>
+                <ul className="ix-caplist">
+                  {(CAPS[sector.num] ?? []).map((cap) => (
+                    <li key={cap}>{cap}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <Link className="ix-cta" href={`/industries/${SLUGS[sector.num]}`}>
+                Explore {sector.name}
+                <span aria-hidden="true"> →</span>
+              </Link>
+            </div>
+          </Tabs.Content>
+        ))}
+      </div>
+    </Tabs.Root>
   )
 }
