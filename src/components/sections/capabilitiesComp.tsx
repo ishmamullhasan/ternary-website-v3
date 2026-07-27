@@ -150,8 +150,13 @@ function CapabilityCard({ item, index }: { item: Capability; index: number }): J
       onPointerLeave={onPointerLeave}
       /* Borderless, on the brand radius token (`rounded-md` = 5px, per globals.css) like every other
          card on the home page. The hover affordance is carried by the lume and by the figure
-         resolving under the pointer — it does not need an edge as well. */
-      className={`cap-card group relative flex h-full min-h-[379px] flex-col overflow-hidden rounded-md bg-button-dark ${focusRing}`}
+         resolving under the pointer — it does not need an edge as well.
+
+         Surface is `bg-ink`, not `bg-button-dark`: every other card on the home page (solutions,
+         industries, scales, engagement) sits on --color-ink #0f0e0e, and #14120b left this one
+         section reading a shade warmer than the rest of the page. `bg-button-dark` stays what its
+         name says — buttons, chips, and the /capabilities ledger stage. */
+      className={`cap-card group relative flex h-full min-h-[379px] flex-col overflow-hidden rounded-md bg-ink ${focusRing}`}
     >
       <span aria-hidden className="cap-lume" />
 
