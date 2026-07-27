@@ -205,12 +205,29 @@
   }
   62%,
   86% {
-    transform: translate(0, -24px);
+    transform: translate(0, -26px);
     opacity: 1;
   }
   96%,
   100% {
-    transform: translate(0, -24px);
+    transform: translate(0, -26px);
+    opacity: 0;
+  }
+}
+/* the one product becomes many — lands after the launch */
+@keyframes sfScale {
+  0%,
+  52% {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  64%,
+  88% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  97%,
+  100% {
     opacity: 0;
   }
 }
@@ -232,6 +249,16 @@
   100% {
     offset-distance: 100%;
     opacity: 0;
+  }
+}
+/* the business that runs on them: its own linear clock, never synced to the
+   migration and never paused — that is the whole point of the lane. */
+@keyframes sfFlow {
+  0% {
+    transform: translateX(-118px);
+  }
+  100% {
+    transform: translateX(118px);
   }
 }
 @keyframes sfArrived {
@@ -310,39 +337,34 @@
     transform: translateX(124px);
   }
 }
-@keyframes sfSpike {
+/* one bar dips, is caught mid-sweep, and is restored */
+@keyframes sfDip {
   0%,
-  30% {
-    transform: scaleY(0);
-    opacity: 0;
-  }
-  34% {
-    opacity: 1;
-  }
-  38%,
-  78% {
+  8% {
     transform: scaleY(1);
-    opacity: 1;
   }
-  88%,
+  13%,
+  24% {
+    transform: scaleY(0.28);
+  }
+  32%,
   100% {
-    transform: scaleY(0);
-    opacity: 0;
+    transform: scaleY(1);
   }
 }
 @keyframes sfCatch {
   0%,
-  74% {
+  22% {
     transform: scale(0.3);
     opacity: 0;
   }
-  77% {
+  26% {
     transform: scale(1);
     opacity: 0.85;
   }
-  90%,
+  38%,
   100% {
-    transform: scale(2);
+    transform: scale(2.1);
     opacity: 0;
   }
 }
@@ -373,12 +395,18 @@
 .sf-ship {
   animation: sfShip 8s cubic-bezier(0.3, 0, 0.2, 1) infinite;
 }
+.sf-scale {
+  animation: sfScale 8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
 
 .sf-cross {
   animation: sfCross 8s cubic-bezier(0.5, 0, 0.2, 1) infinite;
 }
 .sf-arrived {
   animation: sfArrived 8s ease-out infinite;
+}
+.sf-flow {
+  animation: sfFlow 3.2s linear infinite;
 }
 
 .sf-join {
@@ -399,8 +427,8 @@
 .sf-sweep {
   animation: sfSweep 4s linear infinite;
 }
-.sf-spike {
-  animation: sfSpike 8s cubic-bezier(0.3, 0, 0.2, 1) infinite;
+.sf-dip {
+  animation: sfDip 8s cubic-bezier(0.3, 0, 0.2, 1) infinite;
   transform-box: fill-box;
   transform-origin: bottom;
 }

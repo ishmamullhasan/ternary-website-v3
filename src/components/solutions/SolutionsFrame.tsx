@@ -19,58 +19,75 @@ import './solutionsFrame.css'
 const MID = 210
 const VIEW_W = 1200
 const VIEW_H = 420
+const BG = '#0F0E0E'
 
-/* ── 01 · a point becomes a product ─────────────────────────────────────── */
+/* ── 01 · Product Development ────────────────────────────────────────────
+   "conception to scale": a seed reaches out, a product surface draws itself,
+   ships, and then becomes many. */
 function Product(): JSX.Element {
   return (
     <g>
-      <circle cx="-110" cy={MID} r="3.2" className="solid sf-seed" />
-      <path d={`M-106,${MID} h32`} className="hi sf-reach" pathLength="1" strokeDasharray="1" />
+      <circle cx="-116" cy={MID} r="3.2" className="solid sf-seed" />
+      <path d={`M-112,${MID} h34`} className="hi sf-reach" pathLength="1" strokeDasharray="1" />
       <rect
-        x="-70"
-        y={MID - 54}
+        x="-74"
+        y={MID - 56}
         width="140"
-        height="108"
-        rx="4"
+        height="112"
+        rx="5"
         className="hi sf-build"
         pathLength="1"
         strokeDasharray="1"
       />
-      <path d={`M-70,${MID - 30} h140`} className="ink sf-detail" style={{ animationDelay: '2.3s' }} />
-      <path d={`M-54,${MID + 2} h68`} className="ink faint sf-detail" style={{ animationDelay: '2.6s' }} />
-      <path d={`M-54,${MID + 22} h42`} className="ink faint sf-detail" style={{ animationDelay: '2.8s' }} />
-      <circle cx="-54" cy={MID - 42} r="2.6" className="solid sf-detail" style={{ animationDelay: '3s' }} />
+      <path d={`M-74,${MID - 28} h140`} className="ink sf-detail" style={{ animationDelay: '2.3s' }} />
+      <circle cx="-60" cy={MID - 42} r="2.6" className="solid sf-detail" style={{ animationDelay: '2.5s' }} />
+      <path d={`M-56,${MID + 2} h72`} className="ink faint sf-detail" style={{ animationDelay: '2.7s' }} />
+      <path d={`M-56,${MID + 24} h44`} className="ink faint sf-detail" style={{ animationDelay: '2.9s' }} />
+      {/* launch */}
       <g className="sf-ship">
-        <circle cx="70" cy={MID - 54} r="3.6" className="solid" />
+        <circle cx="66" cy={MID - 56} r="3.6" className="solid" />
+      </g>
+      {/* scale — the one product becomes many */}
+      <g className="sf-scale">
+        {[MID - 42, MID - 6, MID + 30].map((y, i) => (
+          <g key={i}>
+            <path d={`M66,${MID} C82,${MID} 84,${y + 12} 92,${y + 12}`} className="ink faint" />
+            <rect x="92" y={y} width="34" height="24" rx="3" className="hi" />
+          </g>
+        ))}
       </g>
     </g>
   )
 }
 
-/* ── 02 · mass crossing, nothing dropped ────────────────────────────────── */
+/* ── 02 · Enterprise Transformation ──────────────────────────────────────
+   The outgrown stack migrates block by block into modular services — while the
+   line underneath, the business that runs on them, never once stops moving. */
 function Transform(): JSX.Element {
-  const SLAB = { w: 60, h: 22 }
-  const src = [0, 1, 2, 3].map((i) => ({ x: -114, y: MID - 70 + i * 34 }))
+  const W = 62
+  const H = 24
+  const src = [0, 1, 2, 3].map((i) => ({ x: -120, y: MID - 88 + i * 36 }))
   const dst = [
-    { x: 16, y: MID - 78 },
-    { x: 66, y: MID - 36 },
-    { x: 12, y: MID + 6 },
-    { x: 62, y: MID + 46 },
+    { x: 12, y: MID - 92 },
+    { x: 52, y: MID - 50 },
+    { x: 8, y: MID - 8 },
+    { x: 48, y: MID + 34 },
   ]
+  const flowY = MID + 86
   return (
     <g>
-      <rect x="-118" y={MID - 76} width="68" height="140" rx="3" className="ink dash" />
+      <rect x="-124" y={MID - 92} width="70" height="148" rx="3" className="ink dash" />
       {src.map((s, i) => (
-        <rect key={`s${i}`} x={s.x} y={s.y} width={SLAB.w} height={SLAB.h} rx="2" className="ink fill-soft" />
+        <rect key={`s${i}`} x={s.x} y={s.y} width={W} height={H} rx="2" className="ink fill-soft" />
       ))}
-      <path d={`M0,${MID - 118} v236`} className="ink faint" strokeDasharray="2 6" />
+      <path d={`M-6,${MID - 104} v190`} className="ink faint" strokeDasharray="2 6" />
       {dst.map((t, i) => (
         <rect
           key={`t${i}`}
           x={t.x}
           y={t.y}
-          width={SLAB.w}
-          height={SLAB.h}
+          width={W}
+          height={H}
           rx="2"
           className="hi sf-arrived"
           style={{ animationDelay: `${(i * 0.5).toFixed(2)}s` }}
@@ -85,26 +102,45 @@ function Transform(): JSX.Element {
             className="sf-cross"
             style={{ offsetPath: `path("${d}")`, animationDelay: `${(i * 0.5).toFixed(2)}s` }}
           >
-            <rect x="0" y="0" width={SLAB.w} height={SLAB.h} rx="2" className="solid" />
+            <rect x="0" y="0" width={W} height={H} rx="2" className="solid" />
           </g>
         )
       })}
+      {/* "without stopping the business that runs on them" — its own clock, never paused */}
+      <path d={`M-124,${flowY} h248`} className="ink" />
+      {Array.from({ length: 13 }, (_, i) => (
+        <path key={`k${i}`} d={`M${-120 + i * 20},${flowY + 5} v5`} className="ink faint" />
+      ))}
+      <g className="sf-flow">
+        <circle cx="0" cy={flowY} r="3.2" className="solid" />
+      </g>
     </g>
   )
 }
 
-/* ── 03 · the team, plus one ────────────────────────────────────────────── */
+/* ── 03 · Engineering Augmentation ───────────────────────────────────────
+   Your team is the outlined mesh; the specialists arriving from outside are the
+   solid ones. They take a seat and bond into three existing people each. */
 function Augmentation(): JSX.Element {
   const team: [number, number][] = [
-    [-96, MID - 52],
-    [-24, MID - 80],
-    [-108, MID + 28],
-    [-36, MID + 60],
-    [34, MID + 36],
+    [-92, MID - 46],
+    [-30, MID - 74],
+    [-104, MID + 30],
+    [-40, MID + 58],
+    [26, MID + 30],
   ]
-  const seat: [number, number] = [48, MID - 36]
-  const bonds = [team[1], team[4], team[0], team[3]]
-  const arrival = `M132,${MID - 152} C132,${MID - 100} ${seat[0] + 30},${MID - 86} ${seat[0]},${seat[1]}`
+  const seats: [number, number][] = [
+    [46, MID - 44],
+    [76, MID + 10],
+  ]
+  const arrivals = [
+    `M128,${MID - 146} C128,${MID - 100} 62,${MID - 88} 46,${MID - 44}`,
+    `M138,${MID + 116} C138,${MID + 74} 94,${MID + 44} 76,${MID + 10}`,
+  ]
+  const bonds: [number, number][][] = [
+    [team[1], team[4], team[0]],
+    [team[4], team[3], team[1]],
+  ]
   return (
     <g>
       {[
@@ -118,47 +154,73 @@ function Augmentation(): JSX.Element {
         <path key={`e${i}`} d={`M${team[a][0]},${team[a][1]}L${team[b][0]},${team[b][1]}`} className="ink faint" />
       ))}
       {team.map(([x, y], i) => (
-        <circle key={`n${i}`} cx={x} cy={y} r="4.5" className="ink" />
+        <circle key={`n${i}`} cx={x} cy={y} r="4.5" className="ink" fill={BG} />
       ))}
-      <circle cx={seat[0]} cy={seat[1]} r="8" className="ink dash sf-seat" />
-      {bonds.map(([x, y], i) => (
-        <path
-          key={`b${i}`}
-          d={`M${seat[0]},${seat[1]}L${x},${y}`}
-          pathLength="1"
-          strokeDasharray="1"
-          className="hi sf-bond"
-          style={{ animationDelay: `${(3.1 + i * 0.16).toFixed(2)}s` }}
-        />
+      {seats.map(([x, y], i) => (
+        <g key={`s${i}`}>
+          <circle
+            cx={x}
+            cy={y}
+            r="8"
+            className="ink dash sf-seat"
+            style={{ animationDelay: `${(i * 0.4).toFixed(2)}s` }}
+          />
+          {bonds[i].map((t, j) => (
+            <path
+              key={j}
+              d={`M${x},${y}L${t[0]},${t[1]}`}
+              pathLength="1"
+              strokeDasharray="1"
+              className="hi sf-bond"
+              style={{ animationDelay: `${(3.2 + i * 0.5 + j * 0.16).toFixed(2)}s` }}
+            />
+          ))}
+          <g
+            className="sf-join"
+            style={{ offsetPath: `path("${arrivals[i]}")`, animationDelay: `${(i * 0.4).toFixed(2)}s` }}
+          >
+            <circle r="5.5" className="solid" />
+          </g>
+          <circle
+            cx={x}
+            cy={y}
+            r="14"
+            className="hi sf-settle"
+            style={{ animationDelay: `${(i * 0.4).toFixed(2)}s` }}
+          />
+        </g>
       ))}
-      <g className="sf-join" style={{ offsetPath: `path("${arrival}")` }}>
-        <circle r="5.5" className="solid" />
-      </g>
-      <circle cx={seat[0]} cy={seat[1]} r="14" className="hi sf-settle" />
     </g>
   )
 }
 
-/* ── 04 · it never resolves. It watches. ──────────────────────────────────
-   The sweep crosses in 4s; the anomaly sits at x = 8, which is 53.2% of the way across the
-   baseline. So the catch fires at 76.6% of the 8s cycle — the second pass. The first pass misses
-   it, which is the point. */
+/* ── 04 · Managed Systems ────────────────────────────────────────────────
+   It never resolves — it watches. Uptime bars run steady; one dips, the sweep
+   reaches it and catches it, and it is restored. The dashed trend keeps
+   climbing: what we built keeps earning its place.
+
+   The sweep crosses in 4s and the anomaly sits at x = -10, dead centre of the
+   248-wide baseline, so the sweep is over it at 2s — 25% of the 8s cycle, which
+   is exactly when sfCatch fires. */
 function Managed(): JSX.Element {
+  const base = MID + 54
+  const bars = [54, 62, 58, 66, 60, 72, 56, 62, 58, 64, 60, 66]
   return (
     <g>
-      <path d={`M-124,${MID} h248`} className="ink" />
-      {Array.from({ length: 13 }, (_, i) => (
-        <path key={i} d={`M${-120 + i * 20},${MID + 6} v6`} className="ink faint" />
+      <path d={`M-124,${base} h248`} className="ink" />
+      {Array.from({ length: 12 }, (_, i) => (
+        <path key={`t${i}`} d={`M${-110 + i * 20},${base + 5} v5`} className="ink faint" />
       ))}
-      <g className="sf-spike">
-        <path d={`M-10,${MID} L8,${MID - 52} L26,${MID}`} className="hi" />
-      </g>
-      <circle cx="8" cy={MID - 52} r="12" className="hi sf-catch" />
+      {bars.map((v, i) => (
+        <path key={`b${i}`} d={`M${-110 + i * 20},${base} v${-v}`} className={i === 5 ? 'hi sf-dip' : 'ink faint'} />
+      ))}
+      <path d={`M-110,${base - 50} L110,${base - 70}`} className="ink faint" strokeDasharray="3 5" />
+      <circle cx="-10" cy={base - 72} r="12" className="hi sf-catch" />
       <g className="sf-sweep">
-        <path d={`M0,${MID - 84} v168`} className="hi" />
-        <circle cx="0" cy={MID - 84} r="2.6" className="solid" />
+        <path d={`M0,${base - 96} v112`} className="hi" />
+        <circle cx="0" cy={base - 96} r="2.6" className="solid" />
       </g>
-      <circle cx="-124" cy={MID} r="3.2" className="solid sf-pulse" />
+      <circle cx="-124" cy={base} r="3.2" className="solid sf-pulse" />
     </g>
   )
 }
