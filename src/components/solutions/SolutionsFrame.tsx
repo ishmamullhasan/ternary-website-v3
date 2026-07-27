@@ -140,7 +140,9 @@ function iso(K: number, OY: number) {
    "conception to scale": a spark on the build plate, and the product assembles
    above it layer by layer until the surface itself exists. */
 function product(): string {
-  const g = iso(1.4, 30)
+  // OY 48 puts the settled stack's optical centre on ~205, the same line the
+  // other three lanes sit on — measured, not eyeballed.
+  const g = iso(1.4, 48)
   const X = 46
   g.open('grid')
   for (let i = -X; i <= X; i += 11.5) {
@@ -182,36 +184,14 @@ function product(): string {
 }
 
 /* ── 02 · Enterprise Transformation ──────────────────────────────────────
-   The outgrown estate — mismatched blocks, each still sitting on its footprint —
-   crosses over and is rebuilt as a single tidy assembly. */
+   Rebuilt for what comes next: the four parts land, one after another, onto one
+   shared platform — the outgrown estate consolidated into a single system.
+   Centred and scaled so its 122 half-width sits between 01's grid (129) and 04's
+   orbit (112), and OY lifts it onto the same optical centre (~205) as the rest.
+   No ghost footprints here: they would sit directly under the pods and read as
+   stray dashes, and the reference's assembled block has none either. */
 function transform(): string {
-  const g = iso(1.3, 6)
-  g.raw('<g transform="translate(-72,0)">')
-  const parts: [number, number, number, number, number][] = [
-    [-6, -28, 13, 9, 11],
-    [26, -6, 9, 9, 7],
-    [-26, 4, 12, 12, 9],
-    [6, 20, 11, 8, 8],
-    [30, 26, 7, 7, 6],
-  ]
-  for (const [x, y, hx, hy, h] of parts) {
-    g.face(x, y, 0, hx + 3, hy + 3, 3, 'ink faint dash')
-    g.box(x, y, 0, hx, hy, h, 3)
-  }
-  g.close()
-
-  g.raw('<g transform="translate(2,0)">')
-  const a = g.pr([-14, -14, 14])
-  const b = g.pr([14, 14, 14])
-  const seg = `M${g.S(a)} L${g.S(b)}`
-  g.raw(`<path d="${seg}" class="ink faint dash"/>`)
-  g.arrow([-14, -14, 14], [14, 14, 14], 'ink')
-  g.open('sf-flowdot', `offset-path:path('${seg}')`)
-  g.raw('<circle r="2.4" class="solid"/>')
-  g.close()
-  g.close()
-
-  g.raw('<g transform="translate(78,0)">')
+  const g = iso(1.9, 8)
   g.box(0, 0, 0, 32, 32, 6, 4)
   ;[
     [-15, -15],
@@ -223,7 +203,6 @@ function transform(): string {
     g.box(x, y, 6, 14, 14, 11, 4, 'hi')
     g.close()
   })
-  g.close()
   return g.done()
 }
 
