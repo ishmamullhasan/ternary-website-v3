@@ -309,7 +309,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
             {COMBINATIONS.map((combo, i) => (
               <Motion key={combo.title} className="h-full" {...revealItem(i)}>
                 <Link
-                  href="/case-studies"
+                  href="/stories"
                   className={cn(
                     'group flex h-full min-h-[340px] flex-col rounded-md border border-line bg-ink p-8 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong',
                     FOCUS_RING,
@@ -409,7 +409,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
                 <ArrowRight size={16} strokeWidth={2} aria-hidden />
               </Link>
               <Link
-                href="/case-studies"
+                href="/stories"
                 className={cn(
                   'inline-flex items-center justify-center rounded-md border border-white/20 bg-white/[0.06] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12]',
                   FOCUS_RING,

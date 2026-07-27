@@ -164,7 +164,7 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
               Start a conversation
               <ArrowRight size={16} strokeWidth={2} aria-hidden />
             </Link>
-            <Link className="btn btn-ghost" href="/case-studies">
+            <Link className="btn btn-ghost" href="/stories">
               See our work
             </Link>
           </Reveal>

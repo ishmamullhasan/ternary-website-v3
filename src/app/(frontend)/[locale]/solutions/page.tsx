@@ -327,7 +327,7 @@ export default function SolutionsHubPage(): JSX.Element {
                     <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-body">
                       <span className="text-cream">{s.proof.client}</span> — {s.proof.body}{' '}
                       <Link
-                        href="/case-studies"
+                        href="/stories"
                         className={cn(
                           'group/story mt-1 inline-flex items-center gap-1.5 whitespace-nowrap font-medium text-cream',
                           FOCUS_RING,
@@ -494,7 +494,7 @@ export default function SolutionsHubPage(): JSX.Element {
                 <ArrowRight size={16} strokeWidth={2} aria-hidden />
               </Link>
               <Link
-                href="/case-studies"
+                href="/stories"
                 className={cn(
                   'inline-flex items-center justify-center rounded-md border border-white/20 bg-white/[0.06] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12]',
                   FOCUS_RING,

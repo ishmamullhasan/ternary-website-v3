@@ -491,7 +491,7 @@ export default async function Page({
                           {result}
                         </p>
                         <Link
-                          href="/case-studies"
+                          href="/stories"
                           className={cn(
                             'group inline-flex items-center gap-1.5 rounded-sm text-[13px] font-medium text-cream transition-colors duration-300 hover:text-cream/70',
                             FOCUS_RING,
