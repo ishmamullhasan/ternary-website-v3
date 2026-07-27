@@ -390,7 +390,7 @@ export default function ScalesHubPage(): JSX.Element {
                 <ArrowRight size={16} strokeWidth={2} aria-hidden />
               </Link>
               <Link
-                href="/case-studies"
+                href="/stories"
                 className={cn(
                   'inline-flex items-center justify-center gap-2 rounded-md border border-white/20 bg-white/[0.06] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12]',
                   FOCUS_RING,

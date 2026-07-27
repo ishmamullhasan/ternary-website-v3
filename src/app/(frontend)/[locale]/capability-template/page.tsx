@@ -429,7 +429,7 @@ export default function CapabilityTemplatePage(): JSX.Element {
                     {cs.result}
                   </p>
                   <Link
-                    href="/case-studies"
+                    href="/stories"
                     className={cn(
                       'group inline-flex items-center gap-1.5 rounded-sm text-[13px] font-medium text-cream transition-colors duration-300 hover:text-cream/70',
                       FOCUS_RING,
@@ -514,7 +514,7 @@ export default function CapabilityTemplatePage(): JSX.Element {
               <ArrowRight size={16} strokeWidth={2} aria-hidden />
             </Link>
             <Link
-              href="/case-studies"
+              href="/stories"
               className={cn(
                 'inline-flex w-full items-center justify-center rounded-md border border-white/20 bg-white/[0.06] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12] sm:w-auto',
                 FOCUS_RING,
