@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import CapabilityArt from '@/components/capability/CapabilityArt'
+import { TONE, toneFor, type Tone } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
@@ -125,6 +126,18 @@ const revealItem = (index: number) => ({
 const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
+// Key colors of the brand TONE gradients (GradientPanel) as raw RGB triplets, so decorative washes
+// can borrow the palette at very low alpha without minting any new colors. Cycle order mirrors
+// `toneFor`'s positional fallback, keeping accents consistent across sections.
+const TONE_RGB: Record<Tone, string> = {
+  crimson: '193, 40, 95',
+  violet: '124, 58, 237',
+  emerald: '31, 157, 107',
+  azure: '47, 147, 218',
+  magenta: '182, 36, 154',
+  indigo: '79, 107, 237',
+}
+
 // Palantir-style section marker: "Section 02 / Label", tabular numerals, tight functional label.
 function SectionMarker({ index, label }: { index: number; label: string }): JSX.Element {
   return (
@@ -182,7 +195,7 @@ export default async function Page({
   const cta = capability.cta
 
   return (
-    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-24 px-5 pb-24 lg:gap-32 lg:pb-32">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-24 px-5 pb-24 md:px-8 lg:gap-32 lg:px-12 lg:pb-32">
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
       <section className="w-full pt-10 lg:pt-16">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
@@ -273,24 +286,45 @@ export default async function Page({
               )}
             </Motion>
 
-            {/* Principles — minimal tiles, stacked. Distinct from the open method sequence. */}
+            {/* Principles — quiet raised tiles: bg-ink + hairline, a faint per-item tonal wash and
+                grain (the signature gradient-panel language at whisper volume), lifting on hover.
+                The hover transform lives on an inner div so Motion's reveal transform (which stays
+                inline on the wrapper) never fights the CSS translate. */}
             {whatItems.length > 0 && (
               <div className="flex flex-col gap-3">
-                {whatItems.map((item, i) => (
-                  <Motion
-                    key={item.id ?? `means-${i}`}
-                    className="flex flex-col gap-2 rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.14]"
-                    {...revealItem(i)}
-                  >
-                    <div className="flex items-baseline gap-3">
-                      <span className="text-[12px] tabular-nums text-cream/70">{String(i + 1).padStart(2, '0')}</span>
-                      {item.title && (
-                        <h3 className="text-[16px] font-medium tracking-[-0.02em] text-cream">{item.title}</h3>
-                      )}
-                    </div>
-                    {item.excerpt && <p className="pl-[27px] text-[14px] leading-relaxed text-body">{item.excerpt}</p>}
-                  </Motion>
-                ))}
+                {whatItems.map((item, i) => {
+                  const tone = toneFor(null, i)
+                  return (
+                    <Motion key={item.id ?? `means-${i}`} {...revealItem(i)}>
+                      <div className="group relative overflow-hidden rounded-md border border-white/[0.07] bg-ink p-6 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-line-strong motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                        <span
+                          aria-hidden
+                          className="absolute inset-0 opacity-60 transition-opacity duration-500 group-hover:opacity-100"
+                          style={{
+                            backgroundImage: `radial-gradient(120% 100% at 0% 0%, rgba(${TONE_RGB[tone]}, 0.11) 0%, transparent 58%)`,
+                          }}
+                        />
+                        <span
+                          aria-hidden
+                          className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.06] mix-blend-overlay"
+                        />
+                        <div className="relative flex flex-col gap-2">
+                          <div className="flex items-baseline gap-3">
+                            <span className="text-[12px] tabular-nums text-cream/70">
+                              {String(i + 1).padStart(2, '0')}
+                            </span>
+                            {item.title && (
+                              <h3 className="text-[16px] font-medium tracking-[-0.02em] text-cream">{item.title}</h3>
+                            )}
+                          </div>
+                          {item.excerpt && (
+                            <p className="pl-[27px] text-[14px] leading-relaxed text-body">{item.excerpt}</p>
+                          )}
+                        </div>
+                      </div>
+                    </Motion>
+                  )
+                })}
               </div>
             )}
           </div>
@@ -299,8 +333,17 @@ export default async function Page({
 
       {/* ── SECTION 02 · HOW WE DO IT (connected numbered sequence) ──────────────────────── */}
       {how?.heading && (
-        <section className="w-full">
-          <Motion className="mb-14 flex max-w-2xl flex-col gap-5" {...reveal}>
+        <section className="relative w-full">
+          {/* faint vertical rule field — the hub hero's quiet engineering texture, used exactly
+              once on this page to break the longest run of black. Decorative, non-interactive. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -inset-y-10 inset-x-0 opacity-50"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
+            }}
+          />
+          <Motion className="relative mb-14 flex max-w-2xl flex-col gap-5" {...reveal}>
             <SectionMarker index={2} label={how.sectionLabel || 'How we do it'} />
             <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
               {how.heading}
@@ -321,26 +364,48 @@ export default async function Page({
                 className="absolute inset-x-0 top-[7px] hidden h-px bg-gradient-to-r from-line via-line-strong to-line lg:block"
               />
               <ol className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-10">
-                {howItems.map((item, i) => (
-                  <Motion tag="li" key={item.id ?? `practice-${i}`} className="flex flex-col gap-6" {...revealItem(i)}>
-                    {/* node on the sequence line */}
-                    <span
-                      aria-hidden
-                      className="relative z-10 block size-3.5 rounded-full border border-line-strong bg-page ring-4 ring-page"
+                {howItems.map((item, i) => {
+                  const tone = toneFor(null, i)
+                  return (
+                    <Motion
+                      tag="li"
+                      key={item.id ?? `practice-${i}`}
+                      className="group relative flex flex-col gap-6"
+                      {...revealItem(i)}
                     >
-                      <span className="absolute inset-[3px] rounded-full bg-cream/70" />
-                    </span>
-                    <div className="flex flex-col gap-3">
-                      <span className="font-display text-[clamp(2.5rem,4vw,3.25rem)] font-medium leading-none tabular-nums tracking-[-0.04em] text-cream/20">
-                        {String(i + 1).padStart(2, '0')}
+                      {/* hover tint — a faint tonal field that surfaces the active step */}
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute -inset-x-4 -inset-y-5 rounded-md opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                        style={{
+                          backgroundImage: `radial-gradient(85% 75% at 22% 8%, rgba(${TONE_RGB[tone]}, 0.09) 0%, transparent 62%)`,
+                        }}
+                      />
+                      {/* node on the sequence line */}
+                      <span
+                        aria-hidden
+                        className="relative z-10 block size-3.5 rounded-full border border-line-strong bg-page ring-4 ring-page"
+                      >
+                        <span className="absolute inset-[3px] rounded-full bg-cream/70 transition-transform duration-300 group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
                       </span>
-                      {item.title && (
-                        <h3 className="text-[18px] font-medium tracking-[-0.02em] text-cream">{item.title}</h3>
-                      )}
-                      {item.excerpt && <p className="max-w-xs text-[15px] leading-relaxed text-body">{item.excerpt}</p>}
-                    </div>
-                  </Motion>
-                ))}
+                      <div className="relative flex flex-col gap-3">
+                        {/* oversized ghost numeral — decorative; the <ol> carries the real order */}
+                        <span
+                          aria-hidden
+                          className="font-display text-[clamp(3.25rem,5.5vw,4.5rem)] font-medium leading-none tabular-nums tracking-[-0.04em] text-cream/[0.14] transition-colors duration-500 group-hover:text-cream/25"
+                        >
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                        {item.title && (
+                          <h3 className="text-[18px] font-medium tracking-[-0.02em] text-cream">{item.title}</h3>
+                        )}
+                        {item.excerpt && (
+                          <p className="max-w-xs text-[15px] leading-relaxed text-body">{item.excerpt}</p>
+                        )}
+                      </div>
+                    </Motion>
+                  )
+                })}
               </ol>
             </div>
           )}
@@ -369,17 +434,24 @@ export default async function Page({
                 // Result line: prefer authored metric, otherwise keep an honest placeholder rather
                 // than inventing a number.
                 const result = [cs.metricValue, cs.metricLabel].filter(Boolean).join(' ') || '[metric]'
+                // Per-row brand accent, cycling the TONE palette so rows read as case cards.
+                const tone = toneFor(null, i)
 
                 return (
                   <Motion
                     tag="article"
                     key={cs.id ?? `case-${i}`}
-                    className="grid grid-cols-1 gap-6 border-t border-line py-10 lg:grid-cols-[0.85fr_2fr] lg:gap-12 lg:py-12"
+                    className="grid grid-cols-1 gap-6 border-t border-line py-10 transition-colors duration-300 hover:bg-gradient-to-r hover:from-white/[0.02] hover:to-transparent lg:grid-cols-[0.85fr_2fr] lg:gap-12 lg:py-12"
                     {...revealItem(i)}
                   >
                     {/* left: meta + title */}
                     <div className="flex flex-col gap-4">
-                      <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.12em] text-subtle">
+                      <div className="flex items-center gap-2.5 text-[12px] uppercase tracking-[0.12em] text-subtle">
+                        {/* slim gradient accent — a miniature of the brand gradient panel, with grain */}
+                        <span aria-hidden className="relative h-3 w-3 shrink-0 overflow-hidden rounded-[3px]">
+                          <span className="absolute inset-0" style={{ backgroundImage: TONE[tone] }} />
+                          <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:80px] opacity-20 mix-blend-overlay" />
+                        </span>
                         <span className="text-cream/70">{cs.meta || '[Client]'}</span>
                       </div>
                       {cs.title && (
