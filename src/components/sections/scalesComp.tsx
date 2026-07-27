@@ -1,12 +1,11 @@
 'use client'
 import Motion from '@/components/animation/motion'
 import { reveal, revealItem } from '@/components/animation/reveal'
-import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import type { Media, Scale } from '@/payload-types'
-import Image from 'next/image'
+import ScaleFigure from '@/components/scales/ScaleFigure'
+import type { Scale } from '@/payload-types'
 import type { JSX } from 'react'
 
 interface SalesCompProps {
@@ -16,36 +15,31 @@ interface SalesCompProps {
   scales?: Scale[] | null
 }
 
-// Single scale card — shared by the sm+ grid and the mobile carousel. The gradient panel IS the
-// fallback (always rendered); an optional CMS image layers on top.
+// Single scale card — shared by the sm+ grid and the mobile carousel. The figure states the card's
+// claim on its own; the title and excerpt sit beneath it. Replaces the gradient panel, which was
+// the same ornament three times over and said nothing about any individual scale.
+//
+// The 372px floor plus a flexed figure area is what keeps the three cards a matched set whatever
+// length the CMS excerpts run to: the copy takes the height it needs, the figure absorbs the rest.
 function ScaleCard({ item, index }: { item: Scale; index: number }): JSX.Element {
-  const thumb = item.thumbnail as Media | string | null | undefined
-  const mediaUrl = typeof thumb === 'object' && thumb ? thumb.url : null
-
   return (
-    <Link href={`/scales`} className="group block h-full">
-      <div className="relative h-full overflow-hidden rounded-md border border-line bg-ink aspect-[3/5]">
-        <GradientPanel tone={toneFor(undefined, index)} interactive />
+    <Link href="/scales" className="group block h-full rounded-md">
+      <div className="sc-card flex h-full min-h-[372px] flex-col justify-between overflow-hidden rounded-md border border-line bg-ink p-5 transition-colors duration-[600ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:border-line-strong">
+        <div className="flex min-h-0 flex-1 items-center justify-center">
+          <ScaleFigure title={item.title} index={index} />
+        </div>
 
-        {mediaUrl ? (
-          <Image
-            src={mediaUrl}
-            alt={item.title || 'industry'}
-            fill
-            className="relative object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-          />
-        ) : null}
-
-        {/* bottom-to-transparent scrim keeps the card text legible over imagery */}
-        <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-black/70" />
-
-        {/* text */}
-        <div className="absolute inset-x-4 bottom-4 z-10">
-          <h3 className="font-medium text-cream">{item.title}</h3>
-          {/* lg guard: reserve + clamp 3 lines (text-sm leading-5) so the 3-up row's bottom-anchored
-              text blocks match — excerpts are budgeted to the 164–175ch band (3 lines at lg). */}
+        <div className="flex flex-col gap-2">
+          <h3 className="text-[17px] font-medium leading-[1.2] tracking-[-0.045em] text-cream">{item.title}</h3>
+          {/* Resting colour is --color-body (#aaaaaa, AAA 7:1) — the design's cream/55 would fail
+              the AAA floor for body text. Hover lifts it to cream.
+              lg guard (kept from main): reserve + clamp 3 lines so the 3-up row's bottom-anchored
+              text blocks match. min-h is 4.5em here — 3 lines at this leading-[1.5], not the 4.29em
+              that suited the previous leading-5. */}
           {item.excerpts ? (
-            <p className="mt-2 text-sm text-cream lg:line-clamp-3 lg:min-h-[4.29em]">{item.excerpts}</p>
+            <p className="text-sm leading-[1.5] tracking-[-0.03em] text-body transition-colors duration-[600ms] group-hover:text-cream lg:line-clamp-3 lg:min-h-[4.5em]">
+              {item.excerpts}
+            </p>
           ) : null}
         </div>
       </div>

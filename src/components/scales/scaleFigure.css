@@ -1,0 +1,275 @@
+/* Scale card figures — three claims, three gestures.
+ *
+ * Hairlines on the ink surface, one tone, no colour. `--ink` is the quiet weight
+ * and `--hi` the one thing each figure wants you to notice; both are declared on
+ * the card so a figure rendered anywhere else still draws.
+ *
+ * RESTING STATE IS THE BASE RULE, NEVER A KEYFRAME. globals.css collapses every
+ * animation to 0.01ms under prefers-reduced-motion and `animation-fill-mode` is
+ * none, so each element reverts to its base style — which is why the base rules
+ * below keep every mark visible, and only `.sc-gap` (a pure accent) starts at 0.
+ */
+
+.sc-card {
+  --ink: rgba(244, 243, 236, 0.3);
+  --hi: rgba(244, 243, 236, 0.92);
+}
+
+.sc-svg {
+  width: 100%;
+  height: 100%;
+  max-height: 220px;
+  display: block;
+}
+.sc-svg path,
+.sc-svg rect,
+.sc-svg circle {
+  vector-effect: non-scaling-stroke;
+}
+
+/* ── 01 · output climbs, cost doesn't ────────────────────────────────────── */
+.sc-flat {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.sc-climb {
+  stroke: var(--hi);
+  stroke-width: 1.5;
+  fill: none;
+  animation: scDraw 6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.sc-gap {
+  stroke: var(--ink);
+  stroke-width: 1;
+  opacity: 0;
+  animation: scGap 6s ease-out infinite;
+}
+.sc-dot {
+  fill: var(--ink);
+}
+.sc-tip {
+  fill: var(--hi);
+  animation: scTip 6s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes scDraw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  42%,
+  86% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes scGap {
+  0%,
+  14% {
+    opacity: 0;
+  }
+  24%,
+  86% {
+    opacity: 1;
+  }
+  96%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes scTip {
+  0%,
+  38% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  46% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  54%,
+  88% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  97%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── 02 · swapped in place, flow never stops ─────────────────────────────── */
+.sc-flow {
+  stroke: var(--hi);
+  stroke-width: 1.5;
+}
+.sc-floor {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+}
+.sc-tick {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.sc-tip-solid {
+  fill: var(--hi);
+}
+/* Its own 2.6s clock — the flow is deliberately never synced to the 12s swap,
+   because the point is that it does not answer to it. */
+.sc-runner {
+  animation: scRun 2.6s linear infinite;
+}
+@keyframes scRun {
+  to {
+    offset-distance: 100%;
+  }
+}
+.sc-unit {
+  fill: rgba(244, 243, 236, 0.05);
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.sc-unit-line {
+  stroke: var(--ink);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+/* Out and back inside a 12s window — six cells 2s apart, so only one is ever
+   mid-swap and the row is never short more than a single unit. */
+.sc-cell {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: scSwap 12s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes scSwap {
+  0%,
+  2% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  6% {
+    transform: translateY(26px);
+    opacity: 0;
+  }
+  6.1% {
+    transform: translateY(-26px);
+    opacity: 0;
+  }
+  11%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── 03 · append-only, verified ──────────────────────────────────────────── */
+.sc-spine {
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.sc-record {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.sc-seal {
+  fill: none;
+  stroke: var(--hi);
+  stroke-width: 1.2;
+  animation: scSeal 7s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes scSeal {
+  0%,
+  6% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  12%,
+  72% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  84%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+}
+.sc-append {
+  animation: scAppend 7s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes scAppend {
+  0%,
+  58% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  68%,
+  92% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.sc-verify {
+  animation: scVerify 7s cubic-bezier(0.4, 0, 0.3, 1) infinite;
+}
+@keyframes scVerify {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.9;
+  }
+  58% {
+    transform: translateY(114px);
+    opacity: 0.9;
+  }
+  66%,
+  100% {
+    transform: translateY(114px);
+    opacity: 0;
+  }
+}
+.sc-scan {
+  stroke: var(--hi);
+  stroke-width: 1;
+}
+
+/* Hover deepens each gesture — it never starts one. */
+.sc-card:hover .sc-climb,
+.sc-card:hover .sc-gap,
+.sc-card:hover .sc-tip {
+  animation-duration: 3.2s;
+}
+.sc-card:hover .sc-cell {
+  animation-duration: 6s;
+}
+.sc-card:hover .sc-runner {
+  animation-duration: 1.5s;
+}
+.sc-card:hover .sc-seal,
+.sc-card:hover .sc-append,
+.sc-card:hover .sc-verify {
+  animation-duration: 3.6s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-svg,
+  .sc-svg * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
