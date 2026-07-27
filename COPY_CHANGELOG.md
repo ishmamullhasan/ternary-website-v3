@@ -58,3 +58,9 @@ Managed Systems). **Prod follow-up.**
 - `capabilities[8].whatThisMeansToUs` → **REWRITTEN to verbatim approved hub copy** (the exact
   /capabilities body sentences + tags). Removes previously authored prose flagged as invented.
 Via `scripts/seed-fixes-round2.js`. **Prod follow-up.**
+
+### Capability "Selected work" — fake case studies removed (staging)
+`capabilities[*].caseStudies.items` → cleared on all 8. The items were generic invented examples
+("2025 · Retail" etc.) present in the production data — not real client work. The section is guarded
+and now hides entirely. **Prod follow-up: clear these in prod too; re-populate only with real,
+approved case studies.**
