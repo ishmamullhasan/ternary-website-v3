@@ -85,6 +85,16 @@ All work local; **never push to any remote without asking Shadman first** (stand
 - **/press-release/[slug]**, **/legals/[slug]**, **/search**, **/job/[slug]**(+/apply) — lower priority;
   spacing/uniformity + copy pass only unless flagged.
 
+## Incorporate from live ternary.solutions (read-only reference — never modify it)
+The production site runs the same design system and adds **animated per-section graphics** our fork's
+redesigned pages lack. Harvest & port (into our redesign, not the other way):
+- **Gradient panels** — crimson/azure/magenta/emerald/violet/indigo radials (`radial-gradient(135% 135%
+  at ~20% 14%, …)`) + grain. Already partly in `heroFeatured` TONE map; extend to hub/detail sections.
+- **Motion graphics** — the `cap*` SVG animations (`capDraw` 7s, `capScroll`, `capTurn`, `capSurface`,
+  `capInfer`, `capProbe`) as the discipline/section "thin-line geometric constructions." Check if these
+  keyframes/components already exist in this repo (unused on the new static pages) before rebuilding.
+- Screenshots + extracted CSS: `audit/ternary-solutions/`, `scripts/harvest-ternary.mjs`.
+
 ## Design-system uniformity (from Phase 0)
 - **Geist Mono not implemented** — decide: adopt Geist Mono for labels/numbering, or standardize on Inter
   `tabular-nums` and remove legacy `font-mono` (system monospace) usages. Pick one, apply site-wide.

@@ -84,11 +84,10 @@ function Card({ item, index }: { item: FeaturedCard; index: number }): JSX.Eleme
         <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent to-50%" />
 
         <div className="relative flex h-full flex-col items-start gap-2 px-6 py-8">
-          {/* Clamp + reserve two lines so every card's title block is the same height regardless of
-              title length (design rule: matching line-counts within a card group). */}
-          <h3 className="line-clamp-2 min-h-[2.3em] w-full text-base font-semibold leading-[1.15] text-cream">
-            {item.title}
-          </h3>
+          {/* Reserve two lines so short titles align with longer ones, but DON'T clamp — clamping
+              truncated long CMS titles mid-word. Titles show in full; the real uniformity fix is
+              shortening the titles in the CMS (tracked as a copy change). */}
+          <h3 className="min-h-[2.3em] w-full text-base font-semibold leading-[1.15] text-cream">{item.title}</h3>
           <span className="w-full text-sm font-medium leading-[1.15] text-cream">{item.category}</span>
         </div>
       </Link>
