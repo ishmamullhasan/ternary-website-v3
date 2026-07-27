@@ -176,7 +176,7 @@ const COMPARE_ROWS: { label: string; cells: (ReactNode | string)[]; tabular?: bo
 // Eyebrow — hairline + uppercase micro-label, cream-accented rule.
 function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <span className="flex items-center gap-3 text-[12px] uppercase tracking-[0.16em] text-subtle">
+    <span className="flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.16em] text-subtle">
       <span aria-hidden className="h-px w-6 bg-cream/60" />
       {children}
     </span>
@@ -214,7 +214,7 @@ export default function SolutionsHubPage(): JSX.Element {
             backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
           }}
         />
-        <div className="relative mx-auto w-full max-w-[1480px] px-5 pt-24 pb-16 lg:pt-32 lg:pb-24">
+        <div className="relative mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 pb-16 lg:pt-32 lg:pb-24">
           <Motion className="flex flex-col gap-7" {...reveal}>
             <Eyebrow>Solutions · Four ways in</Eyebrow>
             <h1 className="max-w-[15ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
@@ -237,7 +237,7 @@ export default function SolutionsHubPage(): JSX.Element {
                   FOCUS_RING,
                 )}
               >
-                <span className="tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
+                <span className="font-mono tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
                   {s.n}
                 </span>
                 {s.name}
@@ -248,7 +248,7 @@ export default function SolutionsHubPage(): JSX.Element {
       </section>
 
       {/* ── FOUR AT A GLANCE ─────────────────────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
         <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
           <div className="flex flex-col gap-4">
             <Eyebrow>At a glance</Eyebrow>
@@ -271,7 +271,7 @@ export default function SolutionsHubPage(): JSX.Element {
                   FOCUS_RING,
                 )}
               >
-                <span className="font-display text-[15px] tabular-nums text-subtle transition-colors duration-300 group-hover:text-cream">
+                <span className="font-display text-[15px] font-mono tabular-nums text-subtle transition-colors duration-300 group-hover:text-cream">
                   {s.n}
                 </span>
                 <h3 className="font-display text-[clamp(1.25rem,2.1vw,1.625rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
@@ -295,12 +295,12 @@ export default function SolutionsHubPage(): JSX.Element {
       {/* ── THE FOUR SOLUTIONS ───────────────────────────────────────────────────────────── */}
       {SOLUTIONS.map((s) => (
         <section key={s.id} id={s.id} className="scroll-mt-28 border-t border-line/60">
-          <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-20 lg:py-32">
+          <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-20 lg:py-32">
             <Motion className="flex flex-col gap-5 lg:sticky lg:top-28 lg:self-start" {...reveal}>
               <span className="text-[12px] uppercase tracking-[0.1em] text-subtle">
                 Solution {s.n} of 04 · <span className="text-cream">{s.name}</span>
               </span>
-              <p className="font-display text-[clamp(2.5rem,6vw,4rem)] font-medium leading-none tracking-[-0.05em] text-cream/45 tabular-nums">
+              <p className="font-display text-[clamp(2.5rem,6vw,4rem)] font-medium leading-none tracking-[-0.05em] text-cream/45 font-mono tabular-nums">
                 {s.n}
               </p>
               <h2 className="max-w-[14ch] font-display text-[clamp(1.75rem,3.4vw,2.75rem)] font-medium leading-[1.04] tracking-[-0.03em] text-cream">
@@ -357,7 +357,7 @@ export default function SolutionsHubPage(): JSX.Element {
 
       {/* ── ENGAGEMENT MODELS ────────────────────────────────────────────────────────────── */}
       <section className="border-t border-line/60">
-        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
           <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
             <div className="flex flex-col gap-4">
               <Eyebrow>Engagement models</Eyebrow>
@@ -377,7 +377,7 @@ export default function SolutionsHubPage(): JSX.Element {
                 className="group flex h-full flex-col rounded-md border border-line bg-ink p-8 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong"
                 {...revealItem(i)}
               >
-                <span className="text-[11px] tabular-nums tracking-[0.1em] text-subtle">{m.n}</span>
+                <span className="text-[11px] font-mono tabular-nums tracking-[0.1em] text-subtle">{m.n}</span>
                 <h3 className="mt-3.5 font-display text-[clamp(1.5rem,2.4vw,2rem)] font-medium tracking-[-0.02em] text-cream">
                   {m.name}
                   <sup className="ml-0.5 text-[0.5em] align-super font-medium text-subtle">℠</sup>
@@ -396,7 +396,7 @@ export default function SolutionsHubPage(): JSX.Element {
 
       {/* ── COMPARE (the showpiece) ──────────────────────────────────────────────────────── */}
       <section className="border-t border-line/60">
-        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
           <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
             <div className="flex flex-col gap-4">
               <Eyebrow>Compare</Eyebrow>
@@ -419,7 +419,7 @@ export default function SolutionsHubPage(): JSX.Element {
                       key={col}
                       className="border-b border-line-strong bg-ink px-5 py-5 align-bottom font-display text-[15px] font-medium whitespace-nowrap text-cream"
                     >
-                      <span className="mb-2 block text-[11px] tabular-nums tracking-[0.08em] text-subtle">
+                      <span className="mb-2 block text-[11px] font-mono tabular-nums tracking-[0.08em] text-subtle">
                         {String(i + 1).padStart(2, '0')}
                       </span>
                       {col}
@@ -441,7 +441,7 @@ export default function SolutionsHubPage(): JSX.Element {
                         key={i}
                         className={cn(
                           'px-5 py-4 align-top text-[14.5px] leading-relaxed text-body',
-                          row.tabular && 'tabular-nums',
+                          row.tabular && 'font-mono tabular-nums',
                         )}
                       >
                         {cell}
@@ -456,7 +456,7 @@ export default function SolutionsHubPage(): JSX.Element {
       </section>
 
       {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12">
         <Motion
           tag="div"
           className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
@@ -508,7 +508,7 @@ export default function SolutionsHubPage(): JSX.Element {
       </section>
 
       {/* ── CAREERS STRIP ────────────────────────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 pt-16 text-center lg:pt-20">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-16 text-center lg:pt-20">
         <Motion tag="p" className="text-[13.5px] leading-relaxed text-body" {...reveal}>
           Engineers: we&apos;re usually hiring.{' '}
           <Link
