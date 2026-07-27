@@ -434,6 +434,15 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
   gap: clamp(40px, 6vw, 80px);
   align-items: start;
 }
+/* The lead used to sit alone at the top of a tall empty column. Sticking it to the
+   viewport keeps the section's claim beside whichever item you are reading — the
+   same move the sector explorer's preview makes, so the page reads as one idea. */
+@media (min-width: 900px) {
+  .hub .split > *:first-child {
+    position: sticky;
+    top: 104px;
+  }
+}
 .hub .split-lead {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;
   font-size: clamp(1.6rem, 2.8vw, 2.25rem);
@@ -443,23 +452,60 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
   max-width: 14ch;
   margin-top: 16px;
 }
+/* ── Ladder — a spine that assembles itself ───────────────────────────────
+   The 1/2/3 and a/b/c glyphs are gone. In their place each item carries a node on
+   a hairline spine. The spine is drawn per-item rather than once down the whole
+   list, so as <Reveal> staggers the items in the line builds itself top to bottom
+   — the motion is the existing stagger, not a new animation. */
 .hub .step {
+  position: relative;
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 22px;
-  padding: 26px 0;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: 26px 0 26px 42px;
   border-top: 1px solid var(--brd);
+}
+/* the spine segment through this item, joining node centre to node centre */
+.hub .step::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--brd2);
+}
+.hub .step:first-child::before {
+  top: 36px;
+}
+.hub .step:last-child::before {
+  bottom: auto;
+  height: 36px;
+}
+.hub .step-node {
+  position: absolute;
+  left: 6px;
+  top: 32px;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--color-cream);
+  background: var(--color-page);
+  box-sizing: border-box;
+}
+/* a sequence reads as waypoints — turned 45deg, and the last one filled because
+   that is where the process lands */
+.hub .ladder-flow .step-node {
+  transform: rotate(45deg);
+}
+.hub .ladder-flow .step:last-child .step-node {
+  background: var(--color-cream);
+}
+/* standing guarantees are not a sequence: square, all equal, none a destination */
+.hub .ladder-stack .step-node {
+  border-radius: 1px;
 }
 .hub .step:last-child {
   border-bottom: 1px solid var(--brd);
-}
-.hub .step .k {
-  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
-  font-weight: 600;
-  font-size: clamp(2rem, 3.4vw, 2.75rem);
-  color: var(--t3);
-  line-height: 0.9;
-  letter-spacing: -0.04em;
 }
 .hub .step h3 {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;

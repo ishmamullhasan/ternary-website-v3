@@ -105,12 +105,11 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
               Before we write a line of code.
             </Heading>
           </Reveal>
-          <div>
+          {/* a sequence: waypoints on a spine that builds as the steps arrive */}
+          <div className="ladder ladder-flow">
             {APPROACH.map((step, i) => (
               <Reveal className="step" i={i} key={step.k}>
-                <span className="k" aria-hidden="true">
-                  {step.k}
-                </span>
+                <span className="step-node" aria-hidden="true" />
                 <div>
                   <Heading level={3}>{step.title}</Heading>
                   <p>{step.body}</p>
@@ -130,12 +129,11 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
               Built to be audited.
             </Heading>
           </Reveal>
-          <div>
+          {/* not a sequence — three standing guarantees, so square nodes and no destination */}
+          <div className="ladder ladder-stack">
             {POSTURE.map((point, i) => (
               <Reveal className="step" i={i} key={point.k}>
-                <span className="k" aria-hidden="true">
-                  {point.k}
-                </span>
+                <span className="step-node" aria-hidden="true" />
                 <div>
                   <Heading level={3}>{point.title}</Heading>
                   <p>{point.body}</p>
