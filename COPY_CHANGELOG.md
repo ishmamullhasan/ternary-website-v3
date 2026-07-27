@@ -64,3 +64,9 @@ Via `scripts/seed-fixes-round2.js`. **Prod follow-up.**
 ("2025 · Retail" etc.) present in the production data — not real client work. The section is guarded
 and now hides entirely. **Prod follow-up: clear these in prod too; re-populate only with real,
 approved case studies.**
+
+### Capability copy v3 — deck-grounded plain-language revision (staging)
+All 8 capabilities: heroSection.description, whatThisMeansToUs (heading/description/items with
+plain-language excerpts), howWeDoIt ("How we work", 3 steps). Grounded in the company deck
+(audit/deck/DECK_COPY.md) + approved hub copy; story arc per page; NO metrics, NO client names.
+Via `scripts/seed-copy-v3.js`. **Prod follow-up.**
