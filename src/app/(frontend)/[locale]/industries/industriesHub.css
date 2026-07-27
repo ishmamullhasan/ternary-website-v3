@@ -185,7 +185,11 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(120% 70% at 70% 0%, color-mix(in oklab, var(--color-cream) 5%, transparent), transparent 70%);
+  background: radial-gradient(
+    120% 70% at 70% 0%,
+    color-mix(in oklab, var(--color-cream) 5%, transparent),
+    transparent 70%
+  );
 }
 .hub .ix-panel {
   position: relative;
@@ -335,7 +339,6 @@
   }
 }
 
-
 @keyframes im-draw {
   0% {
     stroke-dashoffset: 1;
@@ -469,19 +472,25 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
   padding: 24px 26px;
   border: 0;
   border-radius: 10px;
-  background: color-mix(in oklab, var(--color-cream) 3.5%, transparent);
+  /* The same surface every card on the home page sits on. NB inside .hub,
+     --color-ink is remapped to Surface-Elevated (#14120b) by hub.css, so the
+     home page's #0f0e0e is --n-950 here — using --color-ink would silently come
+     out a shade warmer than the rest of the site. */
+  background: var(--n-950);
   transition: background-color 0.5s var(--ease);
 }
+/* The directional wash rides on top as a background-image, so the tile's own
+   background-color stays --color-ink and matches the rest of the site. */
 .hub .ladder-flow .step {
-  background: linear-gradient(
+  background-image: linear-gradient(
     100deg,
-    color-mix(in oklab, var(--color-cream) 7%, transparent) 0%,
-    color-mix(in oklab, var(--color-cream) 2.5%, transparent) 62%
+    color-mix(in oklab, var(--color-cream) 5%, transparent) 0%,
+    transparent 62%
   );
 }
 .hub .ladder-flow .step:hover,
 .hub .ladder-stack .step:hover {
-  background-color: color-mix(in oklab, var(--color-cream) 6%, transparent);
+  background-color: color-mix(in oklab, var(--n-950) 92%, var(--color-cream));
 }
 
 .hub .step h3 {
