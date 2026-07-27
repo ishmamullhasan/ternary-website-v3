@@ -17,9 +17,9 @@ import type { JSX, ReactNode } from 'react'
  */
 
 export const metadata: Metadata = {
-  title: 'Solutions — Four ways in. One standard.',
+  title: 'Solutions — Ways in. One standard.',
   description:
-    'Four ways to work with Ternary — build something new, modernize what you have, extend your team, or hand us the keys to production.',
+    'Ways to work with Ternary — build something new, modernize what you have, extend your team, or hand us the keys to production.',
 }
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -216,13 +216,13 @@ export default function SolutionsHubPage(): JSX.Element {
         />
         <div className="relative mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 pb-16 lg:pt-32 lg:pb-24">
           <Motion className="flex flex-col gap-7" {...reveal}>
-            <Eyebrow>Solutions · Four ways in</Eyebrow>
+            <Eyebrow>Solutions · Ways in</Eyebrow>
             <h1 className="max-w-[15ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
               Built to outlast.
             </h1>
             <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">
-              Four ways to work with us — build something new, modernize what you have, extend your team, or hand us the
-              keys to production. One engineering standard behind all of them.
+              Ways to work with us — build something new, modernize what you have, extend your team, or hand us the keys
+              to production. One engineering standard behind all of them.
             </p>
           </Motion>
 
@@ -253,7 +253,7 @@ export default function SolutionsHubPage(): JSX.Element {
           <div className="flex flex-col gap-4">
             <Eyebrow>At a glance</Eyebrow>
             <h2 className="font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
-              Four doors in
+              The ways in
             </h2>
           </div>
           <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
@@ -366,7 +366,7 @@ export default function SolutionsHubPage(): JSX.Element {
               </h2>
             </div>
             <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
-              Three shapes of engagement. Every solution runs on one — or moves between them as the work changes.
+              Shapes of engagement. Every solution runs on one — or moves between them as the work changes.
             </p>
           </Motion>
 
@@ -401,7 +401,7 @@ export default function SolutionsHubPage(): JSX.Element {
             <div className="flex flex-col gap-4">
               <Eyebrow>Compare</Eyebrow>
               <h2 className="font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
-                Four columns. Six honest answers.
+                Side by side. Honest answers.
               </h2>
             </div>
             <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
