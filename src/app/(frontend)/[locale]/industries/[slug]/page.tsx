@@ -1,5 +1,6 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import Motion from '@/components/animation/motion'
+import GradientPanel, { toneFor, type Tone } from '@/components/layout/GradientPanel'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
@@ -73,7 +74,7 @@ async function fetchRelatedIndustries(currentId: string, locale: TypedLocale): P
 async function getIndustryBySlug(slug: string, locale: TypedLocale): Promise<Industry | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchIndustryBySlug(slug, locale)
-  return unstable_cache(() => fetchIndustryBySlug(slug, locale), [`industry_${slug}_${locale}`], {
+  return unstable_cache(() => fetchIndustryBySlug(slug, locale), [`industry_${slug}_${locale}_v2`], {
     tags: [`industry_${slug}`, 'industry'],
   })()
 }
@@ -123,69 +124,49 @@ const revealItem = (index: number) => ({
   transition: { duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.42) },
 })
 
-// The site's signature noise-gradient device. A radial tone field + a local grain overlay
-// (no external image dependency) + a bottom legibility scrim. Used for the hero header card
-// when no media is present, and as the CTA artwork.
-const HERO_TONE = 'radial-gradient(120% 120% at 78% 18%, #1f9d6b 0%, #134a78 46%, #08233c 100%)'
-const CTA_TONE = 'radial-gradient(135% 135% at 22% 18%, #6d3bd6 0%, #3a1c8c 46%, #1a1448 100%)'
+// Focus-visible affordance shared across every interactive element (matches the detail routes).
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
-function NoiseGradient({ tone, className }: { tone: string; className?: string }): JSX.Element {
-  return (
-    <span aria-hidden className={cn('absolute inset-0', className)}>
-      <span className="absolute inset-0" style={{ backgroundImage: tone }} />
-      <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
-      <span className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45" />
-    </span>
-  )
+// Key colors of the brand TONE gradients (GradientPanel) as raw RGB triplets, so decorative washes
+// can borrow the palette at very low alpha without minting any new colors. Mirrors the capability
+// detail route so both detail surfaces speak the same accent language.
+const TONE_RGB: Record<Tone, string> = {
+  crimson: '193, 40, 95',
+  violet: '124, 58, 237',
+  emerald: '31, 157, 107',
+  azure: '47, 147, 218',
+  magenta: '182, 36, 154',
+  indigo: '79, 107, 237',
 }
 
-// Eyebrow: plain uppercase micro-typography label, optionally numbered ("Section 0X / Label").
-function Eyebrow({ index, label }: { index?: number; label?: string | null }): JSX.Element | null {
-  if (!label) return null
+// Deterministic per-industry tone: hash the slug into the TONE cycle so each vertical keeps a
+// stable accent across visits, without hardcoding a palette per slug.
+function toneForSlug(slug: string): Tone {
+  let sum = 0
+  for (let i = 0; i < slug.length; i++) sum += slug.charCodeAt(i)
+  return toneFor(null, sum)
+}
+
+// Palantir-style section marker: "Section 02 / Label", tabular numerals, tight functional label.
+function SectionMarker({ index, label }: { index: number; label: string }): JSX.Element {
   return (
-    <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
-      {typeof index === 'number' && (
-        <span className="text-cream/70">{`Section ${String(index).padStart(2, '0')} / `}</span>
-      )}
-      {label}
+    <p className="flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] text-subtle">
+      <span className="tabular-nums text-cream/70">{`Section ${String(index).padStart(2, '0')}`}</span>
+      <span aria-hidden className="text-subtle/50">
+        /
+      </span>
+      <span>{label}</span>
     </p>
   )
 }
 
-function SectionHeader({
-  index,
-  label,
-  heading,
-  description,
-  className,
-}: {
-  index?: number
-  label?: string | null
-  heading?: string | null
-  description?: string | null
-  className?: string
-}): JSX.Element | null {
-  if (!heading && !description && !label) return null
-
-  return (
-    <Motion className={cn('flex flex-col gap-4', className)} {...reveal}>
-      <Eyebrow index={index} label={label} />
-      {heading && (
-        <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream whitespace-pre-line">
-          {heading}
-        </h2>
-      )}
-      {description && <p className="max-w-3xl text-[15px] leading-relaxed text-body">{description}</p>}
-    </Motion>
-  )
+// A Lexical richText value is non-empty when its root has at least one child node. Empty editors
+// still serialize a root with an empty children array, so a truthy check alone is not enough.
+function hasRichText(value: unknown): value is RichText {
+  const root = (value as RichText | null | undefined)?.root
+  return Boolean(root?.children?.length)
 }
-
-// Reusable section shell: near-black bordered panel with generous editorial padding.
-const SECTION_SHELL = 'rounded-md border border-white/[0.06] bg-ink p-6 lg:p-12'
-
-// Focus-visible affordance shared across every interactive element.
-const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
 function RelatedCard({
   industry,
@@ -196,25 +177,40 @@ function RelatedCard({
   locale: TypedLocale
   index: number
 }): JSX.Element {
+  const tone = toneFor(null, index)
   return (
     <Motion {...revealItem(index)} className="h-full">
+      {/* Hover transform lives on the Link (inside the Motion wrapper) so the reveal transform,
+          which Motion keeps inline on the wrapper, never fights the CSS translate. */}
       <Link
         href={`/${locale}/industries/${industry.slug}`}
         className={cn(
-          'group flex h-full flex-col gap-2 rounded-md border border-white/[0.07] bg-ink p-6 transition-colors duration-300 hover:border-white/[0.16] hover:bg-ink/80',
+          'group relative flex h-full flex-col gap-2 overflow-hidden rounded-md border border-white/[0.07] bg-ink p-5 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-white/[0.16] motion-reduce:transition-none motion-reduce:hover:translate-y-0',
           FOCUS_RING,
         )}
       >
-        <div className="flex items-start justify-between gap-4">
-          <h3 className="text-[16px] font-medium text-cream">{industry.title}</h3>
+        {/* faint tonal wash + grain — the gradient-panel language at whisper volume */}
+        <span
+          aria-hidden
+          className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          style={{
+            backgroundImage: `radial-gradient(120% 100% at 0% 0%, rgba(${TONE_RGB[tone]}, 0.11) 0%, transparent 58%)`,
+          }}
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.05] mix-blend-overlay"
+        />
+        <div className="relative flex items-start justify-between gap-3">
+          <h3 className="text-[15px] font-medium tracking-[-0.02em] text-cream">{industry.title}</h3>
           <ArrowUpRight
-            size={15}
+            size={14}
             strokeWidth={2}
             aria-hidden
             className="shrink-0 text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream"
           />
         </div>
-        {industry.excerpts && <p className="text-[13px] leading-relaxed text-subtle">{industry.excerpts}</p>}
+        {industry.excerpts && <p className="relative text-[13px] leading-relaxed text-subtle">{industry.excerpts}</p>}
       </Link>
     </Motion>
   )
@@ -225,7 +221,7 @@ function CtaButton({ href, label, primary }: { href: string; label: ReactNode; p
     <Link
       href={href}
       className={cn(
-        'inline-flex w-full items-center justify-center rounded-md px-5 py-2.5 text-[14px] font-medium transition-colors duration-300 sm:w-auto',
+        'inline-flex w-full items-center justify-center rounded-md px-6 py-3 text-[15px] font-medium transition-colors duration-300 sm:w-auto',
         primary
           ? 'bg-cream text-ink hover:bg-cream-hover'
           : 'border border-white/20 bg-white/[0.06] text-cream hover:bg-white/[0.12]',
@@ -265,11 +261,14 @@ export default async function Page({
   const heroImage = industry.thumbnail as Media | undefined
   const relatedIndustries = await fetchRelatedIndustries(industry.id, typedLocale)
 
+  // Stable per-vertical accent, drawn from the brand TONE cycle (GradientPanel).
+  const heroTone = toneForSlug(industry.slug)
+
   return (
-    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-16 px-5 pb-16 lg:gap-20 lg:pb-24">
-      {/* Hero */}
-      <Motion tag="section" className="w-full pt-8 lg:pt-14" {...reveal}>
-        <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-20 px-5 pb-24 md:px-8 lg:gap-28 lg:px-12 lg:pb-32">
+      {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
+      <section className="w-full pt-10 lg:pt-16">
+        <div className="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
           <Motion
             className="flex flex-col items-start gap-6 text-left"
             initial={{ opacity: 0, y: 16 }}
@@ -277,28 +276,29 @@ export default async function Page({
             transition={{ duration: 0.6, ease: EASE }}
           >
             {/* Small discipline row above the headline, mirroring the capability hero. */}
-            <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">
-              {industry.title ? `Industry — ${industry.title}` : 'Industry'}
-            </p>
+            <p className="text-[12px] uppercase tracking-[0.18em] text-subtle">Industry</p>
 
-            <h1 className="font-display text-[clamp(2rem,4.5vw,2.875rem)] font-medium leading-[1.08] tracking-[-0.03em] text-cream">
+            <h1 className="font-display text-[clamp(2.25rem,5vw,3.25rem)] font-medium leading-[1.05] tracking-[-0.03em] text-cream">
               {industry.title}
             </h1>
 
             {industry.excerpts && (
-              <p className="max-w-xl text-[15px] leading-relaxed text-body lg:text-[16px]">{industry.excerpts}</p>
+              <p className="max-w-xl text-[clamp(1rem,1.5vw,1.125rem)] leading-relaxed text-body">
+                {industry.excerpts}
+              </p>
             )}
           </Motion>
 
-          {/* Right header card — always present. Falls back to the noise-gradient device when
-              media is missing so the hero never collapses to a single column. */}
+          {/* Right header card — always present. Falls back to the signature noise-gradient
+              device (per-vertical tone) when media is missing, so the hero never collapses to a
+              single column. */}
           <Motion
             className="relative aspect-[724/458] w-full overflow-hidden rounded-md ring-1 ring-white/[0.06]"
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
           >
-            <NoiseGradient tone={HERO_TONE} />
+            <GradientPanel tone={heroTone} />
             {heroImage?.url && (
               <Image
                 src={heroImage.url}
@@ -311,15 +311,44 @@ export default async function Page({
             )}
           </Motion>
         </div>
-      </Motion>
+      </section>
 
-      {/* Body — the industry's rich-text content, rendered through the shared Lexical converter. */}
-      {industry.content && (
-        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
-          <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
-            <SectionHeader index={1} label="Overview" heading="Where we focus" className="shrink-0 lg:w-[28%]" />
+      {/* ── SECTION 01 · OVERVIEW (raised bg-ink tile, tonal wash + grain, ghost numeral) ── */}
+      {hasRichText(industry.content) && (
+        <Motion
+          tag="section"
+          className="relative overflow-hidden rounded-md border border-white/[0.06] bg-ink p-6 md:p-10 lg:p-14"
+          {...reveal}
+        >
+          {/* whisper-volume tonal wash + grain — the gradient-panel language without the volume */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(110% 90% at 0% 0%, rgba(${TONE_RGB[heroTone]}, 0.08) 0%, transparent 55%)`,
+            }}
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.05] mix-blend-overlay"
+          />
+          {/* oversized ghost numeral — decorative; SectionMarker carries the real order */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -top-5 right-4 select-none font-display text-[clamp(5.5rem,11vw,8.5rem)] font-medium leading-none tabular-nums tracking-[-0.04em] text-cream/[0.05]"
+          >
+            01
+          </span>
 
-            <div className="min-w-0 flex-1">
+          <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_2.1fr] lg:gap-16">
+            <div className="flex flex-col gap-4">
+              <SectionMarker index={1} label="Overview" />
+              <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream">
+                Where we focus
+              </h2>
+            </div>
+
+            <div className="min-w-0">
               <RichTextComp
                 content={industry.content as RichText}
                 className="prose-invert max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.02em] prose-headings:text-cream prose-p:text-body prose-p:leading-relaxed prose-a:text-cream prose-strong:text-cream prose-li:text-body"
@@ -329,10 +358,15 @@ export default async function Page({
         </Motion>
       )}
 
-      {/* Related industries */}
+      {/* ── SECTION 02 · RELATED INDUSTRIES (open editorial strip) ───────────────────────── */}
       {relatedIndustries.length > 0 && (
-        <Motion tag="section" className="rounded-md border border-white/[0.06] bg-card p-6 lg:p-12" {...reveal}>
-          <SectionHeader index={2} label="Related industries" heading="Explore more verticals" className="mb-10" />
+        <section className="w-full">
+          <Motion className="mb-10 flex flex-col gap-4" {...reveal}>
+            <SectionMarker index={2} label="Related industries" />
+            <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream">
+              Explore more verticals
+            </h2>
+          </Motion>
 
           {/* Mobile: horizontal snap carousel with pagination dots. */}
           <MobileCarousel slideClassName="w-[280px]">
@@ -342,28 +376,28 @@ export default async function Page({
           </MobileCarousel>
 
           {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
-          <div className="hidden gap-4 sm:grid md:grid-cols-2 lg:grid-cols-3">
+          <div className="hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-3">
             {relatedIndustries.map((item, index) => (
               <RelatedCard key={item.id} industry={item} locale={typedLocale} index={index} />
             ))}
           </div>
-        </Motion>
+        </section>
       )}
 
-      {/* CTA — the page's signature noise-gradient moment. */}
+      {/* ── CLOSING CTA — the page's signature noise-gradient moment ─────────────────────── */}
       <Motion
         tag="section"
-        className="relative overflow-hidden rounded-md border border-white/[0.06] p-8 lg:p-12"
+        className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
         {...reveal}
       >
-        <NoiseGradient tone={CTA_TONE} />
+        <GradientPanel tone="violet" />
 
         <div className="relative z-10 flex flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
           <Motion className="flex max-w-xl flex-col items-center gap-3 lg:items-start" {...revealItem(0)}>
-            <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
+            <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream">
               {industry.title ? `Building for ${industry.title}?` : "Let's build what's next"}
             </h2>
-            <p className="mx-auto max-w-lg text-[14px] leading-relaxed text-cream/75 lg:mx-0">
+            <p className="mx-auto max-w-lg text-[15px] leading-relaxed text-cream/75 lg:mx-0">
               Tell us where you&apos;re headed and we&apos;ll map the engineering path to get there.
             </p>
           </Motion>

@@ -42,10 +42,9 @@ meaningful motion, and per-section abstract graphics — never color noise or gi
   (clamp(2rem,4.5vw,2.875rem)/1.08/−0.03em/500) and `.text-section` (clamp(1.5rem,3vw,1.875rem)/1.15/−0.02em/500).
 - Focus: 2px solid `--color-cream`, 2px offset, 3px radius (global `:focus-visible`).
 - Nav material: `--nav-blur` 20px, `--nav-saturate` 150%, `--nav-h` 58px, `--nav-gap` 18px; `glass` utility.
-- ⚠️ **DRIFT vs handoff:** **Geist Mono is NOT loaded** — the site ships no mono family. Numbering/labels
-  use Inter + `tabular-nums`; some legacy blocks (CapabilityLedger, AboutThesis, SolutionFeature, job
-  detail, insights) still use `font-mono` → renders as *system* monospace, an inconsistency to resolve
-  in the uniformity/QA pass. Either adopt Geist Mono properly or standardize on Inter tabular-nums.
+- **Geist Mono IS loaded** (resolved 2026-07-27): wired via `next/font` in the locale layout
+  (`--font-geist-mono`), and the `font-mono` utility maps to it in `globals.css`. Use `font-mono`
+  (+ `tabular-nums` where digits align) for labels, numbering, tags, and stats site-wide.
 - Motion (site-wide): transform/opacity only; respect `prefers-reduced-motion` (CSS media query +
   `A11yFab` `data-a11y-motion` + Motion `useReducedMotion()` + `MotionGlobalConfig.skipAnimations`);
   slow and meaningful; one shared scroll-reveal (fade + rise ~16–18px, staggered, once); premium easing.
