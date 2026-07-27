@@ -1,7 +1,8 @@
 import Motion from '@/components/animation/motion'
+import IndustryBlueprint from '@/components/industry/IndustryBlueprint'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import type { IndustriesSectionBlock, Industry, Media } from '@/payload-types'
+import type { IndustriesSectionBlock, Industry } from '@/payload-types'
 import {
   Banknote,
   Factory,
@@ -14,7 +15,6 @@ import {
   Workflow,
   type LucideIcon,
 } from 'lucide-react'
-import Image from 'next/image'
 import type { JSX } from 'react'
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -50,30 +50,17 @@ function iconFor(title: string | null | undefined, index: number): LucideIcon {
 // Home tile — the scale / engagement card treatment: the gradient panel IS the fallback (always
 // rendered), the industry's thumbnail layers on top, and the title + excerpt sit over a scrim.
 function IndustryCard({ item }: { item: Industry }): JSX.Element {
-  const thumb = item.thumbnail as Media | string | null | undefined
-  const media = typeof thumb === 'object' && thumb ? thumb : null
-
   return (
     <Link href={item.slug ? `/industries/${item.slug}` : '#'} className={`group block h-full rounded-md ${focusRing}`}>
       <div className="relative h-full min-h-[397px] overflow-hidden rounded-md border border-line bg-[#0F0E0E]">
-        {media?.url && (
-          <Image
-            src={media.url}
-            alt={media.alt || item.title || 'industry'}
-            fill
-            sizes="(min-width: 1024px) 20vw, (min-width: 640px) 50vw, 100vw"
-            className="relative object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-          />
-        )}
+        {/* Isometric monoline blueprint — one motif per sector, filling the upper card, behind the text. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[66%] transition-transform duration-[900ms] ease-out group-hover:scale-[1.03] motion-reduce:transform-none">
+          <IndustryBlueprint title={item.title} />
+        </div>
 
-        {/* bottom-to-transparent scrim — only over a thumbnail image, for text legibility. */}
-        {media?.url && (
-          <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-black/70" />
-        )}
-
-        <div className="absolute inset-x-4 bottom-4 z-10">
+        <div className="absolute inset-x-5 bottom-5 z-10">
           <h3 className="font-medium text-cream">{item.title}</h3>
-          {item.excerpts && <p className="mt-2 text-sm text-cream">{item.excerpts}</p>}
+          {item.excerpts && <p className="mt-2 text-sm text-body">{item.excerpts}</p>}
         </div>
       </div>
     </Link>
