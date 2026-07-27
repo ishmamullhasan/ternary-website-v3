@@ -28,19 +28,49 @@ const motionGridItemProps = {
 //
 // The card is also what drives the frame above it: pointer and keyboard focus both resolve this
 // solution's lane, so the graphic answers to the same target either way.
-function SolutionCard({ item, onEnter, onLeave }: { item: Solution; onEnter: () => void; onLeave: () => void }): JSX.Element {
+function SolutionCard({
+  item,
+  isFocus,
+  onEnter,
+  onLeave,
+}: {
+  item: Solution
+  isFocus: boolean
+  onEnter: () => void
+  onLeave: () => void
+}): JSX.Element {
   return (
     <Link
       href="/solutions"
-      className="flex h-full flex-col rounded-md p-4 transition-colors duration-200 hover:bg-ink"
+      className="group/sol flex h-full flex-col gap-2.5 rounded-md p-4 transition-colors duration-200 hover:bg-ink"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       onFocus={onEnter}
       onBlur={onLeave}
     >
-      <h3 className="font-display text-2xl font-medium text-cream lg:mt-2 lg:text-lg">{item.title}</h3>
+      {/* The rule fills left-to-right on the focused lane — the caption's half of the frame's
+          "this one resolves" gesture. Decorative; the focus state is already carried by the text. */}
+      <span aria-hidden className="relative block h-px w-full overflow-hidden bg-cream/10">
+        <span
+          className={`absolute inset-0 origin-left bg-cream/75 transition-transform duration-[800ms] ease-[cubic-bezier(.16,1,.3,1)] ${
+            isFocus ? 'scale-x-100' : 'scale-x-0'
+          }`}
+        />
+      </span>
 
-      {item.excerpts && <p className="mt-3 text-base leading-[1.15] text-body lg:mt-2 lg:text-sm">{item.excerpts}</p>}
+      <h3 className="font-display text-2xl font-medium text-cream lg:mt-1 lg:text-lg">{item.title}</h3>
+
+      {/* Resting colour is --color-body (#aaaaaa, AAA 7:1); the focused lane lifts to cream. Never
+          drop the resting step below text-body — cream/50-60 would fail the AAA floor for body text. */}
+      {item.excerpts && (
+        <p
+          className={`text-base leading-[1.15] transition-colors duration-500 lg:text-sm ${
+            isFocus ? 'text-cream' : 'text-body'
+          }`}
+        >
+          {item.excerpts}
+        </p>
+      )}
     </Link>
   )
 }
@@ -104,6 +134,7 @@ export default function SolutionsComp({ heading, description, items }: Solutions
             <SolutionCard
               key={item.id ?? index}
               item={item}
+              isFocus={focus === index}
               onEnter={() => setActive(index)}
               onLeave={() => setActive(null)}
             />
@@ -126,6 +157,7 @@ export default function SolutionsComp({ heading, description, items }: Solutions
               >
                 <SolutionCard
                   item={item}
+                  isFocus={focus === index}
                   onEnter={() => setActive(index)}
                   onLeave={() => setActive(null)}
                 />
