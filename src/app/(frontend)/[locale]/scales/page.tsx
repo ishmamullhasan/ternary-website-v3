@@ -1,240 +1,407 @@
-import Heading from '@/components/a11y/Heading'
-import HeroNodeField from '@/components/hub/HeroNodeField'
-import Reveal from '@/components/hub/Reveal'
+import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
-import { asTypedLocale } from '@/lib/i18n/locales'
-import { ArrowRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import type { JSX, ReactNode } from 'react'
 
-import '@/components/hub/hub.css'
-import './scalesHub.css'
-import ScaleFigure from './ScaleFigure'
+/**
+ * Scales — landing redesign, ported from public/hub/scales-hub-ternary.html into Ternary's own
+ * design language to match /capabilities-hub: monochrome cream-on-near-black (no amber/tan), the
+ * Poppins display + Inter body pairing, brand tokens (page/ink/line/subtle/body), tabular numerals
+ * in place of a mono face, the shared Motion scroll-reveal, and one signature noise-gradient CTA.
+ *
+ * Content is faithful to the mockup — the three scales (Startups & Scale-ups, Mid-Market &
+ * Enterprise, Government & Public Institutions), each with "how we show up / typical shape / week
+ * one" facts and recent proof; the "same engineers" point; the moves/never-moves split; and the
+ * closing CTA. The interactive canvas panels and JS router become static, self-contained markup —
+ * a server component, no separate .css file.
+ *
+ * Structure: hero + scale index → the three scales → the point → what moves / what never does →
+ * the constant standard → closing CTA. Scales are numbered in base three, in keeping with the name.
+ */
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}): Promise<Metadata> {
-  const { locale } = await params
-  if (!asTypedLocale(locale)) return {}
-  return {
-    title: 'Scales',
-    description:
-      "Engineering that scales with you — from a startup's first MVP to a public-sector mission program, one standard held at every scale.",
-  }
+export const metadata: Metadata = {
+  title: 'Scales — From founding teams to national institutions.',
+  description:
+    "Our quality bar doesn't change with your size — the shape of the engagement does. One engineering standard, held from a startup's first MVP to a national institution.",
 }
 
-type Scale = {
-  id: string
-  num: string
-  name: string
-  pos: string
-  prose: string[]
-  stats: Array<[string, string]>
-  fig: 'fan' | 'cubes' | 'stack'
-  scale: 1 | 2 | 3
-  figLabel: string
-  figCap: string
-  alt: boolean
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+const reveal = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-60px' } as const,
+  transition: { duration: 0.6, ease: EASE },
 }
 
-// The three scales — the engagement changes shape, the standard does not.
-const SCALES: Scale[] = [
+const revealItem = (index: number) => ({
+  initial: { opacity: 0, y: 18 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-40px' } as const,
+  transition: { duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) },
+})
+
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
+
+// ---------------------------------------------------------------------------------------------
+// Content — the three scales, base-three numbered. The engagement changes shape; the bar does not.
+// ---------------------------------------------------------------------------------------------
+type Fact = { k: string; v: string; lead?: boolean }
+
+const SCALES = [
   {
-    id: 's1',
-    num: '01',
+    n: '00',
+    mark: 'Scale 1 of 3',
     name: 'Startups & Scale-ups',
-    pos: 'One pod. Daily ship cadence.',
-    prose: [
-      "A single senior pod, embedded in your world and shipping every day. Async-first, at agentic velocity — the smallest team that can carry the whole problem, from the first architecture call to a product in real users' hands in weeks.",
-      "We build beside you, not behind a wall. And when it's time, we hand over something clean: the code, the pipelines, the context, and the confidence to run it yourselves.",
-    ],
-    stats: [
-      ['Pod', '3–6 engineers'],
-      ['To production', 'Weeks'],
-      ['Cadence', 'Daily'],
-    ],
-    fig: 'fan',
-    scale: 1,
-    figLabel: 'Fig 0.1',
-    figCap: '01 · velocity',
-    alt: false,
+    title: 'Move fast without building your own mess.',
+    lede: 'Founders and early CTOs with more roadmap than team.',
+    facts: [
+      {
+        k: 'How we show up',
+        v: 'One senior pod, shipping daily, with direct access to the people writing the code.',
+      },
+      { k: 'Typical shape', v: 'Frame™ or Flow™ · 3–9 months · 3–6 engineers.' },
+      {
+        k: 'Week one',
+        v: 'Architecture decided. Environments live. First increment in review.',
+        lead: true,
+      },
+    ] as Fact[],
+    proof: ['Alley Analytix', 'Flex5 by Reality Meets Science'],
   },
   {
-    id: 's2',
-    num: '02',
+    n: '01',
+    mark: 'Scale 2 of 3',
     name: 'Mid-Market & Enterprise',
-    pos: 'Programs measured in quarters, not sprints.',
-    prose: [
-      'Coordinated pods running in parallel, paired with your domain experts and governed by joint steering. We modernize the strangler-fig way — the new grows up alongside the old, and nothing is switched off until its replacement has earned it.',
-      "The point isn't only the platform we leave behind. It's that your own engineers come out of the program stronger than they went in — with the patterns, the tooling, and the judgment to keep going.",
-    ],
-    stats: [
-      ['Shape', 'Multiple pods'],
-      ['Horizon', '12+ months'],
-      ['Method', 'Strangler-fig'],
-    ],
-    fig: 'cubes',
-    scale: 2,
-    figLabel: 'Fig 0.2',
-    figCap: '02 · structure',
-    alt: true,
+    title: 'Modernize without a hard stop.',
+    lede: "CTOs and transformation leads replacing something that can't afford to pause.",
+    facts: [
+      {
+        k: 'How we show up',
+        v: 'Multi-quarter programs, coordinated workstreams, governance your board will recognize.',
+      },
+      { k: 'Typical shape', v: 'Flow™ or Orchestra™ · 12+ months · multiple pods.' },
+      {
+        k: 'Week one',
+        v: 'Current state mapped. Sequencing drafted. Risks named out loud.',
+        lead: true,
+      },
+    ] as Fact[],
+    proof: ['FAROGL', 'Hissho Sushi'],
   },
   {
-    id: 's3',
-    num: '03',
-    name: 'Public Sector',
-    pos: 'Cleared engineers. Mission-ready from kickoff.',
-    prose: [
-      "Prime or sub on established vehicles, with cleared engineers who are mission-ready from day one. Compliance here isn't a phase bolted on at the end — it's a continuous evidence pipeline running the whole way through.",
-      "CMMI-disciplined delivery against real mission deadlines, ATO-ready by design. The same engineering bar you'd get for a startup MVP — held to the standard a public trust demands.",
-    ],
-    stats: [
-      ['Talent', 'Cleared'],
-      ['Delivery', 'CMMI'],
-      ['Posture', 'ATO-ready'],
-    ],
-    fig: 'stack',
-    scale: 3,
-    figLabel: 'Fig 0.3',
-    figCap: '03 · mission',
-    alt: false,
+    n: '10',
+    mark: 'Scale 3 of 3',
+    name: 'Government & Public Institutions',
+    title: 'Mission timelines. Audit obligations. No surprises.',
+    lede: 'Agencies and public bodies where "trust us" is not an acceptable answer.',
+    facts: [
+      {
+        k: 'How we show up',
+        v: 'Security and auditability designed in from day one. Documentation built for review boards, not just developers.',
+      },
+      { k: 'Typical shape', v: 'Frame™ · procurement-dependent · scoped teams.' },
+      {
+        k: 'Week one',
+        v: 'Compliance requirements mapped before a single line of code.',
+        lead: true,
+      },
+    ] as Fact[],
+    proof: ['Dhaka Stock Exchange'],
   },
-]
+] as const
 
-const CONSTANTS: Array<{ n: string; h: string; p: string }> = [
-  {
-    n: 'i',
-    h: 'Centralized standards',
-    p: 'One review bar and one definition of done, held consistently across New York and the Dhaka delivery hub.',
-  },
-  {
-    n: 'ii',
-    h: 'Certified & compliant delivery',
-    p: 'Security, auditability, and evidence built in — packaged the way review boards actually ask for them.',
-  },
-  {
-    n: 'iii',
-    h: 'Disciplined execution',
-    p: 'The same senior hands, rituals, and rigor whether the invoice is a seed round or a program of record.',
-  },
-  {
-    n: 'iv',
-    h: 'Long-term ownership',
-    p: "We stay accountable past launch — monitoring, maintaining, and modernizing so today's build never becomes tomorrow's legacy.",
-  },
-]
+// What moves with your size — and what never does.
+const NEVER_MOVES = [
+  'The hiring bar',
+  'The code review standard',
+  'The definition of done',
+  'Senior people on the work',
+] as const
 
-export default async function ScalesHubPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  if (!asTypedLocale(locale)) notFound()
+const SHAPED_TO_YOU = [
+  'Process weight and ceremony',
+  'Governance and reporting cadence',
+  'Team size and structure',
+  'Documentation depth',
+] as const
 
+// Eyebrow — hairline rule + uppercase micro-label, in the reference's design language.
+function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <div className="hub">
-      {/* HERO */}
-      <section className="hero">
-        <HeroNodeField className="hero-net" />
-        <div className="wrap">
-          <Reveal className="eyebrow">Scales</Reveal>
-          <Reveal i={1}>
-            <Heading level={1}>Engineering that scales with you.</Heading>
-          </Reveal>
-          <Reveal as="p" className="hero-sub" i={2}>
-            From a startup&rsquo;s first MVP to a public-sector mission program — one engineering standard, held at
-            every scale. We meet you where you are, and we hold the same bar the whole way up.
-          </Reveal>
+    <span className="flex items-center gap-3 text-[12px] uppercase tracking-[0.16em] text-subtle">
+      <span aria-hidden className="h-px w-6 bg-cream/60" />
+      {children}
+    </span>
+  )
+}
+
+// ---------------------------------------------------------------------------------------------
+export default function ScalesHubPage(): JSX.Element {
+  return (
+    <div className="w-full pb-24 lg:pb-32">
+      {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden border-b border-line/60">
+        {/* faint vertical rule field — quiet engineering texture */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.5]"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
+          }}
+        />
+        <div className="relative mx-auto w-full max-w-[1480px] px-5 pt-24 pb-16 lg:pt-32 lg:pb-24">
+          <Motion className="flex flex-col gap-7" {...reveal}>
+            <Eyebrow>Scales · 00–10 · base 3</Eyebrow>
+            <h1 className="max-w-[18ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
+              From founding teams to national institutions.
+            </h1>
+            <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">
+              Our quality bar doesn&apos;t change with your size. The shape of the engagement does — one engineering
+              standard, held all the way up.
+            </p>
+          </Motion>
+
+          {/* hero index — jump links to the three scales below */}
+          <Motion className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-line/70 pt-7 lg:mt-20" {...reveal}>
+            {SCALES.map((s) => (
+              <Link
+                key={s.n}
+                href={`#s${s.n}`}
+                className={cn(
+                  'group inline-flex items-center gap-2.5 rounded-sm text-[13px] tracking-[0.02em] text-subtle transition-colors duration-200 hover:text-cream',
+                  FOCUS_RING,
+                )}
+              >
+                <span className="tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
+                  {s.n}
+                </span>
+                {s.name}
+              </Link>
+            ))}
+          </Motion>
         </div>
       </section>
 
-      {/* THE THREE SCALES */}
-      {SCALES.map((s) => (
-        <section className={`scale${s.alt ? ' alt' : ''}`} id={s.id} key={s.id}>
-          <div className="wrap">
-            <div className="content">
-              <Reveal className="s-num">{s.num}</Reveal>
-              <Reveal>
-                <Heading level={2} className="s-name">
-                  {s.name}
-                </Heading>
-              </Reveal>
-              <Reveal as="p" className="s-pos" i={1}>
-                {s.pos}
-              </Reveal>
-              <Reveal className="s-prose" i={2}>
-                {s.prose.map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </Reveal>
-              <Reveal as="dl" className="s-stats" i={3}>
-                {s.stats.map(([dt, dd]) => (
-                  <div key={dt}>
-                    <dt>{dt}</dt>
-                    <dd>{dd}</dd>
-                  </div>
-                ))}
-              </Reveal>
-            </div>
-            <Reveal className="panel" i={1}>
-              <ScaleFigure scale={s.scale} fig={s.fig} />
-              <span className="plabel mono">{s.figLabel}</span>
-              <span className="pcap mono">{s.figCap}</span>
-            </Reveal>
-          </div>
-        </section>
-      ))}
+      {/* ── THE THREE SCALES (centerpiece) ───────────────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-[1480px] px-5">
+        <div className="border-b border-line">
+          {SCALES.map((s, i) => (
+            <Motion key={s.n} {...revealItem(i)}>
+              <div
+                id={`s${s.n}`}
+                className="grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 border-t border-line py-16 lg:grid-cols-[7rem_minmax(0,1.1fr)_minmax(0,1fr)] lg:py-24"
+              >
+                <span className="font-display text-[15px] tabular-nums text-subtle">{s.n}</span>
 
-      {/* THE CONSTANT */}
-      <section className="constant">
-        <div className="wrap">
-          <div className="const-top">
-            <Reveal>
-              <div className="eyebrow">The constant</div>
-              <Heading level={2} className="const-h">
-                One bar for quality, at every scale.
-              </Heading>
-            </Reveal>
-            <Reveal as="p" className="const-p" i={1}>
-              The engagement changes shape as you grow — the standard does not. Every pod, at every scale, draws on
-              the same centralized standards, the same review discipline, and the same people who hold the line
-              across our global delivery hubs. A startup MVP and a mission program are built to the one bar.
-            </Reveal>
-          </div>
-          <div className="const-list">
-            {CONSTANTS.map((c, i) => (
-              <Reveal className="cl" i={i} key={c.n}>
-                <span className="cn mono">{c.n}</span>
-                <div>
-                  <Heading level={3}>{c.h}</Heading>
-                  <p>{c.p}</p>
+                <div className="flex flex-col">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-subtle">
+                    {s.mark} · <span className="text-body">{s.name}</span>
+                  </span>
+                  <h2 className="mt-5 max-w-[15ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
+                    {s.title}
+                  </h2>
+                  <p className="mt-6 max-w-[46ch] text-[clamp(1rem,1.5vw,1.1875rem)] leading-relaxed text-body">
+                    {s.lede}
+                  </p>
+                  <p className="mt-8 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[12px] tracking-[0.04em] text-subtle">
+                    <span className="uppercase tracking-[0.12em] text-cream/70">Recently at this scale</span>
+                    <span>{s.proof.join(' · ')}</span>
+                  </p>
                 </div>
-              </Reveal>
+
+                <dl className="flex flex-col gap-6 border-t border-line pt-8 lg:border-t-0 lg:pt-1">
+                  {s.facts.map((f) => (
+                    <div
+                      key={f.k}
+                      className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] sm:gap-x-7"
+                    >
+                      <dt className="text-[11px] uppercase tracking-[0.1em] text-subtle">{f.k}</dt>
+                      <dd
+                        className={cn('text-[15px] leading-relaxed', f.lead ? 'font-medium text-cream' : 'text-body')}
+                      >
+                        {f.v}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </Motion>
+          ))}
+        </div>
+      </section>
+
+      {/* ── THE POINT ────────────────────────────────────────────────────────────────────── */}
+      <section className="border-b border-line/60">
+        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 py-24 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.15fr)] lg:gap-16 lg:py-32">
+          <Motion {...reveal}>
+            <p className="max-w-[16ch] font-display text-[clamp(1.75rem,3.6vw,2.75rem)] font-medium leading-[1.18] tracking-[-0.02em] text-cream">
+              A startup and a stock exchange get <span className="text-body">the same engineers.</span>
+            </p>
+          </Motion>
+          <Motion className="flex flex-col gap-5 self-end" {...reveal}>
+            <p className="max-w-[56ch] text-[16px] leading-relaxed text-body">
+              They don&apos;t get the same process, governance, or reporting cadence — those should differ. But the
+              hiring bar, the review standard, and the people in the room don&apos;t move with the size of the invoice.
+            </p>
+            <p className="max-w-[56ch] text-[16px] leading-relaxed text-body">
+              <span className="font-medium text-cream">And scales aren&apos;t silos.</span> The startup we build for
+              today becomes the enterprise program in three years — with the same people in the room who remember why
+              every decision was made.
+            </p>
+          </Motion>
+        </div>
+      </section>
+
+      {/* ── WHAT MOVES / WHAT NEVER DOES ─────────────────────────────────────────────────── */}
+      <section className="border-b border-line/60">
+        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+          <Motion className="mb-14 flex flex-col gap-4 lg:mb-20" {...reveal}>
+            <Eyebrow>In practice</Eyebrow>
+            <h2 className="max-w-[24ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
+              What moves with your size — and what never does
+            </h2>
+          </Motion>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Motion className="h-full" {...revealItem(0)}>
+              <div className="flex h-full flex-col rounded-md border border-line-strong bg-ink p-8">
+                <span className="text-[11px] uppercase tracking-[0.12em] text-cream/70">Never moves</span>
+                <p className="mt-2 text-[13px] text-subtle">Constant at every scale.</p>
+                <ul className="mt-6 flex flex-col border-t border-line">
+                  {NEVER_MOVES.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-baseline gap-3 border-b border-line py-3.5 text-[15px] text-cream"
+                    >
+                      <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-cream/70" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Motion>
+
+            <Motion className="h-full" {...revealItem(1)}>
+              <div className="flex h-full flex-col rounded-md border border-line bg-ink p-8">
+                <span className="text-[11px] uppercase tracking-[0.12em] text-subtle">Shaped to you</span>
+                <p className="mt-2 text-[13px] text-subtle">Fitted to your size and stakes.</p>
+                <ul className="mt-6 flex flex-col border-t border-line">
+                  {SHAPED_TO_YOU.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-baseline gap-3 border-b border-line py-3.5 text-[15px] text-body"
+                    >
+                      <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-subtle" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Motion>
+          </div>
+        </div>
+      </section>
+
+      {/* ── THE CONSTANT ─────────────────────────────────────────────────────────────────── */}
+      <section className="border-b border-line/60">
+        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-20 lg:py-32">
+          <Motion className="flex flex-col gap-6" {...reveal}>
+            <Eyebrow>The constant</Eyebrow>
+            <h2 className="max-w-[16ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
+              Whatever your size, the standard is the point.
+            </h2>
+            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
+              The engagement changes shape as you grow — the standard does not. Every pod, at every scale, draws on the
+              same review discipline and the same senior hands. A startup MVP and a national program are built to the
+              one bar.
+            </p>
+          </Motion>
+
+          <div className="flex flex-col border-b border-line">
+            {[
+              {
+                k: 'a',
+                title: 'The hiring bar holds',
+                body: 'The same senior people, whether the invoice is a seed round or a program of record. No junior bench swapped in when the logo gets smaller.',
+              },
+              {
+                k: 'b',
+                title: 'The review standard holds',
+                body: 'One code review bar and one definition of done, applied consistently across New York and the Dhaka delivery hub.',
+              },
+              {
+                k: 'c',
+                title: 'The ownership holds',
+                body: "We stay accountable past launch — monitoring, maintaining, and modernizing so today's build never becomes tomorrow's legacy.",
+              },
+            ].map((s, i) => (
+              <Motion key={s.k} className="flex flex-col gap-2 border-t border-line py-7" {...revealItem(i)}>
+                <h3 className="flex items-baseline gap-3.5 text-[18px] font-medium tracking-[-0.01em] text-cream">
+                  <span className="font-display text-[13px] tabular-nums text-cream/50">{s.k}.</span>
+                  {s.title}
+                </h3>
+                <p className="max-w-[48ch] pl-[26px] text-[15px] leading-relaxed text-body">{s.body}</p>
+              </Motion>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="cta">
-        <div className="wrap">
-          <Reveal className="eyebrow">Start here</Reveal>
-          <Reveal i={1}>
-            <Heading level={2}>Wherever you are, we meet you there.</Heading>
-          </Reveal>
-          <Reveal as="p" i={2}>
-            Tell us the stage you&rsquo;re at and the problem in front of you. We&rsquo;ll show up shaped for it — and
-            held to the same bar all the way up.
-          </Reveal>
-          <Reveal className="btns" i={3}>
-            <Link className="btn btn-primary" href="/contact">
-              Start a conversation
-              <ArrowRight size={16} strokeWidth={2} aria-hidden />
-            </Link>
-            <Link className="btn btn-ghost" href="/case-studies">
-              See our work
-            </Link>
-          </Reveal>
-        </div>
+      {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-[1480px] px-5 pt-24 lg:pt-32">
+        <Motion
+          tag="div"
+          className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
+          {...reveal}
+        >
+          <span aria-hidden className="absolute inset-0">
+            <span
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'radial-gradient(130% 130% at 20% 15%, #2a2452 0%, #16132f 48%, #0b0a17 100%)',
+              }}
+            />
+            <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
+            <span className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/40" />
+          </span>
+
+          <div className="relative z-10 flex flex-col gap-6">
+            <Eyebrow>Start here</Eyebrow>
+            <h2 className="max-w-[18ch] font-display text-[clamp(1.875rem,4vw,3rem)] font-medium leading-[1.08] tracking-[-0.02em] text-cream">
+              Tell us where you are. We&apos;ll show up shaped for it.
+            </h2>
+            <p className="max-w-[52ch] text-[17px] leading-relaxed text-body">
+              Describe the stage you&apos;re at and the problem in front of you. We&apos;ll bring the right shape of
+              engagement — and hold the same bar all the way up.
+            </p>
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/contact"
+                className={cn(
+                  'inline-flex items-center justify-center gap-2 rounded-md bg-cream px-6 py-3 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-cream-hover',
+                  FOCUS_RING,
+                )}
+              >
+                Start a conversation
+                <ArrowRight size={16} strokeWidth={2} aria-hidden />
+              </Link>
+              <Link
+                href="/case-studies"
+                className={cn(
+                  'inline-flex items-center justify-center gap-2 rounded-md border border-white/20 bg-white/[0.06] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12]',
+                  FOCUS_RING,
+                )}
+              >
+                See our work
+                <ArrowUpRight size={16} strokeWidth={2} aria-hidden />
+              </Link>
+            </div>
+          </div>
+        </Motion>
       </section>
     </div>
   )

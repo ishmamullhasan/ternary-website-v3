@@ -1,463 +1,529 @@
-import Heading from '@/components/a11y/Heading'
-import HeroNodeField from '@/components/hub/HeroNodeField'
-import Reveal from '@/components/hub/Reveal'
+import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
-import { asTypedLocale } from '@/lib/i18n/locales'
-import { ArrowRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import type { CSSProperties } from 'react'
+import type { JSX, ReactNode } from 'react'
 
-import '@/components/hub/hub.css'
-import SolutionsCompare from './SolutionsCompare'
-import './solutionsHub.css'
+/**
+ * Solutions hub — landing rebuild, ported from public/hub/solutions-hub-ternary.html into Ternary's
+ * own design language: monochrome cream-on-near-black (no amber/tan), Poppins display + Inter body,
+ * the brand tokens (page/ink/line/subtle), tabular numerals in place of a mono face, the shared
+ * Motion scroll-reveal, and one signature noise-gradient CTA moment — matching /capabilities-hub.
+ *
+ * Structure: hero → four at a glance (jump index) → the four solutions (who/what/get/proof) → the
+ * three engagement models → the compare matrix → closing CTA → a quiet careers line. Authored as a
+ * self-contained server component; content lives in local const arrays.
+ */
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale } = await params
-  if (!asTypedLocale(locale)) return {}
-  return {
-    title: 'Solutions',
-    description:
-      'Four ways to work with Ternary — build something new, modernize what you have, extend your team, or hand us the keys to production.',
-  }
+export const metadata: Metadata = {
+  title: 'Solutions — Four ways in. One standard.',
+  description:
+    'Four ways to work with Ternary — build something new, modernize what you have, extend your team, or hand us the keys to production.',
 }
 
-// At-a-glance index rows — anchor to the four solution scenes below.
-const GLANCE = [
-  { id: 's1', n: '01', name: 'Product Development', one: 'From rough idea to a product your users depend on.' },
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
+const reveal = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-60px' } as const,
+  transition: { duration: 0.6, ease: EASE },
+}
+
+const revealItem = (index: number) => ({
+  initial: { opacity: 0, y: 18 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-40px' } as const,
+  transition: { duration: 0.55, ease: EASE, delay: Math.min(index * 0.05, 0.4) },
+})
+
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
+
+// ---------------------------------------------------------------------------------------------
+// Content — four solutions (jump-index + full scenes), engagement models, compare matrix.
+// ---------------------------------------------------------------------------------------------
+const SOLUTIONS = [
   {
-    id: 's2',
+    n: '01',
+    id: 's1',
+    name: 'Product Development',
+    tagline: 'Take an idea to a real product.',
+    who: 'You have something to build and no team — or a team that is already full.',
+    what: 'We take it from a rough idea to a launched system: discovery, architecture, design, build, release. One senior team, shipping continuously, with you in the room.',
+    get: 'A launched product with the pipelines, tests, and documentation to grow on — and the team that built it, still on call.',
+    proof: {
+      client: 'Alley Analytix',
+      body: 'sensor hardware, real-time motion processing, and coaching dashboards, built end to end.',
+    },
+  },
+  {
     n: '02',
+    id: 's2',
     name: 'Enterprise Transformation',
-    one: 'Modernize the system holding you back — without pausing the business.',
+    tagline: 'Replace what you have outgrown.',
+    who: 'You are running something critical that is getting expensive, fragile, or impossible to hire for — or the “system” is still paper, phone calls, and spreadsheets the business has outgrown.',
+    what: 'We map how the work actually happens today, then move it across piece by piece. Sometimes that means replacing legacy systems; sometimes it means building your first real one. Nothing switches off until its replacement has proven itself.',
+    get: 'New platform live. Old ways retired. Business uninterrupted.',
+    proof: {
+      client: 'FAROGL',
+      body: 'an oil and gas operation taken from manual workflows to one governed ERP, in phases people actually adopted.',
+    },
   },
   {
-    id: 's3',
     n: '03',
+    id: 's3',
     name: 'Engineering Augmentation',
-    one: 'Senior engineers who join your team, not just your headcount.',
+    tagline: 'Add senior engineers to your team.',
+    who: 'You know exactly what to build. You need more senior hands building it.',
+    what: 'We place experienced engineers inside your team — your process, your tooling, your rituals. Named people, not rotating resources.',
+    get: 'Delivery speed you can measure, from engineers you would have hired yourself.',
+    proof: null,
   },
-  { id: 's4', n: '04', name: 'Managed Systems', one: 'We built it. We’ll keep it running.' },
+  {
+    n: '04',
+    id: 's4',
+    name: 'Managed Systems',
+    tagline: 'We run what we build.',
+    who: 'You have systems in production and nobody whose actual job is keeping them healthy.',
+    what: 'Monitoring, patching, incident response — and the unglamorous roadmap of keeping software current, so it never becomes next year’s legacy problem.',
+    get: 'Uptime you stop thinking about.',
+    proof: {
+      client: 'Counterfoil',
+      body: 'a platform Ternary builds and runs.',
+    },
+  },
+] as const
+
+const MODELS = [
+  {
+    n: '01',
+    name: 'Frame',
+    tag: 'Fixed scope · timeline · price',
+    body: 'For work with a clear finish line.',
+    ideal: 'Launches, migrations, proofs of concept.',
+  },
+  {
+    n: '02',
+    name: 'Flow',
+    tag: 'Dedicated team · continuous',
+    body: 'For products that keep evolving.',
+    ideal: 'Long-term product development, continuous delivery.',
+  },
+  {
+    n: '03',
+    name: 'Orchestra',
+    tag: 'Senior capacity · on demand',
+    body: 'For teams that need depth without the headcount.',
+    ideal: 'Filling skill gaps, scaling delivery.',
+  },
+] as const
+
+const COMPARE_COLS = ['Product Development', 'Enterprise Transformation', 'Engineering Augmentation', 'Managed Systems']
+
+const COMPARE_ROWS: { label: string; cells: (ReactNode | string)[]; tabular?: boolean }[] = [
+  {
+    label: 'Best when',
+    cells: [
+      'You are building something new',
+      'A critical system is aging out — or still runs on paper',
+      'Your roadmap outruns your team',
+      'Your systems need an owner',
+    ],
+  },
+  {
+    label: 'Typical duration',
+    tabular: true,
+    cells: ['3–9 months', '12+ months', 'Rolling, quarterly', 'Ongoing'],
+  },
+  {
+    label: 'Team shape',
+    cells: ['One senior pod', 'Coordinated workstreams', 'Embedded engineers', 'Dedicated ops coverage'],
+  },
+  {
+    label: 'Roadmap owner',
+    cells: ['Shared', 'Shared', 'You', 'We propose, you approve'],
+  },
+  {
+    label: 'What we hand over',
+    cells: [
+      'A launched product + docs',
+      'A retired legacy + a live platform',
+      'Merged code, every week',
+      'Reports, uptime, a healthy system',
+    ],
+  },
+  {
+    label: 'Engagement model',
+    cells: [
+      <>
+        <b className="font-medium text-cream">Frame</b> or <b className="font-medium text-cream">Flow</b>
+      </>,
+      <>
+        <b className="font-medium text-cream">Flow</b> or <b className="font-medium text-cream">Orchestra</b>
+      </>,
+      <b key="orchestra" className="font-medium text-cream">
+        Orchestra
+      </b>,
+      <b key="flow" className="font-medium text-cream">
+        Flow
+      </b>,
+    ],
+  },
 ]
 
-export default async function SolutionsHubPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  if (!asTypedLocale(locale)) notFound()
-
+// Eyebrow — hairline + uppercase micro-label, cream-accented rule.
+function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <div className="hub">
-      {/* HERO */}
-      <section className="hero">
-        <HeroNodeField className="hero-net" />
-        <div className="wrap">
-          <Reveal className="eyebrow">Solutions — Four ways in</Reveal>
-          <Reveal className="big" i={1}>
-            <Heading level={1}>Whatever stage you&rsquo;re at, we plug in.</Heading>
-          </Reveal>
-          <Reveal as="p" className="hero-sub" i={2}>
-            Launch something new. Modernize the system you&rsquo;ve outgrown. Borrow senior engineers. Or hand us the
-            keys and let us run it. Four ways to work with Ternary — one engineering standard behind all of them.
-          </Reveal>
-        </div>
-      </section>
+    <span className="flex items-center gap-3 text-[12px] uppercase tracking-[0.16em] text-subtle">
+      <span aria-hidden className="h-px w-6 bg-cream/60" />
+      {children}
+    </span>
+  )
+}
 
-      {/* FOUR AT A GLANCE */}
-      <section className="sec">
-        <div className="wrap">
-          <Reveal className="sec-head">
-            <div>
-              <span className="eyebrow">At a glance</span>
-              <Heading level={2}>Find your starting point</Heading>
-            </div>
-            <p className="sec-sub">
-              You don&rsquo;t need to know what to call it. Tell us where you are and we&rsquo;ll tell you which door to
-              walk through.
+// A single who/what/get row inside a solution scene.
+function Fact({ label, children, emphasis }: { label: string; children: ReactNode; emphasis?: boolean }): JSX.Element {
+  return (
+    <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
+      <h3 className="pt-0.5 text-[11px] uppercase tracking-[0.1em] text-subtle">{label}</h3>
+      <p
+        className={cn(
+          'max-w-[52ch] leading-relaxed',
+          emphasis ? 'text-[17px] font-medium text-cream' : 'text-[15.5px] text-body',
+        )}
+      >
+        {children}
+      </p>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------------------------
+export default function SolutionsHubPage(): JSX.Element {
+  return (
+    <div className="w-full pb-24 lg:pb-32">
+      {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden border-b border-line/60">
+        {/* faint vertical rule field — quiet engineering texture */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.5]"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
+          }}
+        />
+        <div className="relative mx-auto w-full max-w-[1480px] px-5 pt-24 pb-16 lg:pt-32 lg:pb-24">
+          <Motion className="flex flex-col gap-7" {...reveal}>
+            <Eyebrow>Solutions · Four ways in</Eyebrow>
+            <h1 className="max-w-[15ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
+              Built to outlast.
+            </h1>
+            <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">
+              Four ways to work with us — build something new, modernize what you have, extend your team, or hand us the
+              keys to production. One engineering standard behind all of them.
             </p>
-          </Reveal>
-          <Reveal className="glance" i={1}>
-            {GLANCE.map((g) => (
-              <a href={`#${g.id}`} key={g.id}>
-                <span className="gn">{g.n}</span>
-                <span className="gname">{g.name}</span>
-                <span className="gone">{g.one}</span>
-                <span className="garr" aria-hidden="true">
-                  →
+          </Motion>
+
+          {/* hero index — jump links to the solution scenes below */}
+          <Motion className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-line/70 pt-7 lg:mt-20" {...reveal}>
+            {SOLUTIONS.map((s) => (
+              <Link
+                key={s.n}
+                href={`#${s.id}`}
+                className={cn(
+                  'group inline-flex items-center gap-2.5 rounded-sm text-[13px] tracking-[0.02em] text-subtle transition-colors duration-200 hover:text-cream',
+                  FOCUS_RING,
+                )}
+              >
+                <span className="tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
+                  {s.n}
                 </span>
-              </a>
+                {s.name}
+              </Link>
             ))}
-          </Reveal>
+          </Motion>
         </div>
       </section>
 
-      {/* SOLUTION 01 — PRODUCT DEVELOPMENT */}
-      <section className="sol" id="s1">
-        <div className="wrap">
-          <div className="scene">
-            <Reveal className="sol-mark">
-              Solution 01 / 4 · <b>Product Development</b>
-            </Reveal>
-            <Reveal className="sol-num big" i={1}>
-              01
-            </Reveal>
-            <Reveal className="big" i={1}>
-              <Heading level={2} className="sol-name">
-                Turn the idea into a product.
-              </Heading>
-            </Reveal>
-            <Reveal className="sol-panel" i={2} aria-hidden="true">
-              <svg className="g" viewBox="0 0 360 240" fill="none">
-                <rect className="st" x="150" y="90" width="60" height="60" rx="3" opacity=".26" />
-                <rect
-                  className="st m-piece"
-                  style={{ '--dx': '-16px', '--dy': '-14px' } as CSSProperties}
-                  x="152"
-                  y="92"
-                  width="26"
-                  height="26"
-                  rx="2"
+      {/* ── FOUR AT A GLANCE ─────────────────────────────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+        <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
+          <div className="flex flex-col gap-4">
+            <Eyebrow>At a glance</Eyebrow>
+            <h2 className="font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
+              Four doors in
+            </h2>
+          </div>
+          <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
+            Pick the shape that fits where you are. Each opens onto the same standard of engineering.
+          </p>
+        </Motion>
+
+        <div className="border-b border-line">
+          {SOLUTIONS.map((s, i) => (
+            <Motion key={s.n} {...revealItem(i)}>
+              <Link
+                href={`#${s.id}`}
+                className={cn(
+                  'group grid grid-cols-[3rem_1fr] items-center gap-x-6 gap-y-2 border-t border-line py-8 transition-colors duration-300 hover:bg-gradient-to-r hover:from-white/[0.03] hover:to-transparent lg:grid-cols-[7rem_minmax(0,1fr)_minmax(0,1.4fr)_3rem] lg:gap-x-8 lg:py-10',
+                  FOCUS_RING,
+                )}
+              >
+                <span className="font-display text-[15px] tabular-nums text-subtle transition-colors duration-300 group-hover:text-cream">
+                  {s.n}
+                </span>
+                <h3 className="font-display text-[clamp(1.25rem,2.1vw,1.625rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
+                  {s.name}
+                </h3>
+                <p className="col-span-2 max-w-[48ch] text-[15px] leading-relaxed text-body lg:col-span-1 lg:col-start-3">
+                  {s.tagline}
+                </p>
+                <ArrowUpRight
+                  size={20}
+                  strokeWidth={1.75}
+                  aria-hidden
+                  className="col-start-2 row-start-1 hidden justify-self-end text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream lg:col-start-4 lg:block"
                 />
-                <rect
-                  className="ac m-piece"
-                  style={{ '--dx': '16px', '--dy': '-14px' } as CSSProperties}
-                  x="182"
-                  y="92"
-                  width="26"
-                  height="26"
-                  rx="2"
-                />
-                <rect
-                  className="st m-piece"
-                  style={{ '--dx': '-16px', '--dy': '14px' } as CSSProperties}
-                  x="152"
-                  y="122"
-                  width="26"
-                  height="26"
-                  rx="2"
-                />
-                <rect
-                  className="st m-piece"
-                  style={{ '--dx': '16px', '--dy': '14px' } as CSSProperties}
-                  x="182"
-                  y="122"
-                  width="26"
-                  height="26"
-                  rx="2"
-                />
-              </svg>
-            </Reveal>
-          </div>
-          <div className="facts">
-            <Reveal className="fact">
-              <Heading level={3}>Who it&rsquo;s for</Heading>
-              <p>
-                Founders with a clear vision and no engineering team yet — or a team already stretched past its limit.
-              </p>
-            </Reveal>
-            <Reveal className="fact" i={1}>
-              <Heading level={3}>What we do</Heading>
-              <p>
-                We take you from concept to launch: discovery, architecture, design, build, release. One senior team,
-                shipping every week, in the room with you.
-              </p>
-            </Reveal>
-            <Reveal className="fact get" i={2}>
-              <Heading level={3}>What you get</Heading>
-              <p>
-                A live product with the tests, pipelines, and documentation clean enough for your own team to take over
-                on day one.
-              </p>
-            </Reveal>
-            <Reveal className="fact proof" i={3}>
-              <Heading level={3}>Proof</Heading>
-              <p>
-                <span className="pf">Alley Analytix</span> — sensor hardware, real-time motion processing, and coaching
-                dashboards, built end to end.{' '}
-                <Link className="story" href="/case-studies">
-                  Read the story <i aria-hidden="true">→</i>
-                </Link>
-              </p>
-            </Reveal>
-          </div>
+              </Link>
+            </Motion>
+          ))}
         </div>
       </section>
 
-      {/* SOLUTION 02 — ENTERPRISE TRANSFORMATION */}
-      <section className="sol alt" id="s2">
-        <div className="wrap">
-          <div className="scene">
-            <Reveal className="sol-mark">
-              Solution 02 / 4 · <b>Enterprise Transformation</b>
-            </Reveal>
-            <Reveal className="sol-num big" i={1}>
-              02
-            </Reveal>
-            <Reveal className="big" i={1}>
-              <Heading level={2} className="sol-name">
-                Replace what you&rsquo;ve outgrown.
-              </Heading>
-            </Reveal>
-            <Reveal className="sol-panel" i={2} aria-hidden="true">
-              <svg className="g" viewBox="0 0 360 240" fill="none">
-                <g className="m-old">
-                  <path
-                    className="st"
-                    d="M120 70 H240 M120 120 H240 M120 170 H240 M150 60 V180 M180 60 V180 M210 60 V180"
-                  />
-                </g>
-                <g className="m-new" transform="rotate(6 180 120)">
-                  <path className="st" d="M124 76 H236 M124 120 H236 M124 164 H236 M156 66 V174 M186 66 V174" />
-                  <path className="ac" d="M216 66 V174" />
-                </g>
-              </svg>
-            </Reveal>
-          </div>
-          <div className="facts">
-            <Reveal className="fact">
-              <Heading level={3}>Who it&rsquo;s for</Heading>
-              <p>
-                Teams running on something critical, expensive, and fragile — a legacy platform nobody wants to touch,
-                or a &ldquo;system&rdquo; that&rsquo;s really a stack of spreadsheets.
+      {/* ── THE FOUR SOLUTIONS ───────────────────────────────────────────────────────────── */}
+      {SOLUTIONS.map((s) => (
+        <section key={s.id} id={s.id} className="scroll-mt-28 border-t border-line/60">
+          <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-20 lg:py-32">
+            <Motion className="flex flex-col gap-5 lg:sticky lg:top-28 lg:self-start" {...reveal}>
+              <span className="text-[12px] uppercase tracking-[0.1em] text-subtle">
+                Solution {s.n} of 04 · <span className="text-cream">{s.name}</span>
+              </span>
+              <p className="font-display text-[clamp(2.5rem,6vw,4rem)] font-medium leading-none tracking-[-0.05em] text-cream/45 tabular-nums">
+                {s.n}
               </p>
-            </Reveal>
-            <Reveal className="fact" i={1}>
-              <Heading level={3}>What we do</Heading>
-              <p>
-                We map how the work actually happens today, then move it across piece by piece. Nothing gets switched
-                off until its replacement has earned it.
-              </p>
-            </Reveal>
-            <Reveal className="fact get" i={2}>
-              <Heading level={3}>What you get</Heading>
-              <p>A new platform live, the old one retired, and a business that never stopped running.</p>
-            </Reveal>
-            <Reveal className="fact proof" i={3}>
-              <Heading level={3}>Proof</Heading>
-              <p>
-                <span className="pf">FarOGL</span> — an oil and gas operation moved from manual workflows to a governed
-                ERP, adopted in phases.{' '}
-                <Link className="story" href="/case-studies">
-                  Read the story <i aria-hidden="true">→</i>
-                </Link>
-              </p>
-            </Reveal>
-          </div>
-        </div>
-      </section>
+              <h2 className="max-w-[14ch] font-display text-[clamp(1.75rem,3.4vw,2.75rem)] font-medium leading-[1.04] tracking-[-0.03em] text-cream">
+                {s.tagline}
+              </h2>
+            </Motion>
 
-      {/* SOLUTION 03 — ENGINEERING AUGMENTATION */}
-      <section className="sol" id="s3">
-        <div className="wrap">
-          <div className="scene">
-            <Reveal className="sol-mark">
-              Solution 03 / 4 · <b>Engineering Augmentation</b>
-            </Reveal>
-            <Reveal className="sol-num big" i={1}>
-              03
-            </Reveal>
-            <Reveal className="big" i={1}>
-              <Heading level={2} className="sol-name">
-                Add senior engineers to your team.
-              </Heading>
-            </Reveal>
-            <Reveal className="sol-panel" i={2} aria-hidden="true">
-              <svg className="g" viewBox="0 0 360 240" fill="none">
-                <rect className="st" x="176" y="80" width="72" height="72" rx="3" />
-                <path className="st" d="M212 80 V152 M176 116 H248" opacity=".5" />
-                <rect className="st" x="180" y="120" width="28" height="28" rx="2" opacity=".5" />
-                <rect className="st" x="216" y="84" width="28" height="28" rx="2" opacity=".5" />
-                <rect className="st" x="216" y="120" width="28" height="28" rx="2" opacity=".5" />
-                <rect className="acf m-int" x="181" y="85" width="26" height="26" rx="2" />
-              </svg>
-            </Reveal>
-          </div>
-          <div className="facts">
-            <Reveal className="fact">
-              <Heading level={3}>Who it&rsquo;s for</Heading>
-              <p>You know exactly what to build. You need experienced hands to build it faster.</p>
-            </Reveal>
-            <Reveal className="fact" i={1}>
-              <Heading level={3}>What we do</Heading>
-              <p>
-                We place senior engineers inside your team — your process, your tooling, your rituals. Named people, not
-                a rotating bench.
-              </p>
-            </Reveal>
-            <Reveal className="fact get" i={2}>
-              <Heading level={3}>What you get</Heading>
-              <p>Delivery speed you can measure, from engineers you&rsquo;d have hired yourself.</p>
-            </Reveal>
-            <Reveal className="fact proof" i={3}>
-              <Heading level={3}>Proof</Heading>
-              <p className="hold">
-                [ Named client, with permission — or hold this slot until you have one. An empty proof line is better
-                than a vague one. ]
-              </p>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* SOLUTION 04 — MANAGED SYSTEMS */}
-      <section className="sol alt" id="s4">
-        <div className="wrap">
-          <div className="scene">
-            <Reveal className="sol-mark">
-              Solution 04 / 4 · <b>Managed Systems</b>
-            </Reveal>
-            <Reveal className="sol-num big" i={1}>
-              04
-            </Reveal>
-            <Reveal className="big" i={1}>
-              <Heading level={2} className="sol-name">
-                We run what we build.
-              </Heading>
-            </Reveal>
-            <Reveal className="sol-panel" i={2} aria-hidden="true">
-              <svg className="g" viewBox="0 0 360 240" fill="none">
-                <circle className="st" cx="180" cy="120" r="52" opacity=".35" />
-                <circle className="st" cx="180" cy="120" r="32" opacity=".2" />
-                <rect className="acf a-node" x="170" y="110" width="20" height="20" rx="3" />
-                <g className="a-orbit" style={{ transformOrigin: '180px 120px' }}>
-                  <circle className="acf" cx="180" cy="68" r="5" />
-                </g>
-                <g
-                  className="a-orbit"
-                  style={{ transformOrigin: '180px 120px', animationDuration: '24s', animationDirection: 'reverse' }}
-                >
-                  <circle className="fp" cx="212" cy="120" r="4" />
-                </g>
-              </svg>
-            </Reveal>
-          </div>
-          <div className="facts">
-            <Reveal className="fact">
-              <Heading level={3}>Who it&rsquo;s for</Heading>
-              <p>You have systems in production and nobody whose actual job is keeping them healthy.</p>
-            </Reveal>
-            <Reveal className="fact" i={1}>
-              <Heading level={3}>What we do</Heading>
-              <p>
-                Monitoring, patching, incident response — plus the unglamorous work of keeping software current, so
-                today&rsquo;s platform never becomes next year&rsquo;s legacy problem.
-              </p>
-            </Reveal>
-            <Reveal className="fact get" i={2}>
-              <Heading level={3}>What you get</Heading>
-              <p>Uptime you stop thinking about.</p>
-            </Reveal>
-            <Reveal className="fact proof" i={3}>
-              <Heading level={3}>Proof</Heading>
-              <p>
-                <span className="pf">Counterfoil</span> — a platform Ternary builds and runs.{' '}
-                <Link className="story" href="/case-studies">
-                  Read the story <i aria-hidden="true">→</i>
-                </Link>
-              </p>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* ENGAGEMENT MODELS */}
-      <section className="sec">
-        <div className="wrap">
-          <Reveal className="sec-head">
-            <div>
-              <span className="eyebrow">Engagement models</span>
-              <Heading level={2}>Pick how you want to work</Heading>
+            <div className="flex flex-col gap-7">
+              <Motion {...revealItem(0)}>
+                <Fact label="Who it's for">{s.who}</Fact>
+              </Motion>
+              <Motion {...revealItem(1)}>
+                <Fact label="What we do">{s.what}</Fact>
+              </Motion>
+              <Motion {...revealItem(2)}>
+                <Fact label="What you get" emphasis>
+                  {s.get}
+                </Fact>
+              </Motion>
+              <Motion {...revealItem(3)}>
+                <div className="grid grid-cols-1 gap-1.5 border-t border-line pt-6 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
+                  <h3 className="pt-0.5 text-[11px] uppercase tracking-[0.1em] text-subtle">Proof</h3>
+                  {s.proof ? (
+                    <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-body">
+                      <span className="text-cream">{s.proof.client}</span> — {s.proof.body}{' '}
+                      <Link
+                        href="/case-studies"
+                        className={cn(
+                          'group/story mt-1 inline-flex items-center gap-1.5 whitespace-nowrap font-medium text-cream',
+                          FOCUS_RING,
+                        )}
+                      >
+                        Read the story
+                        <ArrowRight
+                          size={14}
+                          strokeWidth={2}
+                          aria-hidden
+                          className="transition-transform duration-300 group-hover/story:translate-x-0.5"
+                        />
+                      </Link>
+                    </p>
+                  ) : (
+                    <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-subtle">
+                      Named client, with written permission — or we hold this slot until we have one. An empty proof
+                      line is better than a vague one.
+                    </p>
+                  )}
+                </div>
+              </Motion>
             </div>
-            <p className="sec-sub">
-              Three shapes of engagement. Every solution runs on one — and you can move between them as the work
-              changes.
+          </div>
+        </section>
+      ))}
+
+      {/* ── ENGAGEMENT MODELS ────────────────────────────────────────────────────────────── */}
+      <section className="border-t border-line/60">
+        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+          <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
+            <div className="flex flex-col gap-4">
+              <Eyebrow>Engagement models</Eyebrow>
+              <h2 className="font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
+                How the work is structured
+              </h2>
+            </div>
+            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
+              Three shapes of engagement. Every solution runs on one — or moves between them as the work changes.
             </p>
-          </Reveal>
-          <div className="models">
-            <Reveal className="model">
-              <div className="mk">01</div>
-              <Heading level={3}>
-                Frame<sup>℠</sup>
-              </Heading>
-              <div className="tag">Fixed scope · timeline · price</div>
-              <p>For work with a clear finish line.</p>
-              <div className="ideal">
-                <b>Ideal for</b>Launches, migrations, proofs of concept.
-              </div>
-            </Reveal>
-            <Reveal className="model" i={1}>
-              <div className="mk">02</div>
-              <Heading level={3}>
-                Flow<sup>℠</sup>
-              </Heading>
-              <div className="tag">Dedicated team · continuous</div>
-              <p>For products that keep evolving.</p>
-              <div className="ideal">
-                <b>Ideal for</b>Long-term product development, continuous delivery.
-              </div>
-            </Reveal>
-            <Reveal className="model" i={2}>
-              <div className="mk">03</div>
-              <Heading level={3}>
-                Orchestra<sup>℠</sup>
-              </Heading>
-              <div className="tag">Senior capacity · on demand</div>
-              <p>For teams that need real depth without the headcount.</p>
-              <div className="ideal">
-                <b>Ideal for</b>Filling skill gaps, scaling delivery fast.
-              </div>
-            </Reveal>
+          </Motion>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {MODELS.map((m, i) => (
+              <Motion
+                key={m.name}
+                className="group flex h-full flex-col rounded-md border border-line bg-ink p-8 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong"
+                {...revealItem(i)}
+              >
+                <span className="text-[11px] tabular-nums tracking-[0.1em] text-subtle">{m.n}</span>
+                <h3 className="mt-3.5 font-display text-[clamp(1.5rem,2.4vw,2rem)] font-medium tracking-[-0.02em] text-cream">
+                  {m.name}
+                  <sup className="ml-0.5 text-[0.5em] align-super font-medium text-subtle">℠</sup>
+                </h3>
+                <span className="mt-3 text-[11px] uppercase tracking-[0.08em] text-cream/70">{m.tag}</span>
+                <p className="mt-4 flex-1 text-[15.5px] leading-relaxed text-body">{m.body}</p>
+                <div className="mt-6 border-t border-line pt-5">
+                  <span className="mb-1 block text-[11px] uppercase tracking-[0.06em] text-body">Ideal for</span>
+                  <p className="text-[13.5px] leading-relaxed text-subtle">{m.ideal}</p>
+                </div>
+              </Motion>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* COMPARE TABLE */}
-      <section className="sec">
-        <div className="wrap">
-          <Reveal className="sec-head">
-            <div>
-              <span className="eyebrow">Compare</span>
-              <Heading level={2}>Four columns. Six honest answers.</Heading>
+      {/* ── COMPARE (the showpiece) ──────────────────────────────────────────────────────── */}
+      <section className="border-t border-line/60">
+        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+          <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
+            <div className="flex flex-col gap-4">
+              <Eyebrow>Compare</Eyebrow>
+              <h2 className="font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
+                Four columns. Six honest answers.
+              </h2>
             </div>
-            <p className="sec-sub">No winner. Hover a column — the right one is whichever matches your situation.</p>
-          </Reveal>
-          <Reveal i={1}>
-            <SolutionsCompare />
-          </Reveal>
+            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
+              No winner. The right column is the one that matches your situation.
+            </p>
+          </Motion>
+
+          <Motion className="overflow-x-auto rounded-md border border-line" {...reveal}>
+            <table className="w-full min-w-[960px] border-collapse text-left">
+              <thead>
+                <tr>
+                  <th className="w-[150px] border-b border-line-strong bg-ink px-5 py-5" />
+                  {COMPARE_COLS.map((col, i) => (
+                    <th
+                      key={col}
+                      className="border-b border-line-strong bg-ink px-5 py-5 align-bottom font-display text-[15px] font-medium whitespace-nowrap text-cream"
+                    >
+                      <span className="mb-2 block text-[11px] tabular-nums tracking-[0.08em] text-subtle">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {COMPARE_ROWS.map((row) => (
+                  <tr key={row.label} className="border-b border-line last:border-b-0">
+                    <th
+                      scope="row"
+                      className="bg-ink px-5 py-4 text-left text-[11px] font-normal uppercase tracking-[0.06em] whitespace-nowrap text-subtle"
+                    >
+                      {row.label}
+                    </th>
+                    {row.cells.map((cell, i) => (
+                      <td
+                        key={i}
+                        className={cn(
+                          'px-5 py-4 align-top text-[14.5px] leading-relaxed text-body',
+                          row.tabular && 'tabular-nums',
+                        )}
+                      >
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Motion>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="cta">
-        <div className="wrap">
-          <Reveal className="eyebrow">Start here</Reveal>
-          <Reveal i={1}>
-            <Heading level={2}>Not sure which one you need?</Heading>
-          </Reveal>
-          <Reveal as="p" i={2}>
-            Most people aren&rsquo;t at this stage — and figuring that out is our job, not yours. Tell us the problem
-            and we&rsquo;ll tell you the shape.
-          </Reveal>
-          <Reveal className="btns" i={3}>
-            <Link className="btn btn-primary" href="/contact">
-              Start a conversation
-              <ArrowRight size={16} strokeWidth={2} aria-hidden />
-            </Link>
-            <Link className="btn btn-ghost" href="/case-studies">
-              See our work
-            </Link>
-          </Reveal>
-        </div>
+      {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-[1480px] px-5">
+        <Motion
+          tag="div"
+          className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
+          {...reveal}
+        >
+          <span aria-hidden className="absolute inset-0">
+            <span
+              className="absolute inset-0"
+              style={{
+                backgroundImage: 'radial-gradient(130% 130% at 20% 15%, #2a2452 0%, #16132f 48%, #0b0a17 100%)',
+              }}
+            />
+            <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
+            <span className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/40" />
+          </span>
+
+          <div className="relative z-10 flex flex-col gap-6">
+            <Eyebrow>Start here</Eyebrow>
+            <h2 className="max-w-[16ch] font-display text-[clamp(1.875rem,4vw,3rem)] font-medium leading-[1.08] tracking-[-0.02em] text-cream">
+              Still not sure which one you need?
+            </h2>
+            <p className="max-w-[52ch] text-[17px] leading-relaxed text-body">
+              Neither are most people at this stage — that&apos;s our job, not yours. Tell us the problem, and
+              we&apos;ll tell you the shape.
+            </p>
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/contact"
+                className={cn(
+                  'inline-flex items-center justify-center gap-2 rounded-md bg-cream px-6 py-3 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-cream-hover',
+                  FOCUS_RING,
+                )}
+              >
+                Start a conversation
+                <ArrowRight size={16} strokeWidth={2} aria-hidden />
+              </Link>
+              <Link
+                href="/case-studies"
+                className={cn(
+                  'inline-flex items-center justify-center rounded-md border border-white/20 bg-white/[0.06] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12]',
+                  FOCUS_RING,
+                )}
+              >
+                See our work
+              </Link>
+            </div>
+          </div>
+        </Motion>
       </section>
 
-      {/* CAREERS STRIP */}
-      <section className="careers-strip">
-        <div className="wrap">
-          <Reveal as="p">
-            Engineers: we&rsquo;re usually hiring.{' '}
-            <Link href="/careers">
-              See open roles <i aria-hidden="true">→</i>
-            </Link>
-          </Reveal>
-        </div>
+      {/* ── CAREERS STRIP ────────────────────────────────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-[1480px] px-5 pt-16 text-center lg:pt-20">
+        <Motion tag="p" className="text-[13.5px] leading-relaxed text-body" {...reveal}>
+          Engineers: we&apos;re usually hiring.{' '}
+          <Link
+            href="/careers"
+            className={cn('group/careers ml-1 inline-flex items-center gap-1.5 font-medium text-cream', FOCUS_RING)}
+          >
+            See open roles
+            <ArrowRight
+              size={13}
+              strokeWidth={2}
+              aria-hidden
+              className="transition-transform duration-300 group-hover/careers:translate-x-0.5"
+            />
+          </Link>
+        </Motion>
       </section>
     </div>
   )
