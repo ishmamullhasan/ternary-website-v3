@@ -166,7 +166,12 @@ function CapabilityCard({ item, index }: { item: Capability; index: number }): J
 
       <div className="relative z-[2] flex flex-col gap-2 p-4">
         <h3 className="text-[16px] leading-[1.15] font-medium text-cream">{item.title}</h3>
-        {item.excerpts && <p className="line-clamp-3 text-[14px] leading-[1.3] text-body">{item.excerpts}</p>}
+        {/* min-h matches the clamp (3 × 1.3 leading) so every card reserves the same excerpt
+            block and rows align even when CMS copy runs a line short. Copy is budgeted to the
+            77–92ch band (≤2 lines at grid widths) — the clamp is a guard, never the fix. */}
+        {item.excerpts && (
+          <p className="line-clamp-3 min-h-[3.9em] text-[14px] leading-[1.3] text-body">{item.excerpts}</p>
+        )}
         <span className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-medium whitespace-nowrap text-cream transition-[gap] duration-500 group-hover:gap-2.5">
           Explore
           <ArrowUpRight size={13} strokeWidth={1.6} aria-hidden />

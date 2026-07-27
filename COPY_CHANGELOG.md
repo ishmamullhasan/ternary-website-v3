@@ -162,3 +162,49 @@ writing). **Prod follow-up: run the same script against the production CMS once 
   ("Product visuals — coming soon") until the client supplies product images/videos.
 - Code (same pass): detail cache keys bumped `story_detail_${slug}_${locale}` → `_v2`,
   `story_related_${slug}_${locale}` → `_v2`.
+
+### Card-copy alignment pass (staging) — uniform line bands per card group
+Via `scripts/seed-align-copy.js` (idempotent). **Prod follow-up: replicate all.** Goal: within
+every card group, all cards' text blocks land in the same rendered-line band so rows align
+(user-reported: home capabilities descriptions wrapped 2 vs 3+ lines). Every edit is a pure
+compression/recomposition of existing approved wording — no new claims, no metrics. Stale bn
+for each rewritten field **unset** (fallback serves en), per the seed-audit-fixes pattern.
+- **Home capabilities strip** → 77–92ch band (2 lines; was 77–249, two cards clamped mid-claim):
+  - `capabilities.agentic-architecture.excerpts.en` — 249ch two-sentence paragraph →
+    "Multi-agent systems that plan, act, and verify — accountable for what they do in
+    production." (recomposed from its approved /capabilities hub row + its own v3 clause).
+  - `capabilities.devops-automation.excerpts.en` — 184ch → "We make shipping boring. More
+    releases, fewer incidents, and no two-a.m. surprises." (the approved hub row, verbatim).
+  - `capabilities.cloud-transformation.excerpts.en` — "…platform operations…" → "…operations…"
+    (98 → 89ch).
+- **Home solutions cards** → 105–124ch band (3 lines at lg; was 105–144):
+  - `solutions.product-development.excerpts.en` — "End-to-end product engineering from
+    conception to scale. We design…" → "End-to-end product engineering — we design, build, and
+    launch digital products that users love and businesses depend on." (144 → 120ch).
+- **Home industries cards** → 67–82ch band (2 lines; was 67–111):
+  - `industries.healthcare.excerpts.en` — "Digital health platforms…" → "Health platforms that
+    pair intuitive experiences with enterprise-grade compliance." (90 → 82ch).
+  - `industries.hospitality-travel.excerpts.en` — "Digital platforms that coordinate pricing,
+    inventory, and distribution for operators in the experience economy." → "Pricing,
+    inventory, and distribution — coordinated for the experience economy." (111 → 78ch).
+- **Home scales cards** → 164–175ch band (3 lines; was 166–208):
+  - `scales.public-sector.excerpts.en` — dropped the "and useful at the workflow boundary"
+    tail (208 → 164ch).
+- **Home engagement models** → 105–126ch band (3 lines; Frame™ sat a line short at 102ch):
+  - `models.frame.excerpts.en` — "…Built for discrete projects with well-understood
+    objectives." → "…Built for discrete projects with a clear finish line and well-understood
+    objectives." (recomposed with its approved /solutions descriptor; 102 → 126ch).
+- **Capability detail "How we work" 3-up rows** → each page's row now spans ≤10ch (was up to
+  39ch, mixing 2- and 3-line columns). `capabilities[*].howWeDoIt.items[*].excerpt.en`
+  compressed on: digital-experiences[1,2], artificial-intelligence[0,1], data-analytics[0,1,2],
+  cloud-transformation[2], internet-of-things[2], platformization[0], agentic-architecture[1]
+  (e.g. data-analytics[2] "We maintain what we build, so the numbers stay accurate as your
+  business changes — long-term stewardship, not a handoff." → same minus the tail, 120 → 81ch).
+- Code (same pass) — secondary alignment guards, following the HeroFeatured min-h pattern
+  (reserve + clamp the same N lines; copy is budgeted to fit, the clamp only guards future
+  CMS edits): home capability card `line-clamp-3 min-h-[3.9em]`; solution card
+  `lg:line-clamp-3 lg:min-h-[3.45em]`; industry card `sm:line-clamp-2 sm:min-h-[2.86em]`;
+  scale + engagement cards `lg:line-clamp-3 lg:min-h-[4.29em]`. Cache keys bumped so the
+  seeded state surfaces on deploy: `pages_home_${locale}_v8 → _v9`,
+  `capability_${slug}_${locale}_v5 → _v6`, `solution_${slug}_${locale}_v2 → _v3`,
+  `solution_related → solution_related_v2`, `industry_${slug}_${locale}_v2 → _v3`.

@@ -74,7 +74,7 @@ async function fetchRelatedIndustries(currentId: string, locale: TypedLocale): P
 async function getIndustryBySlug(slug: string, locale: TypedLocale): Promise<Industry | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchIndustryBySlug(slug, locale)
-  return unstable_cache(() => fetchIndustryBySlug(slug, locale), [`industry_${slug}_${locale}_v2`], {
+  return unstable_cache(() => fetchIndustryBySlug(slug, locale), [`industry_${slug}_${locale}_v3`], {
     tags: [`industry_${slug}`, 'industry'],
   })()
 }

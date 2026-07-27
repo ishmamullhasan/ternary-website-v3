@@ -38,7 +38,9 @@ function EngagementCard({
       {/* text */}
       <div className="absolute inset-x-4 bottom-4 z-10">
         <h3 className="font-medium text-cream">{item.title}</h3>
-        <p className="mt-2 text-sm text-cream">{item.excerpts}</p>
+        {/* lg guard: reserve + clamp 3 lines (text-sm leading-5) so Frame/Flow/Orchestra keep one
+            text-block height — excerpts are budgeted to the 105–126ch band (3 lines at lg). */}
+        <p className="mt-2 text-sm text-cream lg:line-clamp-3 lg:min-h-[4.29em]">{item.excerpts}</p>
       </div>
     </div>
   )

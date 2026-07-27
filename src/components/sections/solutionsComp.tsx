@@ -63,8 +63,10 @@ function SolutionCard({
       {/* Resting colour is --color-body (#aaaaaa, AAA 7:1); the focused lane lifts to cream. Never
           drop the resting step below text-body — cream/50-60 would fail the AAA floor for body text. */}
       {item.excerpts && (
+        /* lg guard: reserve + clamp 3 lines (3 × 1.15 leading) so the 4-up row keeps a uniform
+           text block — excerpts are budgeted to the 105–124ch band (3 lines at lane width). */
         <p
-          className={`text-base leading-[1.15] transition-colors duration-500 lg:text-sm ${
+          className={`text-base leading-[1.15] transition-colors duration-500 lg:line-clamp-3 lg:min-h-[3.45em] lg:text-sm ${
             isFocus ? 'text-cream' : 'text-body'
           }`}
         >
