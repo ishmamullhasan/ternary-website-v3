@@ -36,9 +36,11 @@
   line-height: 1.6;
 }
 
-/* Section frame — spacing only. Sections are separated by their own rhythm, not by rules. */
+/* Section frame — spacing only. Sections are separated by their own rhythm, not by rules, so the
+   padding IS the separator: 150px top + 150px bottom stacked to ~300px of dead band between one
+   section's last line and the next section's first. Halved. */
 .hub .sec-b {
-  padding: clamp(88px, 11vw, 150px) 0;
+  padding: clamp(48px, 5vw, 80px) 0;
 }
 .hub .sec-head {
   display: flex;
@@ -481,7 +483,7 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
 
 /* CTA — bold full-width statement */
 .hub .cta {
-  padding: clamp(100px, 14vw, 200px) 0;
+  padding: clamp(64px, 6.5vw, 104px) 0;
   text-align: center;
 }
 .hub .cta .eyebrow {
