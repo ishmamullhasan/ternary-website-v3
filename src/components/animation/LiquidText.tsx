@@ -46,25 +46,27 @@ uniform float u_aspect;   // width / height, so the influence region is circular
 
 // Radius of the deformation, in height-units — kept small so only the glyphs directly under the
 // cursor move, not the whole line.
-const float RADIUS = 0.7;
+const float RADIUS = 0.55;
 
 void main() {
   vec2 uv = v_uv;
 
-  // Local Gaussian bump centred on the pointer: near it, texels are displaced; a few letters away,
-  // the influence is ~0, so the rest of the line stays perfectly still.
+  // Local Gaussian bump centred on the pointer, measured in aspect-corrected space so the
+  // influence region is a true circle on screen (radial, not stretched along the line).
   vec2 toM = uv - u_mouse;
   vec2 scaled = vec2(toM.x * u_aspect, toM.y);
   float d = length(scaled);
   float influence = exp(-(d * d) / (RADIUS * RADIUS));
 
-  // Push texels away from the pointer with a gentle travelling ripple, all scaled by the local
-  // influence and the pointer presence — so the deformation flows with the cursor and nowhere else.
-  vec2 dir = toM / (length(toM) + 1e-4);
-  float wave = sin(d * 14.0 - u_time * 5.0);
-  vec2 disp = dir * influence * u_amp * (0.05 + 0.02 * wave);
+  // Smooth radial push away from the pointer. centerFade takes the displacement to zero at the
+  // exact cursor core, where the direction vector flips — that flip was the "infinity" artifact.
+  // No travelling wave: just a clean liquid bulge that follows the cursor.
+  float centerFade = smoothstep(0.0, 0.22, d);
+  vec2 dir = scaled / max(d, 1e-4);
+  vec2 push = dir * influence * centerFade * u_amp * 0.045;
+  push.x /= u_aspect; // back to uv space so the on-screen push is radially uniform
 
-  gl_FragColor = texture2D(u_tex, uv - disp);
+  gl_FragColor = texture2D(u_tex, uv - push);
 }`
 
 function createShader(gl: WebGLRenderingContext, type: number, src: string): WebGLShader | null {
