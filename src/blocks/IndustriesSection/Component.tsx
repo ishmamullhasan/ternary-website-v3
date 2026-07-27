@@ -56,7 +56,7 @@ function IndustryCard({ item, index }: { item: Industry; index: number }): JSX.E
 
   return (
     <Link href={item.slug ? `/industries/${item.slug}` : '#'} className={`group block h-full rounded-md ${focusRing}`}>
-      <div className="relative aspect-[3/5] h-full overflow-hidden rounded-md border border-line bg-ink">
+      <div className="relative h-full min-h-[397px] overflow-hidden rounded-md border border-line bg-ink">
         <GradientPanel tone={toneFor(undefined, index)} interactive />
 
         {media?.url && (
@@ -129,6 +129,7 @@ export function IndustriesSectionComponent({
             <Motion
               key={item.id ?? index}
               tag="div"
+              className="h-full"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
