@@ -5,6 +5,7 @@ import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import ScaleFigure from '@/components/scales/ScaleFigure'
+import SectionCta from '@/components/sections/SectionCta'
 import type { Scale } from '@/payload-types'
 import type { JSX } from 'react'
 
@@ -52,12 +53,16 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
 
   return (
     <section className="section-card flex w-full flex-col gap-8">
-      {/* Header stacked above the grid, left-aligned — the Industries/Capabilities treatment. */}
-      <Motion className="max-w-[544px]" {...reveal}>
-        {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}
-        {description ? (
-          <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />
-        ) : null}
+      {/* Header stacked above the grid, left-aligned — the Industries/Capabilities treatment —
+          with the hub link top-right, level with the h2's first line. */}
+      <Motion className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8" {...reveal}>
+        <div className="max-w-[544px]">
+          {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}
+          {description ? (
+            <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />
+          ) : null}
+        </div>
+        <SectionCta href="/scales" destination="about the scales we work at" />
       </Motion>
 
       {/* Mobile: horizontal snap carousel with pagination dots. */}

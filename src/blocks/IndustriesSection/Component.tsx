@@ -2,6 +2,7 @@ import Motion from '@/components/animation/motion'
 import IndustryBlueprint from '@/components/industry/IndustryBlueprint'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import SectionCta from '@/components/sections/SectionCta'
 import type { IndustriesSectionBlock, Industry } from '@/payload-types'
 import {
   Banknote,
@@ -91,22 +92,28 @@ export function IndustriesSectionComponent({
     // `#1b1a17` token, so the cards vanish. With no panel, the `bg-card` cards read against the
     // darker page, matching the industry-detail benefit grid (Figma 1283-2668).
     <Motion tag="section" className={fullWidth ? 'w-full' : 'section-card w-full'}>
-      {(heading || description) && (
+      {/* The hub link belongs to the home rendering only — in `fullWidth` this block is the
+          industry-detail benefit grid, already on a page under /industries, so a link back to the
+          hub would be pointing at where the reader just came from. */}
+      {(heading || description || !fullWidth) && (
         <Motion
           tag="div"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="mb-10 max-w-2xl space-y-3 lg:mb-14"
+          className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8 lg:mb-14"
         >
-          {heading && <h2 className="font-display text-3xl font-medium leading-[1.15] text-cream">{heading}</h2>}
-          {description && (
-            <RichTextComp
-              content={description as RichText}
-              className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
-            />
-          )}
+          <div className="max-w-2xl space-y-3">
+            {heading && <h2 className="font-display text-3xl font-medium leading-[1.15] text-cream">{heading}</h2>}
+            {description && (
+              <RichTextComp
+                content={description as RichText}
+                className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
+              />
+            )}
+          </div>
+          {!fullWidth && <SectionCta href="/industries" destination="about the industries we serve" />}
         </Motion>
       )}
 

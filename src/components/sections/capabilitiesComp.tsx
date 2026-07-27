@@ -6,6 +6,7 @@ import { usePointerReveal } from '@/components/capability/usePointerReveal'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import SectionCta from '@/components/sections/SectionCta'
 import type { Capability, Media } from '@/payload-types'
 import { ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
@@ -197,15 +198,20 @@ export default function CapabilitiesComp({ heading, description, capability, sli
 
   return (
     <section className="section-card flex w-full flex-col gap-8">
-      {/* Header — display heading ABOVE the supporting sentence, left-aligned. */}
-      <Motion className="flex max-w-[544px] flex-col" {...reveal}>
-        {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
-        {description && (
-          <RichTextComp
-            content={description as RichText}
-            className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
-          />
-        )}
+      {/* Header — display heading ABOVE the supporting sentence, left-aligned, with the hub link
+          top-right. `items-start` keeps the button level with the h2's first line however many
+          lines the heading and description run to; below sm it drops under the copy. */}
+      <Motion className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8" {...reveal}>
+        <div className="flex max-w-[544px] flex-col">
+          {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
+          {description && (
+            <RichTextComp
+              content={description as RichText}
+              className="prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-body"
+            />
+          )}
+        </div>
+        <SectionCta href="/capabilities" destination="about our capabilities" />
       </Motion>
 
       {/* Mobile: horizontal snap carousel with pagination dots (Figma 1221:2339). */}

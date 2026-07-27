@@ -4,6 +4,7 @@ import Motion from '@/components/animation/motion'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import SectionCta from '@/components/sections/SectionCta'
 import SolutionsFrame, { artIndexFor } from '@/components/solutions/SolutionsFrame'
 import type { Media, Solution } from '@/payload-types'
 import { useEffect, useMemo, useState, type JSX } from 'react'
@@ -103,7 +104,8 @@ export default function SolutionsComp({ heading, description, items }: Solutions
 
   return (
     <section className="section-card flex w-full flex-col">
-      <div className="flex justify-start">
+      {/* Hub link top-right, level with the h2's first line; below sm it drops under the copy. */}
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
         <div className="flex flex-col lg:w-[500px]">
           {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}
           {description && (
@@ -113,6 +115,7 @@ export default function SolutionsComp({ heading, description, items }: Solutions
             />
           )}
         </div>
+        <SectionCta href="/solutions" destination="about our solutions" />
       </div>
 
       {/* One wide field, one movement per solution — replaces the gradient hero. Bound to the cards
