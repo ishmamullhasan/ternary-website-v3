@@ -23,7 +23,7 @@ function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.E
         {title ? (
           <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">{title}</h3>
         ) : null}
-        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body/75">{desc}</p> : null}
+        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body">{desc}</p> : null}
       </div>
     </div>
   )
@@ -129,7 +129,7 @@ export function AboutThesisComponent({ heading, description, items }: AboutThesi
                           </h3>
                         ) : null}
                         {item.excerpt ? (
-                          <p className="max-w-sm text-base leading-tight tracking-[-0.02em] text-body/75">
+                          <p className="max-w-sm text-base leading-tight tracking-[-0.02em] text-body">
                             {item.excerpt}
                           </p>
                         ) : null}
@@ -144,14 +144,14 @@ export function AboutThesisComponent({ heading, description, items }: AboutThesi
                         aria-hidden
                         className="absolute right-8 top-1/3 z-0 hidden h-32 w-32 -translate-y-1/2 lg:block"
                       >
-                        <div className="absolute inset-0 animate-[spin_20s_linear_infinite] rounded-full border border-dashed border-white/10"></div>
-                        <div className="absolute inset-4 animate-[spin_12s_linear_infinite_reverse] rounded-full border border-white/20"></div>
-                        <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/25"></div>
-                        <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/20 [animation-delay:0.8s]"></div>
-                        <div className="animation-duration-[2.4s] absolute inset-5 animate-ping rounded-full border border-white/15 [animation-delay:1.6s]"></div>
+                        <div className="absolute inset-0 animate-[spin_20s_linear_infinite] rounded-full border border-dashed border-white/10 motion-reduce:animate-none"></div>
+                        <div className="absolute inset-4 animate-[spin_12s_linear_infinite_reverse] rounded-full border border-white/20 motion-reduce:animate-none"></div>
+                        <div className="absolute inset-5 animate-ping rounded-full border border-white/25 [animation-duration:2.4s] motion-reduce:animate-none"></div>
+                        <div className="absolute inset-5 animate-ping rounded-full border border-white/20 [animation-delay:0.8s] [animation-duration:2.4s] motion-reduce:animate-none"></div>
+                        <div className="absolute inset-5 animate-ping rounded-full border border-white/15 [animation-delay:1.6s] [animation-duration:2.4s] motion-reduce:animate-none"></div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-                            <div className="h-2 w-2 animate-[ping_2s_ease-in-out_infinite] rounded-full bg-white shadow-[0_0_10px_white]"></div>
+                          <div className="flex h-12 w-12 animate-pulse items-center justify-center rounded-full bg-white/10 backdrop-blur-sm motion-reduce:animate-none">
+                            <div className="h-2 w-2 animate-[ping_2s_ease-in-out_infinite] rounded-full bg-white shadow-[0_0_10px_white] motion-reduce:animate-none"></div>
                           </div>
                         </div>
                       </div>

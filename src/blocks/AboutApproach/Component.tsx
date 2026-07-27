@@ -25,7 +25,7 @@ function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.E
         {title ? (
           <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">{title}</h3>
         ) : null}
-        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body/75">{desc}</p> : null}
+        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body">{desc}</p> : null}
       </div>
     </div>
   )
@@ -90,7 +90,7 @@ function FeaturedCard({ item, className }: { item?: ApproachItem; className?: st
             </h3>
           ) : null}
           {item?.excerpt ? (
-            <p className="max-w-md text-base leading-tight tracking-[-0.02em] text-body/75">{item.excerpt}</p>
+            <p className="max-w-md text-base leading-tight tracking-[-0.02em] text-body">{item.excerpt}</p>
           ) : null}
         </div>
       </div>
@@ -113,7 +113,11 @@ export function AboutApproachComponent({ heading, description, items }: AboutApp
 
   return (
     <div>
-      <Section title={heading ?? ''} desc={description ?? ''} className="rounded-md bg-main px-9 py-12">
+      <Section
+        title={heading ?? ''}
+        desc={description ?? ''}
+        className="rounded-md bg-main px-6 py-10 md:px-9 md:py-12"
+      >
         {/* Mobile: single horizontal carousel of every benefit (featured first). `sm:hidden`
             is baked into MobileCarousel, so the bento grid below takes over at sm+. */}
         <MobileCarousel slideClassName="h-[420px] w-[280px]">

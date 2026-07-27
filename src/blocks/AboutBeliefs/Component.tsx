@@ -22,7 +22,7 @@ function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.E
         {title ? (
           <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">{title}</h3>
         ) : null}
-        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body/75">{desc}</p> : null}
+        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body">{desc}</p> : null}
       </div>
     </div>
   )
@@ -101,7 +101,7 @@ function FeaturedBelief({ item }: { item: BeliefItem }): JSX.Element {
               </h3>
             ) : null}
             {item.excerpt ? (
-              <p className="max-w-md text-base leading-tight tracking-[-0.02em] text-body/75">{item.excerpt}</p>
+              <p className="max-w-md text-base leading-tight tracking-[-0.02em] text-body">{item.excerpt}</p>
             ) : null}
           </div>
         </div>

@@ -23,7 +23,7 @@ export function AboutIntroComponent({ heading, description, content }: AboutIntr
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.6, ease: EASE }}
-      className="rounded-md bg-main px-9 py-12"
+      className="rounded-md bg-main px-6 py-10 md:px-9 md:py-12"
     >
       <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
         <div className="flex flex-col gap-2 lg:w-[238px] lg:shrink-0">

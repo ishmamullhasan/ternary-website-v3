@@ -24,7 +24,7 @@ function CompanyCard({ item }: { item: CompanyItem }): JSX.Element {
   return (
     <div className="group flex h-full min-h-[267px] flex-col justify-between rounded-sm bg-ink px-4 pb-4 pt-6 transition-[transform,background-color] duration-300 ease-out hover:-translate-y-1 hover:bg-[#151414]">
       <div className="flex flex-col gap-4">
-        {item.excerpt ? <p className="text-base leading-snug text-body/90">{item.excerpt}</p> : null}
+        {item.excerpt ? <p className="text-base leading-snug text-body">{item.excerpt}</p> : null}
       </div>
 
       {item.name ? (

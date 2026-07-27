@@ -36,7 +36,7 @@ function Detail({
 }): JSX.Element {
   return (
     <div className="flex flex-col gap-1 lg:gap-2">
-      <div className="flex items-center gap-1.5 text-[12px] tracking-[-0.05em] text-subtle">
+      <div className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
         <Icon size={12} aria-hidden />
         {label}
       </div>
@@ -98,15 +98,21 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6, ease: EASE }}
     >
-      <div className="max-w-2xl space-y-4">
-        <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
-          {data?.heading}
-        </h2>
-        <RichTextComp
-          content={data?.description as RichText}
-          className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-snug prose-p:tracking-[-0.05em] prose-p:text-body md:prose-p:text-[16px]"
-        />
-      </div>
+      {(data?.heading || data?.description) && (
+        <div className="max-w-2xl space-y-4">
+          {data?.heading && (
+            <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
+              {data.heading}
+            </h2>
+          )}
+          {data?.description && (
+            <RichTextComp
+              content={data.description as RichText}
+              className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-snug prose-p:tracking-[-0.05em] prose-p:text-body md:prose-p:text-[16px]"
+            />
+          )}
+        </div>
+      )}
 
       {/* Map surface — signature gradient + grain (graceful fallback for the map asset) with the
           office card floating at the bottom, matching Figma 1516:5470. */}
@@ -148,7 +154,11 @@ export default function ContactOffices({ data }: { data?: OfficesData }): JSX.El
           <div className="flex flex-1 flex-col gap-2 lg:gap-4 lg:px-4">
             {/* Heading group */}
             <div className="flex flex-col gap-2">
-              {office.tag && <p className="text-[12px] tracking-[-0.05em] text-subtle lg:text-[16px]">{office.tag}</p>}
+              {office.tag && (
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle lg:text-[12px]">
+                  {office.tag}
+                </p>
+              )}
               {/* Stacked on mobile; city and timezone sit on one baseline at lg. */}
               <div className="flex flex-col gap-1 lg:flex-row lg:flex-wrap lg:items-end lg:gap-x-2 lg:gap-y-1">
                 <h3 className="text-[16px] font-medium leading-[1.15] tracking-[-0.05em] text-cream lg:font-display lg:text-[24px]">

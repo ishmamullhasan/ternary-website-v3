@@ -95,7 +95,7 @@ function RouteCard({
           />
         </div>
         <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
-          <span className="text-[12px] tracking-[-0.05em] text-cream">{route.email}</span>
+          <span className="font-mono text-[12px] tracking-normal text-cream">{route.email}</span>
           <ArrowUpRight
             size={16}
             className={`transition-all duration-300 ${
@@ -131,15 +131,21 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
       viewport={{ once: true, amount: 0.12 }}
       transition={{ duration: 0.6, ease: EASE }}
     >
-      <div className="max-w-3xl space-y-4">
-        <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] whitespace-pre-line text-cream">
-          {data?.heading}
-        </h2>
-        <RichTextComp
-          content={data?.description as RichText}
-          className="max-w-2xl prose-p:mb-0 prose-p:text-[15px] prose-p:leading-snug prose-p:tracking-[-0.05em] prose-p:text-body md:prose-p:text-[16px]"
-        />
-      </div>
+      {(data?.heading || data?.description) && (
+        <div className="max-w-3xl space-y-4">
+          {data?.heading && (
+            <h2 className="font-display text-[30px] font-medium leading-[1.15] tracking-[-0.05em] whitespace-pre-line text-cream">
+              {data.heading}
+            </h2>
+          )}
+          {data?.description && (
+            <RichTextComp
+              content={data.description as RichText}
+              className="max-w-2xl prose-p:mb-0 prose-p:text-[15px] prose-p:leading-snug prose-p:tracking-[-0.05em] prose-p:text-body md:prose-p:text-[16px]"
+            />
+          )}
+        </div>
+      )}
 
       {/* Mobile: horizontal snap carousel with pagination dots. */}
       <MobileCarousel slideClassName="w-[280px]">
@@ -184,7 +190,9 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
             className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:220px] opacity-[0.16] mix-blend-overlay"
           />
           <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45" />
-          <span className="relative text-[12px] tracking-[-0.05em] text-cream/75">Selected route</span>
+          <span className="relative font-mono text-[11px] uppercase tracking-[0.14em] text-cream/75">
+            Selected route
+          </span>
           <div className="relative space-y-2">
             <p className="font-display text-[24px] font-medium leading-[1.15] tracking-[-0.05em] text-cream">
               {selected.title}
@@ -199,7 +207,7 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
         <div className="grid grid-cols-1 items-start gap-4 p-4 lg:grid-cols-2 lg:p-8">
           {/* Best for */}
           <div className="space-y-2 lg:space-y-4">
-            <span className="block text-[12px] tracking-[-0.05em] text-body">Best for</span>
+            <span className="block font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">Best for</span>
             <ul className="space-y-1 lg:space-y-2">
               {(selected.bestFor ?? []).map((entry, i) => (
                 <li key={entry.id ?? i} className="flex items-start gap-2 text-[16px] tracking-[-0.05em] text-body">
@@ -212,7 +220,7 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
 
           {/* Reach the owner */}
           <div className="space-y-3 2xl:space-y-4">
-            <span className="block text-[12px] tracking-[-0.05em] text-body">Reach the owner</span>
+            <span className="block font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">Reach the owner</span>
             <div className="space-y-3 rounded-sm bg-card px-2 py-3 2xl:p-3">
               <div className="flex items-center gap-2">
                 <Mail size={14} className="shrink-0 text-cream" aria-hidden />
