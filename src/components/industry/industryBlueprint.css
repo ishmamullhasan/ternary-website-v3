@@ -47,22 +47,22 @@
   opacity: 0.95;
 }
 
-/* Path-drawing motion: on hover each solid stroke sweeps its dash offset from fully-hidden to drawn.
-   The dash length (1600 user units) comfortably exceeds the longest path in the 400-unit viewBox, so
-   `dasharray == dashoffset` starts every stroke off-screen and animates it in. No fill-mode: once the
-   sweep ends the stroke reverts to the solid base rule, and the dotted ground (.gr) is left untouched
-   so it keeps its pattern. */
+/* Path-drawing motion: on hover each solid stroke draws itself in. Every animatable stroke carries
+   pathLength="1" (set in the component), so `dasharray: 1` normalises to that stroke's full length and
+   the offset sweep runs at the SAME relaxed pace on every stroke — long or short — rather than short
+   marks snapping in first. No fill-mode: once the sweep ends the stroke reverts to the solid base
+   rule, and the dotted ground (.gr) is left untouched so it keeps its pattern. */
 .group:hover .ib .ln,
 .group:hover .ib .thin {
-  animation: ibDraw 1s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: ibDraw 1.7s cubic-bezier(0.45, 0, 0.25, 1);
 }
 @keyframes ibDraw {
   from {
-    stroke-dasharray: 1600;
-    stroke-dashoffset: 1600;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
   }
   to {
-    stroke-dasharray: 1600;
+    stroke-dasharray: 1;
     stroke-dashoffset: 0;
   }
 }

@@ -31,8 +31,18 @@ function draw(key: string): string {
     Object.entries(a)
       .map(([k, v]) => `${k}="${typeof v === 'number' ? n(v) : v}"`)
       .join(' ')
-  const E = (tag: string, a: Record<string, string | number>): void => void out.push(`<${tag} ${attr(a)}/>`)
-  const Pst = (d: string, cls?: string): void => void out.push(`<path d="${d}" class="${cls ?? 'ln'}" fill="none"/>`)
+  // A stroke draws itself in on hover; normalise its length to 1 so every stroke, long or short,
+  // completes over the same relaxed duration (see industryBlueprint.css). The dotted ground (.gr)
+  // keeps its own dash pattern and is excluded.
+  const anim = (cls: string): boolean => /(^|\s)(ln|thin)(\s|$)/.test(cls) && !/gr/.test(cls)
+  const E = (tag: string, a: Record<string, string | number>): void => {
+    const cls = typeof a.class === 'string' ? a.class : ''
+    void out.push(`<${tag} ${attr(anim(cls) ? { ...a, pathLength: 1 } : a)}/>`)
+  }
+  const Pst = (d: string, cls?: string): void => {
+    const c = cls ?? 'ln'
+    void out.push(`<path d="${d}" class="${c}" fill="none"${anim(c) ? ' pathLength="1"' : ''}/>`)
+  }
   const Pfl = (d: string): void => void out.push(`<path d="${d}" fill="${BG}" stroke="none"/>`)
   const ln3 = (a: number[], b: number[], cls?: string): void => {
     const p = pr(a)
@@ -203,20 +213,39 @@ function draw(key: string): string {
       }
   }
 
-  // ---- 1. BANKING — coin on stepped vault ----
+  // A rounded rect on the front-left (+y) face of a box, plus a spoke cross on that face.
+  const facequadY = (fx: number, y: number, fz: number, dw: number, dh: number, r: number): string =>
+    rp([[fx - dw, y, fz - dh], [fx + dw, y, fz - dh], [fx + dw, y, fz + dh], [fx - dw, y, fz + dh]], r)
+  const spokeY = (fx: number, y: number, fz: number, s: number): void => {
+    ln3([fx - s, y, fz], [fx + s, y, fz])
+    ln3([fx, y, fz - s], [fx, y, fz + s])
+  }
+
+  // ---- 1. BANKING — vault/safe + coin stack ----
   const banking = (): void => {
-    OX = 200
-    OY = 228
-    K = 2.0
-    ground(0, 0, 52)
-    pbox(0, 0, 0, 46, 46, 6, 7)
-    pbox(0, 0, 6, 38, 38, 6, 7)
-    pbox(0, 0, 12, 31, 31, 6, 7)
-    pbox(0, 0, 18, 42, 42, 7, 8)
-    const zt = 25
-    ellipse3(0, 0, zt, 20)
-    ellipse3(0, 0, zt, 12, 'ln dim')
-    Pst(rp([[-3.5, 0, zt], [0, -3.5, zt], [3.5, 0, zt], [0, 3.5, zt]], 2), 'ln dim')
+    OX = 202
+    OY = 248
+    K = 1.5
+    ground(2, 0, 58)
+    pbox(2, 0, 0, 54, 54, 6, 4)
+    pbox(2, 0, 6, 45, 45, 5, 4)
+    const bx = -10
+    const by = -6
+    const bw = 25
+    const bd = 25
+    const bz = 11
+    const bh = 46
+    cube(bx, by, bz, bw, bd, bh)
+    const yF = by + bd
+    const fz = bz + bh / 2
+    Pst(facequadY(bx, yF, fz, 17, 20, 6), 'ln')
+    Pst(facequadY(bx, yF, fz, 12, 15, 5), 'ln dim')
+    spokeY(bx, yF, fz, 8)
+    Pst(facequadY(bx, yF, fz, 3, 3, 2.5), 'ln')
+    ln3([bx + 13, yF, fz - 5], [bx + 13, yF, fz + 5], 'ln')
+    cyl(34, 18, 6, 10, 5)
+    cyl(34, 18, 11, 10, 5)
+    cyl(34, 18, 16, 10, 5)
   }
 
   // ---- 2. MANUFACTURING — robot arm + cubes ----
@@ -243,27 +272,21 @@ function draw(key: string): string {
     ln3([-6, -8, 70], [0, -2, 66], 'thin')
   }
 
-  // ---- 3. HEALTHCARE — plus of rounded pods ----
+  // ---- 3. HEALTHCARE — bold 3D medical cross ----
   const health = (): void => {
     OX = 200
-    OY = 205
-    K = 1.9
-    ground(0, 4, 54)
-    const AH = 17
-    const r = 9
-    const off = 30
-    drop(0, -off, 0)
-    drop(-off, 0, 0)
-    drop(off, 0, 0)
-    drop(0, off, 0)
-    pbox(0, -off, 0, 17, 17, AH, r)
-    pbox(-off, 0, 0, 17, 17, AH, r)
-    pbox(off, 0, 0, 17, 17, AH, r)
-    pbox(0, 0, 0, 16, 16, AH + 2, r)
-    pbox(0, off, 0, 17, 17, AH, r)
-    const zt = AH + 2
-    Pst(rp([[-6, -6, zt], [6, 6, zt]], 0), 'ln dim')
-    Pst(rp([[6, -6, zt], [-6, 6, zt]], 0), 'ln dim')
+    OY = 224
+    K = 1.8
+    ground(0, 0, 54)
+    pbox(0, 0, 0, 44, 44, 6, 5) // base platform
+    pbox(0, 0, 6, 23, 23, 7, 5) // pedestal
+    const pz = 13
+    const ph = 14
+    const a = 8
+    const L = 31
+    const r = 6
+    pbox(0, 0, pz, a, L, ph, r) // vertical bar
+    pbox(0, 0, pz, L, a, ph, r) // horizontal bar
   }
 
   // ---- 4. SPORTS — stadium bowl + scoreboard ----
