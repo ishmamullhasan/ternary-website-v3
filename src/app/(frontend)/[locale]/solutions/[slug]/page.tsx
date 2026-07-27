@@ -50,7 +50,8 @@ const getRelatedSolutions = unstable_cache(
     })
     return result.docs as Solution[]
   },
-  ['solution_related'],
+  // _v2: the related rail renders sibling excerpts, so the align-copy seed bumps this too.
+  ['solution_related_v2'],
   { tags: ['solution'] },
 )
 
@@ -73,7 +74,7 @@ async function fetchSolutionBySlug(slug: string, locale: TypedLocale): Promise<S
 async function getSolutionBySlug(slug: string, locale: TypedLocale): Promise<Solution | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchSolutionBySlug(slug, locale)
-  return unstable_cache(() => fetchSolutionBySlug(slug, locale), [`solution_${slug}_${locale}_v2`], {
+  return unstable_cache(() => fetchSolutionBySlug(slug, locale), [`solution_${slug}_${locale}_v3`], {
     tags: [`solution_${slug}`, 'solution'],
   })()
 }

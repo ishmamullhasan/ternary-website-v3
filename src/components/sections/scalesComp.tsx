@@ -42,7 +42,11 @@ function ScaleCard({ item, index }: { item: Scale; index: number }): JSX.Element
         {/* text */}
         <div className="absolute inset-x-4 bottom-4 z-10">
           <h3 className="font-medium text-cream">{item.title}</h3>
-          {item.excerpts ? <p className="mt-2 text-sm text-cream">{item.excerpts}</p> : null}
+          {/* lg guard: reserve + clamp 3 lines (text-sm leading-5) so the 3-up row's bottom-anchored
+              text blocks match — excerpts are budgeted to the 164–175ch band (3 lines at lg). */}
+          {item.excerpts ? (
+            <p className="mt-2 text-sm text-cream lg:line-clamp-3 lg:min-h-[4.29em]">{item.excerpts}</p>
+          ) : null}
         </div>
       </div>
     </Link>
