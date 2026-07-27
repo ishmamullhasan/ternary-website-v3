@@ -1,4 +1,5 @@
 import Motion from '@/components/animation/motion'
+import { GradientPanel, toneFor, type Tone } from '@/components/layout/GradientPanel'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
@@ -15,7 +16,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import type { TypedLocale } from 'payload'
 import { getPayload } from 'payload'
-import type { JSX, ReactNode } from 'react'
+import type { JSX } from 'react'
 
 // SSG + ISR: prebuild known slugs (generateStaticParams below) and serve them statically, then
 // Freshness is purely tag-driven (no time-based revalidate) — the solution afterChange/afterDelete
@@ -72,7 +73,7 @@ async function fetchSolutionBySlug(slug: string, locale: TypedLocale): Promise<S
 async function getSolutionBySlug(slug: string, locale: TypedLocale): Promise<Solution | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchSolutionBySlug(slug, locale)
-  return unstable_cache(() => fetchSolutionBySlug(slug, locale), [`solution_${slug}_${locale}`], {
+  return unstable_cache(() => fetchSolutionBySlug(slug, locale), [`solution_${slug}_${locale}_v2`], {
     tags: [`solution_${slug}`, 'solution'],
   })()
 }
@@ -105,6 +106,14 @@ export async function generateMetadata({
   })
 }
 
+// ---------------------------------------------------------------------------------------------
+// Presentation — brought up to the capability-detail / solutions-hub design language: Geist Mono
+// eyebrow + SectionMarker labels, tone-cycled gradient washes with /noise.svg grain, raised
+// bg-ink tiles with hairline borders and hover lifts, and one signature gradient CTA. The doc
+// carries title / excerpts / thumbnail / content only, so every section is guarded on its data
+// and sparse docs degrade to hero + CTA without empty shells.
+// ---------------------------------------------------------------------------------------------
+
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
 
 // Shared reveal — quiet upward fade, fires once. Motion already honors prefers-reduced-motion.
@@ -122,77 +131,48 @@ const revealItem = (index: number) => ({
   transition: { duration: 0.55, ease: EASE, delay: Math.min(index * 0.06, 0.42) },
 })
 
-// The site's signature noise-gradient device. A radial tone field + a local grain overlay
-// (no external image dependency) + a bottom legibility scrim. Used for the hero header card
-// when no media is present, and as the CTA artwork.
-const HERO_TONE = 'radial-gradient(120% 120% at 78% 18%, #1f9d6b 0%, #134a78 46%, #08233c 100%)'
-const CTA_TONE = 'radial-gradient(135% 135% at 22% 18%, #6d3bd6 0%, #3a1c8c 46%, #1a1448 100%)'
+// Focus-visible affordance shared across every interactive element (matches the detail routes).
+const FOCUS_RING =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
-function NoiseGradient({ tone, className }: { tone: string; className?: string }): JSX.Element {
-  return (
-    <span aria-hidden className={cn('absolute inset-0', className)}>
-      <span className="absolute inset-0" style={{ backgroundImage: tone }} />
-      <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
-      <span className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45" />
-    </span>
-  )
+// Key colors of the brand TONE gradients (GradientPanel) as raw RGB triplets, so decorative washes
+// can borrow the palette at very low alpha without minting any new colors. Cycle order mirrors
+// `toneFor`'s positional fallback, keeping accents consistent across sections.
+const TONE_RGB: Record<Tone, string> = {
+  crimson: '193, 40, 95',
+  violet: '124, 58, 237',
+  emerald: '31, 157, 107',
+  azure: '47, 147, 218',
+  magenta: '182, 36, 154',
+  indigo: '79, 107, 237',
 }
 
-// Eyebrow: uniform Inter uppercase micro-typography for section labels.
-function Eyebrow({ index, label }: { index?: number; label?: string | null }): JSX.Element | null {
-  if (!label) return null
+// Canonical order of the four solutions (see project instructions) — drives the hero's
+// "Solution 0N of 04" numbering and a stable per-page gradient tone. Unknown slugs simply
+// render without a number and fall back to the first tone.
+const SLUG_ORDER: Record<string, number> = {
+  'product-development': 0,
+  'enterprise-transformation': 1,
+  'engineering-augmentation': 2,
+  'managed-systems': 3,
+}
+
+// Palantir-style section marker: "Section 02 / Label" in Geist Mono, tabular numerals.
+function SectionMarker({ index, label }: { index: number; label: string }): JSX.Element {
   return (
-    <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">
-      {typeof index === 'number' && (
-        <span className="text-cream/70">{`Section ${String(index).padStart(2, '0')} / `}</span>
-      )}
-      {label}
+    <p className="flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.14em] text-subtle">
+      <span className="tabular-nums text-cream/70">{`Section ${String(index).padStart(2, '0')}`}</span>
+      <span aria-hidden className="text-subtle/50">
+        /
+      </span>
+      <span>{label}</span>
     </p>
   )
 }
 
-function SectionHeader({
-  index,
-  label,
-  heading,
-  description,
-  className,
-}: {
-  index?: number
-  label?: string | null
-  heading?: string | null
-  description?: string | null
-  className?: string
-}): JSX.Element | null {
-  if (!heading && !description && !label) return null
-
-  return (
-    <Motion className={cn('flex flex-col gap-4', className)} {...reveal}>
-      <Eyebrow index={index} label={label} />
-      {heading && (
-        <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream whitespace-pre-line">
-          {heading}
-        </h2>
-      )}
-      {description && <p className="max-w-3xl text-[15px] leading-relaxed text-body">{description}</p>}
-    </Motion>
-  )
-}
-
-// Outlined hairline chip, consistent with the rest of the system's static pills.
-function Pill({ children }: { children: ReactNode }): JSX.Element {
-  return (
-    <span className="inline-flex items-center rounded-md border border-line-strong/80 px-3 py-1 text-[12px] text-body">
-      {children}
-    </span>
-  )
-}
-
-// Reusable section shell: card-toned panel with generous editorial padding, no border.
-const SECTION_SHELL = 'rounded-md bg-card p-6 lg:p-12'
-
 // Single related-solution card — shared by the sm+ grid and the mobile carousel. `h-full` on the
-// Motion root lets the flex/grid parent stretch every card to equal height.
+// Motion root lets the flex/grid parent stretch every card to equal height. The hover transform
+// lives on the inner Link so Motion's reveal transform (inline on the wrapper) never fights it.
 function RelatedSolutionCard({
   solution,
   locale,
@@ -202,17 +182,35 @@ function RelatedSolutionCard({
   locale: TypedLocale
   index: number
 }): JSX.Element {
+  const tone = toneFor(null, index)
   return (
     <Motion {...revealItem(index)} className="h-full">
       <Link
         href={`/${locale}/solutions/${solution.slug}`}
         className={cn(
-          'group flex h-full flex-col gap-2 rounded-md bg-ink p-6 transition-colors duration-300 hover:bg-white/[0.03]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page',
+          'group relative flex h-full flex-col gap-2.5 overflow-hidden rounded-md border border-white/[0.07] bg-ink p-6 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-line-strong motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+          FOCUS_RING,
         )}
       >
-        <div className="flex items-start justify-between gap-4">
-          <h3 className="text-[16px] font-medium text-cream">{solution.title}</h3>
+        {/* faint per-card tonal wash + grain — the signature gradient language at whisper volume */}
+        <span
+          aria-hidden
+          className="absolute inset-0 opacity-60 transition-opacity duration-500 group-hover:opacity-100"
+          style={{
+            backgroundImage: `radial-gradient(120% 100% at 0% 0%, rgba(${TONE_RGB[tone]}, 0.1) 0%, transparent 58%)`,
+          }}
+        />
+        <span
+          aria-hidden
+          className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.06] mix-blend-overlay"
+        />
+        <div className="relative flex items-start justify-between gap-4">
+          <div className="flex items-baseline gap-3">
+            <span className="font-mono text-[12px] tabular-nums text-cream/70">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <h3 className="text-[16px] font-medium tracking-[-0.02em] text-cream">{solution.title}</h3>
+          </div>
           <ArrowUpRight
             size={15}
             strokeWidth={2}
@@ -220,7 +218,9 @@ function RelatedSolutionCard({
             className="shrink-0 text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream"
           />
         </div>
-        {solution.excerpts && <p className="text-[13px] leading-relaxed text-subtle">{solution.excerpts}</p>}
+        {solution.excerpts && (
+          <p className="relative pl-[29px] text-[13px] leading-relaxed text-subtle">{solution.excerpts}</p>
+        )}
       </Link>
     </Motion>
   )
@@ -247,39 +247,52 @@ export default async function Page({
   const allSolutions = await getRelatedSolutions(typedLocale)
   const relatedSolutions = allSolutions.filter((item) => item.id !== solution.id).slice(0, 3)
 
-  // Focus-visible affordance shared across every interactive element.
-  const focusRing =
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
+  // Canonical position → hero numbering + a stable per-page gradient tone.
+  const order = SLUG_ORDER[slug]
+  const orderNumber = order !== undefined ? String(order + 1).padStart(2, '0') : null
+  const heroTone = toneFor(null, order ?? 0)
+
+  // Section numbering skips sections a sparse doc doesn't render, so markers never show gaps.
+  const overviewIndex = hasContent ? 1 : 0
+  const relatedIndex = (hasContent ? 1 : 0) + 1
 
   return (
-    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-16 px-5 pb-16 lg:gap-20 lg:pb-24">
-      {/* Hero */}
-      <Motion tag="section" className="w-full pt-8 lg:pt-14" {...reveal}>
-        <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+    <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-24 px-5 pb-24 md:px-8 lg:gap-32 lg:px-12 lg:pb-32">
+      {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
+      <section className="w-full pt-10 lg:pt-16">
+        <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
           <Motion
-            className="flex flex-col items-start gap-6 text-left"
+            className="flex flex-col items-start gap-7 text-left"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
           >
-            {/* Small ID / discipline row above the headline, mirrors the capability hero. */}
-            <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">
-              {solution.title ? `Solution — ${solution.title}` : 'Solution'}
+            {/* Mono eyebrow with hairline rule — mirrors the solutions hub and hero numbering. */}
+            <p className="flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.16em] text-subtle">
+              <span aria-hidden className="h-px w-6 bg-cream/60" />
+              {orderNumber ? (
+                <>
+                  Solution <span className="tabular-nums text-cream/70">{orderNumber}</span> of{' '}
+                  <span className="tabular-nums">04</span>
+                </>
+              ) : (
+                'Solution'
+              )}
             </p>
 
-            <h1 className="font-display text-[clamp(2rem,4.5vw,2.875rem)] font-medium leading-[1.08] tracking-[-0.03em] text-cream">
+            <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] font-medium leading-[1.02] tracking-[-0.04em] text-cream">
               {solution.title}
             </h1>
 
             {solution.excerpts && (
-              <p className="max-w-xl text-[15px] leading-relaxed text-body lg:text-[16px]">{solution.excerpts}</p>
+              <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.2rem)] leading-relaxed text-body">{solution.excerpts}</p>
             )}
 
             <Link
               href={`/${typedLocale}/solutions`}
               className={cn(
                 'mt-1 inline-flex items-center gap-2 rounded-md border border-line-strong bg-transparent px-5 py-2.5 text-[14px] font-medium text-cream transition-colors duration-300 hover:border-subtle hover:bg-white/[0.04]',
-                focusRing,
+                FOCUS_RING,
               )}
             >
               All solutions
@@ -287,16 +300,16 @@ export default async function Page({
             </Link>
           </Motion>
 
-          {/* Right header card — always present. Falls back to the noise-gradient device when
-              media is missing so the hero never collapses to a single column. */}
+          {/* Right header card — always present. Falls back to the brand gradient panel (with a
+              ghost numeral) when media is missing so the hero never collapses to a single column. */}
           <Motion
             className="relative aspect-[724/458] w-full overflow-hidden rounded-md ring-1 ring-white/[0.06]"
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
           >
-            <NoiseGradient tone={HERO_TONE} />
-            {heroImage?.url && (
+            <GradientPanel tone={heroTone} />
+            {heroImage?.url ? (
               <Image
                 src={heroImage.url}
                 alt={heroImage.alt || solution.title || 'Solution hero'}
@@ -305,36 +318,59 @@ export default async function Page({
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
               />
+            ) : (
+              orderNumber && (
+                <span
+                  aria-hidden
+                  className="absolute bottom-4 left-6 font-mono text-[clamp(4rem,8vw,6rem)] font-medium leading-none tabular-nums tracking-[-0.04em] text-cream/[0.18]"
+                >
+                  {orderNumber}
+                </span>
+              )
             )}
           </Motion>
         </div>
-      </Motion>
+      </section>
 
-      {/* Overview — the solution's rich-text body, rendered via the shared Lexical converter. */}
+      {/* ── SECTION 01 · OVERVIEW (rich-text body via the shared Lexical converter) ──────── */}
       {hasContent && (
-        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
-          <div className="flex flex-col gap-8 lg:flex-row lg:gap-16">
-            <SectionHeader
-              index={1}
-              label="Overview"
-              heading={solution.title ? `Inside ${solution.title}` : 'Overview'}
-              className="shrink-0 lg:w-[28%]"
-            />
+        <section className="relative w-full">
+          {/* faint vertical rule field — the hub hero's quiet engineering texture, used exactly
+              once on this page to break the longest run of black. Decorative, non-interactive. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -inset-y-10 inset-x-0 opacity-50"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
+            }}
+          />
+          <div className="relative grid grid-cols-1 gap-10 lg:grid-cols-[0.8fr_2.2fr] lg:gap-16">
+            <Motion className="flex flex-col gap-5 lg:sticky lg:top-28 lg:self-start" {...reveal}>
+              <SectionMarker index={overviewIndex} label="Overview" />
+              <h2 className="max-w-xs font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream">
+                {solution.title ? `Inside ${solution.title}` : 'Overview'}
+              </h2>
+            </Motion>
 
-            <div className="min-w-0 flex-1">
+            <Motion className="min-w-0" {...reveal}>
               <RichTextComp
                 content={solution.content as RichText}
                 className="prose-invert max-w-none prose-headings:font-display prose-headings:font-medium prose-headings:tracking-[-0.01em] prose-headings:text-cream prose-p:text-body prose-li:text-body prose-a:text-cream"
               />
-            </div>
+            </Motion>
           </div>
-        </Motion>
+        </section>
       )}
 
-      {/* Related solutions */}
+      {/* ── SECTION 02 · RELATED SOLUTIONS ───────────────────────────────────────────────── */}
       {relatedSolutions.length > 0 && (
-        <Motion tag="section" className={SECTION_SHELL} {...reveal}>
-          <SectionHeader index={2} label="Related solutions" heading="Explore more" className="mb-10" />
+        <section className="w-full">
+          <Motion className="mb-10 flex flex-col gap-5 lg:mb-12" {...reveal}>
+            <SectionMarker index={relatedIndex} label="Related solutions" />
+            <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream">
+              Explore more
+            </h2>
+          </Motion>
 
           {/* Mobile: horizontal snap carousel with pagination dots. */}
           <MobileCarousel slideClassName="w-[280px]">
@@ -359,40 +395,56 @@ export default async function Page({
               />
             ))}
           </div>
-        </Motion>
+        </section>
       )}
 
-      {/* CTA — the page's signature noise-gradient moment. */}
-      <Motion tag="section" className="relative overflow-hidden rounded-md p-8 lg:p-12" {...reveal}>
-        <NoiseGradient tone={CTA_TONE} />
+      {/* ── CLOSING CTA (the page's signature noise-gradient moment) ─────────────────────── */}
+      <Motion
+        tag="section"
+        className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
+        {...reveal}
+      >
+        <span aria-hidden className="absolute inset-0">
+          <span
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'radial-gradient(135% 135% at 22% 18%, #6d3bd6 0%, #3a1c8c 46%, #1a1448 100%)',
+            }}
+          />
+          <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
+          <span className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/45" />
+        </span>
 
         <div className="relative z-10 flex flex-col items-center gap-8 text-center lg:flex-row lg:items-center lg:justify-between lg:text-left">
-          <Motion className="flex max-w-xl flex-col items-center gap-3 lg:items-start" {...revealItem(0)}>
-            <Pill>Let&apos;s talk</Pill>
-            <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
+          <div className="flex max-w-2xl flex-col items-center gap-4 lg:items-start">
+            <p className="flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.16em] text-cream/70">
+              <span aria-hidden className="h-px w-6 bg-cream/60" />
+              Let&apos;s talk
+            </p>
+            <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream">
               {solution.title ? `Ready to put ${solution.title} to work?` : 'Ready to get started?'}
             </h2>
-            <p className="mx-auto max-w-lg text-[14px] leading-relaxed text-cream/75 lg:mx-0">
+            <p className="mx-auto max-w-lg text-[15px] leading-relaxed text-cream/75 lg:mx-0">
               Tell us where you are today and we&apos;ll map the fastest path to outcomes that matter.
             </p>
-          </Motion>
+          </div>
 
           <div className="flex w-full shrink-0 flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row lg:ml-auto">
             <Link
               href={`/${typedLocale}/contact`}
               className={cn(
-                'inline-flex w-full items-center justify-center gap-2 rounded-md bg-cream px-5 py-2.5 text-[14px] font-medium text-ink transition-colors duration-300 hover:bg-cream-hover sm:w-auto',
-                focusRing,
+                'inline-flex w-full items-center justify-center gap-2 rounded-md bg-cream px-6 py-3 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-cream-hover sm:w-auto',
+                FOCUS_RING,
               )}
             >
               Start a conversation
-              <ArrowRight size={15} strokeWidth={2} aria-hidden />
+              <ArrowRight size={16} strokeWidth={2} aria-hidden />
             </Link>
             <Link
               href={`/${typedLocale}/solutions`}
               className={cn(
-                'inline-flex w-full items-center justify-center rounded-md border border-white/20 bg-white/[0.06] px-5 py-2.5 text-[14px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12] sm:w-auto',
-                focusRing,
+                'inline-flex w-full items-center justify-center rounded-md border border-white/20 bg-white/[0.06] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12] sm:w-auto',
+                FOCUS_RING,
               )}
             >
               Browse solutions
