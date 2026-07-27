@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import ScaleFigure from '@/components/scales/ScaleFigure'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -144,7 +145,7 @@ export default function ScalesHubPage(): JSX.Element {
   return (
     <div className="w-full pb-24 lg:pb-32">
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-line/60">
+      <section className="relative overflow-hidden">
         {/* faint vertical rule field — quiet engineering texture */}
         <span
           aria-hidden
@@ -166,7 +167,7 @@ export default function ScalesHubPage(): JSX.Element {
           </Motion>
 
           {/* hero index — jump links to the three scales below */}
-          <Motion className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-line/70 pt-7 lg:mt-20" {...reveal}>
+          <Motion className="mt-14 flex flex-wrap gap-x-8 gap-y-3 pt-7 lg:mt-20" {...reveal}>
             {SCALES.map((s) => (
               <Link
                 key={s.n}
@@ -188,14 +189,20 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── THE THREE SCALES (centerpiece) ───────────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12">
-        <div className="border-b border-line">
+        <div className="grid gap-4 lg:gap-5">
           {SCALES.map((s, i) => (
             <Motion key={s.n} {...revealItem(i)}>
               <div
                 id={`s${s.n}`}
-                className="grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 border-t border-line py-16 lg:grid-cols-[7rem_minmax(0,1.1fr)_minmax(0,1fr)] lg:py-24"
+                className="sc-card sc-tile grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 p-7 sm:p-9 lg:grid-cols-[11rem_minmax(0,1.1fr)_minmax(0,1fr)] lg:p-12"
               >
-                <span className="font-display text-[15px] font-mono tabular-nums text-subtle">{s.n}</span>
+                <div className="flex flex-col gap-7">
+                  <span className="font-display text-[15px] font-mono tabular-nums text-subtle">{s.n}</span>
+                  {/* the same figure this scale carries on the home page, so both tell one story */}
+                  <div className="hidden lg:block" aria-hidden="true">
+                    <ScaleFigure title={s.name} index={i} />
+                  </div>
+                </div>
 
                 <div className="flex flex-col">
                   <span className="text-[11px] uppercase tracking-[0.12em] text-subtle">
@@ -213,7 +220,7 @@ export default function ScalesHubPage(): JSX.Element {
                   </p>
                 </div>
 
-                <dl className="flex flex-col gap-6 border-t border-line pt-8 lg:border-t-0 lg:pt-1">
+                <dl className="flex flex-col gap-6 pt-2 lg:pt-1">
                   {s.facts.map((f) => (
                     <div
                       key={f.k}
@@ -235,7 +242,7 @@ export default function ScalesHubPage(): JSX.Element {
       </section>
 
       {/* ── THE POINT ────────────────────────────────────────────────────────────────────── */}
-      <section className="border-b border-line/60">
+      <section>
         <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.15fr)] lg:gap-16 lg:py-32">
           <Motion {...reveal}>
             <p className="max-w-[16ch] font-display text-[clamp(1.75rem,3.6vw,2.75rem)] font-medium leading-[1.18] tracking-[-0.02em] text-cream">
@@ -257,7 +264,7 @@ export default function ScalesHubPage(): JSX.Element {
       </section>
 
       {/* ── WHAT MOVES / WHAT NEVER DOES ─────────────────────────────────────────────────── */}
-      <section className="border-b border-line/60">
+      <section>
         <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
           <Motion className="mb-14 flex flex-col gap-4 lg:mb-20" {...reveal}>
             <Eyebrow>In practice</Eyebrow>
@@ -268,14 +275,14 @@ export default function ScalesHubPage(): JSX.Element {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Motion className="h-full" {...revealItem(0)}>
-              <div className="flex h-full flex-col rounded-md border border-line-strong bg-ink p-8">
+              <div className="sc-tile flex h-full flex-col rounded-xl p-8">
                 <span className="text-[11px] uppercase tracking-[0.12em] text-cream/70">Never moves</span>
                 <p className="mt-2 text-[13px] text-subtle">Constant at every scale.</p>
-                <ul className="mt-6 flex flex-col border-t border-line">
+                <ul className="mt-6 flex flex-col gap-1">
                   {NEVER_MOVES.map((item) => (
                     <li
                       key={item}
-                      className="flex items-baseline gap-3 border-b border-line py-3.5 text-[15px] text-cream"
+                      className="flex items-baseline gap-3 py-2 text-[15px] text-cream"
                     >
                       <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-cream/70" />
                       {item}
@@ -286,14 +293,14 @@ export default function ScalesHubPage(): JSX.Element {
             </Motion>
 
             <Motion className="h-full" {...revealItem(1)}>
-              <div className="flex h-full flex-col rounded-md border border-line bg-ink p-8">
+              <div className="sc-tile flex h-full flex-col rounded-xl p-8">
                 <span className="text-[11px] uppercase tracking-[0.12em] text-subtle">Shaped to you</span>
                 <p className="mt-2 text-[13px] text-subtle">Fitted to your size and stakes.</p>
-                <ul className="mt-6 flex flex-col border-t border-line">
+                <ul className="mt-6 flex flex-col gap-1">
                   {SHAPED_TO_YOU.map((item) => (
                     <li
                       key={item}
-                      className="flex items-baseline gap-3 border-b border-line py-3.5 text-[15px] text-body"
+                      className="flex items-baseline gap-3 py-2 text-[15px] text-body"
                     >
                       <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-subtle" />
                       {item}
@@ -307,7 +314,7 @@ export default function ScalesHubPage(): JSX.Element {
       </section>
 
       {/* ── THE CONSTANT ─────────────────────────────────────────────────────────────────── */}
-      <section className="border-b border-line/60">
+      <section>
         <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-20 lg:py-32">
           <Motion className="flex flex-col gap-6" {...reveal}>
             <Eyebrow>The constant</Eyebrow>
@@ -321,7 +328,7 @@ export default function ScalesHubPage(): JSX.Element {
             </p>
           </Motion>
 
-          <div className="flex flex-col border-b border-line">
+          <div className="grid gap-3">
             {[
               {
                 k: 'a',
@@ -339,7 +346,7 @@ export default function ScalesHubPage(): JSX.Element {
                 body: "We stay accountable past launch — monitoring, maintaining, and modernizing so today's build never becomes tomorrow's legacy.",
               },
             ].map((s, i) => (
-              <Motion key={s.k} className="flex flex-col gap-2 border-t border-line py-7" {...revealItem(i)}>
+              <Motion key={s.k} className="sc-tile flex flex-col gap-2 rounded-xl p-6" {...revealItem(i)}>
                 <h3 className="flex items-baseline gap-3.5 text-[18px] font-medium tracking-[-0.01em] text-cream">
                   <span className="font-display text-[13px] font-mono tabular-nums text-cream/50">{s.k}.</span>
                   {s.title}
@@ -355,7 +362,7 @@ export default function ScalesHubPage(): JSX.Element {
       <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 lg:pt-32">
         <Motion
           tag="div"
-          className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
+          className="sc-tile relative overflow-hidden p-10 lg:p-16"
           {...reveal}
         >
           <span aria-hidden className="absolute inset-0">

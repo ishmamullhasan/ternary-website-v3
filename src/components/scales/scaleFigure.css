@@ -273,3 +273,16 @@
     transition: none !important;
   }
 }
+
+/* ── Scale hub — surfaces instead of rules ────────────────────────────────
+   The hub used to separate every scale, list item and card with a hairline.
+   Each is now its own soft surface, so the structure comes from the tiles and
+   nothing on the page is divided by a line. */
+.sc-tile {
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--color-cream) 3.5%, transparent);
+  transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sc-tile:hover {
+  background: color-mix(in oklab, var(--color-cream) 5.5%, transparent);
+}
