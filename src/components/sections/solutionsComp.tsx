@@ -1,13 +1,12 @@
 'use client'
 
 import Motion from '@/components/animation/motion'
-import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import SolutionsFrame, { artIndexFor } from '@/components/solutions/SolutionsFrame'
 import type { Media, Solution } from '@/payload-types'
-import Image from 'next/image'
-import type { JSX } from 'react'
+import { useEffect, useMemo, useState, type JSX } from 'react'
 
 interface SolutionsCompProps {
   heading?: string | null
@@ -26,9 +25,19 @@ const motionGridItemProps = {
 // Single solution card — shared by the sm+ grid and the mobile carousel. The whole card is the link
 // (was the "Learn More" link). No resting background; hover fills with bg-ink. Title above excerpt.
 // Keyboard focus uses the global :focus-visible cream outline (globals.css) — no ring needed here.
-function SolutionCard({ item }: { item: Solution }): JSX.Element {
+//
+// The card is also what drives the frame above it: pointer and keyboard focus both resolve this
+// solution's lane, so the graphic answers to the same target either way.
+function SolutionCard({ item, onEnter, onLeave }: { item: Solution; onEnter: () => void; onLeave: () => void }): JSX.Element {
   return (
-    <Link href="/solutions" className="flex h-full flex-col rounded-md p-4 transition-colors duration-200 hover:bg-ink">
+    <Link
+      href="/solutions"
+      className="flex h-full flex-col rounded-md p-4 transition-colors duration-200 hover:bg-ink"
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      onFocus={onEnter}
+      onBlur={onLeave}
+    >
       <h3 className="font-display text-2xl font-medium text-cream lg:mt-2 lg:text-lg">{item.title}</h3>
 
       {item.excerpts && <p className="mt-3 text-base leading-[1.15] text-body lg:mt-2 lg:text-sm">{item.excerpts}</p>}
@@ -36,11 +45,29 @@ function SolutionCard({ item }: { item: Solution }): JSX.Element {
   )
 }
 
-export default function SolutionsComp({ heading, description, image, items }: SolutionsCompProps): JSX.Element | null {
-  const solutions = (items as Solution[] | null | undefined) ?? []
-  if (solutions.length === 0) return null
+export default function SolutionsComp({ heading, description, items }: SolutionsCompProps): JSX.Element | null {
+  // Memoised so `lanes` below isn't recomputed on every render by a fresh [] identity.
+  const solutions = useMemo(() => (items as Solution[] | null | undefined) ?? [], [items])
 
-  const hero = image as Media | null | undefined
+  // Which lane resolves: the hovered/focused card wins, otherwise the frame walks the lanes on its
+  // own so the section is never inert. Hooks run before the early return — they must be unconditional.
+  const [active, setActive] = useState<number | null>(null)
+  const [auto, setAuto] = useState(0)
+  const count = solutions.length
+
+  useEffect(() => {
+    if (active !== null || count < 2) return
+    // Don't cycle for people who asked for less motion — they get lane 01, held.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const t = setInterval(() => setAuto((i) => (i + 1) % count), 4000)
+    return () => clearInterval(t)
+  }, [active, count])
+
+  const lanes = useMemo(() => solutions.map((item, i) => artIndexFor(item?.title, i)), [solutions])
+
+  if (count === 0) return null
+
+  const focus = active ?? auto % count
 
   return (
     <section className="section-card flex w-full flex-col">
@@ -56,17 +83,17 @@ export default function SolutionsComp({ heading, description, image, items }: So
         </div>
       </div>
 
-      {/* Hero media: the gradient field IS the fallback; the CMS image layers on top when present. */}
+      {/* One wide field, one movement per solution — replaces the gradient hero. Bound to the cards
+          below: hovering or focusing a card resolves its lane. */}
       <Motion
         tag="div"
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="group relative my-8 aspect-[16/10] w-full overflow-hidden rounded-md border border-white/[0.06] lg:my-10 lg:aspect-[16/7]"
+        className="w-full"
       >
-        <GradientPanel tone={toneFor(undefined, 0)} interactive />
-        {hero?.url && <Image src={hero.url} alt={hero.alt || ''} fill className="relative object-cover" />}
+        <SolutionsFrame focus={focus} lanes={lanes} />
       </Motion>
 
       <div className="w-full">
@@ -74,7 +101,12 @@ export default function SolutionsComp({ heading, description, image, items }: So
         {/* Mobile: horizontal snap carousel with pagination dots. */}
         <MobileCarousel slideClassName="w-[280px]">
           {solutions.map((item, index) => (
-            <SolutionCard key={item.id ?? index} item={item} />
+            <SolutionCard
+              key={item.id ?? index}
+              item={item}
+              onEnter={() => setActive(index)}
+              onLeave={() => setActive(null)}
+            />
           ))}
         </MobileCarousel>
 
@@ -92,7 +124,11 @@ export default function SolutionsComp({ heading, description, image, items }: So
                   delay: index * 0.05,
                 }}
               >
-                <SolutionCard item={item} />
+                <SolutionCard
+                  item={item}
+                  onEnter={() => setActive(index)}
+                  onLeave={() => setActive(null)}
+                />
               </Motion>
             )
           })}

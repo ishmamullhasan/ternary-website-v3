@@ -1,0 +1,426 @@
+/* Solutions frame — one wide field, four movements.
+ *
+ * Three of the four solutions build something; the fourth keeps it running, so it is the only lane
+ * whose gesture never resolves — it catches, clears, and goes back to watching.
+ *
+ * Same language as the capability card figures (capabilityArt.css): cream hairlines on the ink
+ * surface, latent under a pointer-tracked spotlight, no colour. Lanes are bound to the solution
+ * cards below — hovering a card resolves its lane while the others recede.
+ *
+ * RESTING STATE IS THE BASE RULE, NEVER A KEYFRAME. globals.css collapses every animation to 0.01ms
+ * under prefers-reduced-motion, and `animation-fill-mode` is none, so each element reverts to its
+ * base style. Every mark here is visible in its base state; nothing's visibility lives only in a
+ * keyframe, or it would vanish for reduced-motion users.
+ */
+
+.sf-frame {
+  --on: 0;
+  --px: 600px;
+  --py: 210px;
+  --lx: 50%;
+  --ly: 50%;
+  /* Same ink weights as the capability card figures — the two sets read as one language. */
+  --ink: rgba(244, 243, 236, 0.8);
+  --hi: rgba(244, 243, 236, 1);
+  --sd: rgba(244, 243, 236, 1);
+
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--color-ink);
+  border-radius: 6px;
+  border: 1px solid color-mix(in oklab, var(--color-cream) 6%, transparent);
+  transition: border-color 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sf-frame:hover {
+  border-color: color-mix(in oklab, var(--color-cream) 13%, transparent);
+}
+
+/* A faint pool of light under the pointer, on the frame itself rather than the figures. */
+.sf-lume {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--on);
+  transition: opacity 0.6s ease;
+  background: radial-gradient(
+    320px 320px at var(--lx) var(--ly),
+    color-mix(in oklab, var(--color-cream) 4%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+.sf-svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sf-svg .ink,
+.sf-svg .hi {
+  fill: none;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+.sf-svg .ink {
+  stroke: var(--ink);
+}
+.sf-svg .hi {
+  stroke: var(--hi);
+}
+.sf-svg .faint {
+  opacity: 0.45;
+}
+.sf-svg .dash {
+  stroke-dasharray: 4 6;
+}
+.sf-svg .solid {
+  fill: var(--sd);
+  stroke: none;
+}
+.sf-svg .fill-soft {
+  fill: color-mix(in oklab, var(--color-cream) 5%, transparent);
+}
+
+/* THE MASK IS THE BRIGHTNESS KNOB for the whole field — every figure's ink is multiplied by it.
+   Turning up the ink and turning down the mask are the same knob; do not "fix" the stroke colours
+   in isolation or the `solid` fills, which are opaque by definition, will blow out. */
+.sf-base {
+  fill-opacity: 0.4;
+  transition: fill-opacity 0.7s ease;
+}
+.sf-frame:hover .sf-base {
+  fill-opacity: 0.92;
+}
+
+.sf-spot {
+  opacity: var(--on);
+  transform: translate(var(--px), var(--py));
+  transition:
+    opacity 0.5s ease,
+    transform 0.18s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+/* The focused lane resolves; the rest recede. */
+.sf-lane {
+  opacity: 0.34;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.sf-lane.is-focus {
+  opacity: 1;
+}
+
+.sf-marks {
+  position: absolute;
+  inset: auto 0 16px 0;
+  z-index: 2;
+  display: grid;
+  pointer-events: none;
+}
+.sf-mark {
+  justify-self: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: color-mix(in oklab, var(--color-cream) 16%, transparent);
+  transition: color 0.6s ease;
+}
+.sf-mark.is-focus {
+  color: color-mix(in oklab, var(--color-cream) 55%, transparent);
+}
+
+/* ── 01 · a point becomes a product ─────────────────────────────────────── */
+@keyframes sfSeed {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  4% {
+    transform: scale(1.8);
+    opacity: 1;
+  }
+  9%,
+  88% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  97%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes sfReach {
+  0%,
+  4% {
+    stroke-dashoffset: 1;
+  }
+  13%,
+  88% {
+    stroke-dashoffset: 0;
+  }
+  97%,
+  100% {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes sfBuild {
+  0%,
+  12% {
+    stroke-dashoffset: 1;
+  }
+  34%,
+  88% {
+    stroke-dashoffset: 0;
+  }
+  97%,
+  100% {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes sfDetail {
+  0% {
+    opacity: 0;
+  }
+  6%,
+  86% {
+    opacity: 1;
+  }
+  96%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes sfShip {
+  0%,
+  40% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  46% {
+    opacity: 1;
+  }
+  62%,
+  86% {
+    transform: translate(0, -24px);
+    opacity: 1;
+  }
+  96%,
+  100% {
+    transform: translate(0, -24px);
+    opacity: 0;
+  }
+}
+
+/* ── 02 · mass crossing, nothing dropped ────────────────────────────────── */
+@keyframes sfCross {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  46% {
+    offset-distance: 100%;
+    opacity: 1;
+  }
+  56%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+@keyframes sfArrived {
+  0%,
+  44% {
+    opacity: 0;
+  }
+  52%,
+  92% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── 03 · the team, plus one ────────────────────────────────────────────── */
+@keyframes sfJoin {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  36%,
+  100% {
+    offset-distance: 100%;
+    opacity: 1;
+  }
+}
+@keyframes sfSettle {
+  0%,
+  34% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  38% {
+    opacity: 0.75;
+  }
+  58%,
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+@keyframes sfSeat {
+  0%,
+  32% {
+    opacity: 0.9;
+  }
+  44%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes sfBond {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  12%,
+  94% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* ── 04 · it watches. the first pass misses; the second catches. ─────────── */
+@keyframes sfSweep {
+  0% {
+    transform: translateX(-124px);
+  }
+  100% {
+    transform: translateX(124px);
+  }
+}
+@keyframes sfSpike {
+  0%,
+  30% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  34% {
+    opacity: 1;
+  }
+  38%,
+  78% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  88%,
+  100% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+@keyframes sfCatch {
+  0%,
+  74% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  77% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  90%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+@keyframes sfPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.sf-seed {
+  animation: sfSeed 8s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.sf-reach {
+  animation: sfReach 8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.sf-build {
+  animation: sfBuild 8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+.sf-detail {
+  animation: sfDetail 8s ease-out infinite;
+}
+.sf-ship {
+  animation: sfShip 8s cubic-bezier(0.3, 0, 0.2, 1) infinite;
+}
+
+.sf-cross {
+  animation: sfCross 8s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+}
+.sf-arrived {
+  animation: sfArrived 8s ease-out infinite;
+}
+
+.sf-join {
+  animation: sfJoin 8s cubic-bezier(0.4, 0, 0.15, 1) infinite;
+}
+.sf-settle {
+  animation: sfSettle 8s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.sf-seat {
+  animation: sfSeat 8s ease-out infinite;
+}
+.sf-bond {
+  animation: sfBond 8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.sf-sweep {
+  animation: sfSweep 4s linear infinite;
+}
+.sf-spike {
+  animation: sfSpike 8s cubic-bezier(0.3, 0, 0.2, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: bottom;
+}
+.sf-catch {
+  animation: sfCatch 8s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.sf-pulse {
+  animation: sfPulse 2.4s ease-in-out infinite;
+}
+
+/* globals.css already collapses every animation to 0.01ms / 1 iteration under reduce. This also
+   freezes the pointer spotlight — a transition, not an animation, which would otherwise still
+   chase the cursor. */
+@media (prefers-reduced-motion: reduce) {
+  .sf-svg,
+  .sf-svg *,
+  .sf-lume {
+    animation: none !important;
+    transition: none !important;
+  }
+}
