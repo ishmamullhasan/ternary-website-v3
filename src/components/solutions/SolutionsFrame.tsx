@@ -6,14 +6,22 @@ import './solutionsFrame.css'
 /**
  * SolutionsFrame — one wide field, four movements.
  *
- * Replaces the gradient hero above the solution cards. Each lane is a gesture that answers to its
- * solution: a point becomes a product; mass crosses without dropping anything; a team gains one;
- * and the last one never resolves — it catches, clears, and goes back to watching, because Managed
- * Services is the only engagement that doesn't finish.
+ * Replaces the gradient hero above the solution cards. Each lane is an isometric
+ * scene that answers its solution: a product built layer by layer; an outgrown
+ * estate consolidated into one assembly; specialists converging on a team; and a
+ * system kept in orbit — the only lane whose gesture never resolves, because
+ * Managed Systems is the only engagement that doesn't finish.
  *
- * Lanes are bound to the cards below: hover or focus a card and its lane resolves while the others
- * recede (`focus`, owned by the parent so the cards stay the single source of truth). Purely
- * decorative — the cards carry every word — so the whole frame is aria-hidden.
+ * Drawn on a 2:1 dimetric projector (the same construction system as the industry
+ * blueprints): forms are described in world coordinates (x right, y depth, z up)
+ * and projected, so the geometry is true rather than faked with skews. Markup is
+ * built as a plain string per lane — no DOM APIs — and every edge stays a real
+ * <path>, so the whole set is vector at any size.
+ *
+ * Lanes are bound to the cards below: hover or focus a card and its lane resolves
+ * while the others recede (`focus`, owned by the parent so the cards stay the
+ * single source of truth). Purely decorative — the cards carry every word — so
+ * the whole frame is aria-hidden.
  */
 
 const MID = 210
@@ -21,216 +29,295 @@ const VIEW_W = 1200
 const VIEW_H = 420
 const BG = '#0F0E0E'
 
+type P3 = [number, number, number]
+type P2 = [number, number]
+
+/** A projector bound to one scene's scale (K) and vertical offset (OY). */
+function iso(K: number, OY: number) {
+  const out: string[] = []
+  const n = (v: number): string => v.toFixed(2)
+  const pr = (p: P3): P2 => [(p[0] - p[1]) * K, MID + OY + ((p[0] + p[1]) * K) / 2 - p[2] * K]
+  const S = (s: P2): string => `${n(s[0])},${n(s[1])}`
+  const push = (s: string): void => void out.push(s)
+
+  /** Rounded closed polygon through already-projected points. */
+  const rpoly = (pts: P2[], r: number): string => {
+    const m = pts.length
+    let d = ''
+    for (let i = 0; i < m; i++) {
+      const a = pts[(i - 1 + m) % m]
+      const p = pts[i]
+      const b = pts[(i + 1) % m]
+      const va = [a[0] - p[0], a[1] - p[1]]
+      const vb = [b[0] - p[0], b[1] - p[1]]
+      const la = Math.hypot(va[0], va[1]) || 1
+      const lb = Math.hypot(vb[0], vb[1]) || 1
+      const rr = Math.min(r, la / 2, lb / 2)
+      const pa: P2 = [p[0] + (va[0] / la) * rr, p[1] + (va[1] / la) * rr]
+      const pb: P2 = [p[0] + (vb[0] / lb) * rr, p[1] + (vb[1] / lb) * rr]
+      d += (i === 0 ? `M${S(pa)} ` : `L${S(pa)} `) + `Q${S(p)} ${S(pb)} `
+    }
+    return d + 'Z'
+  }
+  /** Rounded open polyline through already-projected points. */
+  const ropen = (pts: P2[], r: number): string => {
+    const m = pts.length
+    let d = `M${S(pts[0])} `
+    for (let i = 1; i < m - 1; i++) {
+      const a = pts[i - 1]
+      const p = pts[i]
+      const b = pts[i + 1]
+      const va = [a[0] - p[0], a[1] - p[1]]
+      const vb = [b[0] - p[0], b[1] - p[1]]
+      const la = Math.hypot(va[0], va[1]) || 1
+      const lb = Math.hypot(vb[0], vb[1]) || 1
+      const rr = Math.min(r, la / 2, lb / 2)
+      const pa: P2 = [p[0] + (va[0] / la) * rr, p[1] + (va[1] / la) * rr]
+      const pb: P2 = [p[0] + (vb[0] / lb) * rr, p[1] + (vb[1] / lb) * rr]
+      d += `L${S(pa)} Q${S(p)} ${S(pb)} `
+    }
+    return d + `L${S(pts[m - 1])} `
+  }
+
+  const api = {
+    pr,
+    S,
+    n,
+    /** Open a wrapper group (e.g. to carry an animation class). */
+    open: (cls?: string, style?: string): void =>
+      push(`<g${cls ? ` class="${cls}"` : ''}${style ? ` style="${style}"` : ''}>`),
+    close: (): void => push('</g>'),
+    raw: push,
+    /** Rounded isometric box: footprint centre (cx,cy), from z0 up by h. */
+    box: (cx: number, cy: number, z0: number, hx: number, hy: number, h: number, r: number, cls = 'ink'): void => {
+      const zt = z0 + h
+      const T = pr([cx - hx, cy - hy, zt])
+      const R = pr([cx + hx, cy - hy, zt])
+      const F = pr([cx + hx, cy + hy, zt])
+      const L = pr([cx - hx, cy + hy, zt])
+      const Rb = pr([cx + hx, cy - hy, z0])
+      const Fb = pr([cx + hx, cy + hy, z0])
+      const Lb = pr([cx - hx, cy + hy, z0])
+      push(`<path d="${rpoly([T, R, F, L, Lb, Fb, Rb], r)}" fill="${BG}" stroke="none"/>`)
+      push(`<path d="${rpoly([T, R, F, L], r)}" class="${cls}"/>`)
+      push(`<path d="${ropen([R, Rb, Fb, Lb, L], r)}" class="${cls}"/>`)
+      push(`<path d="${ropen([F, Fb], Math.min(r, (h * K) / 2))}" class="${cls}"/>`)
+    },
+    /** Flat top-face outline — a ghost footprint, or a thin plate's face. */
+    face: (cx: number, cy: number, z: number, hx: number, hy: number, r: number, cls: string): void => {
+      push(
+        `<path d="${rpoly(
+          [pr([cx - hx, cy - hy, z]), pr([cx + hx, cy - hy, z]), pr([cx + hx, cy + hy, z]), pr([cx - hx, cy + hy, z])],
+          r,
+        )}" class="${cls}"/>`,
+      )
+    },
+    line: (a: P3, b: P3, cls: string): void => {
+      const p = pr(a)
+      const q = pr(b)
+      push(`<line x1="${n(p[0])}" y1="${n(p[1])}" x2="${n(q[0])}" y2="${n(q[1])}" class="${cls}"/>`)
+    },
+    /** Arrowhead at b, pointing along a→b (built in screen space so it stays crisp). */
+    arrow: (a: P3, b: P3, cls: string): void => {
+      const p = pr(a)
+      const q = pr(b)
+      const dx = q[0] - p[0]
+      const dy = q[1] - p[1]
+      const L = Math.hypot(dx, dy) || 1
+      const ux = dx / L
+      const uy = dy / L
+      const s = 5
+      const l: P2 = [q[0] - ux * s - uy * s * 0.55, q[1] - uy * s + ux * s * 0.55]
+      const r: P2 = [q[0] - ux * s + uy * s * 0.55, q[1] - uy * s - ux * s * 0.55]
+      push(`<path d="M${S(l)} L${S(q)} L${S(r)}" class="${cls}"/>`)
+    },
+    done: (): string => out.join(''),
+  }
+  return api
+}
+
 /* ── 01 · Product Development ────────────────────────────────────────────
-   "conception to scale": a seed reaches out, a product surface draws itself,
-   ships, and then becomes many. */
-function Product(): JSX.Element {
-  return (
-    <g>
-      <circle cx="-116" cy={MID} r="3.2" className="solid sf-seed" />
-      <path d={`M-112,${MID} h34`} className="hi sf-reach" pathLength="1" strokeDasharray="1" />
-      <rect
-        x="-74"
-        y={MID - 56}
-        width="140"
-        height="112"
-        rx="5"
-        className="hi sf-build"
-        pathLength="1"
-        strokeDasharray="1"
-      />
-      <path d={`M-74,${MID - 28} h140`} className="ink sf-detail" style={{ animationDelay: '2.3s' }} />
-      <circle cx="-60" cy={MID - 42} r="2.6" className="solid sf-detail" style={{ animationDelay: '2.5s' }} />
-      <path d={`M-56,${MID + 2} h72`} className="ink faint sf-detail" style={{ animationDelay: '2.7s' }} />
-      <path d={`M-56,${MID + 24} h44`} className="ink faint sf-detail" style={{ animationDelay: '2.9s' }} />
-      {/* launch */}
-      <g className="sf-ship">
-        <circle cx="66" cy={MID - 56} r="3.6" className="solid" />
-      </g>
-      {/* scale — the one product becomes many */}
-      <g className="sf-scale">
-        {[MID - 42, MID - 6, MID + 30].map((y, i) => (
-          <g key={i}>
-            <path d={`M66,${MID} C82,${MID} 84,${y + 12} 92,${y + 12}`} className="ink faint" />
-            <rect x="92" y={y} width="34" height="24" rx="3" className="hi" />
-          </g>
-        ))}
-      </g>
-    </g>
-  )
+   "conception to scale": a spark on the build plate, and the product assembles
+   above it layer by layer until the surface itself exists. */
+function product(): string {
+  const g = iso(1.4, 30)
+  const X = 46
+  g.open('grid')
+  for (let i = -X; i <= X; i += 11.5) {
+    g.raw(`<path d="M${g.S(g.pr([i, -X, 0]))} L${g.S(g.pr([i, X, 0]))}"/>`)
+    g.raw(`<path d="M${g.S(g.pr([-X, i, 0]))} L${g.S(g.pr([X, i, 0]))}"/>`)
+  }
+  g.close()
+  g.box(0, 0, 0, 38, 38, 9, 7)
+  g.open('sf-glow')
+  g.face(0, 0, 9, 7, 7, 3, 'solid')
+  g.close()
+
+  const layers: [number, number][] = [
+    [30, 32],
+    [46, 32],
+    [62, 32],
+    [82, 38],
+  ]
+  layers.forEach(([z, hx], i) => {
+    g.open('sf-lift', `animation-delay:${(i * 0.28).toFixed(2)}s`)
+    const below = i === 0 ? 9 : layers[i - 1][0] + 2.5
+    for (const [x, y] of [
+      [-hx, -hx],
+      [hx, -hx],
+      [hx, hx],
+      [-hx, hx],
+    ]) {
+      g.line([x, y, below], [x, y, z], 'ink faint dash')
+    }
+    g.box(0, 0, z, hx, hx, 2.5, 6)
+    if (i === layers.length - 1) {
+      g.face(-6, -6, z + 2.5, 20, 13, 3, 'hi')
+      g.face(16, 14, z + 2.5, 11, 11, 3, 'ink faint')
+      for (const k of [0, 1]) g.line([-20, 16 + k * 8, z + 2.5], [2, 16 + k * 8, z + 2.5], 'ink faint')
+    }
+    g.close()
+  })
+  return g.done()
 }
 
 /* ── 02 · Enterprise Transformation ──────────────────────────────────────
-   The outgrown stack migrates block by block into modular services — while the
-   line underneath, the business that runs on them, never once stops moving. */
-function Transform(): JSX.Element {
-  const W = 62
-  const H = 24
-  const src = [0, 1, 2, 3].map((i) => ({ x: -120, y: MID - 88 + i * 36 }))
-  const dst = [
-    { x: 12, y: MID - 92 },
-    { x: 52, y: MID - 50 },
-    { x: 8, y: MID - 8 },
-    { x: 48, y: MID + 34 },
+   The outgrown estate — mismatched blocks, each still sitting on its footprint —
+   crosses over and is rebuilt as a single tidy assembly. */
+function transform(): string {
+  const g = iso(1.3, 6)
+  g.raw('<g transform="translate(-72,0)">')
+  const parts: [number, number, number, number, number][] = [
+    [-6, -28, 13, 9, 11],
+    [26, -6, 9, 9, 7],
+    [-26, 4, 12, 12, 9],
+    [6, 20, 11, 8, 8],
+    [30, 26, 7, 7, 6],
   ]
-  const flowY = MID + 86
-  return (
-    <g>
-      <rect x="-124" y={MID - 92} width="70" height="148" rx="3" className="ink dash" />
-      {src.map((s, i) => (
-        <rect key={`s${i}`} x={s.x} y={s.y} width={W} height={H} rx="2" className="ink fill-soft" />
-      ))}
-      <path d={`M-6,${MID - 104} v190`} className="ink faint" strokeDasharray="2 6" />
-      {dst.map((t, i) => (
-        <rect
-          key={`t${i}`}
-          x={t.x}
-          y={t.y}
-          width={W}
-          height={H}
-          rx="2"
-          className="hi sf-arrived"
-          style={{ animationDelay: `${(i * 0.5).toFixed(2)}s` }}
-        />
-      ))}
-      {src.map((s, i) => {
-        const t = dst[i]
-        const d = `M${s.x},${s.y} C${s.x + 96},${s.y} ${t.x - 82},${t.y} ${t.x},${t.y}`
-        return (
-          <g
-            key={`m${i}`}
-            className="sf-cross"
-            style={{ offsetPath: `path("${d}")`, animationDelay: `${(i * 0.5).toFixed(2)}s` }}
-          >
-            <rect x="0" y="0" width={W} height={H} rx="2" className="solid" />
-          </g>
-        )
-      })}
-      {/* "without stopping the business that runs on them" — its own clock, never paused */}
-      <path d={`M-124,${flowY} h248`} className="ink" />
-      {Array.from({ length: 13 }, (_, i) => (
-        <path key={`k${i}`} d={`M${-120 + i * 20},${flowY + 5} v5`} className="ink faint" />
-      ))}
-      <g className="sf-flow">
-        <circle cx="0" cy={flowY} r="3.2" className="solid" />
-      </g>
-    </g>
-  )
+  for (const [x, y, hx, hy, h] of parts) {
+    g.face(x, y, 0, hx + 3, hy + 3, 3, 'ink faint dash')
+    g.box(x, y, 0, hx, hy, h, 3)
+  }
+  g.close()
+
+  g.raw('<g transform="translate(2,0)">')
+  const a = g.pr([-14, -14, 14])
+  const b = g.pr([14, 14, 14])
+  const seg = `M${g.S(a)} L${g.S(b)}`
+  g.raw(`<path d="${seg}" class="ink faint dash"/>`)
+  g.arrow([-14, -14, 14], [14, 14, 14], 'ink')
+  g.open('sf-flowdot', `offset-path:path('${seg}')`)
+  g.raw('<circle r="2.4" class="solid"/>')
+  g.close()
+  g.close()
+
+  g.raw('<g transform="translate(78,0)">')
+  g.box(0, 0, 0, 32, 32, 6, 4)
+  ;[
+    [-15, -15],
+    [15, -15],
+    [-15, 15],
+    [15, 15],
+  ].forEach(([x, y], i) => {
+    g.open('sf-assemble', `animation-delay:${(i * 0.16).toFixed(2)}s`)
+    g.box(x, y, 6, 14, 14, 11, 4, 'hi')
+    g.close()
+  })
+  g.close()
+  return g.done()
 }
 
 /* ── 03 · Engineering Augmentation ───────────────────────────────────────
-   Your team is the outlined mesh; the specialists arriving from outside are the
-   solid ones. They take a seat and bond into three existing people each. */
-function Augmentation(): JSX.Element {
-  const team: [number, number][] = [
-    [-92, MID - 46],
-    [-30, MID - 74],
-    [-104, MID + 30],
-    [-40, MID + 58],
-    [26, MID + 30],
+   Your team is the assembly at the centre; the specialists stand on their own
+   footprints and are drawn inward until they are part of it. */
+function augmentation(): string {
+  const g = iso(1.2, 0)
+  g.box(0, 0, 0, 34, 34, 6, 5)
+  for (const [x, y] of [
+    [-16, -16],
+    [16, -16],
+    [-16, 16],
+    [16, 16],
+  ]) {
+    g.box(x, y, 6, 15, 15, 10, 5)
+  }
+  const out: [number, number][] = [
+    [0, -72],
+    [-72, 0],
+    [72, 0],
+    [0, 72],
+    [-58, -58],
+    [58, 58],
   ]
-  const seats: [number, number][] = [
-    [46, MID - 44],
-    [76, MID + 10],
-  ]
-  const arrivals = [
-    `M128,${MID - 146} C128,${MID - 100} 62,${MID - 88} 46,${MID - 44}`,
-    `M138,${MID + 116} C138,${MID + 74} 94,${MID + 44} 76,${MID + 10}`,
-  ]
-  const bonds: [number, number][][] = [
-    [team[1], team[4], team[0]],
-    [team[4], team[3], team[1]],
-  ]
-  return (
-    <g>
-      {[
-        [0, 1],
-        [0, 2],
-        [1, 4],
-        [2, 3],
-        [3, 4],
-        [1, 3],
-      ].map(([a, b], i) => (
-        <path key={`e${i}`} d={`M${team[a][0]},${team[a][1]}L${team[b][0]},${team[b][1]}`} className="ink faint" />
-      ))}
-      {team.map(([x, y], i) => (
-        <circle key={`n${i}`} cx={x} cy={y} r="4.5" className="ink" fill={BG} />
-      ))}
-      {seats.map(([x, y], i) => (
-        <g key={`s${i}`}>
-          <circle
-            cx={x}
-            cy={y}
-            r="8"
-            className="ink dash sf-seat"
-            style={{ animationDelay: `${(i * 0.4).toFixed(2)}s` }}
-          />
-          {bonds[i].map((t, j) => (
-            <path
-              key={j}
-              d={`M${x},${y}L${t[0]},${t[1]}`}
-              pathLength="1"
-              strokeDasharray="1"
-              className="hi sf-bond"
-              style={{ animationDelay: `${(3.2 + i * 0.5 + j * 0.16).toFixed(2)}s` }}
-            />
-          ))}
-          <g
-            className="sf-join"
-            style={{ offsetPath: `path("${arrivals[i]}")`, animationDelay: `${(i * 0.4).toFixed(2)}s` }}
-          >
-            <circle r="5.5" className="solid" />
-          </g>
-          <circle
-            cx={x}
-            cy={y}
-            r="14"
-            className="hi sf-settle"
-            style={{ animationDelay: `${(i * 0.4).toFixed(2)}s` }}
-          />
-        </g>
-      ))}
-    </g>
-  )
+  out.forEach(([x, y], i) => {
+    const delay = `animation-delay:${(i * 0.18).toFixed(2)}s`
+    g.face(x, y, 0, 15, 15, 4, 'ink faint dash')
+    g.box(x, y, 0, 12, 12, 9, 4)
+    const from: P3 = [x * 0.62, y * 0.62, 5]
+    const to: P3 = [x * 0.34, y * 0.34, 5]
+    const p = g.pr(from)
+    const q = g.pr(to)
+    g.raw(`<path d="M${g.S(p)} L${g.S(q)}" class="hi sf-draw" pathLength="1" stroke-dasharray="1" style="${delay}"/>`)
+    g.arrow(from, to, 'hi sf-draw')
+    const trail = `M${g.S(g.pr([x, y, 9]))} L${g.S(g.pr([x * 0.3, y * 0.3, 9]))}`
+    g.open('sf-inbound', `offset-path:path('${trail}');${delay}`)
+    g.raw('<circle r="2.6" class="solid"/>')
+    g.close()
+  })
+  return g.done()
 }
 
 /* ── 04 · Managed Systems ────────────────────────────────────────────────
-   It never resolves — it watches. Uptime bars run steady; one dips, the sweep
-   reaches it and catches it, and it is restored. The dashed trend keeps
-   climbing: what we built keeps earning its place.
+   It never resolves — it orbits. Probes at the cardinals report back, and three
+   lights keep going round on their own clock, long after everything else has
+   settled. */
+function managed(): string {
+  const g = iso(1.2, 0)
+  const R = 66
+  const c = g.pr([0, 0, 4])
+  const ex = R * 1.2 * Math.SQRT2
+  const ey = ex / 2
+  const ring =
+    `M${g.n(c[0] - ex)},${g.n(c[1])} A${g.n(ex)},${g.n(ey)} 0 1 0 ${g.n(c[0] + ex)},${g.n(c[1])}` +
+    ` A${g.n(ex)},${g.n(ey)} 0 1 0 ${g.n(c[0] - ex)},${g.n(c[1])}`
+  g.raw(`<path d="${ring}" class="ink faint"/>`)
 
-   The sweep crosses in 4s and the anomaly sits at x = -10, dead centre of the
-   248-wide baseline, so the sweep is over it at 2s — 25% of the 8s cycle, which
-   is exactly when sfCatch fires. */
-function Managed(): JSX.Element {
-  const base = MID + 54
-  const bars = [54, 62, 58, 66, 60, 72, 56, 62, 58, 64, 60, 66]
-  return (
-    <g>
-      <path d={`M-124,${base} h248`} className="ink" />
-      {Array.from({ length: 12 }, (_, i) => (
-        <path key={`t${i}`} d={`M${-110 + i * 20},${base + 5} v5`} className="ink faint" />
-      ))}
-      {bars.map((v, i) => (
-        <path key={`b${i}`} d={`M${-110 + i * 20},${base} v${-v}`} className={i === 5 ? 'hi sf-dip' : 'ink faint'} />
-      ))}
-      <path d={`M-110,${base - 50} L110,${base - 70}`} className="ink faint" strokeDasharray="3 5" />
-      <circle cx="-10" cy={base - 72} r="12" className="hi sf-catch" />
-      <g className="sf-sweep">
-        <path d={`M0,${base - 96} v112`} className="hi" />
-        <circle cx="0" cy={base - 96} r="2.6" className="solid" />
-      </g>
-      <circle cx="-124" cy={base} r="3.2" className="solid sf-pulse" />
-    </g>
-  )
+  g.box(0, 0, 0, 34, 34, 6, 5)
+  for (const [x, y] of [
+    [-16, -16],
+    [16, -16],
+    [-16, 16],
+    [16, 16],
+  ]) {
+    g.box(x, y, 6, 15, 15, 10, 5)
+  }
+  for (const [x, y] of [
+    [0, -R],
+    [-R, 0],
+    [R, 0],
+    [0, R],
+  ]) {
+    g.box(x, y, 0, 8, 8, 6, 3)
+    const from: P3 = [x * 0.82, y * 0.82, 4]
+    const to: P3 = [x * 0.42, y * 0.42, 4]
+    g.line(from, to, 'ink faint')
+    g.arrow(from, to, 'ink faint')
+  }
+  for (const i of [0, 1, 2]) {
+    g.open('sf-orbit', `offset-path:path('${ring}');animation-delay:${(-i * 3).toFixed(2)}s`)
+    g.raw('<circle r="2.8" class="solid"/>')
+    g.close()
+  }
+  return g.done()
 }
 
-const ART = [Product, Transform, Augmentation, Managed] as const
+const ART = [product, transform, augmentation, managed] as const
 
 /**
- * Pick the gesture that matches the authored solution title, so re-ordering or re-wording in the
- * CMS keeps each lane on the right idea. Order matters: "Engineering Augmentation" must match
- * augmentation before the broader product/engineering test claims it.
+ * Pick the scene that matches the authored solution title, so re-ordering or
+ * re-wording in the CMS keeps each lane on the right idea. Order matters:
+ * "Engineering Augmentation" must match augmentation before the broader
+ * product/engineering test claims it.
  */
 export function artIndexFor(title: string | null | undefined, index: number): number {
   const t = (title ?? '').toLowerCase()
@@ -290,7 +377,6 @@ export default function SolutionsFrame({
 
   const n = Math.max(lanes.length, 1)
   const step = VIEW_W / n
-  // Lane centres, and the dividers that sit between them.
   const laneX = lanes.map((_, i) => step * (i + 0.5))
   const dividers = Array.from({ length: n - 1 }, (_, i) => step * (i + 1))
 
@@ -320,18 +406,14 @@ export default function SolutionsFrame({
           {dividers.map((x) => (
             <path key={x} d={`M${x},58 v304`} className="ink faint" />
           ))}
-          {lanes.map((art, i) => {
-            const Art = ART[art] ?? ART[0]
-            return (
-              <g
-                key={i}
-                transform={`translate(${laneX[i]},0)`}
-                className={`sf-lane${focus === i ? ' is-focus' : ''}`}
-              >
-                <Art />
-              </g>
-            )
-          })}
+          {lanes.map((art, i) => (
+            <g
+              key={i}
+              transform={`translate(${laneX[i]},0)`}
+              className={`sf-lane${focus === i ? ' is-focus' : ''}`}
+              dangerouslySetInnerHTML={{ __html: (ART[art] ?? ART[0])() }}
+            />
+          ))}
         </g>
       </svg>
 
