@@ -33,3 +33,20 @@ CMS later.
 - **Old:** 4 refs but one was a deleted/dangling doc → only 3 cards rendered (centered in a 4-col grid).
 - **New:** set 4 valid industries (Financial Services & Insurance, Health Care, Technology Platforms,
   Consumer Goods & Services); resolves the Software-vs-Technology Platforms dup. **Prod follow-up.**
+
+### Story titles — tightened for 2-line cards (staging)
+`stories[10].title` — compressed each title to ≤51 chars (pure compression, no new claims) so home
+hero card titles complete within the 2-line clamp. e.g. "Counterfoil: From a Booking Monolith to an
+Event-Driven Platform" → "Counterfoil: A Booking Monolith Goes Event-Driven". Via
+`scripts/seed-story-titles.js`. **Prod follow-up.**
+
+### Home solutions section — all 4 solutions (staging)
+`pages.home.layout[solutionsSection].items` — had 3 refs, one dangling; now the 4 canonical
+solutions in order (Product Development · Enterprise Transformation · Engineering Augmentation ·
+Managed Systems). **Prod follow-up.**
+
+### Home section headings — hub voice (staging)
+- capabilitiesSection: "Capabilities" → "What we practice"
+- industriesSection: "Domain expertise across every industry" → "We build where the stakes are specific"
+- scalesSection: "The scales we serve." → "From founding teams to national institutions"
+**Prod follow-up.**
