@@ -11,17 +11,13 @@ import '@/components/hub/hub.css'
 import './industriesHub.css'
 import SectorIndex from './SectorIndex'
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   if (!asTypedLocale(locale)) return {}
   return {
     title: 'Industries',
     description:
-      'We build where the stakes are specific. Nine sectors where the rules, the risk, and the vocabulary are specific — with named work behind them.',
+      'We build where the stakes are specific — sectors where the rules, the risk, and the vocabulary are specific, with named work behind them.',
   }
 }
 
@@ -89,7 +85,7 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
         <div className="wrap">
           <Reveal className="sec-head">
             <div>
-              <span className="eyebrow">The sectors · nine</span>
+              <span className="eyebrow">The sectors</span>
               <Heading level={2}>Where we build</Heading>
             </div>
             <p className="sec-sub">

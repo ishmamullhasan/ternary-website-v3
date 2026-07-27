@@ -17,9 +17,9 @@ import type { JSX, ReactNode } from 'react'
  */
 
 export const metadata: Metadata = {
-  title: 'Capabilities — Eight disciplines. One standard.',
+  title: 'Capabilities — Every discipline. One standard.',
   description:
-    'The eight technical practices behind everything Ternary builds and runs — each with a named lead, house standards, and work in production.',
+    'The technical practices behind everything Ternary builds and runs — each with a named lead, house standards, and work in production.',
 }
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -182,7 +182,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
           <Motion className="flex flex-col gap-7" {...reveal}>
             <Eyebrow>Capability index · 00–21 · base 3</Eyebrow>
             <h1 className="max-w-[15ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
-              Eight disciplines. One standard.
+              Every discipline. One standard.
             </h1>
             <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">
               The technical practices behind everything we build and run. Each has a named lead, house standards, and
@@ -222,8 +222,8 @@ export default function CapabilitiesHubPage(): JSX.Element {
           </Motion>
           <Motion className="self-end" {...reveal}>
             <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
-              Each of the eight below has people who own it, methods we can defend, and clients who can vouch for it. We
-              only list what we currently run for clients — nothing aspirational, nothing outsourced to a slide.
+              Each one below has people who own it, methods we can defend, and clients who can vouch for it. We only
+              list what we currently run for clients — nothing aspirational, nothing outsourced to a slide.
             </p>
           </Motion>
         </div>
@@ -300,8 +300,8 @@ export default function CapabilitiesHubPage(): JSX.Element {
               </h2>
             </div>
             <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
-              Most engagements draw on three or four capabilities at once. A modernization is never just cloud. A
-              product is never just interface.
+              Most engagements draw on several capabilities at once. A modernization is never just cloud. A product is
+              never just interface.
             </p>
           </Motion>
 
@@ -352,7 +352,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
           <Motion className="flex flex-col gap-4" {...reveal}>
             <Eyebrow>The bar</Eyebrow>
             <h2 className="max-w-[12ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
-              One standard across all eight
+              One standard across them all
             </h2>
           </Motion>
 
