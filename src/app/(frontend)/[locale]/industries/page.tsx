@@ -1,5 +1,4 @@
 import Heading from '@/components/a11y/Heading'
-import HeroNodeField from '@/components/hub/HeroNodeField'
 import Reveal from '@/components/hub/Reveal'
 import Link from '@/components/LocalizedLink'
 import { asTypedLocale } from '@/lib/i18n/locales'
@@ -67,7 +66,6 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
     <div className="hub">
       {/* HERO */}
       <section className="hero">
-        <HeroNodeField className="hero-net" />
         <div className="wrap">
           <Reveal className="eyebrow">Industries</Reveal>
           <Reveal i={1}>
