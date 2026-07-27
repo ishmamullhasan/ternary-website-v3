@@ -70,3 +70,28 @@ All 8 capabilities: heroSection.description, whatThisMeansToUs (heading/descript
 plain-language excerpts), howWeDoIt ("How we work", 3 steps). Grounded in the company deck
 (audit/deck/DECK_COPY.md) + approved hub copy; story arc per page; NO metrics, NO client names.
 Via `scripts/seed-copy-v3.js`. **Prod follow-up.**
+
+### Audit copy fixes (staging) — marks, definitions, placeholders, de-counting
+Via `scripts/seed-audit-fixes.js` (idempotent). **Prod follow-up: replicate all.**
+- `models[frame|flow|orchestra].title.en` → **℠ → ™** ("Frame℠" → "Frame™", etc.; bn already ™).
+- `models.orchestra.excerpts.en + content.en` → **REWRITTEN to canonical on-demand-senior-talent
+  definition** (deck p18 + approved /solutions wording). The old multi-pod/multi-program copy
+  belonged to no engagement model. Stale bn excerpt/content **unset** (fallback serves en).
+- `pages.home.layout[processSection].description` — "four foundations" → "the foundations that help
+  us deliver" (en + bn de-counted; the list has five items).
+- `pages.contact.layout` — placeholder `ctaBlock` ("CTA" / "vfgdvdfvdfvdsfbsdfbbfbdfb" / "123"
+  buttons) **removed**; placeholder office phone "+1 (800) 123-4567" cleared (guarded row hides).
+- `industries.technology-platforms.excerpts.en` → "Product companies making the jump from one
+  system to a real platform." (home industry card had no description).
+- `globals.footer.industries` → **software-platforms ref pulled** (dup of Technology Platforms).
+- `solutions.enterprise-transformation.excerpts.en` → "Replace what you have outgrown. We modernize
+  the systems your business depends on — without stopping the business to do it." (was the
+  "Modernize legacy systems and processes." stub; stale bn unset).
+- `pages.stories.layout[storiesArchive].description` — "Eight engagements, every one delivered to
+  production." → "Every engagement here shipped to production." (en + bn de-counted).
+- NOTE `team` "Romjan Ali" has **no position** in the DB — deliberately not invented; the
+  component now guards/hides an empty role line (code).
+Code-side (same pass): /solutions ℠→™ + proof slot hides when empty; home "N+ Orchestrators"
+counter removed; empty team-role guard; industries index "Advanced Manufacturing & Energy" →
+"Advanced Manufacturing"; `engagements@ternary.com` → `info@ternary.solutions` (ContactForm block +
+form error copy); careers Team-voices lines de-quoted (plain role descriptions, not testimonials).

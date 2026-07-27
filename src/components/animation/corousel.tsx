@@ -162,9 +162,11 @@ export default function Corousel({ items, variant = 'team', navVariant = 'arrows
                   )}
 
                   <div className="absolute bottom-0 left-0 p-8 w-full z-10 flex flex-col justify-end h-full">
-                    <p className="text-white text-[17px] font-medium leading-snug mb-8">
-                      &ldquo;{teamItem.excerpt}&rdquo;
-                    </p>
+                    {/* Plain role description — not quotation-marked: these lines are authored
+                        descriptions, not collected personal testimonials. Hidden when empty. */}
+                    {teamItem.excerpt && (
+                      <p className="text-white text-[17px] font-medium leading-snug mb-8">{teamItem.excerpt}</p>
+                    )}
                     <div>
                       <div className="text-white text-sm font-medium">{teamItem.name}</div>
                       <div className="text-zinc-400 text-sm mt-0.5">{teamItem.position}</div>

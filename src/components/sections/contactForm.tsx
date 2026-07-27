@@ -190,11 +190,11 @@ export default function ContactForm({ formId, submitLabel, confirmationFallback 
         setMessage(confirmationFallback || 'Thank you — an orchestrator will read this and reply personally.')
       } else {
         setStatus('error')
-        setMessage(data.message || 'Something went wrong. Please try again or email engagements@ternary.com.')
+        setMessage(data.message || 'Something went wrong. Please try again or email info@ternary.solutions.')
       }
     } catch {
       setStatus('error')
-      setMessage('Something went wrong. Please try again or email engagements@ternary.com.')
+      setMessage('Something went wrong. Please try again or email info@ternary.solutions.')
     }
   }
 
