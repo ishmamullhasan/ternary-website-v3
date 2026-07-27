@@ -224,7 +224,7 @@ export default function Footer({ footerData }: FooterProps) {
   const partners = (footerData?.partners ?? []).filter((p) => getLogoUrl(p?.logo) || p?.name?.trim())
 
   return (
-    <footer className="mx-auto w-full max-w-7xl px-5 py-16">
+    <footer className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-16">
       {/* Top text row — logo block + the five link columns, space-between on desktop */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6 lg:gap-6">
         {/* Logo block (gap24) — combination mark + wordmark, then the two-line tagline */}
@@ -310,44 +310,6 @@ export default function Footer({ footerData }: FooterProps) {
           items={footerData?.resources?.menu ?? null}
           prefix="resources"
         />
-      </div>
-
-      {/* Design previews — quick links to the redesigned hub pages. The four named buttons now point
-          at the REAL redesigned routes (LocalizedLink, so they get locale-prefixed client nav); the
-          "All previews" button still opens the raw static mockup gallery under /public/hub, so it
-          stays a plain <a>. */}
-      <div className="mt-12 flex flex-col gap-4">
-        <span className="text-[13px] font-medium uppercase leading-[1.15] tracking-[0.12em] text-cream/60">
-          Design previews
-        </span>
-        <div className="flex flex-wrap gap-3">
-          {[
-            { label: 'Capabilities', href: '/capabilities' },
-            { label: 'Solutions', href: '/solutions' },
-            { label: 'Industries', href: '/industries' },
-            { label: 'Scales', href: '/scales' },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-2 text-[14px] font-medium leading-none tracking-[-0.03em] text-cream transition-colors duration-150 hover:border-cream/60 hover:bg-cream/5 focus-visible:border-cream/60 focus-visible:bg-cream/5"
-            >
-              {item.label}
-              <span aria-hidden className="text-cream/50">
-                &#8594;
-              </span>
-            </Link>
-          ))}
-          <a
-            href="/hub/index.html"
-            className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-2 text-[14px] font-medium leading-none tracking-[-0.03em] text-cream transition-colors duration-150 hover:border-cream/60 hover:bg-cream/5 focus-visible:border-cream/60 focus-visible:bg-cream/5"
-          >
-            All previews
-            <span aria-hidden className="text-cream/50">
-              &#8599;
-            </span>
-          </a>
-        </div>
       </div>
 
       {/* Hairline divider (Figma Line 4) between the link columns and the bottom bar. */}

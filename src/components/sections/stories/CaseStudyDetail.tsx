@@ -68,7 +68,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   return (
     <article className="w-full pb-16 lg:pb-24">
       {/* Breadcrumb */}
-      <div className="mx-auto w-full max-w-7xl px-5 pt-6">
+      <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 pt-6">
         <Link
           href={backHref}
           className="inline-flex items-center gap-2 rounded-md text-[13px] tracking-[-0.01em] text-subtle transition-colors hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
@@ -79,7 +79,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
       </div>
 
       {/* Hero */}
-      <header className="mx-auto w-full max-w-7xl px-5 pt-10 lg:pt-14">
+      <header className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 pt-10 lg:pt-14">
         <Motion tag="div" {...reveal} transition={{ duration: 0.7, ease: EASE }} className="max-w-4xl">
           <h1 className="font-display text-[clamp(2rem,5vw,2.75rem)] font-medium leading-[1.08] tracking-[-0.04em] text-cream">
             {story.title}
@@ -122,7 +122,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         tag="div"
         {...reveal}
         transition={{ duration: 0.7, ease: EASE, delay: 0.12 }}
-        className="mx-auto mt-10 w-full max-w-7xl px-5 lg:mt-14"
+        className="mx-auto mt-10 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-14"
       >
         <div className="relative h-[260px] w-full overflow-hidden rounded-md ring-1 ring-white/5 lg:h-[440px]">
           <GradientPanel tone={heroTone} />
@@ -130,7 +130,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
       </Motion>
 
       {hasBody ? (
-        <div className="mx-auto mt-16 w-full max-w-7xl px-5 lg:mt-24">
+        <div className="mx-auto mt-16 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-24">
           <Motion tag="div" {...reveal} className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-16">
             <div className="lg:sticky lg:top-28 lg:self-start">
               <p className="text-[12px] uppercase tracking-[0.14em] text-subtle">The story</p>
@@ -144,7 +144,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
           </Motion>
         </div>
       ) : (
-        <div className="mx-auto w-full max-w-7xl px-5 py-16 lg:py-24">
+        <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-16 lg:py-24">
           <Motion tag="div" {...reveal} className="rounded-md border border-white/5 bg-ink/40 px-6 py-16 text-center">
             <p className="text-base tracking-[-0.01em] text-cream">The full write-up is on its way.</p>
             <p className="mx-auto mt-2 max-w-md text-sm tracking-[-0.01em] text-subtle">
@@ -156,7 +156,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
 
       {/* Related case studies */}
       {related.length > 0 && (
-        <section className="mx-auto mt-16 w-full max-w-7xl px-5 lg:mt-24">
+        <section className="mx-auto mt-16 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-24">
           <div className="mb-8 flex items-end justify-between gap-4">
             <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium tracking-[-0.04em] text-cream">
               Related case studies.
@@ -185,7 +185,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
       )}
 
       {/* CTA banner */}
-      <section className="mx-auto mt-16 w-full max-w-7xl px-5 lg:mt-24">
+      <section className="mx-auto mt-16 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-24">
         <div className="relative overflow-hidden rounded-md ring-1 ring-white/10">
           <GradientPanel tone="violet" />
           <div className="relative flex flex-col items-center gap-6 p-8 text-center lg:flex-row lg:items-center lg:justify-between lg:p-12 lg:text-left">

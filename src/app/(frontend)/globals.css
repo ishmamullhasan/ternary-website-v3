@@ -111,6 +111,12 @@ html[data-a11y-links='underline'] footer a {
   .font-body {
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   }
+  /* Mono/label family (Geist Mono via next/font). Overrides Tailwind's built-in `font-mono` so every
+     existing usage and the labels/numbering across the redesign share one real mono face instead of
+     the system monospace fallback. */
+  .font-mono {
+    font-family: var(--font-geist-mono), ui-monospace, 'SFMono-Regular', monospace;
+  }
 
   /* Navbar geometry/material tokens. Centralized so the glass pill and its layout can be
      tuned in one place (blur strength, saturation boost, bar height, inner gutter). */

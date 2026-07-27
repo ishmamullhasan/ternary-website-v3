@@ -153,7 +153,7 @@ export default function ScalesHubPage(): JSX.Element {
             backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
           }}
         />
-        <div className="relative mx-auto w-full max-w-[1480px] px-5 pt-24 pb-16 lg:pt-32 lg:pb-24">
+        <div className="relative mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 pb-16 lg:pt-32 lg:pb-24">
           <Motion className="flex flex-col gap-7" {...reveal}>
             <Eyebrow>Scales · 00–10 · base 3</Eyebrow>
             <h1 className="max-w-[18ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
@@ -187,7 +187,7 @@ export default function ScalesHubPage(): JSX.Element {
       </section>
 
       {/* ── THE THREE SCALES (centerpiece) ───────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12">
         <div className="border-b border-line">
           {SCALES.map((s, i) => (
             <Motion key={s.n} {...revealItem(i)}>
@@ -236,7 +236,7 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── THE POINT ────────────────────────────────────────────────────────────────────── */}
       <section className="border-b border-line/60">
-        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 py-24 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.15fr)] lg:gap-16 lg:py-32">
+        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.15fr)] lg:gap-16 lg:py-32">
           <Motion {...reveal}>
             <p className="max-w-[16ch] font-display text-[clamp(1.75rem,3.6vw,2.75rem)] font-medium leading-[1.18] tracking-[-0.02em] text-cream">
               A startup and a stock exchange get <span className="text-body">the same engineers.</span>
@@ -258,7 +258,7 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── WHAT MOVES / WHAT NEVER DOES ─────────────────────────────────────────────────── */}
       <section className="border-b border-line/60">
-        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
           <Motion className="mb-14 flex flex-col gap-4 lg:mb-20" {...reveal}>
             <Eyebrow>In practice</Eyebrow>
             <h2 className="max-w-[24ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
@@ -308,7 +308,7 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── THE CONSTANT ─────────────────────────────────────────────────────────────────── */}
       <section className="border-b border-line/60">
-        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-20 lg:py-32">
+        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-20 lg:py-32">
           <Motion className="flex flex-col gap-6" {...reveal}>
             <Eyebrow>The constant</Eyebrow>
             <h2 className="max-w-[16ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
@@ -352,7 +352,7 @@ export default function ScalesHubPage(): JSX.Element {
       </section>
 
       {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 pt-24 lg:pt-32">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 lg:pt-32">
         <Motion
           tag="div"
           className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"

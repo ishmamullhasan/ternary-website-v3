@@ -214,7 +214,7 @@ export default function SolutionsHubPage(): JSX.Element {
             backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
           }}
         />
-        <div className="relative mx-auto w-full max-w-[1480px] px-5 pt-24 pb-16 lg:pt-32 lg:pb-24">
+        <div className="relative mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 pb-16 lg:pt-32 lg:pb-24">
           <Motion className="flex flex-col gap-7" {...reveal}>
             <Eyebrow>Solutions · Four ways in</Eyebrow>
             <h1 className="max-w-[15ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
@@ -248,7 +248,7 @@ export default function SolutionsHubPage(): JSX.Element {
       </section>
 
       {/* ── FOUR AT A GLANCE ─────────────────────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
         <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
           <div className="flex flex-col gap-4">
             <Eyebrow>At a glance</Eyebrow>
@@ -295,7 +295,7 @@ export default function SolutionsHubPage(): JSX.Element {
       {/* ── THE FOUR SOLUTIONS ───────────────────────────────────────────────────────────── */}
       {SOLUTIONS.map((s) => (
         <section key={s.id} id={s.id} className="scroll-mt-28 border-t border-line/60">
-          <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-20 lg:py-32">
+          <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-20 lg:py-32">
             <Motion className="flex flex-col gap-5 lg:sticky lg:top-28 lg:self-start" {...reveal}>
               <span className="text-[12px] uppercase tracking-[0.1em] text-subtle">
                 Solution {s.n} of 04 · <span className="text-cream">{s.name}</span>
@@ -357,7 +357,7 @@ export default function SolutionsHubPage(): JSX.Element {
 
       {/* ── ENGAGEMENT MODELS ────────────────────────────────────────────────────────────── */}
       <section className="border-t border-line/60">
-        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
           <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
             <div className="flex flex-col gap-4">
               <Eyebrow>Engagement models</Eyebrow>
@@ -396,7 +396,7 @@ export default function SolutionsHubPage(): JSX.Element {
 
       {/* ── COMPARE (the showpiece) ──────────────────────────────────────────────────────── */}
       <section className="border-t border-line/60">
-        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
           <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
             <div className="flex flex-col gap-4">
               <Eyebrow>Compare</Eyebrow>
@@ -456,7 +456,7 @@ export default function SolutionsHubPage(): JSX.Element {
       </section>
 
       {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12">
         <Motion
           tag="div"
           className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
@@ -508,7 +508,7 @@ export default function SolutionsHubPage(): JSX.Element {
       </section>
 
       {/* ── CAREERS STRIP ────────────────────────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 pt-16 text-center lg:pt-20">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-16 text-center lg:pt-20">
         <Motion tag="p" className="text-[13.5px] leading-relaxed text-body" {...reveal}>
           Engineers: we&apos;re usually hiring.{' '}
           <Link

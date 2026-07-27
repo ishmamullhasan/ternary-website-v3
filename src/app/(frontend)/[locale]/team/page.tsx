@@ -72,7 +72,7 @@ export default async function TeamPage({ params }: { params: Promise<{ locale: s
   })).filter((s) => s.members.length > 0)
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-5 pt-12 pb-24 text-cream lg:pt-16">
+    <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 pt-12 pb-24 text-cream lg:pt-16">
       <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-16">
         {/* Left third — sticky under the floating nav, so the intro stays put while the roster scrolls. */}
         <Motion

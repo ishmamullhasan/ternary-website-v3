@@ -15,7 +15,7 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getServerSideURL } from '@/utilities/getURL'
 import { hasEditorSession } from '@/utilities/liveContent'
 import type { Metadata } from 'next'
-import { Inter, Poppins } from 'next/font/google'
+import { Geist_Mono, Inter, Poppins } from 'next/font/google'
 import { cookies, draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
 import '../globals.css'
@@ -44,6 +44,14 @@ const poppins = Poppins({
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+})
+
+// Geist Mono = labels, numbering, tags, stats (the "mono/label" intent). Exposed as --font-geist-mono
+// and wired to the `font-mono` utility in globals.css so the whole site shares one mono family.
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
   display: 'swap',
 })
 
@@ -116,7 +124,7 @@ export default async function RootLayout({
     // scroll-padding-top keeps in-page anchor targets clear of the fixed floating pill.
     <html lang={typedLocale} style={{ scrollPaddingTop: 'calc(var(--nav-h) + var(--nav-gap) + 12px)' }}>
       <body
-        className={`${poppins.variable} ${inter.variable} antialiased py-0 bg-page text-cream w-full overflow-x-hidden`}
+        className={`${poppins.variable} ${inter.variable} ${geistMono.variable} antialiased py-0 bg-page text-cream w-full overflow-x-hidden`}
       >
         {/* Must be the first focusable element in the document (WCAG 2.4.1). */}
         <SkipLink locale={typedLocale as Locale} />

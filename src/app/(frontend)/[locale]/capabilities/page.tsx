@@ -178,7 +178,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
             backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
           }}
         />
-        <div className="relative mx-auto w-full max-w-[1480px] px-5 pt-24 pb-16 lg:pt-32 lg:pb-24">
+        <div className="relative mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 pb-16 lg:pt-32 lg:pb-24">
           <Motion className="flex flex-col gap-7" {...reveal}>
             <Eyebrow>Capability index · 00–21 · base 3</Eyebrow>
             <h1 className="max-w-[15ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
@@ -191,10 +191,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
           </Motion>
 
           {/* hero index — jump links to the rows below */}
-          <Motion
-            className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-line/70 pt-7 lg:mt-20"
-            {...reveal}
-          >
+          <Motion className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-line/70 pt-7 lg:mt-20" {...reveal}>
             {CAPABILITIES.map((c) => (
               <Link
                 key={c.n}
@@ -216,7 +213,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
 
       {/* ── FRAMING ──────────────────────────────────────────────────────────────────────── */}
       <section className="border-b border-line/60">
-        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-16 lg:py-32">
+        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-16 lg:py-32">
           <Motion {...reveal}>
             <p className="max-w-[30ch] font-display text-[clamp(1.5rem,2.6vw,2rem)] font-medium leading-[1.28] tracking-[-0.02em] text-cream">
               A capability, to us, is not a keyword on a services page.{' '}
@@ -233,7 +230,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
       </section>
 
       {/* ── THE INDEX (centerpiece) ──────────────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
         <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
           <div className="flex flex-col gap-4">
             <Eyebrow>The index</Eyebrow>
@@ -294,7 +291,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
 
       {/* ── COMBINATIONS ─────────────────────────────────────────────────────────────────── */}
       <section className="border-t border-line/60">
-        <div className="mx-auto w-full max-w-[1480px] px-5 py-24 lg:py-32">
+        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
           <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
             <div className="flex flex-col gap-4">
               <Eyebrow>In practice</Eyebrow>
@@ -351,7 +348,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
 
       {/* ── THE STANDARD ─────────────────────────────────────────────────────────────────── */}
       <section className="border-t border-line/60">
-        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-20 lg:py-32">
+        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-20 lg:py-32">
           <Motion className="flex flex-col gap-4" {...reveal}>
             <Eyebrow>The bar</Eyebrow>
             <h2 className="max-w-[12ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
@@ -361,11 +358,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
 
           <div className="flex flex-col border-b border-line">
             {STANDARD.map((s, i) => (
-              <Motion
-                key={s.k}
-                className="flex flex-col gap-2 border-t border-line py-7"
-                {...revealItem(i)}
-              >
+              <Motion key={s.k} className="flex flex-col gap-2 border-t border-line py-7" {...revealItem(i)}>
                 <h4 className="flex items-baseline gap-3.5 text-[18px] font-medium tracking-[-0.01em] text-cream">
                   <span className="font-display text-[13px] tabular-nums text-cream/50">{s.k}.</span>
                   {s.title}
@@ -378,7 +371,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
       </section>
 
       {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5">
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12">
         <Motion
           tag="div"
           className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
@@ -387,7 +380,9 @@ export default function CapabilitiesHubPage(): JSX.Element {
           <span aria-hidden className="absolute inset-0">
             <span
               className="absolute inset-0"
-              style={{ backgroundImage: 'radial-gradient(130% 130% at 20% 15%, #2a2452 0%, #16132f 48%, #0b0a17 100%)' }}
+              style={{
+                backgroundImage: 'radial-gradient(130% 130% at 20% 15%, #2a2452 0%, #16132f 48%, #0b0a17 100%)',
+              }}
             />
             <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
             <span className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/40" />
@@ -399,8 +394,8 @@ export default function CapabilitiesHubPage(): JSX.Element {
               Not sure which capability you need?
             </h2>
             <p className="max-w-[52ch] text-[17px] leading-relaxed text-body">
-              Most people aren&apos;t — that&apos;s our job. Describe the problem in your own words, and we&apos;ll bring
-              the right practices to the first call.
+              Most people aren&apos;t — that&apos;s our job. Describe the problem in your own words, and we&apos;ll
+              bring the right practices to the first call.
             </p>
             <div className="mt-2 flex flex-col gap-3 sm:flex-row">
               <Link

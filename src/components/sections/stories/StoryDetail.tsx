@@ -206,7 +206,7 @@ export default function StoryDetail({ story, backHref, related = [] }: StoryDeta
   return (
     <article className="w-full">
       {/* Breadcrumb */}
-      <div className="mx-auto w-full max-w-7xl px-5 pt-6">
+      <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 pt-6">
         <Link
           href={backHref}
           className="inline-flex items-center gap-2 rounded-md text-[14px] text-subtle transition-colors hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
@@ -217,7 +217,7 @@ export default function StoryDetail({ story, backHref, related = [] }: StoryDeta
       </div>
 
       {/* Hero */}
-      <header className="mx-auto w-full max-w-7xl px-5 pt-10 lg:pt-14">
+      <header className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 pt-10 lg:pt-14">
         <Motion tag="div" {...reveal} transition={{ duration: 0.7, ease: EASE }} className="max-w-4xl">
           <h1 className="text-display text-cream">{story.title}</h1>
           {story.excerpts && <p className="mt-5 max-w-2xl text-base leading-[1.55] text-body">{story.excerpts}</p>}
@@ -264,7 +264,7 @@ export default function StoryDetail({ story, backHref, related = [] }: StoryDeta
         tag="div"
         {...reveal}
         transition={{ duration: 0.7, ease: EASE, delay: 0.12 }}
-        className="mx-auto mt-10 w-full max-w-7xl px-5 lg:mt-14"
+        className="mx-auto mt-10 w-full max-w-7xl px-5 md:px-8 lg:px-12 lg:mt-14"
       >
         <div className="relative h-[260px] w-full overflow-hidden rounded-lg ring-1 ring-white/5 lg:h-[440px]">
           <GradientPanel tone={heroTone} />
@@ -273,7 +273,7 @@ export default function StoryDetail({ story, backHref, related = [] }: StoryDeta
 
       {/* Body */}
       {hasBodySections ? (
-        <div className="mx-auto w-full max-w-7xl px-5 py-16 lg:py-24">
+        <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-16 lg:py-24">
           {/* Numbered multi-section layout (Figma 1556:7370). */}
           <div className="border-b border-line">
             {bodySections.map((section, index) => (
@@ -303,7 +303,7 @@ export default function StoryDetail({ story, backHref, related = [] }: StoryDeta
           )}
         </div>
       ) : (
-        <div className="mx-auto w-full max-w-7xl px-5 py-16 lg:py-24">
+        <div className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-16 lg:py-24">
           {hasBody ? (
             <Motion
               tag="div"
@@ -339,7 +339,7 @@ export default function StoryDetail({ story, backHref, related = [] }: StoryDeta
 
       {/* Related stories */}
       {related.length > 0 && (
-        <section className="mx-auto w-full max-w-7xl px-5 pb-16 lg:pb-24">
+        <section className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 pb-16 lg:pb-24">
           <div className="mb-8 flex items-end justify-between gap-4">
             <h2 className="font-display text-2xl font-medium tracking-[-0.03em] text-cream">Related stories.</h2>
             <Link
