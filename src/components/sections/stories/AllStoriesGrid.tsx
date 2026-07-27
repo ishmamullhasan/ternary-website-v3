@@ -5,9 +5,9 @@ import RichTextComp, { type RichText } from '@/components/richtext'
 import {
   CATEGORY_LABELS,
   detailHref,
-  GradientTileCard,
   InsightImageCard,
   InsightWideCard,
+  StoryFeatureCard,
   TextCard,
   type ContentType,
   type NormalizedItem,
@@ -194,23 +194,14 @@ export default function AllStoriesGrid({
 
       {filtered.length > 0 ? (
         <div className="space-y-4">
-          {/* Case studies — up to two rows of gradient tiles. */}
+          {/* Case studies — large editorial media-forward cards, one idea per band
+              (fantasy.co study): media leads, mono numbered eyebrow, one confident line. */}
           {storyItems.length > 0 && (
-            <>
-              {/* Mobile: horizontal snap carousel with pagination dots. */}
-              <MobileCarousel slideClassName="w-[280px]">
-                {storyItems.map((item, index) => (
-                  <GradientTileCard key={item.id} item={item} index={index} />
-                ))}
-              </MobileCarousel>
-
-              {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
-              <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
-                {storyItems.map((item, index) => (
-                  <GradientTileCard key={item.id} item={item} index={index} />
-                ))}
-              </div>
-            </>
+            <div className="grid grid-cols-1 gap-x-8 gap-y-14 pb-8 md:grid-cols-2 lg:gap-y-16">
+              {storyItems.map((item, index) => (
+                <StoryFeatureCard key={item.id} item={item} index={index} />
+              ))}
+            </div>
           )}
 
           {/* Press releases — a row of clean text cards. */}

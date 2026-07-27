@@ -377,6 +377,16 @@ export interface Story {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Product visuals for the detail page. Images now; video uploads render as <video>.
+   */
+  gallery?:
+    | {
+        media?: (string | null) | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   caseMeta?: {
     industry?: string | null;
     engagement?: string | null;
@@ -5508,6 +5518,13 @@ export interface StorySelect<T extends boolean = true> {
     | T
     | {
         name?: T;
+        id?: T;
+      };
+  gallery?:
+    | T
+    | {
+        media?: T;
+        caption?: T;
         id?: T;
       };
   caseMeta?:
