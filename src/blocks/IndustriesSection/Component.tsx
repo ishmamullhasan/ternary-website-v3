@@ -121,18 +121,9 @@ export function IndustriesSectionComponent({
         </Motion>
       )}
 
-      <div
-        className={
-          fullWidth
-            ? 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4'
-            : 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5'
-        }
-      >
-        {/* Default: empty left gutter (desktop) so the 8 cards sit in columns 2–5 — matching the
-            Capabilities section. Full-width mode drops the gutter for the flush 4-column benefit grid
-            on the industry-detail page (Figma 1283-2668). */}
-        {!fullWidth && <div aria-hidden className="hidden lg:block" />}
-
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Home: eight cards fill a flush 4-column grid (two clean rows of four) — no leading gutter
+            or trailing empty cell. Full-width detail grid also uses four columns. */}
         {!fullWidth &&
           items.map((item, index) => (
             <Motion
