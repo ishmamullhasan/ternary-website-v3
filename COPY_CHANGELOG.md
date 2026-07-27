@@ -50,3 +50,11 @@ Managed Systems). **Prod follow-up.**
 - industriesSection: "Domain expertise across every industry" → "We build where the stakes are specific"
 - scalesSection: "The scales we serve." → "From founding teams to national institutions"
 **Prod follow-up.**
+
+### Round-2 fixes (staging) — titles / industries / de-invented capability copy
+- `stories[10].title` → shortened again to ≤37 chars (2-line clamp never truncates).
+- `pages.home.layout[industriesSection].industries` → 8 industries (two 4-up rows; excludes the
+  software-platforms dup and Consumer Goods & Services).
+- `capabilities[8].whatThisMeansToUs` → **REWRITTEN to verbatim approved hub copy** (the exact
+  /capabilities body sentences + tags). Removes previously authored prose flagged as invented.
+Via `scripts/seed-fixes-round2.js`. **Prod follow-up.**

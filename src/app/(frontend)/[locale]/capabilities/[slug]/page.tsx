@@ -55,7 +55,7 @@ async function fetchCapabilityBySlug(slug: string, locale: TypedLocale): Promise
 async function getCapabilityBySlug(slug: string, locale: TypedLocale): Promise<Capability | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchCapabilityBySlug(slug, locale)
-  return unstable_cache(() => fetchCapabilityBySlug(slug, locale), [`capability_${slug}_${locale}`], {
+  return unstable_cache(() => fetchCapabilityBySlug(slug, locale), [`capability_${slug}_${locale}_v2`], {
     // `team`: the practice-lead section embeds a team doc (depth 2), so editing that team member
     // must bust this page too.
     tags: [`capability_${slug}`, 'capability', 'team'],
