@@ -157,7 +157,7 @@ const STANDARD = [
 // Eyebrow — hairline + uppercase micro-label, cream-accented rule instead of the amber original.
 function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <span className="flex items-center gap-3 text-[12px] uppercase tracking-[0.16em] text-subtle">
+    <span className="flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.16em] text-subtle">
       <span aria-hidden className="h-px w-6 bg-cream/60" />
       {children}
     </span>
@@ -201,7 +201,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
                   FOCUS_RING,
                 )}
               >
-                <span className="tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
+                <span className="font-mono tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
                   {c.n}
                 </span>
                 {c.name}
@@ -255,7 +255,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
                   FOCUS_RING,
                 )}
               >
-                <span className="pt-1 font-display text-[15px] tabular-nums text-subtle transition-colors duration-300 group-hover:text-cream">
+                <span className="pt-1 font-display text-[15px] font-mono tabular-nums text-subtle transition-colors duration-300 group-hover:text-cream">
                   {c.n}
                 </span>
 
@@ -324,7 +324,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
                   <div className="mt-7 flex flex-col gap-2.5 border-t border-line pt-5">
                     {combo.caps.map(([n, name]) => (
                       <span key={n} className="flex items-baseline gap-3 text-[13px] text-body">
-                        <span className="tabular-nums text-cream/50">{n}</span>
+                        <span className="font-mono tabular-nums text-cream/50">{n}</span>
                         {name}
                       </span>
                     ))}
@@ -360,7 +360,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
             {STANDARD.map((s, i) => (
               <Motion key={s.k} className="flex flex-col gap-2 border-t border-line py-7" {...revealItem(i)}>
                 <h4 className="flex items-baseline gap-3.5 text-[18px] font-medium tracking-[-0.01em] text-cream">
-                  <span className="font-display text-[13px] tabular-nums text-cream/50">{s.k}.</span>
+                  <span className="font-display text-[13px] font-mono tabular-nums text-cream/50">{s.k}.</span>
                   {s.title}
                 </h4>
                 <p className="max-w-[48ch] pl-[26px] text-[15px] leading-relaxed text-body">{s.body}</p>

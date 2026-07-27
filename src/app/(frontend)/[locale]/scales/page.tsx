@@ -132,7 +132,7 @@ const SHAPED_TO_YOU = [
 // Eyebrow — hairline rule + uppercase micro-label, in the reference's design language.
 function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <span className="flex items-center gap-3 text-[12px] uppercase tracking-[0.16em] text-subtle">
+    <span className="flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.16em] text-subtle">
       <span aria-hidden className="h-px w-6 bg-cream/60" />
       {children}
     </span>
@@ -176,7 +176,7 @@ export default function ScalesHubPage(): JSX.Element {
                   FOCUS_RING,
                 )}
               >
-                <span className="tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
+                <span className="font-mono tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
                   {s.n}
                 </span>
                 {s.name}
@@ -195,7 +195,7 @@ export default function ScalesHubPage(): JSX.Element {
                 id={`s${s.n}`}
                 className="grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 border-t border-line py-16 lg:grid-cols-[7rem_minmax(0,1.1fr)_minmax(0,1fr)] lg:py-24"
               >
-                <span className="font-display text-[15px] tabular-nums text-subtle">{s.n}</span>
+                <span className="font-display text-[15px] font-mono tabular-nums text-subtle">{s.n}</span>
 
                 <div className="flex flex-col">
                   <span className="text-[11px] uppercase tracking-[0.12em] text-subtle">
@@ -341,7 +341,7 @@ export default function ScalesHubPage(): JSX.Element {
             ].map((s, i) => (
               <Motion key={s.k} className="flex flex-col gap-2 border-t border-line py-7" {...revealItem(i)}>
                 <h3 className="flex items-baseline gap-3.5 text-[18px] font-medium tracking-[-0.01em] text-cream">
-                  <span className="font-display text-[13px] tabular-nums text-cream/50">{s.k}.</span>
+                  <span className="font-display text-[13px] font-mono tabular-nums text-cream/50">{s.k}.</span>
                   {s.title}
                 </h3>
                 <p className="max-w-[48ch] pl-[26px] text-[15px] leading-relaxed text-body">{s.body}</p>
