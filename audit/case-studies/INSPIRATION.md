@@ -37,3 +37,47 @@ premium, and how each observation maps to our stories index + case-study detail.
 Key five applied (summary): media-forward hero areas from CMS thumbnails · one-sentence confident
 excerpts · mono numbered eyebrows (`SectionMarker`) · roomy single-idea vertical rhythm · large
 editorial index cards instead of a uniform small-tile grid.
+
+---
+
+# accenture.com — layout takeaways for interleaving stories, insights, and services
+
+Studied 2026-07-28 (`https://www.accenture.com/us-en` + `/us-en/services/data-ai`). How Accenture
+mixes case studies, insights, and services on a single page, and what maps to our hubs and detail
+routes.
+
+1. **Insights lead, services follow, stories prove.** The homepage gives its prime carousel real
+   estate to research/perspectives, then services, then a client-stories band — editorial first,
+   catalogue second, proof third. → Our capability/solution pages can keep the same arc: define
+   the practice, then show the work behind it, then link one relevant insight.
+2. **One card grammar for every content type.** Research reports, perspectives, case studies, and
+   blog posts all share a single card pattern — eyebrow category label, headline, 1–2 sentence
+   body, one action-verb CTA. Only the eyebrow tells you the type. → Reuse one related-card
+   component across "Related work" / "Related insights" and let a small mono eyebrow ("Case study",
+   "Insight") carry the distinction.
+3. **A mixed "What's trending" band interleaves types deliberately.** On the services page, case
+   studies sit *inside* the same carousel as research and blog posts rather than in a separate
+   section — the practice page becomes a feed of everything that validates it. → A capability page
+   can mix its proof rows and one insight card in a single "From this practice" band instead of
+   two thin sections.
+4. **Case-study cards can be text-only.** The homepage's six client stories run with no imagery at
+   all — client + outcome headline, 1–2 sentences, "Read more". Proof reads fine without media
+   when the headline names the client and the change. → Our proof rows don't need thumbnails;
+   meta ("Sector · Client") + a concrete title does the work.
+5. **Cards link outward to the story, not sideways to services.** Stories link to their own full
+   pages; service associations live in the story body, not as chips on the card. The hub page is a
+   dispatcher, never a dead end. → Keep proof rows linking straight to `/case-studies/<slug>`;
+   don't clutter cards with capability chips.
+6. **Service cards are expandable summaries with deep links.** The services grid is 6–8 cards,
+   each headline + subhead + 1–2 sentences + "Learn more" to a sub-service page — depth lives one
+   click away, never on the hub. → Matches our related-capability rail; keep excerpts to one
+   sentence and push detail to the detail route.
+7. **Every section is a distinct exit ramp.** Sequence on the services page: hero → stats →
+   service cards → mixed trending feed → partners → awards → news → leadership → careers CTA.
+   Each band offers a different onward journey, so the page ends in invitations, not summary. →
+   Our detail pages should keep ending in two CTAs (talk to us / browse the hub) after the proof
+   and related bands.
+8. **Restraint in copy density is systematic.** Across both pages nearly everything is headline +
+   ≤2 sentences + one CTA; long-form never appears on hub surfaces. (Their stats bands are the one
+   pattern we deliberately do NOT copy — our house rule is no numbers-as-boasts.) → Hold proof-row
+   problem/approach/outcome to 1–2 plain sentences each.

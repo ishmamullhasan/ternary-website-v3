@@ -3,6 +3,7 @@ import Motion from '@/components/animation/motion'
 import GradientPanel, { toneFor, type Tone } from '@/components/layout/GradientPanel'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
+import { getRelatedWorkStories, RelatedWorkSection } from '@/components/relatedWork'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
@@ -74,7 +75,8 @@ async function fetchRelatedIndustries(currentId: string, locale: TypedLocale): P
 async function getIndustryBySlug(slug: string, locale: TypedLocale): Promise<Industry | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchIndustryBySlug(slug, locale)
-  return unstable_cache(() => fetchIndustryBySlug(slug, locale), [`industry_${slug}_${locale}_v3`], {
+  // _v4: related-work strip added (content-enrichment pass) — bust past persisted _v3 entries.
+  return unstable_cache(() => fetchIndustryBySlug(slug, locale), [`industry_${slug}_${locale}_v4`], {
     tags: [`industry_${slug}`, 'industry'],
   })()
 }
@@ -138,6 +140,19 @@ const TONE_RGB: Record<Tone, string> = {
   azure: '47, 147, 218',
   magenta: '182, 36, 154',
   indigo: '79, 107, 237',
+}
+
+// Real delivered work per sector (story slugs; see audit/case-studies/SOURCES.md). The industry
+// collection has no case-study field, so the mapping lives here; the section is guarded — a
+// vertical with no published mapped story renders no strip. Unlisted slugs simply show nothing.
+const RELATED_WORK: Record<string, string[]> = {
+  'banking-capital-markets': ['lankabangla-securities', 'dhaka-stock-exchange'],
+  'sports-entertainment': ['turfly', 'alley-analytix'],
+  'hospitality-travel': ['counterfoil-continuum'],
+  healthcare: ['flex5'],
+  'consumer-goods': ['hissho-sushiops360', 'doyouwork'],
+  'advanced-manufacturing': ['holcim'],
+  'technology-platforms': ['counterfoil-continuum', 'turfly'],
 }
 
 // Deterministic per-industry tone: hash the slug into the TONE cycle so each vertical keeps a
@@ -261,8 +276,16 @@ export default async function Page({
   const heroImage = industry.thumbnail as Media | undefined
   const relatedIndustries = await fetchRelatedIndustries(industry.id, typedLocale)
 
+  // Real delivered work mapped to this sector — published stories only (guarded strip).
+  const relatedWorkStories = await getRelatedWorkStories(RELATED_WORK[slug] ?? [], typedLocale)
+
   // Stable per-vertical accent, drawn from the brand TONE cycle (GradientPanel).
   const heroTone = toneForSlug(industry.slug)
+
+  // Section numbering skips sections a sparse doc doesn't render, so markers never show gaps.
+  const overviewIndex = hasRichText(industry.content) ? 1 : 0
+  const relatedWorkIndex = overviewIndex + (relatedWorkStories.length > 0 ? 1 : 0)
+  const relatedIndustriesIndex = relatedWorkIndex + 1
 
   return (
     <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-20 px-5 pb-24 md:px-8 lg:gap-28 lg:px-12 lg:pb-32">
@@ -342,7 +365,7 @@ export default async function Page({
 
           <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_2.1fr] lg:gap-16">
             <div className="flex flex-col gap-4">
-              <SectionMarker index={1} label="Overview" />
+              <SectionMarker index={overviewIndex} label="Overview" />
               <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream">
                 Where we focus
               </h2>
@@ -358,11 +381,19 @@ export default async function Page({
         </Motion>
       )}
 
-      {/* ── SECTION 02 · RELATED INDUSTRIES (open editorial strip) ───────────────────────── */}
+      {/* ── RELATED WORK (real delivered engagements; hidden when none is published) ─────── */}
+      <RelatedWorkSection
+        stories={relatedWorkStories}
+        locale={typedLocale}
+        sectionIndex={relatedWorkIndex}
+        heading="Work in this sector"
+      />
+
+      {/* ── RELATED INDUSTRIES (open editorial strip) ────────────────────────────────────── */}
       {relatedIndustries.length > 0 && (
         <section className="w-full">
           <Motion className="mb-10 flex flex-col gap-4" {...reveal}>
-            <SectionMarker index={2} label="Related industries" />
+            <SectionMarker index={relatedIndustriesIndex} label="Related industries" />
             <h2 className="font-display text-[clamp(1.6rem,3vw,1.875rem)] font-medium leading-[1.1] tracking-[-0.02em] text-cream">
               Explore more verticals
             </h2>

@@ -208,3 +208,65 @@ for each rewritten field **unset** (fallback serves en), per the seed-audit-fixe
   seeded state surfaces on deploy: `pages_home_${locale}_v8 → _v9`,
   `capability_${slug}_${locale}_v5 → _v6`, `solution_${slug}_${locale}_v2 → _v3`,
   `solution_related → solution_related_v2`, `industry_${slug}_${locale}_v2 → _v3`.
+
+### Content-enrichment pass (staging) — DSE source + story, capability proof, related work, insights
+Sources: `audit/case-studies/SOURCES.md` (new **“Dhaka Stock Exchange (DSE)” section appended**,
+extracted from the new Desktop synthesis file `Here's a synthesis of the DSE engag.txt`; internal
+references — SOW number, ticket IDs, staging URL, data blockers — flagged as hold-from-public) +
+the existing Word-doc sections + `audit/deck/DECK_COPY.md`. **Prod follow-up: replicate all.**
+- **`stories.dhaka-stock-exchange` upgraded to the seed-stories-v2 narrative arc** via
+  `scripts/seed-dse-story.js` (idempotent; latest `_story_versions` synced).
+  - `content.en` — old proposal/design-prototyping copy → active-rebuild narrative (context →
+    The challenge → Our approach → What we're building → The outcome): full rebuild of the
+    exchange's public platform on a modern CMS-driven stack, disciplined legacy parity (four
+    governing rules: no invented pages, no lost information, no invented/derived data fields,
+    verbatim table labels), design language (navy identity; green/red reserved for market
+    movement), spec suite, audit loop with reconciliation evidence. No internal references,
+    no metrics.
+  - `excerpts.en` → "Ternary is rebuilding the Dhaka Stock Exchange's public platform on a
+    modern, content-managed stack — under a strict fidelity standard…" (was "designing a
+    ground-up rebuild… investor portal" — superseded by the new source).
+  - `tags` (en+bn) → Legacy replatform · CMS-driven platform · Design system · Regulated data
+    fidelity (was Public platform / Bilingual & accessible / Investor portal / Content
+    workflows — grounded in the old proposal framing).
+  - `caseMeta.engagement` → "Full platform rebuild" (was "Platform design & prototyping").
+  - **bn follow-up:** content.bn/excerpts.bn still carry the previous copy.
+- **Capability proof sections filled with real case studies** — `capabilities[8].caseStudies`
+  (sectionLabel "Proof" · heading "Work behind this practice" · one-line description · items
+  with meta "Sector · Client", title, 1–2-sentence problem/approach/outcome) via
+  `scripts/seed-proof-sections.js` (idempotent). All content strictly from SOURCES.md;
+  **metricValue/metricLabel deliberately left empty** (no invented numbers). Mapping:
+  agentic-architecture ← LankaBangla + Hissho · artificial-intelligence ← LankaBangla + Alley
+  Analytix · data-analytics ← Alley Analytix + Counterfoil · cloud-transformation ← Hissho
+  (Azure) + FAR Oil & Gas (AWS) [refined from the draft "DSE" mapping — DSE's source is a
+  replatform story, not a cloud story] · platformization ← Counterfoil + Turfly ·
+  digital-experiences ← DSE + Flex5 + DoYouWork · devops-automation ← Counterfoil + Turfly ·
+  internet-of-things ← Alley Analytix.
+- **Insights: two lesson-style editorial retellings created** (published, EN only) via
+  `scripts/seed-insights-case-lessons.js` (idempotent; `_insight_versions` snapshot created):
+  - INS-006 `lessons-from-an-air-gapped-llm-in-capital-markets` — **"The Model Is the Easy
+    Part: Lessons from an Air-Gapped LLM in Capital Markets"** (LankaBangla pattern; distinct
+    from the existing generic draft INS-002 "Air-Gapped AI for Regulated Industries" — this one
+    is the engagement retelling).
+  - INS-007 `unify-the-domain-before-you-automate-it` — **"Unify the Domain Before You
+    Automate It: Lessons from an Event-Driven Replatform"** (Counterfoil Continuum).
+  - **bn follow-up:** both need Bangla translations (en fallback serves meanwhile).
+- Code (same pass):
+  - Capability detail proof row: **"Result —" line now renders only when a real metric is
+    authored** (was an unconditional "[metric]" placeholder); "Read the story" link keeps
+    right alignment via `ml-auto`. Meta renders the real "Sector · Client".
+  - New `src/components/relatedWork.tsx` — guarded "Related work" strip (published stories
+    only, capability related-card styling, links to `/case-studies/<slug>`).
+  - Solutions detail: related-work strip added (map: product-development ← turfly/alley/flex5 ·
+    enterprise-transformation ← farogl/DSE · managed-systems ← counterfoil/hissho ·
+    engineering-augmentation ← none → hidden). Draft stories (flex5, hissho) auto-hide until
+    published.
+  - Industries detail: related-work strip added (banking-capital-markets ← lankabangla/DSE ·
+    sports-entertainment ← turfly/alley · hospitality-travel ← counterfoil · healthcare ←
+    flex5 · consumer-goods ← hissho/doyouwork · advanced-manufacturing ← holcim ·
+    technology-platforms ← counterfoil/turfly; others hidden). Section numbering stays
+    gap-free either way.
+  - Cache keys bumped past persisted entries: `capability_${slug}_${locale}_v6 → _v7`,
+    `solution_${slug}_${locale}_v3 → _v4`, `industry_${slug}_${locale}_v3 → _v4`.
+- `audit/case-studies/INSPIRATION.md` — appended 8 accenture.com layout takeaways (how case
+  studies, insights, and services interleave on one page).

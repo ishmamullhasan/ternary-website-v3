@@ -2,6 +2,7 @@ import Motion from '@/components/animation/motion'
 import { GradientPanel, toneFor, type Tone } from '@/components/layout/GradientPanel'
 import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
+import { getRelatedWorkStories, RelatedWorkSection } from '@/components/relatedWork'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
@@ -74,7 +75,8 @@ async function fetchSolutionBySlug(slug: string, locale: TypedLocale): Promise<S
 async function getSolutionBySlug(slug: string, locale: TypedLocale): Promise<Solution | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchSolutionBySlug(slug, locale)
-  return unstable_cache(() => fetchSolutionBySlug(slug, locale), [`solution_${slug}_${locale}_v3`], {
+  // _v4: related-work strip added (content-enrichment pass) — bust past persisted _v3 entries.
+  return unstable_cache(() => fetchSolutionBySlug(slug, locale), [`solution_${slug}_${locale}_v4`], {
     tags: [`solution_${slug}`, 'solution'],
   })()
 }
@@ -156,6 +158,16 @@ const SLUG_ORDER: Record<string, number> = {
   'enterprise-transformation': 1,
   'engineering-augmentation': 2,
   'managed-systems': 3,
+}
+
+// Real delivered work per solution (story slugs; see audit/case-studies/SOURCES.md). The solution
+// collection has no case-study field, so the mapping lives here; the section is guarded — a
+// solution with no published mapped story (engineering-augmentation today) renders no strip.
+const RELATED_WORK: Record<string, string[]> = {
+  'product-development': ['turfly', 'alley-analytix', 'flex5'],
+  'enterprise-transformation': ['farogl-odoo-erp', 'dhaka-stock-exchange'],
+  'engineering-augmentation': [],
+  'managed-systems': ['counterfoil-continuum', 'hissho-sushiops360'],
 }
 
 // Palantir-style section marker: "Section 02 / Label" in Geist Mono, tabular numerals.
@@ -253,9 +265,13 @@ export default async function Page({
   const orderNumber = order !== undefined ? String(order + 1).padStart(2, '0') : null
   const heroTone = toneFor(null, order ?? 0)
 
+  // Real delivered work mapped to this solution — published stories only (guarded strip).
+  const relatedWorkStories = await getRelatedWorkStories(RELATED_WORK[slug] ?? [], typedLocale)
+
   // Section numbering skips sections a sparse doc doesn't render, so markers never show gaps.
   const overviewIndex = hasContent ? 1 : 0
-  const relatedIndex = (hasContent ? 1 : 0) + 1
+  const relatedWorkIndex = overviewIndex + (relatedWorkStories.length > 0 ? 1 : 0)
+  const relatedIndex = relatedWorkIndex + 1
 
   return (
     <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-24 px-5 pb-24 md:px-8 lg:gap-32 lg:px-12 lg:pb-32">
@@ -363,7 +379,15 @@ export default async function Page({
         </section>
       )}
 
-      {/* ── SECTION 02 · RELATED SOLUTIONS ───────────────────────────────────────────────── */}
+      {/* ── RELATED WORK (real delivered engagements; hidden when none is published) ─────── */}
+      <RelatedWorkSection
+        stories={relatedWorkStories}
+        locale={typedLocale}
+        sectionIndex={relatedWorkIndex}
+        heading="Work behind this solution"
+      />
+
+      {/* ── RELATED SOLUTIONS ────────────────────────────────────────────────────────────── */}
       {relatedSolutions.length > 0 && (
         <section className="w-full">
           <Motion className="mb-10 flex flex-col gap-5 lg:mb-12" {...reveal}>
