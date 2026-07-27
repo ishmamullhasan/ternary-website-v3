@@ -27,3 +27,9 @@ CMS later.
 - **Old:** empty → detail pages rendered hero-only.
 - **New:** authored real per-discipline content for all 8 capabilities (no invented clients/metrics).
   Seeded via `scripts/seed-capability-content.js`. **Production follow-up:** replicate to prod CMS.
+
+### Home industries section — 4 cards (staging)
+`pages.home.layout[industriesSection].industries`
+- **Old:** 4 refs but one was a deleted/dangling doc → only 3 cards rendered (centered in a 4-col grid).
+- **New:** set 4 valid industries (Financial Services & Insurance, Health Care, Technology Platforms,
+  Consumer Goods & Services); resolves the Software-vs-Technology Platforms dup. **Prod follow-up.**
