@@ -95,3 +95,31 @@ Code-side (same pass): /solutions ℠→™ + proof slot hides when empty; home 
 counter removed; empty team-role guard; industries index "Advanced Manufacturing & Energy" →
 "Advanced Manufacturing"; `engagements@ternary.com` → `info@ternary.solutions` (ContactForm block +
 form error copy); careers Team-voices lines de-quoted (plain role descriptions, not testimonials).
+
+### Round-3 (staging) — home industries dedupe, excerpt alignment, About heading + story arc
+Via `scripts/seed-round3.js` (idempotent). **Prod follow-up: replicate all.**
+- `pages.home.layout[industriesSection].industries` → **4 cards** (was 8): Banking & Capital
+  Markets · Health Care · Technology Platforms · Advanced Manufacturing. Financial Services &
+  Insurance read as a duplicate of Banking & Capital Markets on the home grid — Banking kept.
+- `industries[*].excerpts.en` aligned to one plain sentence of similar length (deck-grounded):
+  - `banking-capital-markets` → "Digital transformation and secure platforms for financial
+    institutions." (deck p07 verbatim; dropped the dense "high-tempo, control-sensitive" tail)
+  - `healthcare` → "Digital health platforms that pair intuitive experiences with enterprise-grade
+    compliance." (was a 22-word run-on; grounded in the Flex5 case narrative)
+  - `public-sector` → "Secure, compliant systems for government and mission-critical operations."
+    (was much shorter than every sibling; grounded in deck p09 Government & Defense)
+  - technology-platforms / advanced-manufacturing / financial-services-insurance /
+    sports-entertainment / hospitality-travel / consumer-goods already fit — untouched.
+- `pages.about` hero — **"Built in New York, shipped everywhere." → "An engineering institution,
+  built for the long term."** (deck p02 identity phrase + long-term-stewardship voice; shipping
+  wordplay dropped). Description reworded to match: now opens "Ternary builds digital systems…"
+  so "engineering institution" isn't repeated back-to-back with the heading.
+- `pages.about.layout` **reordered into a story arc**: hero → thesis → approach (principles) →
+  proof of work → culture → leadership → funding story → closing CTA (funding story moved from
+  slot 2 to slot 7). Funding-story link relabeled "Start a conversation" → **"Work with us"**
+  (same `/contact` destination) so it no longer duplicates the adjacent CTA block's button.
+- Latest `_pages_versions` drafts for **home and about** synced to the new layouts (seed-about-v2
+  pattern) so a republish can't resurrect the old order/copy.
+- Code (same pass): cache keys bumped — `pages_${path}_${locale}_v2` → `_v3`
+  (`[...slug]/page.tsx`) and `pages_home_${locale}_v6` → `_v7` (`[locale]/page.tsx`) so the new
+  CMS state surfaces on deploy.
