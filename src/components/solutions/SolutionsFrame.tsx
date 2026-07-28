@@ -27,7 +27,6 @@ import './solutionsFrame.css'
 const MID = 210
 const VIEW_W = 1200
 const VIEW_H = 420
-const BG = '#0F0E0E'
 
 type P3 = [number, number, number]
 type P2 = [number, number]
@@ -98,7 +97,13 @@ function iso(K: number, OY: number) {
       const Rb = pr([cx + hx, cy - hy, z0])
       const Fb = pr([cx + hx, cy + hy, z0])
       const Lb = pr([cx - hx, cy + hy, z0])
-      push(`<path d="${rpoly([T, R, F, L, Lb, Fb, Rb], r)}" fill="${BG}" stroke="none"/>`)
+      // Occluder — the box's silhouette, so whatever is painted behind it is hidden.
+      // It walks the OUTLINE only: T→R→Rb→Fb→Lb→L. `F` is the top face's front corner,
+      // which sits INSIDE that hexagon; including it (as this did) makes the path detour
+      // through its own middle, and under the default nonzero fill rule the side-face
+      // region winds to zero and renders transparent. The visible symptom is background
+      // lines showing through the lower half of every box.
+      push(`<path d="${rpoly([T, R, Rb, Fb, Lb, L], r)}" class="occ"/>`)
       push(`<path d="${rpoly([T, R, F, L], r)}" class="${cls}"/>`)
       push(`<path d="${ropen([R, Rb, Fb, Lb, L], r)}" class="${cls}"/>`)
       push(`<path d="${ropen([F, Fb], Math.min(r, (h * K) / 2))}" class="${cls}"/>`)
@@ -313,19 +318,20 @@ function standard(): string {
   g.face(0, 0, 0, SPAN, SPAN, R, 'ink')
 
   // Four plates, one per solution, at four heights. Painted far to near so each
-  // box's BG silhouette occludes what sits behind it.
+  // box's occluder hides what sits behind it.
   const plates: [number, number, number][] = [
     [-13, -13, 30],
     [13, -13, 21],
     [-13, 13, 16],
     [13, 13, 25],
   ]
+  // Painted far to near, so each box's occluder hides what sits behind it. No footprint
+  // outlines: four more rounded rectangles down among the plates read as clutter, not as
+  // structure — the plates already sit visibly over the ground.
   plates.forEach(([x, y, z], i) => {
-    g.open('sf-lift', `animation-delay:${(-i * 1.7).toFixed(1)}s`)
+    g.open('sf-drift', `animation-delay:${(-i * 2.2).toFixed(1)}s`)
     g.box(x, y, z, 8.5, 8.5, 1.8, R, 'ink')
     g.close()
-    // the plate's own footprint on the ground — what it maps to on the standard
-    g.face(x, y, 0, 8.5, 8.5, R, 'ink faint')
   })
 
   return g.done()

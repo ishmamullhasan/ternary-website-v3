@@ -91,6 +91,17 @@
 .sf-svg .hi {
   stroke: var(--hi);
 }
+/* The box occluders. Inside the frame they hide against its --color-ink surface;
+   lifted out (marks, hero) they sit directly on the page, so they have to match
+   --color-page instead or every box reads as a lighter patch. */
+.sf-svg .occ {
+  fill: var(--color-ink);
+  stroke: none;
+}
+.sf-solo .occ {
+  fill: var(--color-page);
+}
+
 .sf-svg .faint {
   opacity: 0.4;
 }
@@ -245,6 +256,23 @@
 .sf-lift {
   animation: sfLift 8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
+/* The hero plates drift; they never fade. `sfLift`, which the lanes use, drops to
+   opacity 0 at both ends of its cycle — right for a lane that assembles and resets,
+   wrong for a standing figure, where it just reads as plates blinking out. Transform
+   only, and the resting state is the base rule so reduced motion lands on it. */
+@keyframes sfDrift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+.sf-drift {
+  animation: sfDrift 9s ease-in-out infinite;
+}
+
 .sf-glow {
   animation: sfGlow 3.2s ease-in-out infinite;
 }
