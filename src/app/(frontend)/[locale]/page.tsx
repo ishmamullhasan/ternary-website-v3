@@ -52,7 +52,7 @@ const fetchHomePage = async (draft: boolean, locale: TypedLocale) => {
 const getHomePage = (draft: boolean, locale: TypedLocale) =>
   draft
     ? fetchHomePage(true, locale)
-    : unstable_cache(() => fetchHomePage(false, locale), [`pages_home_${locale}_v9`], {
+    : unstable_cache(() => fetchHomePage(false, locale), [`pages_home_${locale}_v10`], {
         tags: [...new Set(['pages_home', ...PAGES_EMBED_TAGS])],
       })()
 
