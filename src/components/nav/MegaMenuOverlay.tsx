@@ -374,16 +374,23 @@ function PanelBody({
         )}
 
         {columns.length > 0 && (
-          <div className="grid flex-1 grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-3">
+          <div
+            className={cn(
+              'flex-1',
+              // Multi-column panels (Capabilities, Industries) sit in a 2–3 track grid. A single-
+              // column panel (Solutions) instead spans the full width so its items have room.
+              singleColumn ? '' : 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-3',
+            )}
+          >
             {columns.map((col, i) => (
               <div key={i}>
                 {col.heading && (
                   <h4 className="mb-6 text-[10px] font-bold uppercase tracking-[0.18em] text-subtle">{col.heading}</h4>
                 )}
-                {/* A panel with a single column (e.g. Solutions' 4 items) lays those items out in a
-                    2-wide grid so they read as a 2×2 block instead of a tall list. Multi-column
-                    panels keep their items stacked under each column heading. */}
-                <div className={cn(singleColumn ? 'grid grid-cols-1 gap-x-8 gap-y-7 sm:grid-cols-2' : 'flex flex-col gap-7')}>
+                {/* A panel with a single column (e.g. Solutions' 4 items) lays those items across the
+                    full-width column as a 2×2 block instead of a tall list. Multi-column panels keep
+                    their items stacked under each column heading. */}
+                <div className={cn(singleColumn ? 'grid grid-cols-1 gap-x-12 gap-y-8 sm:grid-cols-2' : 'flex flex-col gap-7')}>
                   {(col.items ?? []).map((item, j) => (
                     <Link key={j} href={href(item.link)} onClick={onClose} className="group flex gap-4">
                       {item.icon && (
