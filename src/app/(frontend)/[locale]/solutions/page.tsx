@@ -335,14 +335,19 @@ export default function SolutionsHubPage(): JSX.Element {
       </Section>
 
       {/* ── THE FOUR SOLUTIONS ───────────────────────────────────────────────────────────── */}
-      {/* One grid with equal rows, so every scene — and the panel inside it — takes the height
-          of the tallest, at ANY viewport width. A min-height cannot do this job: the tallest
-          panel measures 651px at 1024, 526px at 1280 and 422px at 1440, so a single number is
-          either short at narrow widths or dead space at wide ones. Only from lg, where the
-          scenes are two columns; stacked on mobile, equal heights would be pure padding. */}
+      {/* Each scene is ONE card — heading, tagline, figure and detail all on a single surface,
+          the way the home page cards work. The detail half used to carry its own panel while the
+          heading sat bare on the page, so a scene read as a loose column next to a card rather
+          than as one object.
+
+          One grid with equal rows, so every card takes the height of the tallest at ANY viewport
+          width. A min-height cannot do this job: the tallest content measures 526px at 1024 and
+          439px at 1440, so a single number is either short at narrow widths or dead space at wide
+          ones. Only from lg, where a scene is two columns; stacked on mobile, equal heights would
+          be pure padding. */}
       <div className="lg:grid lg:auto-rows-fr">
         {SOLUTIONS.map((s) => (
-          <Section key={s.id} id={s.id} pad="py-[clamp(24px,2.5vw,40px)] lg:h-full">
+          <Section key={s.id} id={s.id} pad="py-[clamp(20px,2vw,34px)] lg:h-full">
             {/* PROXIMITY. The left track was `1fr` of a 1:1.35 split, so it kept growing with the
                 viewport while its content did not — the heading caps at 467px. Above 1280 that
                 opened a dead channel: 136px at 1440, 159px at 1920, against a 72–80px gap BETWEEN
@@ -353,7 +358,12 @@ export default function SolutionsHubPage(): JSX.Element {
                 what it holds — below that the heading simply wraps to the track and the dead space
                 stays at zero. The column gap is set under the scene gap at every width, so the
                 spacing hierarchy reads columns < scenes < sections. */}
-            <div className="grid grid-cols-1 gap-8 lg:h-full lg:grid-cols-[clamp(300px,34vw,470px)_minmax(0,1fr)] lg:gap-x-[clamp(32px,3vw,56px)]">
+            <div
+              className={cn(
+                'grid grid-cols-1 gap-8 p-7 lg:h-full lg:grid-cols-[clamp(280px,30vw,440px)_minmax(0,1fr)] lg:gap-x-[clamp(32px,3vw,56px)] lg:p-10',
+                PANEL,
+              )}
+            >
               {/* Not sticky any more. It was, back when a scene ran to ~520px and the column had
                   room to travel; at the tightened rhythm it barely moves, and what it does do is
                   leave each heading at a different height from its own panel's top as you scroll,
@@ -375,12 +385,9 @@ export default function SolutionsHubPage(): JSX.Element {
                 </div>
               </Motion>
 
-              {/* The detail sits on its own surface. With the rule between scenes gone, this panel
-                is what marks where one solution ends and the next begins — and it gives the four
-                scenes a repeating shape down the page instead of four undifferentiated columns.
-                It stretches to the equalised row rather than shrinking to its own content, which
-                is what makes all four panels one size. */}
-              <div className={cn('flex flex-col gap-7 p-7 lg:p-10', PANEL)}>
+              {/* No surface of its own — the card around the whole scene is the surface now, and a
+                  panel inside a panel would read as a card in a card. */}
+              <div className="flex flex-col gap-7">
                 <Motion {...revealItem(0)}>
                   <Fact label="Who it's for">{s.who}</Fact>
                 </Motion>
