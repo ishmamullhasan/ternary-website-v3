@@ -183,43 +183,47 @@ function managed(): string {
 }
 
 /* ── Hero · one standard behind all of them ──────────────────────────────
-   The hero's right half was empty. This fills it with the sentence next to it
-   rather than an ornament: four plates at four heights — the four ways in, each
-   a different shape — over the single ruled ground they all rest on.
+   Fills the hero's right half with the sentence next to it rather than an
+   ornament: plates ringing a single ruled ground, every one at the same height.
+   The equal height is the whole point — different ways in, all held to one
+   level, which is what "one engineering standard behind all of them" claims.
 
    Deliberately unlike the four scene marks it sits above. Those are objects,
    read at object scale; this is a field — wider, flatter, quieter, and set at
    roughly half their contrast — so it registers as the backdrop to the copy and
-   never competes with the headline for first read. */
+   never competes with the headline for first read.
+
+   It is also the horizontal counterpart to the capabilities hero, which stands
+   equal columns UP from one base. Same construction, one lying down and one
+   standing: a way in versus a depth you have built. */
 function standard(): string {
-  const g = iso(3.1, 22)
+  const g = iso(3.1, 26)
   const R = 3
   const SPAN = 30
+  const RING = 19
 
-  // The shared ground. Ruled rather than solid: a plane you can see through is
-  // quieter than a filled one, and the rules read as measurement, not as border.
+  // The shared ground — "one engineering standard behind all of them". Ruled rather
+  // than solid: a plane you can see through is quieter than a filled one, and the
+  // rules read as measurement rather than as a border.
   for (let i = -SPAN; i <= SPAN; i += 10) {
     g.line([i, -SPAN, 0], [i, SPAN, 0], 'ink faint')
     g.line([-SPAN, i, 0], [SPAN, i, 0], 'ink faint')
   }
   g.face(0, 0, 0, SPAN, SPAN, R, 'ink')
 
-  // Four plates, one per solution, at four heights. Painted far to near so each
-  // box's occluder hides what sits behind it.
-  const plates: [number, number, number][] = [
-    [-13, -13, 30],
-    [13, -13, 21],
-    [-13, 13, 16],
-    [13, 13, 25],
-  ]
-  // Painted far to near, so each box's occluder hides what sits behind it. No footprint
-  // outlines: four more rounded rectangles down among the plates read as clutter, not as
-  // structure — the plates already sit visibly over the ground.
-  plates.forEach(([x, y, z], i) => {
-    g.open('sf-drift', `animation-delay:${(-i * 2.2).toFixed(1)}s`)
-    g.box(x, y, z, 8.5, 8.5, 1.8, R, 'ink')
+  // Plates ringing the plane, every one at the same height. The height is the point:
+  // different ways in, held to one level. Painted back to front — ascending x + y in
+  // this projection — so each box's occluder hides what sits behind it.
+  const plates = Array.from({ length: 8 }, (_, i) => {
+    const a = (i / 8) * Math.PI * 2 + Math.PI / 8
+    return { x: Math.cos(a) * RING, y: Math.sin(a) * RING, i }
+  }).sort((p, q) => p.x + p.y - (q.x + q.y))
+
+  for (const { x, y, i } of plates) {
+    g.open('sf-drift', `animation-delay:${(-i * 1.1).toFixed(1)}s`)
+    g.box(x, y, 3, 5, 5, 1.6, 2, 'ink')
     g.close()
-  })
+  }
 
   return g.done()
 }
@@ -295,7 +299,7 @@ const MARK_CY = 205
  */
 export function SolutionsHeroMark(): JSX.Element {
   return (
-    <svg viewBox="-194 59 388 274" fill="none" aria-hidden className="sf-svg sf-solo sf-hero">
+    <svg viewBox="-194 135 388 202" fill="none" aria-hidden className="sf-svg sf-solo sf-hero">
       <g dangerouslySetInnerHTML={{ __html: standard() }} />
     </svg>
   )
