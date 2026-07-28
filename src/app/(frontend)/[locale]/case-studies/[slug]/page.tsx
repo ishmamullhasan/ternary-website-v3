@@ -39,7 +39,9 @@ function getStory(slug: string, locale: TypedLocale) {
       })
       return (result.docs[0] as Story | undefined) ?? null
     },
-    [`story_detail_${slug}_${locale}_v2`],
+    // _v3: seed-fit-copy trimmed the dhaka-stock-exchange excerpt via a direct DB write (no tag
+    // revalidation), so bump the key to force a fresh read on deploy.
+    [`story_detail_${slug}_${locale}_v3`],
     // Purely tag-driven: the story afterChange/afterDelete hooks bust these tags. Docs written
     // straight to the DB (seed/ops scripts) must be followed by GET /next/revalidate or the admin
     // "Revalidate site" button — there is no time-based fallback anymore.
@@ -60,7 +62,8 @@ function getRelatedStories(excludeSlug: string, locale: TypedLocale) {
       })
       return result.docs as Story[]
     },
-    [`story_related_${excludeSlug}_${locale}_v2`],
+    // _v3: the related rail renders sibling excerpts (incl. the trimmed dhaka-stock-exchange one).
+    [`story_related_${excludeSlug}_${locale}_v3`],
     { tags: ['story'] },
   )
 }

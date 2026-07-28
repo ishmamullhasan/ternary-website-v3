@@ -51,8 +51,9 @@ const getRelatedSolutions = unstable_cache(
     })
     return result.docs as Solution[]
   },
-  // _v2: the related rail renders sibling excerpts, so the align-copy seed bumps this too.
-  ['solution_related_v2'],
+  // _v3: the related rail renders sibling excerpts; the seed-fit-copy pass tightened solution
+  // excerpts (direct DB write → no tag revalidation), so bump the key to force a fresh read.
+  ['solution_related_v3'],
   { tags: ['solution'] },
 )
 
@@ -75,8 +76,9 @@ async function fetchSolutionBySlug(slug: string, locale: TypedLocale): Promise<S
 async function getSolutionBySlug(slug: string, locale: TypedLocale): Promise<Solution | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchSolutionBySlug(slug, locale)
-  // _v4: related-work strip added (content-enrichment pass) — bust past persisted _v3 entries.
-  return unstable_cache(() => fetchSolutionBySlug(slug, locale), [`solution_${slug}_${locale}_v4`], {
+  // _v5: seed-fit-copy tightened solution excerpts via a direct DB write (no tag revalidation),
+  // so bump the key to bust persisted _v4 entries on deploy.
+  return unstable_cache(() => fetchSolutionBySlug(slug, locale), [`solution_${slug}_${locale}_v5`], {
     tags: [`solution_${slug}`, 'solution'],
   })()
 }

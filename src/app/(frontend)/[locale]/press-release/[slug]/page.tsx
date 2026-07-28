@@ -48,7 +48,9 @@ const getPressReleaseList = unstable_cache(
     })
     return result.docs
   },
-  ['pressRelease'],
+  // _v2: seed-fit-copy shortened the one-year-in-bangladesh title + excerpt via a direct DB write
+  // (no tag revalidation), so a key version is added to force a fresh read on deploy.
+  ['pressRelease_v2'],
   { tags: ['pressRelease'] },
 )
 
@@ -70,7 +72,8 @@ async function fetchPressReleaseBySlug(slug: string, locale: TypedLocale): Promi
 async function getPressReleaseBySlug(slug: string, locale: TypedLocale): Promise<PressRelease | null> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchPressReleaseBySlug(slug, locale)
-  return unstable_cache(() => fetchPressReleaseBySlug(slug, locale), [`pressRelease_${slug}_${locale}`], {
+  // _v2: bust persisted unversioned entries after the seed-fit-copy title/excerpt rewrite.
+  return unstable_cache(() => fetchPressReleaseBySlug(slug, locale), [`pressRelease_${slug}_${locale}_v2`], {
     tags: [`pressRelease_${slug}`, 'pressRelease'],
   })()
 }
