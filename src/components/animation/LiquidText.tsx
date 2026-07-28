@@ -63,7 +63,11 @@ void main() {
   // No travelling wave: just a clean liquid bulge that follows the cursor.
   float centerFade = smoothstep(0.0, 0.22, d);
   vec2 dir = scaled / max(d, 1e-4);
-  vec2 push = dir * influence * centerFade * u_amp * 0.045;
+  vec2 perp = vec2(-dir.y, dir.x); // tangential component — curls the glyphs instead of magnifying
+  // Mostly swirl with a little outward push, plus a slow rotation of the curl over time: reads as
+  // liquid smearing around the cursor rather than a zoom lens.
+  float curlSign = sin(u_time * 0.7) > 0.0 ? 1.0 : -1.0;
+  vec2 push = (dir * 0.35 + perp * curlSign * 0.85) * influence * centerFade * u_amp * 0.05;
   push.x /= u_aspect; // back to uv space so the on-screen push is radially uniform
 
   gl_FragColor = texture2D(u_tex, uv - push);
