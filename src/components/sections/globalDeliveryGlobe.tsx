@@ -46,7 +46,7 @@ const DESTINATION_SIZE = 0.05
 
 // Globe tilt. Shared by cobe (the `theta` option) and the overlay's projection — they must agree
 // or the arcs will drift off the sphere.
-const THETA = 0.28
+const THETA = 0.12
 
 // Sphere radius in cobe's clip space: its fragment shader tests `dot(a, a) <= 0.64`.
 const SPHERE_R = 0.8
