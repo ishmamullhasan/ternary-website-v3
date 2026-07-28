@@ -67,8 +67,8 @@ void main() {
   }
 
   // Local disc blur whose radius grows toward the cursor. The offset is (cos/aspect, sin), so a
-  // step of `blur` maps to a circle of radius blur*height in SCREEN pixels — big enough to actually
-  // fuse adjacent glyphs (a melt needs ~10px, not 1). A slow time rotation keeps the blob alive.
+  // step of size blur maps to a circle of radius blur*height in SCREEN pixels — big enough to
+  // actually fuse adjacent glyphs (a melt needs ~10px, not 1). A slow time rotation keeps it alive.
   float blur = influence * 0.16;
   vec4 acc = base;
   float total = 1.0;
