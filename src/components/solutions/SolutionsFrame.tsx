@@ -307,6 +307,22 @@ export function artIndexFor(title: string | null | undefined, index: number): nu
   return index % ART.length
 }
 
+/* Measured bounding boxes of the four scenes, in the frame's own coordinate space
+   (`getBBox()` on each rendered lane). Hardcoded because the art is built as a
+   string, so there is no layout pass on the server to measure it against. If a
+   scene's paths change, re-measure — nothing here will notice on its own. */
+const ART_BOX = [
+  { y: 87.8, h: 234.6 }, // product      — the exploded stack; twice the height of the others
+  { y: 131.5, h: 147.3 }, // transform
+  { y: 116.1, h: 180.6 }, // augmentation
+  { y: 148.5, h: 112.7 }, // managed
+] as const
+
+/* Target painted height, and the centre every scene is squashed toward, so the four
+   marks read as one set instead of the 113–235px spread they were drawn at. */
+const MARK_H = 150
+const MARK_CY = 205
+
 /**
  * A single lane, lifted out of the frame — the solutions hub renders the scene
  * that belongs to each solution beside its heading, so the hub and the home
@@ -317,17 +333,39 @@ export function artIndexFor(title: string | null | undefined, index: number): nu
  * mask, no pointer field, no `is-focus` state — there is only one lane, so
  * nothing needs to recede.
  *
- * The viewBox is the measured union of all four scenes' bounding boxes plus
- * 10px, NOT the frame's 1200×420 — the art occupies only y 88–322 of that, so
- * inheriting it gave every mark ~100px of blank space above and below. One
- * shared box across all four (rather than
- * fitting each to its own extents) is what keeps them a matched set — otherwise
- * the smallest scene would render largest.
+ * SIZING. The scenes were authored to sit side by side in one wide frame, where
+ * differing heights read as variety. Stacked one per solution down a page they
+ * just read as inconsistent, so each is scaled to a common painted height —
+ * and the transform is deliberately constrained two ways:
+ *
+ *   • Vertical only. These are isometric figures; scaling x as well would narrow
+ *     them into a different projection, and the set would stop matching the home
+ *     page frame they came from.
+ *   • Never above 1. The two short scenes are left short rather than stretched —
+ *     pulling `managed` up to 150 would mean 1.33x, which turns its orbit ring
+ *     into an obvious ellipse. Squashing the tall one is nearly invisible;
+ *     stretching a short one is not.
+ *
+ * `translate(CY) scale(sy) translate(-cy)` maps each figure's own centre onto a
+ * shared one, so they are aligned as well as matched — squashing in place would
+ * leave `product` sitting 30px higher than the rest.
+ *
+ * The viewBox is then the common box those transforms produce, plus ~10px: NOT
+ * the frame's 1200×420, which gave every mark ~100px of blank space above and
+ * below, and not each scene's own extents, which would render the smallest
+ * scene largest.
  */
 export function SolutionMark({ art }: { art: number }): JSX.Element {
+  const box = ART_BOX[art] ?? ART_BOX[0]
+  const sy = Math.min(1, MARK_H / box.h)
+  const cy = box.y + box.h / 2
+
   return (
-    <svg viewBox="-139 78 278 255" fill="none" aria-hidden className="sf-svg sf-solo">
-      <g dangerouslySetInnerHTML={{ __html: (ART[art] ?? ART[0])() }} />
+    <svg viewBox="-136 120 272 170" fill="none" aria-hidden className="sf-svg sf-solo">
+      <g
+        transform={`translate(0 ${MARK_CY}) scale(1 ${sy.toFixed(4)}) translate(0 ${-cy})`}
+        dangerouslySetInnerHTML={{ __html: (ART[art] ?? ART[0])() }}
+      />
     </svg>
   )
 }

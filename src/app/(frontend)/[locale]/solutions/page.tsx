@@ -198,7 +198,7 @@ function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
 function Section({ children, id, pad }: { children: ReactNode; id?: string; pad?: string }): JSX.Element {
   return (
     <section id={id} className={id ? 'scroll-mt-28' : undefined}>
-      <div className={cn('mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12', pad ?? 'py-20 lg:py-28')}>
+      <div className={cn('mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12', pad ?? 'py-[clamp(48px,5vw,80px)]')}>
         {children}
       </div>
     </section>
@@ -211,7 +211,7 @@ function Section({ children, id, pad }: { children: ReactNode; id?: string; pad?
 function SectionHead({ eyebrow, title, blurb }: { eyebrow: string; title: string; blurb: string }): JSX.Element {
   return (
     <Motion
-      className="mb-12 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
+      className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
       {...reveal}
     >
       <div className="flex flex-col gap-4">
@@ -249,7 +249,7 @@ export default function SolutionsHubPage(): JSX.Element {
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
       {/* The repeating vertical rule field that used to sit behind this, and the rule closing
           the section, are both gone — they were the loudest lines on the page. */}
-      <Section pad="pt-24 pb-14 lg:pt-32 lg:pb-20">
+      <Section pad="pt-[clamp(32px,6vh,72px)] pb-[clamp(48px,7vh,80px)]">
         <Motion className="flex flex-col gap-7" {...reveal}>
           <Eyebrow>Solutions · Ways in</Eyebrow>
           <h1 className="font-display max-w-[15ch] text-[clamp(2.75rem,7vw,6rem)] leading-[1.01] font-medium tracking-[-0.04em] text-cream">
@@ -322,77 +322,87 @@ export default function SolutionsHubPage(): JSX.Element {
       </Section>
 
       {/* ── THE FOUR SOLUTIONS ───────────────────────────────────────────────────────────── */}
-      {SOLUTIONS.map((s) => (
-        <Section key={s.id} id={s.id} pad="py-8 lg:py-10">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-16">
-            <Motion className="flex flex-col gap-4 lg:sticky lg:top-28 lg:self-start" {...reveal}>
-              {/* The solution's NAME is the heading. It used to be a 12px eyebrow while the tagline
+      {/* One grid with equal rows, so every scene — and the panel inside it — takes the height
+          of the tallest, at ANY viewport width. A min-height cannot do this job: the tallest
+          panel measures 651px at 1024, 526px at 1280 and 422px at 1440, so a single number is
+          either short at narrow widths or dead space at wide ones. Only from lg, where the
+          scenes are two columns; stacked on mobile, equal heights would be pure padding. */}
+      <div className="lg:grid lg:auto-rows-fr">
+        {SOLUTIONS.map((s) => (
+          <Section key={s.id} id={s.id} pad="py-[clamp(24px,2.5vw,40px)] lg:h-full">
+            <div className="grid grid-cols-1 gap-8 lg:h-full lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-16">
+              {/* Not sticky any more. It was, back when a scene ran to ~520px and the column had
+                  room to travel; at the tightened rhythm it barely moves, and what it does do is
+                  leave each heading at a different height from its own panel's top as you scroll,
+                  which reads as four misaligned scenes rather than one system. */}
+              <Motion className="flex flex-col gap-4 lg:self-start" {...reveal}>
+                {/* The solution's NAME is the heading. It used to be a 12px eyebrow while the tagline
                   took the h2 — so the thing the section is actually about was its smallest type, and
                   four sections in a row were titled by a sentence rather than by a name. */}
-              <h2 className="max-w-[13ch] font-display text-[clamp(2.25rem,4.6vw,3.5rem)] font-medium leading-[1.02] tracking-[-0.035em] text-cream">
-                {s.name}
-              </h2>
-              <p className="max-w-[28ch] text-[clamp(1.0625rem,1.7vw,1.375rem)] leading-[1.35] text-body">
-                {s.tagline}
-              </p>
-              {/* The scene from the home page's solutions frame, one lane per solution — what the
+                <h2 className="max-w-[13ch] font-display text-[clamp(2.25rem,4.6vw,3.5rem)] font-medium leading-[1.02] tracking-[-0.035em] text-cream">
+                  {s.name}
+                </h2>
+                <p className="max-w-[28ch] text-[clamp(1.0625rem,1.7vw,1.375rem)] leading-[1.35] text-body">
+                  {s.tagline}
+                </p>
+                {/* The scene from the home page's solutions frame, one lane per solution — what the
                   decorative "02" numeral used to occupy, carrying the idea instead of the count. */}
-              <div className="mt-2 w-full max-w-[280px]">
-                <SolutionMark art={s.art} />
-              </div>
-            </Motion>
+                <div className="mt-2 w-full max-w-[280px]">
+                  <SolutionMark art={s.art} />
+                </div>
+              </Motion>
 
-            {/* The detail sits on its own surface. With the rule between scenes gone, this panel
+              {/* The detail sits on its own surface. With the rule between scenes gone, this panel
                 is what marks where one solution ends and the next begins — and it gives the four
-                scenes a repeating shape down the page instead of four undifferentiated columns. */}
-            {/* `self-start` so the panel is only as tall as its own content. Stretched to the grid
-                row it matched the taller left column (heading + tagline + figure) and trailed
-                ~80px of empty surface under the last fact. */}
-            <div className={cn('flex flex-col gap-7 p-7 lg:self-start lg:p-10', PANEL)}>
-              <Motion {...revealItem(0)}>
-                <Fact label="Who it's for">{s.who}</Fact>
-              </Motion>
-              <Motion {...revealItem(1)}>
-                <Fact label="What we do">{s.what}</Fact>
-              </Motion>
-              <Motion {...revealItem(2)}>
-                <Fact label="What you get" emphasis>
-                  {s.get}
-                </Fact>
-              </Motion>
-              {/* Proof slot: named client with written permission only. With no proof, the slot
+                scenes a repeating shape down the page instead of four undifferentiated columns.
+                It stretches to the equalised row rather than shrinking to its own content, which
+                is what makes all four panels one size. */}
+              <div className={cn('flex flex-col gap-7 p-7 lg:p-10', PANEL)}>
+                <Motion {...revealItem(0)}>
+                  <Fact label="Who it's for">{s.who}</Fact>
+                </Motion>
+                <Motion {...revealItem(1)}>
+                  <Fact label="What we do">{s.what}</Fact>
+                </Motion>
+                <Motion {...revealItem(2)}>
+                  <Fact label="What you get" emphasis>
+                    {s.get}
+                  </Fact>
+                </Motion>
+                {/* Proof slot: named client with written permission only. With no proof, the slot
                   hides entirely — an empty proof line is better than a vague one. Keeps the Fact
                   grid rather than the rule it used to sit under, so its label still lines up with
                   the three above it. */}
-              {s.proof && (
-                <Motion {...revealItem(3)}>
-                  <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
-                    <h3 className="pt-0.5 text-[11px] tracking-[0.1em] text-subtle uppercase">Proof</h3>
-                    <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-body">
-                      <span className="text-cream">{s.proof.client}</span> — {s.proof.body}{' '}
-                      <Link
-                        href="/stories"
-                        className={cn(
-                          'group/story mt-1 inline-flex items-center gap-1.5 whitespace-nowrap font-medium text-cream',
-                          FOCUS_RING,
-                        )}
-                      >
-                        Read the story
-                        <ArrowRight
-                          size={14}
-                          strokeWidth={2}
-                          aria-hidden
-                          className="transition-transform duration-300 group-hover/story:translate-x-0.5"
-                        />
-                      </Link>
-                    </p>
-                  </div>
-                </Motion>
-              )}
+                {s.proof && (
+                  <Motion {...revealItem(3)}>
+                    <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
+                      <h3 className="pt-0.5 text-[11px] tracking-[0.1em] text-subtle uppercase">Proof</h3>
+                      <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-body">
+                        <span className="text-cream">{s.proof.client}</span> — {s.proof.body}{' '}
+                        <Link
+                          href="/stories"
+                          className={cn(
+                            'group/story mt-1 inline-flex items-center gap-1.5 whitespace-nowrap font-medium text-cream',
+                            FOCUS_RING,
+                          )}
+                        >
+                          Read the story
+                          <ArrowRight
+                            size={14}
+                            strokeWidth={2}
+                            aria-hidden
+                            className="transition-transform duration-300 group-hover/story:translate-x-0.5"
+                          />
+                        </Link>
+                      </p>
+                    </div>
+                  </Motion>
+                )}
+              </div>
             </div>
-          </div>
-        </Section>
-      ))}
+          </Section>
+        ))}
+      </div>
 
       {/* ── ENGAGEMENT MODELS ────────────────────────────────────────────────────────────── */}
       <Section>
