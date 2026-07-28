@@ -273,3 +273,9 @@
     transition: none !important;
   }
 }
+
+/* The hero field. Quieter than `.sf-solo` on purpose: it sits beside the h1, and
+   at the marks' contrast it competed with the headline for first read. */
+.sf-hero {
+  opacity: 0.55;
+}

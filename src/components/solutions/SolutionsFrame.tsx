@@ -290,6 +290,47 @@ function managed(): string {
   return g.done()
 }
 
+/* ── Hero · one standard behind all of them ──────────────────────────────
+   The hero's right half was empty. This fills it with the sentence next to it
+   rather than an ornament: four plates at four heights — the four ways in, each
+   a different shape — over the single ruled ground they all rest on.
+
+   Deliberately unlike the four scene marks it sits above. Those are objects,
+   read at object scale; this is a field — wider, flatter, quieter, and set at
+   roughly half their contrast — so it registers as the backdrop to the copy and
+   never competes with the headline for first read. */
+function standard(): string {
+  const g = iso(3.1, 22)
+  const R = 3
+  const SPAN = 30
+
+  // The shared ground. Ruled rather than solid: a plane you can see through is
+  // quieter than a filled one, and the rules read as measurement, not as border.
+  for (let i = -SPAN; i <= SPAN; i += 10) {
+    g.line([i, -SPAN, 0], [i, SPAN, 0], 'ink faint')
+    g.line([-SPAN, i, 0], [SPAN, i, 0], 'ink faint')
+  }
+  g.face(0, 0, 0, SPAN, SPAN, R, 'ink')
+
+  // Four plates, one per solution, at four heights. Painted far to near so each
+  // box's BG silhouette occludes what sits behind it.
+  const plates: [number, number, number][] = [
+    [-13, -13, 30],
+    [13, -13, 21],
+    [-13, 13, 16],
+    [13, 13, 25],
+  ]
+  plates.forEach(([x, y, z], i) => {
+    g.open('sf-lift', `animation-delay:${(-i * 1.7).toFixed(1)}s`)
+    g.box(x, y, z, 8.5, 8.5, 1.8, R, 'ink')
+    g.close()
+    // the plate's own footprint on the ground — what it maps to on the standard
+    g.face(x, y, 0, 8.5, 8.5, R, 'ink faint')
+  })
+
+  return g.done()
+}
+
 const ART = [product, transform, augmentation, managed] as const
 
 /**
@@ -355,6 +396,18 @@ const MARK_CY = 205
  * below, and not each scene's own extents, which would render the smallest
  * scene largest.
  */
+/**
+ * The hero figure. Its viewBox is set from the measured extents of `standard()`
+ * — see SolutionMark for why these are hardcoded rather than computed.
+ */
+export function SolutionsHeroMark(): JSX.Element {
+  return (
+    <svg viewBox="-194 59 388 274" fill="none" aria-hidden className="sf-svg sf-solo sf-hero">
+      <g dangerouslySetInnerHTML={{ __html: standard() }} />
+    </svg>
+  )
+}
+
 export function SolutionMark({ art }: { art: number }): JSX.Element {
   const box = ART_BOX[art] ?? ART_BOX[0]
   const sy = Math.min(1, MARK_H / box.h)

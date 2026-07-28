@@ -1,6 +1,6 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
-import { SolutionMark } from '@/components/solutions/SolutionsFrame'
+import { SolutionMark, SolutionsHeroMark } from '@/components/solutions/SolutionsFrame'
 import '@/components/solutions/solutionsFrame.css'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
@@ -250,35 +250,48 @@ export default function SolutionsHubPage(): JSX.Element {
       {/* The repeating vertical rule field that used to sit behind this, and the rule closing
           the section, are both gone — they were the loudest lines on the page. */}
       <Section pad="pt-[clamp(32px,6vh,72px)] pb-[clamp(48px,7vh,80px)]">
-        <Motion className="flex flex-col gap-7" {...reveal}>
-          <Eyebrow>Solutions · Ways in</Eyebrow>
-          <h1 className="font-display max-w-[15ch] text-[clamp(2.75rem,7vw,6rem)] leading-[1.01] font-medium tracking-[-0.04em] text-cream">
-            Built to outlast.
-          </h1>
-          <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">
-            Ways to work with us — build something new, modernize what you have, extend your team, or hand us the keys
-            to production. One engineering standard behind all of them.
-          </p>
-        </Motion>
+        {/* Copy left, figure right. The right half was empty at lg and up — enough of a hole
+          that the hero read as unfinished rather than airy. */}
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-16">
+          <div>
+            <Motion className="flex flex-col gap-7" {...reveal}>
+              <Eyebrow>Solutions · Ways in</Eyebrow>
+              <h1 className="font-display max-w-[15ch] text-[clamp(2.75rem,7vw,6rem)] leading-[1.01] font-medium tracking-[-0.04em] text-cream">
+                Built to outlast.
+              </h1>
+              <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">
+                Ways to work with us — build something new, modernize what you have, extend your team, or hand us the
+                keys to production. One engineering standard behind all of them.
+              </p>
+            </Motion>
 
-        {/* Jump links to the scenes below. Chips, not a row of bare words: with both the
+            {/* Jump links to the scenes below. Chips, not a row of bare words: with both the
             ordinals and the rule above them gone there is nothing else separating four text
             links, and the filled shape is what says "these are controls". */}
-        <Motion className="mt-12 flex flex-wrap gap-2.5 lg:mt-16" {...reveal}>
-          {SOLUTIONS.map((s) => (
-            <Link
-              key={s.id}
-              href={`#${s.id}`}
-              className={cn(
-                'inline-flex items-center px-4 py-2 text-[13.5px] text-body hover:text-cream',
-                CHIP,
-                FOCUS_RING,
-              )}
-            >
-              {s.name}
-            </Link>
-          ))}
-        </Motion>
+            <Motion className="mt-12 flex flex-wrap gap-2.5 lg:mt-16" {...reveal}>
+              {SOLUTIONS.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`#${s.id}`}
+                  className={cn(
+                    'inline-flex items-center px-4 py-2 text-[13.5px] text-body hover:text-cream',
+                    CHIP,
+                    FOCUS_RING,
+                  )}
+                >
+                  {s.name}
+                </Link>
+              ))}
+            </Motion>
+          </div>
+
+          {/* Not a fifth object beside the four below — a field. Wider, flatter and at about
+            half their contrast, so it backs the copy instead of competing with the h1.
+            Hidden below lg, where the hero is one column and it would only add scroll. */}
+          <Motion className="hidden lg:block" {...reveal}>
+            <SolutionsHeroMark />
+          </Motion>
+        </div>
       </Section>
 
       {/* ── FOUR AT A GLANCE ─────────────────────────────────────────────────────────────── */}
