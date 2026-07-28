@@ -33,7 +33,7 @@ async function getGlobal(slug: Global, depth = 0, locale?: TypedLocale) {
  * Freshness is purely tag-driven (no time-based revalidate): out-of-request edits must be followed
  * by GET /next/revalidate or the admin "Revalidate site" button (or a CACHE_VERSION bump).
  */
-const CACHE_VERSION = 'v3'
+const CACHE_VERSION = 'v4'
 
 function cachedGlobal(slug: Global, depth: number, tags: string[], locale?: TypedLocale) {
   return unstable_cache(
