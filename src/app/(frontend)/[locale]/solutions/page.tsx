@@ -1,5 +1,7 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import { SolutionMark } from '@/components/solutions/SolutionsFrame'
+import '@/components/solutions/solutionsFrame.css'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -46,8 +48,8 @@ const FOCUS_RING =
 // ---------------------------------------------------------------------------------------------
 const SOLUTIONS = [
   {
-    n: '01',
     id: 's1',
+    art: 0,
     name: 'Product Development',
     tagline: 'Take an idea to a real product.',
     who: 'You have something to build and no team — or a team that is already full.',
@@ -59,8 +61,8 @@ const SOLUTIONS = [
     },
   },
   {
-    n: '02',
     id: 's2',
+    art: 1,
     name: 'Enterprise Transformation',
     tagline: 'Replace what you have outgrown.',
     who: 'You are running something critical that is getting expensive, fragile, or impossible to hire for — or the “system” is still paper, phone calls, and spreadsheets the business has outgrown.',
@@ -72,8 +74,8 @@ const SOLUTIONS = [
     },
   },
   {
-    n: '03',
     id: 's3',
+    art: 2,
     name: 'Engineering Augmentation',
     tagline: 'Add senior engineers to your team.',
     who: 'You know exactly what to build. You need more senior hands building it.',
@@ -82,8 +84,8 @@ const SOLUTIONS = [
     proof: null,
   },
   {
-    n: '04',
     id: 's4',
+    art: 3,
     name: 'Managed Systems',
     tagline: 'We run what we build.',
     who: 'You have systems in production and nobody whose actual job is keeping them healthy.',
@@ -98,21 +100,18 @@ const SOLUTIONS = [
 
 const MODELS = [
   {
-    n: '01',
     name: 'Frame',
     tag: 'Fixed scope · timeline · price',
     body: 'For work with a clear finish line.',
     ideal: 'Launches, migrations, proofs of concept.',
   },
   {
-    n: '02',
     name: 'Flow',
     tag: 'Dedicated team · continuous',
     body: 'For products that keep evolving.',
     ideal: 'Long-term product development, continuous delivery.',
   },
   {
-    n: '03',
     name: 'Orchestra',
     tag: 'Senior capacity · on demand',
     body: 'For teams that need depth without the headcount.',
@@ -226,20 +225,19 @@ export default function SolutionsHubPage(): JSX.Element {
             </p>
           </Motion>
 
-          {/* hero index — jump links to the solution scenes below */}
-          <Motion className="mt-14 flex flex-wrap gap-x-8 gap-y-3 border-t border-line/70 pt-7 lg:mt-20" {...reveal}>
+          {/* hero index — jump links to the solution scenes below. Chips rather than a bare row of
+              words: with the leading ordinal gone there is nothing separating four plain text links,
+              and they read as one run-on line. The filled shape is what now says "these are controls". */}
+          <Motion className="mt-14 flex flex-wrap gap-2.5 border-t border-line/70 pt-7 lg:mt-20" {...reveal}>
             {SOLUTIONS.map((s) => (
               <Link
-                key={s.n}
+                key={s.id}
                 href={`#${s.id}`}
                 className={cn(
-                  'group inline-flex items-center gap-2.5 rounded-sm text-[13px] tracking-[0.02em] text-subtle transition-colors duration-200 hover:text-cream',
+                  'inline-flex items-center rounded-full bg-ink px-4 py-2 text-[13.5px] text-body transition-colors duration-200 hover:bg-[#23211d] hover:text-cream',
                   FOCUS_RING,
                 )}
               >
-                <span className="font-mono tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
-                  {s.n}
-                </span>
                 {s.name}
               </Link>
             ))}
@@ -263,28 +261,23 @@ export default function SolutionsHubPage(): JSX.Element {
 
         <div className="border-b border-line">
           {SOLUTIONS.map((s, i) => (
-            <Motion key={s.n} {...revealItem(i)}>
+            <Motion key={s.id} {...revealItem(i)}>
               <Link
                 href={`#${s.id}`}
                 className={cn(
-                  'group grid grid-cols-[3rem_1fr] items-center gap-x-6 gap-y-2 border-t border-line py-8 transition-colors duration-300 hover:bg-gradient-to-r hover:from-white/[0.03] hover:to-transparent lg:grid-cols-[7rem_minmax(0,1fr)_minmax(0,1.4fr)_3rem] lg:gap-x-8 lg:py-10',
+                  'group grid grid-cols-1 items-center gap-x-8 gap-y-2 border-t border-line py-8 transition-colors duration-300 hover:bg-gradient-to-r hover:from-white/[0.03] hover:to-transparent lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_3rem] lg:py-10',
                   FOCUS_RING,
                 )}
               >
-                <span className="font-display text-[15px] font-mono tabular-nums text-subtle transition-colors duration-300 group-hover:text-cream">
-                  {s.n}
-                </span>
-                <h3 className="font-display text-[clamp(1.25rem,2.1vw,1.625rem)] font-medium leading-[1.12] tracking-[-0.02em] text-cream">
+                <h3 className="font-display text-[clamp(1.5rem,2.8vw,2.125rem)] font-medium leading-[1.1] tracking-[-0.025em] text-cream">
                   {s.name}
                 </h3>
-                <p className="col-span-2 max-w-[48ch] text-[15px] leading-relaxed text-body lg:col-span-1 lg:col-start-3">
-                  {s.tagline}
-                </p>
+                <p className="max-w-[48ch] text-[15px] leading-relaxed text-body lg:col-start-2">{s.tagline}</p>
                 <ArrowUpRight
                   size={20}
                   strokeWidth={1.75}
                   aria-hidden
-                  className="col-start-2 row-start-1 hidden justify-self-end text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream lg:col-start-4 lg:block"
+                  className="hidden justify-self-end text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream lg:col-start-3 lg:row-start-1 lg:block"
                 />
               </Link>
             </Motion>
@@ -296,16 +289,21 @@ export default function SolutionsHubPage(): JSX.Element {
       {SOLUTIONS.map((s) => (
         <section key={s.id} id={s.id} className="scroll-mt-28 border-t border-line/60">
           <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-20 lg:py-32">
-            <Motion className="flex flex-col gap-5 lg:sticky lg:top-28 lg:self-start" {...reveal}>
-              <span className="text-[12px] uppercase tracking-[0.1em] text-subtle">
-                Solution {s.n} of 04 · <span className="text-cream">{s.name}</span>
-              </span>
-              <p className="font-display text-[clamp(2.5rem,6vw,4rem)] font-medium leading-none tracking-[-0.05em] text-cream/45 font-mono tabular-nums">
-                {s.n}
-              </p>
-              <h2 className="max-w-[14ch] font-display text-[clamp(1.75rem,3.4vw,2.75rem)] font-medium leading-[1.04] tracking-[-0.03em] text-cream">
-                {s.tagline}
+            <Motion className="flex flex-col gap-4 lg:sticky lg:top-28 lg:self-start" {...reveal}>
+              {/* The solution's NAME is the heading. It used to be a 12px eyebrow while the tagline
+                  took the h2 — so the thing the section is actually about was its smallest type, and
+                  four sections in a row were titled by a sentence rather than by a name. */}
+              <h2 className="max-w-[13ch] font-display text-[clamp(2.25rem,4.6vw,3.5rem)] font-medium leading-[1.02] tracking-[-0.035em] text-cream">
+                {s.name}
               </h2>
+              <p className="max-w-[28ch] text-[clamp(1.0625rem,1.7vw,1.375rem)] leading-[1.35] text-body">
+                {s.tagline}
+              </p>
+              {/* The scene from the home page's solutions frame, one lane per solution — what the
+                  decorative "02" numeral used to occupy, carrying the idea instead of the count. */}
+              <div className="mt-2 w-full max-w-[280px]">
+                <SolutionMark art={s.art} />
+              </div>
             </Motion>
 
             <div className="flex flex-col gap-7">
@@ -374,8 +372,7 @@ export default function SolutionsHubPage(): JSX.Element {
                 className="group flex h-full flex-col rounded-md border border-line bg-ink p-8 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong"
                 {...revealItem(i)}
               >
-                <span className="text-[11px] font-mono tabular-nums tracking-[0.1em] text-subtle">{m.n}</span>
-                <h3 className="mt-3.5 font-display text-[clamp(1.5rem,2.4vw,2rem)] font-medium tracking-[-0.02em] text-cream">
+                <h3 className="font-display text-[clamp(1.5rem,2.4vw,2rem)] font-medium tracking-[-0.02em] text-cream">
                   {m.name}
                   <sup className="ml-0.5 text-[0.5em] align-super font-medium text-subtle">™</sup>
                 </h3>
@@ -411,14 +408,11 @@ export default function SolutionsHubPage(): JSX.Element {
               <thead>
                 <tr>
                   <th className="w-[150px] border-b border-line-strong bg-ink px-5 py-5" />
-                  {COMPARE_COLS.map((col, i) => (
+                  {COMPARE_COLS.map((col) => (
                     <th
                       key={col}
                       className="border-b border-line-strong bg-ink px-5 py-5 align-bottom font-display text-[15px] font-medium whitespace-nowrap text-cream"
                     >
-                      <span className="mb-2 block text-[11px] font-mono tabular-nums tracking-[0.08em] text-subtle">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
                       {col}
                     </th>
                   ))}

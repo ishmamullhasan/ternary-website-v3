@@ -62,6 +62,21 @@
   display: block;
 }
 
+/* One lane on its own, outside the frame (the solutions hub renders each scene
+   beside its heading). It reuses `.sf-svg` for the stroke language but has to
+   re-declare the ink tokens, which live on `.sf-frame` — without them every
+   stroke resolves to `none` and the figure renders invisible. `height: auto`
+   overrides `.sf-svg`'s `100%`, which needs a sized parent it does not have
+   here; with a viewBox that gives the figure its intrinsic ratio. */
+.sf-solo {
+  --ink: rgba(244, 243, 236, 0.8);
+  --hi: rgba(244, 243, 236, 1);
+  --sd: rgba(244, 243, 236, 1);
+
+  height: auto;
+  opacity: 0.9;
+}
+
 .sf-svg .ink,
 .sf-svg .hi {
   fill: none;

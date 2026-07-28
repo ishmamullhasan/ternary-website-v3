@@ -307,6 +307,31 @@ export function artIndexFor(title: string | null | undefined, index: number): nu
   return index % ART.length
 }
 
+/**
+ * A single lane, lifted out of the frame — the solutions hub renders the scene
+ * that belongs to each solution beside its heading, so the hub and the home
+ * page section speak the same visual language.
+ *
+ * Each lane's art is authored around a local x of 0 (the frame translates it
+ * into place afterwards), so a viewBox centred on 0 needs no path changes. No
+ * mask, no pointer field, no `is-focus` state — there is only one lane, so
+ * nothing needs to recede.
+ *
+ * The viewBox is the measured union of all four scenes' bounding boxes plus
+ * 10px, NOT the frame's 1200×420 — the art occupies only y 88–322 of that, so
+ * inheriting it gave every mark ~100px of blank space above and below. One
+ * shared box across all four (rather than
+ * fitting each to its own extents) is what keeps them a matched set — otherwise
+ * the smallest scene would render largest.
+ */
+export function SolutionMark({ art }: { art: number }): JSX.Element {
+  return (
+    <svg viewBox="-139 78 278 255" fill="none" aria-hidden className="sf-svg sf-solo">
+      <g dangerouslySetInnerHTML={{ __html: (ART[art] ?? ART[0])() }} />
+    </svg>
+  )
+}
+
 export default function SolutionsFrame({
   focus,
   lanes,
