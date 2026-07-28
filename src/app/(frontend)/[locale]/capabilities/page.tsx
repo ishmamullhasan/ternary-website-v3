@@ -168,7 +168,7 @@ function Section({ children, id, pad }: { children: ReactNode; id?: string; pad?
 
 /* Every section opens the same way — eyebrow + heading left, one supporting sentence
    right, sharing a baseline. */
-function SectionHead({ eyebrow, title, blurb }: { eyebrow: string; title: string; blurb: string }): JSX.Element {
+function SectionHead({ eyebrow, title, blurb }: { eyebrow: string; title: string; blurb?: string }): JSX.Element {
   return (
     <Motion
       className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
@@ -176,11 +176,13 @@ function SectionHead({ eyebrow, title, blurb }: { eyebrow: string; title: string
     >
       <div className="flex flex-col gap-4">
         <Eyebrow>{eyebrow}</Eyebrow>
-        <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-cream">
+        {/* `text-balance` so a heading breaks into even lines instead of orphaning its last
+            word — "One standard across them / all" was the case that showed it. */}
+        <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-balance text-cream">
           {title}
         </h2>
       </div>
-      <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:pb-2">{blurb}</p>
+      {blurb ? <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:pb-2">{blurb}</p> : null}
     </Motion>
   )
 }
@@ -357,28 +359,26 @@ export default function CapabilitiesHubPage(): JSX.Element {
       </Section>
 
       {/* ── THE STANDARD ─────────────────────────────────────────────────────────────────── */}
+      {/* Was the only section on the page that set its heading BESIDE its content, on a
+          1.2fr / 1fr split — so the wider track (681px) held a 400px heading, leaving 281px
+          empty across and 275px more empty below it, while the three cards were squeezed
+          into the narrower 568px track. Heading on top, cards across the full width, like
+          every other section here: both dead zones go and the cards gain ~780px. */}
       <Section>
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-20">
-          <Motion className="flex flex-col gap-4 lg:self-start" {...reveal}>
-            <Eyebrow>The bar</Eyebrow>
-            <h2 className="font-display max-w-[12ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-cream">
-              One standard across them all
-            </h2>
-          </Motion>
+        <SectionHead eyebrow="The bar" title="One standard across them all" />
 
-          {/* Three items separated by hairlines, each labelled a. b. c. Three surfaces now —
-              the gaps do the separating, and the titles carry themselves without the letters,
-              which indexed nothing a reader needed. */}
-          <div className="flex flex-col gap-3">
-            {STANDARD.map((item, i) => (
-              <Motion key={item.title} className={cn('flex flex-col gap-2 p-6', PANEL)} {...revealItem(i)}>
-                {/* h3, not h4 — these are repeated items directly under the section's h2, and
-                    an h4 here skipped a level (SC 1.3.1). It was h4 before this rewrite too. */}
-                <h3 className="text-[18px] font-medium tracking-[-0.01em] text-cream">{item.title}</h3>
-                <p className="max-w-[48ch] text-[15px] leading-relaxed text-body">{item.body}</p>
-              </Motion>
-            ))}
-          </div>
+        {/* Three items separated by hairlines, each labelled a. b. c. Three surfaces now —
+            the gaps do the separating, and the titles carry themselves without the letters,
+            which indexed nothing a reader needed. */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {STANDARD.map((item, i) => (
+            <Motion key={item.title} className={cn('flex h-full flex-col gap-2 p-7', PANEL)} {...revealItem(i)}>
+              {/* h3, not h4 — repeated items directly under the section's h2; an h4 here
+                  skipped a level (SC 1.3.1). It was h4 before this rewrite too. */}
+              <h3 className="text-[18px] font-medium tracking-[-0.01em] text-cream">{item.title}</h3>
+              <p className="text-[15px] leading-relaxed text-body">{item.body}</p>
+            </Motion>
+          ))}
         </div>
       </Section>
 
