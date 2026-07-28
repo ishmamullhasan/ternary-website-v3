@@ -43,7 +43,7 @@ export default function GlobalDeliveryComp({ heading, description, lanes }: Glob
           The offset lives on this plain wrapper, not on <Motion>: the shared `reveal` animates `y`,
           and motion writes that to an inline `transform`, which would overwrite the translate
           utilities. The reveal below is therefore opacity-only. */}
-      <div className="absolute bottom-0 right-0 w-[340px] translate-x-[20%] translate-y-[16%] sm:w-[420px] lg:w-[560px] xl:w-[660px]">
+      <div className="absolute bottom-0 right-0 w-[300px] translate-x-[18%] translate-y-[8%] sm:w-[360px] lg:w-[480px] xl:w-[560px]">
         <Motion
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
