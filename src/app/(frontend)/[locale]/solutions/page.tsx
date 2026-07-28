@@ -343,7 +343,17 @@ export default function SolutionsHubPage(): JSX.Element {
       <div className="lg:grid lg:auto-rows-fr">
         {SOLUTIONS.map((s) => (
           <Section key={s.id} id={s.id} pad="py-[clamp(24px,2.5vw,40px)] lg:h-full">
-            <div className="grid grid-cols-1 gap-8 lg:h-full lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-16">
+            {/* PROXIMITY. The left track was `1fr` of a 1:1.35 split, so it kept growing with the
+                viewport while its content did not — the heading caps at 467px. Above 1280 that
+                opened a dead channel: 136px at 1440, 159px at 1920, against a 72–80px gap BETWEEN
+                scenes. The two halves of one scene were reading as further apart than two separate
+                solutions, which is the proximity principle exactly backwards.
+
+                The track is now capped at the heading's own natural width, so it never outgrows
+                what it holds — below that the heading simply wraps to the track and the dead space
+                stays at zero. The column gap is set under the scene gap at every width, so the
+                spacing hierarchy reads columns < scenes < sections. */}
+            <div className="grid grid-cols-1 gap-8 lg:h-full lg:grid-cols-[clamp(300px,34vw,470px)_minmax(0,1fr)] lg:gap-x-[clamp(32px,3vw,56px)]">
               {/* Not sticky any more. It was, back when a scene ran to ~520px and the column had
                   room to travel; at the tightened rhythm it barely moves, and what it does do is
                   leave each heading at a different height from its own panel's top as you scroll,
