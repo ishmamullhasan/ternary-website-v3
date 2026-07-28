@@ -44,53 +44,33 @@ uniform float u_amp;      // 0..1 presence of the pointer over THIS line; 0 = st
 uniform vec2 u_mouse;     // smoothed pointer position, texture space, (0,0) = top-left
 uniform float u_aspect;   // width / height, so the influence region is circular in screen pixels
 
-// Influence radius of the melt, in height-units. Near the cursor glyphs go gooey; elsewhere the
-// text stays perfectly crisp.
-const float RADIUS = 0.5;
-
-// Samples the premultiplied text texture; alpha carries the glyph coverage the metaball works on.
-vec4 tap(vec2 uv) { return texture2D(u_tex, uv); }
+// Radius of the deformation, in height-units — kept small so only the glyphs directly under the
+// cursor move, not the whole line.
+const float RADIUS = 0.55;
 
 void main() {
   vec2 uv = v_uv;
-  vec4 base = tap(uv);
 
-  // Circular influence on screen (aspect-corrected), eased in with the pointer presence.
-  vec2 scaled = vec2((uv.x - u_mouse.x) * u_aspect, uv.y - u_mouse.y);
+  // Local Gaussian bump centred on the pointer, measured in aspect-corrected space so the
+  // influence region is a true circle on screen (radial, not stretched along the line).
+  vec2 toM = uv - u_mouse;
+  vec2 scaled = vec2(toM.x * u_aspect, toM.y);
   float d = length(scaled);
-  float influence = exp(-(d * d) / (RADIUS * RADIUS)) * u_amp;
+  float influence = exp(-(d * d) / (RADIUS * RADIUS));
 
-  // Away from the cursor: leave the text untouched and crisp.
-  if (influence < 0.02) {
-    gl_FragColor = base;
-    return;
-  }
+  // Smooth radial push away from the pointer. centerFade takes the displacement to zero at the
+  // exact cursor core, where the direction vector flips — that flip was the "infinity" artifact.
+  // No travelling wave: just a clean liquid bulge that follows the cursor.
+  float centerFade = smoothstep(0.0, 0.22, d);
+  vec2 dir = scaled / max(d, 1e-4);
+  vec2 perp = vec2(-dir.y, dir.x); // tangential component — curls the glyphs instead of magnifying
+  // Mostly swirl with a little outward push, plus a slow rotation of the curl over time: reads as
+  // liquid smearing around the cursor rather than a zoom lens.
+  float curlSign = sin(u_time * 0.7) > 0.0 ? 1.0 : -1.0;
+  vec2 push = (dir * 0.35 + perp * curlSign * 0.85) * influence * centerFade * u_amp * 0.05;
+  push.x /= u_aspect; // back to uv space so the on-screen push is radially uniform
 
-  // Local disc blur whose radius grows toward the cursor. The offset is (cos/aspect, sin), so a
-  // step of size blur maps to a circle of radius blur*height in SCREEN pixels — big enough to
-  // actually fuse adjacent glyphs (a melt needs ~10px, not 1). A slow time rotation keeps it alive.
-  float blur = influence * 0.16;
-  vec4 acc = base;
-  float total = 1.0;
-  for (int i = 0; i < 12; i++) {
-    float ang = 0.5235988 * float(i) + u_time * 0.6;
-    vec2 dirs = vec2(cos(ang) / u_aspect, sin(ang));
-    acc += tap(uv + dirs * blur);
-    acc += tap(uv + dirs * blur * 0.55);
-    total += 2.0;
-  }
-  acc /= total;
-
-  // Metaball threshold: sharpen the blurred alpha so overlapping smears fuse into flowing blobs and
-  // then separate again as the cursor moves on. Mixed in by influence so the edge of the region
-  // blends smoothly back into the crisp text.
-  float gooA = smoothstep(0.34, 0.5, acc.a);
-  float outA = mix(base.a, gooA, influence);
-  // Premultiplied colour: rescale the (already premultiplied) rgb to the new coverage.
-  vec3 gooRGB = acc.rgb * (gooA / max(acc.a, 0.001));
-  vec3 outRGB = mix(base.rgb, gooRGB, influence);
-
-  gl_FragColor = vec4(outRGB, outA);
+  gl_FragColor = texture2D(u_tex, uv - push);
 }`
 
 function createShader(gl: WebGLRenderingContext, type: number, src: string): WebGLShader | null {
