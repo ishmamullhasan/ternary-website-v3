@@ -35,14 +35,15 @@ export default function GlobalDeliveryComp({ heading, description, lanes }: Glob
 
       {/* Interactive 3D globe (lazy-loaded WebGL) highlighting the delivery hubs. It is anchored to
           the card's bottom-right corner and pushed past both edges by a fraction of its own size —
-          20% horizontally, 30% vertically — so the visible slice is the top-left 80% × 70% of the
-          sphere. `.section-card` is `overflow: clip`, which does the cropping. `py-0 max-w-none`
+          20% horizontally, 16% vertically — so the visible slice is the top-left 80% × 84% of the
+          sphere. The lighter vertical crop keeps southern regions (e.g. Australia) in frame.
+          `.section-card` is `overflow: clip`, which does the cropping. `py-0 max-w-none`
           unwind the component's own centring/padding defaults, which assume it is laid out in flow.
 
           The offset lives on this plain wrapper, not on <Motion>: the shared `reveal` animates `y`,
           and motion writes that to an inline `transform`, which would overwrite the translate
           utilities. The reveal below is therefore opacity-only. */}
-      <div className="absolute bottom-0 right-0 w-[340px] translate-x-[20%] translate-y-[30%] sm:w-[420px] lg:w-[560px] xl:w-[660px]">
+      <div className="absolute bottom-0 right-0 w-[340px] translate-x-[20%] translate-y-[16%] sm:w-[420px] lg:w-[560px] xl:w-[660px]">
         <Motion
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
