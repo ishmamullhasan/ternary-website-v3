@@ -121,16 +121,11 @@ export default function MegaMenuOverlay({
                     const mega = hasPanel(entry)
                     const isActive = i === activeIndex
                     if (mega) {
-                      return (
-                        <button
-                          key={i}
-                          type="button"
-                          onMouseEnter={() => onActiveIndex(i)}
-                          onFocus={() => onActiveIndex(i)}
-                          onClick={() => onActiveIndex(i)}
-                          aria-current={isActive ? 'true' : undefined}
-                          className="group relative flex items-center justify-between rounded-md py-2.5 pl-4 pr-2 text-left transition-colors"
-                        >
+                      // The top-level item both previews its panel (on hover/focus) AND navigates to
+                      // its hub on click, so "Capabilities" takes you to /capabilities. It's a Link
+                      // when a hub destination exists; otherwise a plain panel-opening button.
+                      const inner = (
+                        <>
                           {isActive && (
                             <motion.span
                               layoutId="mega-active"
@@ -153,6 +148,33 @@ export default function MegaMenuOverlay({
                             )}
                             aria-hidden
                           />
+                        </>
+                      )
+                      const triggerClass =
+                        'group relative flex items-center justify-between rounded-md py-2.5 pl-4 pr-2 text-left transition-colors'
+                      return entry.link ? (
+                        <Link
+                          key={i}
+                          href={href(entry.link)}
+                          onMouseEnter={() => onActiveIndex(i)}
+                          onFocus={() => onActiveIndex(i)}
+                          onClick={onClose}
+                          aria-current={isActive ? 'true' : undefined}
+                          className={triggerClass}
+                        >
+                          {inner}
+                        </Link>
+                      ) : (
+                        <button
+                          key={i}
+                          type="button"
+                          onMouseEnter={() => onActiveIndex(i)}
+                          onFocus={() => onActiveIndex(i)}
+                          onClick={() => onActiveIndex(i)}
+                          aria-current={isActive ? 'true' : undefined}
+                          className={triggerClass}
+                        >
+                          {inner}
                         </button>
                       )
                     }
