@@ -91,14 +91,16 @@ How we work:
 - Copy/content lives in the CMS database (a MongoDB Atlas "staging cluster"), NOT in git. I will
   paste the database connection string when you ask for it. Use it ONLY to write to that staging
   cluster — never any other database, and never a production database.
+- This clone's `origin` is github.com/sajid209-stack/ternary-website-v3, and the review site
+  (yh16) rebuilds from that repo's `main` automatically — so deploying just means merging to `main`.
 - Follow the established pattern in this repo exactly: make CMS changes with an idempotent mongosh
   seed script under scripts/, run and verify it, bump the relevant unstable_cache key so the change
-  surfaces, log every content change in COPY_CHANGELOG.md, then deploy the way this repo always does:
-  branch off fresh main, commit with --no-verify (co-author line for Claude), open a PR via the
-  GitHub API and squash-merge it, then sync the fork with `git push staging origin/main:main`
-  (fast-forward only, never force-push). If a "staging" remote for github.com/sajid209-stack isn't
-  set, add it.
+  surfaces, log every content change in COPY_CHANGELOG.md, then deploy: branch off fresh `main`,
+  commit with --no-verify (co-author line for Claude), push to origin, open a PR via the GitHub API
+  and squash-merge it to `main`. Never force-push. (No separate fork-sync step is needed — origin is
+  already the fork that feeds the review site.)
 - After you deploy, tell me the change may take a few minutes to appear on the review URL.
+- If you'd rather I NOT auto-merge and instead leave a PR for Sajid to review, tell me and I will.
 
 Hard rules for all copy (do not break these):
 1. Plain language a non-technical business owner understands; explain any technical term.
