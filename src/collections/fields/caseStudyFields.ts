@@ -41,6 +41,45 @@ export const caseStudyFields: Field[] = [
     ],
   },
 
+  // Numbered "how we worked" sequence rendered by <NumberedSteps> between the write-up and the
+  // media showcase. Two rows minimum (a single step is not a sequence) and four maximum — the
+  // component lays out at most three columns before wrapping, and the band reads as a summary,
+  // not a project plan. The band is guarded on this array, so leaving it empty hides it entirely
+  // and the page's section numbering closes up behind it.
+  //
+  // Row structure is shared across locales with localized leaves, matching the capability
+  // collection's `howWeDoIt.items` — the same content shape this component already renders there.
+  {
+    name: 'steps',
+    label: 'How We Worked',
+    type: 'array',
+    minRows: 2,
+    maxRows: 4,
+    admin: {
+      description: 'Numbered steps (2–4) shown after the write-up. Keep the bodies a similar length so they align.',
+    },
+    fields: [
+      { name: 'title', label: 'Title', type: 'text', localized: true },
+      { name: 'body', label: 'Body', type: 'textarea', localized: true },
+    ],
+  },
+
+  // The two-line editorial headline for a story's scene on /work. Line one is set in the primary
+  // text tier, line two in the muted italic beneath it — so the break is authored, not wrapped.
+  // Falls back to the story title when unset, which is why /work needs no separate curation list.
+  //
+  // House rules apply here as everywhere: no counts, no metrics, nothing we cannot source.
+  {
+    name: 'workHeadline',
+    label: 'Work Page Headline',
+    type: 'textarea',
+    localized: true,
+    admin: {
+      description: 'Two lines, one per row. Line 2 renders in the muted italic. No counts or metrics.',
+      rows: 2,
+    },
+  },
+
   // 5-cell meta strip beneath the hero.
   {
     name: 'caseMeta',

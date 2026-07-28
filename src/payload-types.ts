@@ -387,6 +387,20 @@ export interface Story {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Numbered steps (2–4) shown after the write-up. Keep the bodies a similar length so they align.
+   */
+  steps?:
+    | {
+        title?: string | null;
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Two lines, one per row. Line 2 renders in the muted italic. No counts or metrics.
+   */
+  workHeadline?: string | null;
   caseMeta?: {
     industry?: string | null;
     engagement?: string | null;
@@ -394,6 +408,30 @@ export interface Story {
     team?: string | null;
     year?: string | null;
   };
+  /**
+   * Higher sorts earlier on /stories. Ties fall back to the published date.
+   */
+  sortWeight?: number | null;
+  /**
+   * External items link offsite and show the source label instead of the category.
+   */
+  linkType?: ('internal' | 'external') | null;
+  /**
+   * Full URL including https://
+   */
+  externalUrl?: string | null;
+  /**
+   * Shown in place of the category, e.g. “Read it on Forbes”.
+   */
+  sourceLabel?: string | null;
+  /**
+   * Still frame used when the thumbnail is a video. Ignored for image thumbnails.
+   */
+  posterImage?: (string | null) | Media;
+  /**
+   * Shown on the /stories row and used as the fallback sort.
+   */
+  publishedDate?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -678,6 +716,26 @@ export interface Insight {
       link?: string | null;
     };
   };
+  /**
+   * Higher sorts earlier on /stories. Ties fall back to the published date.
+   */
+  sortWeight?: number | null;
+  /**
+   * External items link offsite and show the source label instead of the category.
+   */
+  linkType?: ('internal' | 'external') | null;
+  /**
+   * Full URL including https://
+   */
+  externalUrl?: string | null;
+  /**
+   * Shown in place of the category, e.g. “Read it on Forbes”.
+   */
+  sourceLabel?: string | null;
+  /**
+   * Still frame used when the thumbnail is a video. Ignored for image thumbnails.
+   */
+  posterImage?: (string | null) | Media;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -911,6 +969,26 @@ export interface PressRelease {
     } | null;
     pressReleases?: (string | PressRelease)[] | null;
   };
+  /**
+   * Higher sorts earlier on /stories. Ties fall back to the published date.
+   */
+  sortWeight?: number | null;
+  /**
+   * External items link offsite and show the source label instead of the category.
+   */
+  linkType?: ('internal' | 'external') | null;
+  /**
+   * Full URL including https://
+   */
+  externalUrl?: string | null;
+  /**
+   * Shown in place of the category, e.g. “Read it on Forbes”.
+   */
+  sourceLabel?: string | null;
+  /**
+   * Still frame used when the thumbnail is a video. Ignored for image thumbnails.
+   */
+  posterImage?: (string | null) | Media;
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -5527,6 +5605,14 @@ export interface StorySelect<T extends boolean = true> {
         caption?: T;
         id?: T;
       };
+  steps?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  workHeadline?: T;
   caseMeta?:
     | T
     | {
@@ -5536,6 +5622,12 @@ export interface StorySelect<T extends boolean = true> {
         team?: T;
         year?: T;
       };
+  sortWeight?: T;
+  linkType?: T;
+  externalUrl?: T;
+  sourceLabel?: T;
+  posterImage?: T;
+  publishedDate?: T;
   meta?:
     | T
     | {
@@ -5599,6 +5691,11 @@ export interface InsightSelect<T extends boolean = true> {
               link?: T;
             };
       };
+  sortWeight?: T;
+  linkType?: T;
+  externalUrl?: T;
+  sourceLabel?: T;
+  posterImage?: T;
   meta?:
     | T
     | {
@@ -5691,6 +5788,11 @@ export interface PressReleaseSelect<T extends boolean = true> {
         description?: T;
         pressReleases?: T;
       };
+  sortWeight?: T;
+  linkType?: T;
+  externalUrl?: T;
+  sourceLabel?: T;
+  posterImage?: T;
   meta?:
     | T
     | {
