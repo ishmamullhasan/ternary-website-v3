@@ -48,20 +48,30 @@ come from):
 
 ---
 
-## 3. One-time setup (ask Sajid for the two secret items)
+## 3. Connect Claude to the repo (pick ONE — you already have repo access as a collaborator)
 
-1. **Install Claude Code** (Sajid or IT can help): https://claude.com/claude-code
-2. **Get the code.** In a terminal, clone the repo you were added to as a collaborator:
-   ```
-   git clone https://github.com/sajid209-stack/ternary-website-v3.git
-   cd ternary-website-v3
-   ```
-   (When git asks you to sign in to GitHub, use your own GitHub account — you have access.)
-3. **Two things to get from Sajid, privately (never paste these into email/Slack/chat):**
-   - The **database connection string** (lets Claude publish copy changes). Sajid sends it to you
-     directly; you'll paste it only into your own terminal when Claude asks.
-   - Confirmation you're a **collaborator** on the repo (you are).
-4. Open Claude Code in the `ternary-website-v3` folder and paste the prompt in section 4.
+You do **not** have to clone anything. Two ways to connect Claude to the repo:
+
+**Option A — Claude on the web (no download, easiest).**
+1. Sign in at **https://claude.ai** with your account.
+2. Connect your **GitHub** and select the repository **`sajid209-stack/ternary-website-v3`**.
+3. Start a session on that repo and paste the prompt in section 4. Claude works on the repo in the
+   cloud — nothing is installed on your computer.
+
+**Option B — Claude Code on your computer (one-time clone, most powerful).**
+1. Install Claude Code: https://claude.com/claude-code
+2. In a terminal: `git clone https://github.com/sajid209-stack/ternary-website-v3.git` then
+   `cd ternary-website-v3` (sign in to GitHub with your own account when asked — you have access).
+3. Run Claude Code in that folder and paste the prompt in section 4.
+
+**Get these from Sajid privately — never paste into email/Slack/chat:**
+- The **database connection string** (lets Claude publish copy changes; you paste it into Claude only
+  when it asks). Without it Claude can still read everything and draft copy, but can't publish
+  content changes.
+
+_(Simplest alternative for small text tweaks, no Claude at all: the CMS dashboard at
+`https://ternary-website-v3-yh16.vercel.app/admin` — ask Sajid for a login. Good for quick edits;
+use the Claude prompt below for anything bigger.)_
 
 ---
 
