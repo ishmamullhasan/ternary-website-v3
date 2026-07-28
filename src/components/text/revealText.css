@@ -1,0 +1,36 @@
+/* Word-by-word reveal for a statement paragraph.
+ *
+ * BASE IS THE FINISHED STATE — every word at full opacity. The dimmed state exists
+ * only under `[data-rv='on']`, an attribute RevealText sets from JavaScript and only
+ * when the visitor has not asked for reduced motion. So with JS off, before hydration,
+ * or under reduced motion the sentence is simply readable. Text that is legible only
+ * because an animation ran is the failure this file is written to avoid.
+ *
+ * Opacity only, deliberately. A per-word transform needs `display: inline-block`, which
+ * changes how the line breaks and how the text is selected; keeping the words plain
+ * inline spans means wrapping, justification and selection behave exactly as they do
+ * without the effect. Screen readers still see one continuous sentence, because inline
+ * spans with real spaces between them do not fragment the accessible text.
+ */
+
+.rv-w {
+  transition: opacity 0.5s ease;
+}
+
+.rv[data-rv='on']:not(.is-in) .rv-w {
+  opacity: 0.16;
+}
+
+/* 34ms apart: a ~20-word sentence finishes in about 1.2s, which reads as one gesture
+   rather than twenty. Any slower and the reader is waiting for their own sentence. */
+.rv[data-rv='on'].is-in .rv-w {
+  opacity: 1;
+  transition-delay: calc(var(--w, 0) * 34ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv .rv-w {
+    opacity: 1 !important;
+    transition: none !important;
+  }
+}

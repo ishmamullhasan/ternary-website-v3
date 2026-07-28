@@ -1,6 +1,7 @@
 import Motion from '@/components/animation/motion'
 import CapabilityHeroMark from '@/components/capability/CapabilityHeroMark'
 import Link from '@/components/LocalizedLink'
+import RevealText from '@/components/text/RevealText'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
@@ -237,16 +238,20 @@ export default function CapabilitiesHubPage(): JSX.Element {
       </Section>
 
       {/* ── FRAMING ──────────────────────────────────────────────────────────────────────── */}
+      {/* Same flex row as SectionHead rather than a 1fr/1.35fr grid. In the grid the second
+          paragraph started at its own track's left edge and floated mid-page; `justify-between`
+          puts it flush right, where every other section's supporting sentence sits. */}
       <Section>
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-16">
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+          <RevealText
+            className="max-w-[36ch] font-display text-[clamp(1.75rem,3vw,2.5rem)] font-medium leading-[1.26] tracking-[-0.025em] text-cream"
+            segments={[
+              { text: 'A capability, to us, is not a keyword on a services page.' },
+              { text: 'It’s a practice we run in production.', className: 'text-body' },
+            ]}
+          />
           <Motion {...reveal}>
-            <p className="max-w-[30ch] font-display text-[clamp(1.5rem,2.6vw,2rem)] font-medium leading-[1.28] tracking-[-0.02em] text-cream">
-              A capability, to us, is not a keyword on a services page.{' '}
-              <span className="text-body">It&apos;s a practice we run in production.</span>
-            </p>
-          </Motion>
-          <Motion className="self-end" {...reveal}>
-            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
+            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:pb-2">
               Each one below has people who own it, methods we can defend, and clients who can vouch for it. We only
               list what we currently run for clients — nothing aspirational, nothing outsourced to a slide.
             </p>
