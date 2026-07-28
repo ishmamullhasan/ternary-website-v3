@@ -317,6 +317,7 @@ function PanelBody({
 }) {
   const featured = panel.featured?.enabled ? panel.featured : undefined
   const columns = (panel.columns ?? []).filter((c) => (c.items?.length ?? 0) > 0 || c.heading)
+  const singleColumn = columns.length === 1
   const resources = (panel.resources ?? []).filter((r) => r.label)
 
   return (
@@ -379,7 +380,10 @@ function PanelBody({
                 {col.heading && (
                   <h4 className="mb-6 text-[10px] font-bold uppercase tracking-[0.18em] text-subtle">{col.heading}</h4>
                 )}
-                <div className="flex flex-col gap-7">
+                {/* A panel with a single column (e.g. Solutions' 4 items) lays those items out in a
+                    2-wide grid so they read as a 2×2 block instead of a tall list. Multi-column
+                    panels keep their items stacked under each column heading. */}
+                <div className={cn(singleColumn ? 'grid grid-cols-1 gap-x-8 gap-y-7 sm:grid-cols-2' : 'flex flex-col gap-7')}>
                   {(col.items ?? []).map((item, j) => (
                     <Link key={j} href={href(item.link)} onClick={onClose} className="group flex gap-4">
                       {item.icon && (
