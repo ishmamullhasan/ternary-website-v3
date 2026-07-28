@@ -66,16 +66,17 @@ void main() {
     return;
   }
 
-  // Local disc blur whose radius grows toward the cursor. Two rings of taps + centre, in uv space
-  // (x divided by aspect so the blur is round on screen). A gentle time wobble keeps the blob alive.
-  float blur = influence * 0.014;
+  // Local disc blur whose radius grows toward the cursor. The offset is (cos/aspect, sin), so a
+  // step of `blur` maps to a circle of radius blur*height in SCREEN pixels — big enough to actually
+  // fuse adjacent glyphs (a melt needs ~10px, not 1). A slow time rotation keeps the blob alive.
+  float blur = influence * 0.16;
   vec4 acc = base;
   float total = 1.0;
-  for (int i = 0; i < 10; i++) {
-    float ang = 0.6283185 * float(i) + u_time * 0.6;
+  for (int i = 0; i < 12; i++) {
+    float ang = 0.5235988 * float(i) + u_time * 0.6;
     vec2 dirs = vec2(cos(ang) / u_aspect, sin(ang));
     acc += tap(uv + dirs * blur);
-    acc += tap(uv + dirs * blur * 0.5);
+    acc += tap(uv + dirs * blur * 0.55);
     total += 2.0;
   }
   acc /= total;
