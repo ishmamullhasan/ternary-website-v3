@@ -330,3 +330,48 @@ replicate the CMS `scales` edits below.**
     junior bench swapped in" → "No juniors quietly substituted in"; "one definition of done" →
     "one standard for calling it finished"; card titles "The hiring bar holds"/"The review
     standard holds" → "Who we hire holds"/"How we check the work holds".
+
+### Fit truncated card copy (staging) — complete thoughts within every clamp
+Via `scripts/seed-fit-copy.js` (idempotent). **Prod follow-up: replicate all fields below.** Every
+truncation was verified in-browser against the real rendered card width on `yh16`; each fix is a
+pure recomposition of existing approved copy (no new claims, no metrics). Each field is set to
+`{ en }` only, which replaces the localized object and drops stale `bn` (fallback serves the fresh
+`en`); bn re-translation is a later pass. **No clamp changes were needed** — all fixes are copy,
+so cards stay aligned on their existing `min-h` reservations.
+
+The only visible truncations at the audited widths were in the home `aboutSection` (AboutComp) and
+`solutionsSection` (SolutionsComp):
+
+- **`pressreleases.one-year-in-bangladesh.title`** — 47ch wrapped to 3 lines in AboutComp's
+  `line-clamp-2` title (24px, ~284px grid card). "Ternary Marks One Year of Bangladesh Operations"
+  → "Ternary Marks One Year in Bangladesh" (36ch, 2 lines — matches the 32–37ch story-title band).
+- **`pressreleases.one-year-in-bangladesh.excerpts`** — 190ch overran AboutComp's hover
+  `line-clamp-5` (16px). "One year after establishing its Dhaka delivery hub, Ternary marks a year
+  of building and operating production software from Bangladesh — anchoring a dual-hub model across
+  New York and Dhaka." → "A year after opening its Dhaka delivery hub, Ternary now builds and
+  operates production software from Bangladesh — anchoring a dual-hub model across New York and
+  Dhaka." (168ch, 5 lines).
+- **`stories.dhaka-stock-exchange.excerpts`** — 198ch overran the same `line-clamp-5`. Dropped the
+  trailing "so a decade of institutional information carries over exactly" and recomposed as one
+  complete sentence ending "— with a decade of institutional information carried over exactly."
+  (166ch, 5 lines).
+- **`solutions.{product-development,enterprise-transformation,engineering-augmentation}.excerpts`**
+  — 120/123/124ch overran SolutionsComp's `lg:line-clamp-3` (14px) at the tight 4-up lg width
+  (~232px). Recomposed to a uniform 100–105ch band so all four fit 3 lines and read as one group
+  (`managed-systems`, 105ch, already fit and is unchanged):
+  - product-development: "End-to-end product engineering — we design, build, and launch digital
+    products businesses depend on." (100ch)
+  - enterprise-transformation: "Replace what you have outgrown. We modernize the systems your
+    business depends on, without the downtime." (104ch)
+  - engineering-augmentation: "Extending your team with specialized talent — experienced engineers
+    who fit your workflows and culture." (103ch)
+- Verified: capability excerpts (77–92ch, 2 lines), industry excerpts (2 lines), the other 5
+  AboutComp story excerpts (144–173ch, ≤5 lines) and story titles (32–37ch, ≤2 lines) all fit
+  their clamps — no change.
+- Code (same pass): direct DB writes don't fire Payload's tag revalidation, so cache **keys** were
+  bumped to force fresh reads on deploy: `pages_home_${locale}_v10` → `_v11`;
+  `solution_${slug}_${locale}_v4` → `_v5` and `solution_related_v2` → `_v3`;
+  `story_detail_${slug}_${locale}_v2` → `_v3` and `story_related_${excludeSlug}_${locale}_v2` →
+  `_v3`; press-release detail keys gained a version segment (`pressRelease` → `pressRelease_v2`,
+  `pressRelease_${slug}_${locale}` → `…_v2`). Globals (header/footer) render only nav
+  title/slug — not these excerpts — so `getGlobals` `CACHE_VERSION` was left unchanged.
