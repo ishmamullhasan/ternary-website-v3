@@ -1,11 +1,12 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import SolutionScene from '@/components/solutions/SolutionScene'
 import { SolutionMark, SolutionsHeroMark } from '@/components/solutions/SolutionsFrame'
 import '@/components/solutions/solutionsFrame.css'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
-import type { JSX, ReactNode } from 'react'
+import type { CSSProperties, JSX, ReactNode } from 'react'
 
 /**
  * Solutions hub — landing rebuild, ported from public/hub/solutions-hub-ternary.html into Ternary's
@@ -358,7 +359,14 @@ export default function SolutionsHubPage(): JSX.Element {
                 what it holds — below that the heading simply wraps to the track and the dead space
                 stays at zero. The column gap is set under the scene gap at every width, so the
                 spacing hierarchy reads columns < scenes < sections. */}
-            <div
+            {/* SolutionScene owns the scroll choreography: it adds `is-in` on entry and
+                `is-out` when the NEXT card takes the frame, and writes the parallax offset.
+                Every duration and delay lives in solutionScene.css. The Motion wrappers that
+                used to reveal these children are gone — deliberately. Motion commits its
+                `initial` styles before useReducedMotion() resolves and never clears them, so
+                reduced-motion visitors were left on opacity 0; the CSS here is written the
+                other way round, with the finished card as the base rule. */}
+            <SolutionScene
               className={cn(
                 'grid grid-cols-1 gap-8 p-7 lg:h-full lg:grid-cols-[clamp(280px,30vw,440px)_minmax(0,1fr)] lg:gap-x-[clamp(32px,3vw,56px)] lg:p-10',
                 PANEL,
@@ -368,7 +376,7 @@ export default function SolutionsHubPage(): JSX.Element {
                   room to travel; at the tightened rhythm it barely moves, and what it does do is
                   leave each heading at a different height from its own panel's top as you scroll,
                   which reads as four misaligned scenes rather than one system. */}
-              <Motion className="flex flex-col gap-4 lg:self-start" {...reveal}>
+              <div className="sc-head flex flex-col gap-4 lg:self-start">
                 {/* The solution's NAME is the heading. It used to be a 12px eyebrow while the tagline
                   took the h2 — so the thing the section is actually about was its smallest type, and
                   four sections in a row were titled by a sentence rather than by a name. */}
@@ -380,31 +388,31 @@ export default function SolutionsHubPage(): JSX.Element {
                 </p>
                 {/* The scene from the home page's solutions frame, one lane per solution — what the
                   decorative "02" numeral used to occupy, carrying the idea instead of the count. */}
-                <div className="mt-2 w-full max-w-[280px]">
+                <div className="sc-fig mt-2 w-full max-w-[280px]">
                   <SolutionMark art={s.art} />
                 </div>
-              </Motion>
+              </div>
 
               {/* No surface of its own — the card around the whole scene is the surface now, and a
                   panel inside a panel would read as a card in a card. */}
               <div className="flex flex-col gap-7">
-                <Motion {...revealItem(0)}>
+                <div className="sc-row" style={{ '--r': 0 } as CSSProperties}>
                   <Fact label="Who it's for">{s.who}</Fact>
-                </Motion>
-                <Motion {...revealItem(1)}>
+                </div>
+                <div className="sc-row" style={{ '--r': 1 } as CSSProperties}>
                   <Fact label="What we do">{s.what}</Fact>
-                </Motion>
-                <Motion {...revealItem(2)}>
+                </div>
+                <div className="sc-row" style={{ '--r': 2 } as CSSProperties}>
                   <Fact label="What you get" emphasis>
                     {s.get}
                   </Fact>
-                </Motion>
+                </div>
                 {/* Proof slot: named client with written permission only. With no proof, the slot
                   hides entirely — an empty proof line is better than a vague one. Keeps the Fact
                   grid rather than the rule it used to sit under, so its label still lines up with
                   the three above it. */}
                 {s.proof && (
-                  <Motion {...revealItem(3)}>
+                  <div className="sc-row" style={{ '--r': 3 } as CSSProperties}>
                     <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
                       <h3 className="pt-0.5 text-[11px] tracking-[0.1em] text-subtle uppercase">Proof</h3>
                       <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-body">
@@ -426,10 +434,10 @@ export default function SolutionsHubPage(): JSX.Element {
                         </Link>
                       </p>
                     </div>
-                  </Motion>
+                  </div>
                 )}
               </div>
-            </div>
+            </SolutionScene>
           </Section>
         ))}
       </div>

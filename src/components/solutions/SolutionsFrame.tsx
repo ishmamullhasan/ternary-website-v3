@@ -414,6 +414,27 @@ export function SolutionsHeroMark(): JSX.Element {
   )
 }
 
+/**
+ * Prepare an art string to be drawn stroke by stroke.
+ *
+ * Two additions per strokeable element:
+ *   • `pathLength="1"` — normalises every path to a length of 1 so one
+ *     `stroke-dasharray: 1` draws them all at the same rate. Without it a long
+ *     edge and a short tick take wildly different times to appear.
+ *   • `style="--i:N"` — its index, which the CSS turns into a stagger delay, so
+ *     the figure builds up rather than materialising at once.
+ *
+ * Occluders are skipped deliberately: they are fills, not strokes, so a dash
+ * offset does nothing to them — and they must keep hiding what is behind them
+ * from the very first frame, or the drawing shows through its own boxes.
+ */
+function drawable(svg: string): string {
+  let i = 0
+  return svg.replace(/<(path|line)\s+([^>]*?)class="((?:ink|hi|solid)[^"]*)"/g, (m, tag, attrs, cls) =>
+    cls.includes('occ') ? m : `<${tag} ${attrs}class="${cls}" pathLength="1" style="--i:${i++}"`,
+  )
+}
+
 export function SolutionMark({ art }: { art: number }): JSX.Element {
   const box = ART_BOX[art] ?? ART_BOX[0]
   const sy = Math.min(1, MARK_H / box.h)
@@ -423,7 +444,7 @@ export function SolutionMark({ art }: { art: number }): JSX.Element {
     <svg viewBox="-136 120 272 170" fill="none" aria-hidden className="sf-svg sf-solo">
       <g
         transform={`translate(0 ${MARK_CY}) scale(1 ${sy.toFixed(4)}) translate(0 ${-cy})`}
-        dangerouslySetInnerHTML={{ __html: (ART[art] ?? ART[0])() }}
+        dangerouslySetInnerHTML={{ __html: drawable((ART[art] ?? ART[0])()) }}
       />
     </svg>
   )
