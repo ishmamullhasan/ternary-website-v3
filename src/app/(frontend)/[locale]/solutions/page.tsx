@@ -172,13 +172,56 @@ const COMPARE_ROWS: { label: string; cells: (ReactNode | string)[]; tabular?: bo
   },
 ]
 
-// Eyebrow — hairline + uppercase micro-label, cream-accented rule.
+/* Structure on this page comes from surfaces, not from rules. Every panel is
+   --color-ink #0f0e0e — the surface every card on the site sits on — laid over the
+   darker --color-page, and the two hover steps below are the only lift. Nothing here
+   is divided by a hairline; if a divider seems needed, it wants to be a surface. */
+const PANEL = 'rounded-xl bg-ink'
+const PANEL_HOVER = 'transition-colors duration-300 hover:bg-[#1b1916]'
+const CHIP = 'rounded-full bg-ink transition-colors duration-200 hover:bg-[#23211d]'
+
+// Eyebrow — uppercase micro-label. Its marker is a dot rather than the 6px rule it
+// used to be: it reads identically at a glance and adds no hairline to a page whose
+// structure is now carried entirely by surfaces.
 function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
   return (
-    <span className="flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.16em] text-subtle">
-      <span aria-hidden className="h-px w-6 bg-cream/60" />
+    <span className="flex items-center gap-2.5 font-mono text-[12px] tracking-[0.16em] text-subtle uppercase">
+      <span aria-hidden className="size-1.5 rounded-full bg-cream/60" />
       {children}
     </span>
+  )
+}
+
+/* One wrapper for every section, so the max width, the gutters and the vertical
+   rhythm are declared once here instead of being repeated six times and drifting
+   apart — which is what left the sections misaligned with each other. */
+function Section({ children, id, pad }: { children: ReactNode; id?: string; pad?: string }): JSX.Element {
+  return (
+    <section id={id} className={id ? 'scroll-mt-28' : undefined}>
+      <div className={cn('mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12', pad ?? 'py-20 lg:py-28')}>
+        {children}
+      </div>
+    </section>
+  )
+}
+
+/* Every section opens the same way — eyebrow + heading left, one supporting sentence
+   right, sharing a baseline. Previously each section hand-rolled this and they came
+   out on slightly different margins. */
+function SectionHead({ eyebrow, title, blurb }: { eyebrow: string; title: string; blurb: string }): JSX.Element {
+  return (
+    <Motion
+      className="mb-12 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
+      {...reveal}
+    >
+      <div className="flex flex-col gap-4">
+        <Eyebrow>{eyebrow}</Eyebrow>
+        <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-cream">
+          {title}
+        </h2>
+      </div>
+      <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:pb-2">{blurb}</p>
+    </Motion>
   )
 }
 
@@ -204,91 +247,84 @@ export default function SolutionsHubPage(): JSX.Element {
   return (
     <div className="w-full pb-24 lg:pb-32">
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-line/60">
-        {/* faint vertical rule field — quiet engineering texture */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.5]"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
-          }}
-        />
-        <div className="relative mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 pb-16 lg:pt-32 lg:pb-24">
-          <Motion className="flex flex-col gap-7" {...reveal}>
-            <Eyebrow>Solutions · Ways in</Eyebrow>
-            <h1 className="max-w-[15ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
-              Built to outlast.
-            </h1>
-            <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">
-              Ways to work with us — build something new, modernize what you have, extend your team, or hand us the keys
-              to production. One engineering standard behind all of them.
-            </p>
-          </Motion>
-
-          {/* hero index — jump links to the solution scenes below. Chips rather than a bare row of
-              words: with the leading ordinal gone there is nothing separating four plain text links,
-              and they read as one run-on line. The filled shape is what now says "these are controls". */}
-          <Motion className="mt-14 flex flex-wrap gap-2.5 border-t border-line/70 pt-7 lg:mt-20" {...reveal}>
-            {SOLUTIONS.map((s) => (
-              <Link
-                key={s.id}
-                href={`#${s.id}`}
-                className={cn(
-                  'inline-flex items-center rounded-full bg-ink px-4 py-2 text-[13.5px] text-body transition-colors duration-200 hover:bg-[#23211d] hover:text-cream',
-                  FOCUS_RING,
-                )}
-              >
-                {s.name}
-              </Link>
-            ))}
-          </Motion>
-        </div>
-      </section>
-
-      {/* ── FOUR AT A GLANCE ─────────────────────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
-        <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
-          <div className="flex flex-col gap-4">
-            <Eyebrow>At a glance</Eyebrow>
-            <h2 className="font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
-              The ways in
-            </h2>
-          </div>
-          <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
-            Pick the shape that fits where you are. Each opens onto the same standard of engineering.
+      {/* The repeating vertical rule field that used to sit behind this, and the rule closing
+          the section, are both gone — they were the loudest lines on the page. */}
+      <Section pad="pt-24 pb-14 lg:pt-32 lg:pb-20">
+        <Motion className="flex flex-col gap-7" {...reveal}>
+          <Eyebrow>Solutions · Ways in</Eyebrow>
+          <h1 className="font-display max-w-[15ch] text-[clamp(2.75rem,7vw,6rem)] leading-[1.01] font-medium tracking-[-0.04em] text-cream">
+            Built to outlast.
+          </h1>
+          <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">
+            Ways to work with us — build something new, modernize what you have, extend your team, or hand us the keys
+            to production. One engineering standard behind all of them.
           </p>
         </Motion>
 
-        <div className="border-b border-line">
+        {/* Jump links to the scenes below. Chips, not a row of bare words: with both the
+            ordinals and the rule above them gone there is nothing else separating four text
+            links, and the filled shape is what says "these are controls". */}
+        <Motion className="mt-12 flex flex-wrap gap-2.5 lg:mt-16" {...reveal}>
+          {SOLUTIONS.map((s) => (
+            <Link
+              key={s.id}
+              href={`#${s.id}`}
+              className={cn(
+                'inline-flex items-center px-4 py-2 text-[13.5px] text-body hover:text-cream',
+                CHIP,
+                FOCUS_RING,
+              )}
+            >
+              {s.name}
+            </Link>
+          ))}
+        </Motion>
+      </Section>
+
+      {/* ── FOUR AT A GLANCE ─────────────────────────────────────────────────────────────── */}
+      <Section>
+        <SectionHead
+          eyebrow="At a glance"
+          title="The ways in"
+          blurb="Pick the shape that fits where you are. Each opens onto the same standard of engineering."
+        />
+
+        {/* Was a stack of rows divided by hairlines, top and bottom. Each is now its own
+            surface in a 2×2 grid: the same four targets, separated by the gaps between the
+            panels rather than by lines, and the tiles give the names room to be large. */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {SOLUTIONS.map((s, i) => (
-            <Motion key={s.id} {...revealItem(i)}>
+            <Motion key={s.id} className="h-full" {...revealItem(i)}>
               <Link
                 href={`#${s.id}`}
-                className={cn(
-                  'group grid grid-cols-1 items-center gap-x-8 gap-y-2 border-t border-line py-8 transition-colors duration-300 hover:bg-gradient-to-r hover:from-white/[0.03] hover:to-transparent lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_3rem] lg:py-10',
-                  FOCUS_RING,
-                )}
+                className={cn('group flex h-full flex-col gap-3 p-7 lg:p-9', PANEL, PANEL_HOVER, FOCUS_RING)}
               >
-                <h3 className="font-display text-[clamp(1.5rem,2.8vw,2.125rem)] font-medium leading-[1.1] tracking-[-0.025em] text-cream">
-                  {s.name}
-                </h3>
-                <p className="max-w-[48ch] text-[15px] leading-relaxed text-body lg:col-start-2">{s.tagline}</p>
-                <ArrowUpRight
-                  size={20}
-                  strokeWidth={1.75}
-                  aria-hidden
-                  className="hidden justify-self-end text-subtle transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-cream lg:col-start-3 lg:row-start-1 lg:block"
-                />
+                <div className="flex items-start justify-between gap-6">
+                  {/* Reserve two lines from md up, where the tiles pair off: three of the four
+                      names wrap and "Managed Systems" does not, which left its tagline sitting
+                      higher than its rowmate's. Unprefixed below md, where one column makes
+                      row alignment moot and the reservation would just be dead space. */}
+                  <h3 className="font-display max-w-[16ch] text-[clamp(1.5rem,2.6vw,2rem)] leading-[1.1] font-medium tracking-[-0.025em] text-cream md:min-h-[2.2em]">
+                    {s.name}
+                  </h3>
+                  <ArrowUpRight
+                    size={20}
+                    strokeWidth={1.75}
+                    aria-hidden
+                    className="mt-1 shrink-0 text-subtle transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 motion-reduce:transform-none"
+                  />
+                </div>
+                <p className="max-w-[42ch] text-[15px] leading-relaxed text-body">{s.tagline}</p>
               </Link>
             </Motion>
           ))}
         </div>
-      </section>
+      </Section>
 
       {/* ── THE FOUR SOLUTIONS ───────────────────────────────────────────────────────────── */}
       {SOLUTIONS.map((s) => (
-        <section key={s.id} id={s.id} className="scroll-mt-28 border-t border-line/60">
-          <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-20 lg:py-32">
+        <Section key={s.id} id={s.id} pad="py-8 lg:py-10">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)] lg:gap-16">
             <Motion className="flex flex-col gap-4 lg:sticky lg:top-28 lg:self-start" {...reveal}>
               {/* The solution's NAME is the heading. It used to be a 12px eyebrow while the tagline
                   took the h2 — so the thing the section is actually about was its smallest type, and
@@ -306,7 +342,13 @@ export default function SolutionsHubPage(): JSX.Element {
               </div>
             </Motion>
 
-            <div className="flex flex-col gap-7">
+            {/* The detail sits on its own surface. With the rule between scenes gone, this panel
+                is what marks where one solution ends and the next begins — and it gives the four
+                scenes a repeating shape down the page instead of four undifferentiated columns. */}
+            {/* `self-start` so the panel is only as tall as its own content. Stretched to the grid
+                row it matched the taller left column (heading + tagline + figure) and trailed
+                ~80px of empty surface under the last fact. */}
+            <div className={cn('flex flex-col gap-7 p-7 lg:self-start lg:p-10', PANEL)}>
               <Motion {...revealItem(0)}>
                 <Fact label="Who it's for">{s.who}</Fact>
               </Motion>
@@ -319,11 +361,13 @@ export default function SolutionsHubPage(): JSX.Element {
                 </Fact>
               </Motion>
               {/* Proof slot: named client with written permission only. With no proof, the slot
-                  hides entirely — an empty proof line is better than a vague one. */}
+                  hides entirely — an empty proof line is better than a vague one. Keeps the Fact
+                  grid rather than the rule it used to sit under, so its label still lines up with
+                  the three above it. */}
               {s.proof && (
                 <Motion {...revealItem(3)}>
-                  <div className="grid grid-cols-1 gap-1.5 border-t border-line pt-6 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
-                    <h3 className="pt-0.5 text-[11px] uppercase tracking-[0.1em] text-subtle">Proof</h3>
+                  <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-[130px_minmax(0,1fr)] sm:gap-x-7">
+                    <h3 className="pt-0.5 text-[11px] tracking-[0.1em] text-subtle uppercase">Proof</h3>
                     <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-body">
                       <span className="text-cream">{s.proof.client}</span> — {s.proof.body}{' '}
                       <Link
@@ -347,112 +391,93 @@ export default function SolutionsHubPage(): JSX.Element {
               )}
             </div>
           </div>
-        </section>
+        </Section>
       ))}
 
       {/* ── ENGAGEMENT MODELS ────────────────────────────────────────────────────────────── */}
-      <section className="border-t border-line/60">
-        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
-          <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
-            <div className="flex flex-col gap-4">
-              <Eyebrow>Engagement models</Eyebrow>
-              <h2 className="font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
-                How the work is structured
-              </h2>
-            </div>
-            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
-              Shapes of engagement. Every solution runs on one — or moves between them as the work changes.
-            </p>
-          </Motion>
+      <Section>
+        <SectionHead
+          eyebrow="Engagement models"
+          title="How the work is structured"
+          blurb="Shapes of engagement. Every solution runs on one — or moves between them as the work changes."
+        />
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {MODELS.map((m, i) => (
-              <Motion
-                key={m.name}
-                className="group flex h-full flex-col rounded-md border border-line bg-ink p-8 transition-all duration-300 hover:-translate-y-1 hover:border-line-strong"
-                {...revealItem(i)}
-              >
-                <h3 className="font-display text-[clamp(1.5rem,2.4vw,2rem)] font-medium tracking-[-0.02em] text-cream">
-                  {m.name}
-                  <sup className="ml-0.5 text-[0.5em] align-super font-medium text-subtle">™</sup>
-                </h3>
-                <span className="mt-3 text-[11px] uppercase tracking-[0.08em] text-cream/70">{m.tag}</span>
-                <p className="mt-4 flex-1 text-[15.5px] leading-relaxed text-body">{m.body}</p>
-                <div className="mt-6 border-t border-line pt-5">
-                  <span className="mb-1 block text-[11px] uppercase tracking-[0.06em] text-body">Ideal for</span>
-                  <p className="text-[13.5px] leading-relaxed text-subtle">{m.ideal}</p>
-                </div>
-              </Motion>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {MODELS.map((m, i) => (
+            <Motion key={m.name} className={cn('flex h-full flex-col p-8', PANEL, PANEL_HOVER)} {...revealItem(i)}>
+              <h3 className="font-display text-[clamp(1.5rem,2.4vw,2rem)] font-medium tracking-[-0.02em] text-cream">
+                {m.name}
+                <sup className="ml-0.5 align-super text-[0.5em] font-medium text-subtle">™</sup>
+              </h3>
+              <span className="mt-3 text-[11px] tracking-[0.08em] text-cream/70 uppercase">{m.tag}</span>
+              <p className="mt-4 flex-1 text-[15.5px] leading-relaxed text-body">{m.body}</p>
+              {/* "Ideal for" used to be cut off by a rule inside the card. It is an inset surface
+                  now — a panel within a panel, which separates it without drawing anything. */}
+              <div className="mt-6 rounded-lg bg-cream/[0.03] px-5 py-4">
+                <span className="mb-1 block text-[11px] tracking-[0.06em] text-body uppercase">Ideal for</span>
+                <p className="text-[13.5px] leading-relaxed text-subtle">{m.ideal}</p>
+              </div>
+            </Motion>
+          ))}
         </div>
-      </section>
+      </Section>
 
       {/* ── COMPARE (the showpiece) ──────────────────────────────────────────────────────── */}
-      <section className="border-t border-line/60">
-        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
-          <Motion className="mb-14 flex flex-wrap items-end justify-between gap-6 lg:mb-20" {...reveal}>
-            <div className="flex flex-col gap-4">
-              <Eyebrow>Compare</Eyebrow>
-              <h2 className="font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
-                Side by side. Honest answers.
-              </h2>
-            </div>
-            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
-              No winner. The right column is the one that matches your situation.
-            </p>
-          </Motion>
+      <Section>
+        <SectionHead
+          eyebrow="Compare"
+          title="Side by side. Honest answers."
+          blurb="No winner. The right column is the one that matches your situation."
+        />
 
-          <Motion className="overflow-x-auto rounded-md border border-line" {...reveal}>
-            <table className="w-full min-w-[960px] border-collapse text-left">
-              <thead>
-                <tr>
-                  <th className="w-[150px] border-b border-line-strong bg-ink px-5 py-5" />
-                  {COMPARE_COLS.map((col) => (
-                    <th
-                      key={col}
-                      className="border-b border-line-strong bg-ink px-5 py-5 align-bottom font-display text-[15px] font-medium whitespace-nowrap text-cream"
+        {/* The table carried more rules than the rest of the page combined — an outer border, a
+            heavy rule under the head, and one under every row. All of it is gone. The head is a
+            band, the rows alternate, and the eye tracks across on the banding instead. */}
+        <Motion className={cn('overflow-x-auto', PANEL)} {...reveal}>
+          <table className="w-full min-w-[960px] text-left">
+            <thead>
+              <tr className="bg-cream/[0.05]">
+                <th className="w-[150px] px-5 py-5" />
+                {COMPARE_COLS.map((col) => (
+                  <th
+                    key={col}
+                    className="font-display px-5 py-5 align-bottom text-[15px] font-medium whitespace-nowrap text-cream"
+                  >
+                    {col}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {COMPARE_ROWS.map((row, r) => (
+                <tr key={row.label} className={cn(r % 2 === 1 && 'bg-cream/[0.02]')}>
+                  <th
+                    scope="row"
+                    className="px-5 py-4 text-left text-[11px] font-normal tracking-[0.06em] whitespace-nowrap text-subtle uppercase"
+                  >
+                    {row.label}
+                  </th>
+                  {row.cells.map((cell, i) => (
+                    <td
+                      key={i}
+                      className={cn(
+                        'px-5 py-4 align-top text-[14.5px] leading-relaxed text-body',
+                        row.tabular && 'font-mono tabular-nums',
+                      )}
                     >
-                      {col}
-                    </th>
+                      {cell}
+                    </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {COMPARE_ROWS.map((row) => (
-                  <tr key={row.label} className="border-b border-line last:border-b-0">
-                    <th
-                      scope="row"
-                      className="bg-ink px-5 py-4 text-left text-[11px] font-normal uppercase tracking-[0.06em] whitespace-nowrap text-subtle"
-                    >
-                      {row.label}
-                    </th>
-                    {row.cells.map((cell, i) => (
-                      <td
-                        key={i}
-                        className={cn(
-                          'px-5 py-4 align-top text-[14.5px] leading-relaxed text-body',
-                          row.tabular && 'font-mono tabular-nums',
-                        )}
-                      >
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Motion>
-        </div>
-      </section>
+              ))}
+            </tbody>
+          </table>
+        </Motion>
+      </Section>
 
       {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12">
-        <Motion
-          tag="div"
-          className="relative overflow-hidden rounded-md border border-white/[0.06] p-10 lg:p-16"
-          {...reveal}
-        >
+      <Section pad="py-0">
+        <Motion tag="div" className="relative overflow-hidden rounded-xl p-10 lg:p-16" {...reveal}>
           <span aria-hidden className="absolute inset-0">
             <span
               className="absolute inset-0"
@@ -484,10 +509,12 @@ export default function SolutionsHubPage(): JSX.Element {
                 Start a conversation
                 <ArrowRight size={16} strokeWidth={2} aria-hidden />
               </Link>
+              {/* Filled rather than outlined — the last hairline on the page was this button's
+                  edge. A lighter fill separates it from the primary just as well. */}
               <Link
                 href="/stories"
                 className={cn(
-                  'inline-flex items-center justify-center rounded-md border border-white/20 bg-white/[0.06] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-white/[0.12]',
+                  'inline-flex items-center justify-center rounded-md bg-cream/[0.10] px-6 py-3 text-[15px] font-medium text-cream transition-colors duration-300 hover:bg-cream/[0.18]',
                   FOCUS_RING,
                 )}
               >
@@ -496,10 +523,10 @@ export default function SolutionsHubPage(): JSX.Element {
             </div>
           </div>
         </Motion>
-      </section>
+      </Section>
 
       {/* ── CAREERS STRIP ────────────────────────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-16 text-center lg:pt-20">
+      <section className="mx-auto w-full max-w-[1480px] px-5 pt-16 text-center md:px-8 lg:px-12 lg:pt-20">
         <Motion tag="p" className="text-[13.5px] leading-relaxed text-body" {...reveal}>
           Engineers: we&apos;re usually hiring.{' '}
           <Link
