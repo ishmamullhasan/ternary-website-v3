@@ -173,13 +173,19 @@ const COMPARE_ROWS: { label: string; cells: (ReactNode | string)[]; tabular?: bo
   },
 ]
 
-/* Structure on this page comes from surfaces, not from rules. Every panel is
-   --color-ink #0f0e0e — the surface every card on the site sits on — laid over the
-   darker --color-page, and the two hover steps below are the only lift. Nothing here
-   is divided by a hairline; if a divider seems needed, it wants to be a surface. */
-const PANEL = 'rounded-xl bg-ink'
-const PANEL_HOVER = 'transition-colors duration-300 hover:bg-[#1b1916]'
-const CHIP = 'rounded-full bg-ink transition-colors duration-200 hover:bg-[#23211d]'
+/* Structure on this page comes from surfaces, not from rules; nothing is divided by a
+   hairline, and a divider that seems necessary wants to be a surface instead.
+ *
+ * These are --color-card #1b1a17, NOT --color-ink #0f0e0e. Ink is what a card uses when
+ * it sits INSIDE a --color-card section panel, as every card on the home page does — the
+ * panel is what gives it contrast, and the card reads as recessed into it. There is no
+ * panel here; these sit straight on --color-page. At ink that measured 1.06:1 against the
+ * page, so a large surface barely registered as a surface at all. Card takes it to
+ * 1.17:1, above even the home page's 1.11:1, using a token the system already defines as
+ * Surface-Card. Matching the home page's hex rather than its elevation was the mistake. */
+const PANEL = 'rounded-xl bg-card'
+const PANEL_HOVER = 'transition-colors duration-300 hover:bg-[#232119]'
+const CHIP = 'rounded-full bg-card transition-colors duration-200 hover:bg-[#2a2820]'
 
 // Eyebrow — uppercase micro-label. Its marker is a dot rather than the 6px rule it
 // used to be: it reads identically at a glance and adds no hairline to a page whose

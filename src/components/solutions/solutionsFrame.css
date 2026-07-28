@@ -91,14 +91,21 @@
 .sf-svg .hi {
   stroke: var(--hi);
 }
-/* The box occluders. Inside the frame they hide against its --color-ink surface;
-   lifted out (marks, hero) they sit directly on the page, so they have to match
-   --color-page instead or every box reads as a lighter patch. */
+/* The box occluders. An occluder is only invisible if it is EXACTLY the colour of
+   whatever is behind it, so each context sets its own — get this wrong and every box
+   shows a patch in the shape of its own silhouette.
+     · in the frame   → the frame's own --color-ink surface
+     · a scene mark   → the solution card it sits inside, --color-card
+     · the hero       → nothing but the page, --color-page
+   `.sf-hero` also carries `.sf-solo`, so it must come last to win on equal specificity. */
 .sf-svg .occ {
   fill: var(--color-ink);
   stroke: none;
 }
 .sf-solo .occ {
+  fill: var(--color-card);
+}
+.sf-hero .occ {
   fill: var(--color-page);
 }
 

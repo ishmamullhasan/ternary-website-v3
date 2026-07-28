@@ -472,11 +472,12 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
   padding: 24px 26px;
   border: 0;
   border-radius: 10px;
-  /* The same surface every card on the home page sits on. NB inside .hub,
-     --color-ink is remapped to Surface-Elevated (#14120b) by hub.css, so the
-     home page's #0f0e0e is --n-950 here — using --color-ink would silently come
-     out a shade warmer than the rest of the site. */
-  background: var(--n-950);
+  /* Surface-Card. hub.css already documents the ladder — 950 Page, 900 Elevated,
+     850 Card — and these were on --n-950, the PAGE colour, which is the same value
+     the section behind them uses: they measured 1.00:1 and did not read as surfaces
+     at all. --color-card resolves to --n-850 #1b1a17 in this scope, the same value
+     the other hubs now use, so a card means one thing across the site. */
+  background: var(--color-card);
   transition: background-color 0.5s var(--ease);
 }
 /* The directional wash rides on top as a background-image, so the tile's own
@@ -490,7 +491,7 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
 }
 .hub .ladder-flow .step:hover,
 .hub .ladder-stack .step:hover {
-  background-color: color-mix(in oklab, var(--n-950) 92%, var(--color-cream));
+  background-color: color-mix(in oklab, var(--color-card) 92%, var(--color-cream));
 }
 
 .hub .step h3 {

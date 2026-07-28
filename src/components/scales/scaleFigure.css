@@ -280,11 +280,12 @@
    nothing on the page is divided by a line. */
 .sc-tile {
   border-radius: 14px;
-  /* --color-ink, the same surface every card on the home page sits on, rather than
-     a translucent wash that renders a different colour over each background. */
-  background: var(--color-ink);
+  /* Surface-Card, not Surface-Ink. Ink is for a card sitting inside a --color-card
+     section panel (the home page pattern) where the panel supplies the contrast. These
+     sit straight on --color-page, where ink measured 1.06:1 — barely a surface. */
+  background: var(--color-card);
   transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .sc-tile:hover {
-  background: color-mix(in oklab, var(--color-ink) 92%, var(--color-cream));
+  background: color-mix(in oklab, var(--color-card) 92%, var(--color-cream));
 }
