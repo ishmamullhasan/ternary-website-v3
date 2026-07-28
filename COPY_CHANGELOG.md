@@ -270,3 +270,63 @@ the existing Word-doc sections + `audit/deck/DECK_COPY.md`. **Prod follow-up: re
     `solution_${slug}_${locale}_v3 → _v4`, `industry_${slug}_${locale}_v3 → _v4`.
 - `audit/case-studies/INSPIRATION.md` — appended 8 accenture.com layout takeaways (how case
   studies, insights, and services interleave on one page).
+
+### Scales copy — plain-language rewrite for non-technical buyers (staging + code)
+Rewrote the "Scales" copy so a non-technical business owner or enterprise buyer understands every
+line: no jargon (ATO, security by architecture, re-architect, cloud-native, pod, cadence,
+increment, workstream, definition of done, program of record, MVP, CTO), no metrics-as-boasts, no
+invented facts. Kept Frame™/Flow™/Orchestra™, the month/team ranges, and the real proof client
+names (Alley Analytix, Flex5, FAROGL, Hissho Sushi, Dhaka Stock Exchange). **Prod follow-up:
+replicate the CMS `scales` edits below.**
+
+- **Home scale cards** (CMS `scales` collection) via `scripts/seed-scales-copy.js` (idempotent;
+  stale `title.bn`/`excerpts.bn` unset so the en fallback serves). `title.en` → short human
+  promise (≤8 words); `excerpts.en` → one plain 12–16-word sentence, aligned length (83–98ch band,
+  all 3 lines the same). old → new:
+  - `startups-and-scale-ups` — title "One pod. Daily ship cadence." → "Turn your idea into a
+    product that ships." · excerpt "From first product to scaling infrastructure — senior pods
+    that turn vision into a launch-ready system, then re-architect it for growth without slowing
+    the team down." → "For founders and early teams: we build your first product and grow it as
+    you scale."
+  - `mid-market-and-enterprise` — title "Programs measured in quarters, not sprints." →
+    "Modernize what your business runs on." · excerpt "Modernizing the core and transforming
+    operations — from legacy systems to cloud-native platforms, delivered with the governance and
+    adoption that larger organizations require." → "For established companies: we replace the
+    systems you have outgrown, without pausing the business."
+  - `public-sector` — title "Cleared engineers. ATO-ready from kickoff." → "Built for the
+    standards you must meet." · excerpt "Secure, compliant, accountable delivery for institutions
+    that demand security by architecture and verifiable governance — controlled at the
+    infrastructure boundary." → "For government and public bodies: we build secure systems and
+    prove they meet every rule."
+- **/scales page** (hardcoded, `src/app/(frontend)/[locale]/scales/page.tsx`) — rewrote in place;
+  structure/proof/engagement-model names intact. Page is fully static (reads no cache key), so no
+  `_v` bump. Notable edits (old → new):
+  - metadata description "…from a startup's first MVP to a national institution." → "…from a
+    startup's first product…"
+  - Startups lede "Founders and early CTOs with more roadmap than team." → "Founders and early
+    tech leaders with more roadmap than people to build it."; How "One senior pod, shipping
+    daily…" → "One senior team, shipping every day — and you talk straight to the people writing
+    the code."; Week one "Architecture decided. Environments live. First increment in review." →
+    "The key decisions are made. Your setup is running. The first working piece is in review."
+  - Mid-Market lede "CTOs and transformation leads replacing something that can't afford to
+    pause." → "The leaders replacing a system the business cannot afford to switch off."; How
+    "…coordinated workstreams, governance your board will recognize." → "Long, multi-team
+    programs — run with the oversight and reporting your board will expect."; "multiple pods" →
+    "several teams"; Week one "Current state mapped. Sequencing drafted…" → "Where you stand today
+    is mapped. The order of work is planned. Risks are named out loud."
+  - Government title "Mission timelines. Audit obligations. No surprises." → "Public deadlines.
+    Audits. No surprises."; lede kept; How "Security and auditability designed in… for review
+    boards…" → "Security and a full record built in from day one — documented for the people who
+    must review it, not just developers."; Typical shape "procurement-dependent" → "sized to your
+    procurement process"; Week one "Compliance requirements mapped…" → "The rules you must follow
+    are mapped before a single line of code."
+  - NEVER_MOVES: "The hiring bar" → "Who we hire"; "The code review standard" → "How closely we
+    check the work"; "The definition of done" → "Our standard for finished work". SHAPED_TO_YOU:
+    "Process weight and ceremony" → "How much process and formality"; "Governance and reporting
+    cadence" → "How often we report to you"; "Documentation depth" → "How much documentation".
+  - "The point": "governance, or reporting cadence" → "oversight, or reporting rhythm"; "size of
+    the invoice" → "size of the bill"; "scales aren't silos" → "the scales aren't sealed off from
+    each other". "The constant": "program of record" → "a long-term government program"; "No
+    junior bench swapped in" → "No juniors quietly substituted in"; "one definition of done" →
+    "one standard for calling it finished"; card titles "The hiring bar holds"/"The review
+    standard holds" → "Who we hire holds"/"How we check the work holds".

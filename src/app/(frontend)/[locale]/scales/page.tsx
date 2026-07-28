@@ -25,7 +25,7 @@ import type { JSX, ReactNode } from 'react'
 export const metadata: Metadata = {
   title: 'Scales — From founding teams to national institutions.',
   description:
-    "Our quality bar doesn't change with your size — the shape of the engagement does. One engineering standard, held from a startup's first MVP to a national institution.",
+    "Our quality bar doesn't change with your size — the shape of the work does. One engineering standard, held from a startup's first product to a national institution.",
 }
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -58,16 +58,16 @@ const SCALES = [
     mark: 'Scale 1 of 3',
     name: 'Startups & Scale-ups',
     title: 'Move fast without building your own mess.',
-    lede: 'Founders and early CTOs with more roadmap than team.',
+    lede: 'Founders and early tech leaders with more roadmap than people to build it.',
     facts: [
       {
         k: 'How we show up',
-        v: 'One senior pod, shipping daily, with direct access to the people writing the code.',
+        v: 'One senior team, shipping every day — and you talk straight to the people writing the code.',
       },
       { k: 'Typical shape', v: 'Frame™ or Flow™ · 3–9 months · 3–6 engineers.' },
       {
         k: 'Week one',
-        v: 'Architecture decided. Environments live. First increment in review.',
+        v: 'The key decisions are made. Your setup is running. The first working piece is in review.',
         lead: true,
       },
     ] as Fact[],
@@ -78,16 +78,16 @@ const SCALES = [
     mark: 'Scale 2 of 3',
     name: 'Mid-Market & Enterprise',
     title: 'Modernize without a hard stop.',
-    lede: "CTOs and transformation leads replacing something that can't afford to pause.",
+    lede: 'The leaders replacing a system the business cannot afford to switch off.',
     facts: [
       {
         k: 'How we show up',
-        v: 'Multi-quarter programs, coordinated workstreams, governance your board will recognize.',
+        v: 'Long, multi-team programs — run with the oversight and reporting your board will expect.',
       },
-      { k: 'Typical shape', v: 'Flow™ or Orchestra™ · 12+ months · multiple pods.' },
+      { k: 'Typical shape', v: 'Flow™ or Orchestra™ · 12+ months · several teams.' },
       {
         k: 'Week one',
-        v: 'Current state mapped. Sequencing drafted. Risks named out loud.',
+        v: 'Where you stand today is mapped. The order of work is planned. Risks are named out loud.',
         lead: true,
       },
     ] as Fact[],
@@ -97,17 +97,17 @@ const SCALES = [
     n: '10',
     mark: 'Scale 3 of 3',
     name: 'Government & Public Institutions',
-    title: 'Mission timelines. Audit obligations. No surprises.',
+    title: 'Public deadlines. Audits. No surprises.',
     lede: 'Agencies and public bodies where "trust us" is not an acceptable answer.',
     facts: [
       {
         k: 'How we show up',
-        v: 'Security and auditability designed in from day one. Documentation built for review boards, not just developers.',
+        v: 'Security and a full record built in from day one — documented for the people who must review it, not just developers.',
       },
-      { k: 'Typical shape', v: 'Frame™ · procurement-dependent · scoped teams.' },
+      { k: 'Typical shape', v: 'Frame™ · sized to your procurement process · scoped teams.' },
       {
         k: 'Week one',
-        v: 'Compliance requirements mapped before a single line of code.',
+        v: 'The rules you must follow are mapped before a single line of code.',
         lead: true,
       },
     ] as Fact[],
@@ -117,17 +117,17 @@ const SCALES = [
 
 // What moves with your size — and what never does.
 const NEVER_MOVES = [
-  'The hiring bar',
-  'The code review standard',
-  'The definition of done',
+  'Who we hire',
+  'How closely we check the work',
+  'Our standard for finished work',
   'Senior people on the work',
 ] as const
 
 const SHAPED_TO_YOU = [
-  'Process weight and ceremony',
-  'Governance and reporting cadence',
+  'How much process and formality',
+  'How often we report to you',
   'Team size and structure',
-  'Documentation depth',
+  'How much documentation',
 ] as const
 
 // Eyebrow — hairline rule + uppercase micro-label, in the reference's design language.
@@ -251,13 +251,14 @@ export default function ScalesHubPage(): JSX.Element {
           </Motion>
           <Motion className="flex flex-col gap-5 self-end" {...reveal}>
             <p className="max-w-[56ch] text-[16px] leading-relaxed text-body">
-              They don&apos;t get the same process, governance, or reporting cadence — those should differ. But the
-              hiring bar, the review standard, and the people in the room don&apos;t move with the size of the invoice.
+              They don&apos;t get the same process, oversight, or reporting rhythm — those should differ. But who we
+              hire, how closely we check the work, and the people in the room don&apos;t change with the size of the
+              bill.
             </p>
             <p className="max-w-[56ch] text-[16px] leading-relaxed text-body">
-              <span className="font-medium text-cream">And scales aren&apos;t silos.</span> The startup we build for
-              today becomes the enterprise program in three years — with the same people in the room who remember why
-              every decision was made.
+              <span className="font-medium text-cream">And the scales aren&apos;t sealed off from each other.</span> The
+              startup we build for today becomes the enterprise program in three years — with the same people in the
+              room who remember why every decision was made.
             </p>
           </Motion>
         </div>
@@ -280,10 +281,7 @@ export default function ScalesHubPage(): JSX.Element {
                 <p className="mt-2 text-[13px] text-subtle">Constant at every scale.</p>
                 <ul className="mt-6 flex flex-col gap-1">
                   {NEVER_MOVES.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-baseline gap-3 py-2 text-[15px] text-cream"
-                    >
+                    <li key={item} className="flex items-baseline gap-3 py-2 text-[15px] text-cream">
                       <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-cream/70" />
                       {item}
                     </li>
@@ -298,10 +296,7 @@ export default function ScalesHubPage(): JSX.Element {
                 <p className="mt-2 text-[13px] text-subtle">Fitted to your size and stakes.</p>
                 <ul className="mt-6 flex flex-col gap-1">
                   {SHAPED_TO_YOU.map((item) => (
-                    <li
-                      key={item}
-                      className="flex items-baseline gap-3 py-2 text-[15px] text-body"
-                    >
+                    <li key={item} className="flex items-baseline gap-3 py-2 text-[15px] text-body">
                       <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-subtle" />
                       {item}
                     </li>
@@ -322,9 +317,9 @@ export default function ScalesHubPage(): JSX.Element {
               Whatever your size, the standard is the point.
             </h2>
             <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
-              The engagement changes shape as you grow — the standard does not. Every pod, at every scale, draws on the
-              same review discipline and the same senior hands. A startup MVP and a national program are built to the
-              one bar.
+              The work changes shape as you grow — the standard does not. Every team, at every size, brings the same
+              careful review and the same senior hands. A startup&apos;s first product and a national program are built
+              to the one bar.
             </p>
           </Motion>
 
@@ -332,13 +327,13 @@ export default function ScalesHubPage(): JSX.Element {
             {[
               {
                 k: 'a',
-                title: 'The hiring bar holds',
-                body: 'The same senior people, whether the invoice is a seed round or a program of record. No junior bench swapped in when the logo gets smaller.',
+                title: 'Who we hire holds',
+                body: 'The same senior people, whether the work is a first-round startup or a long-term government program. No juniors quietly substituted in when the name on the door is smaller.',
               },
               {
                 k: 'b',
-                title: 'The review standard holds',
-                body: 'One code review bar and one definition of done, applied consistently across New York and the Dhaka delivery hub.',
+                title: 'How we check the work holds',
+                body: 'One standard for reviewing the code and one standard for calling it finished, applied the same way across New York and our Dhaka delivery hub.',
               },
               {
                 k: 'c',
@@ -360,11 +355,7 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 lg:pt-32">
-        <Motion
-          tag="div"
-          className="sc-tile relative overflow-hidden p-10 lg:p-16"
-          {...reveal}
-        >
+        <Motion tag="div" className="sc-tile relative overflow-hidden p-10 lg:p-16" {...reveal}>
           <span aria-hidden className="absolute inset-0">
             <span
               className="absolute inset-0"
