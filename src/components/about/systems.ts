@@ -99,35 +99,6 @@ export const WAY_EDGES: [number, number][] = [
   [6, 7],
 ]
 
-/**
- * The thesis system — a larger field the camera travels through. Each point anchors one of the
- * seven statements, so scrolling the section is literally moving through the argument.
- */
-export const THESIS_NODES: Pt[] = [
-  { x: 50, y: 50 },
-  { x: 22, y: 28 },
-  { x: 76, y: 24 },
-  { x: 86, y: 58 },
-  { x: 60, y: 82 },
-  { x: 28, y: 74 },
-  { x: 12, y: 48 },
-]
-
-export const THESIS_EDGES: [number, number][] = [
-  [0, 1],
-  [0, 2],
-  [0, 3],
-  [0, 4],
-  [0, 5],
-  [0, 6],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [4, 5],
-  [5, 6],
-  [6, 1],
-]
-
 /** Straight-line path between two points, for an SVG <path d>. */
 export const edgePath = (a: Pt, b: Pt): string => `M ${a.x} ${a.y} L ${b.x} ${b.y}`
 

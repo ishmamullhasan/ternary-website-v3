@@ -4,94 +4,92 @@ import type { AboutThesisBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
 /**
- * SCENE 02 — the thesis as a system the reader travels through.
+ * SCENE 02 — "Our thesis", as an editorial slider.
  *
- * REPLACES seven rows of heading-plus-paragraph (before that, a six-cell bento where every cell
- * carried the same lucide `Zap` glyph). The statements are now anchored to nodes in one field:
- * scroll moves a camera through it, the wires draw progressively, signals run the spokes, and
- * the statement being read holds the frame at full size while the others recede.
+ * REPLACES a full-bleed node field with a camera travelling through it. That version put
+ * circles and connections directly behind the headline and body copy, set the active headline
+ * larger than the section title, and let the two columns compete for the same attention.
  *
- * RESPONSIVE. Above 900px the scene pins and the camera pushes deeper with each hand-over.
- * Below it there is no pin: the same statements become a vertical connected journey down a rail
- * that draws as it is scrolled — no viewport-tall empty box, everything in normal flow.
+ * The composition now: a 32/68 split with a real gutter, both columns centred against the
+ * viewport, and the graphic confined to a canvas that starts at 70% of the right column — past
+ * where the copy can ever reach. The structure is what keeps the animation off the text; there
+ * is no positioning to get wrong.
+ *
+ * The section title is the largest thing in the scene, the active headline sits under it, and
+ * the description under that — one focal order rather than two competing ones.
+ *
+ * RESPONSIVE. Below 900px there is no pin and no canvas: the six theses become a plain vertical
+ * sequence, each with a single small marker beside it.
  *
  * CONTENT: every heading, title and excerpt is the CMS string, unchanged.
  */
 export function AboutThesisComponent({ heading, description, items }: AboutThesisBlock): JSX.Element | null {
   if (!heading || !items?.length) return null
 
-  // The stage is held open at the longest entry so nothing jumps as the copy changes length.
-  // Sized from the longest title AND the longest excerpt independently — not from one item.
-  // Using a single "longest" item sized the stage to whichever had the longest excerpt, which
-  // was not the item with the tallest title, so the tallest state overflowed the clip and its
-  // last line was cut off.
-  const longestTitle = items.reduce((a, s) => ((s.title ?? '').length > (a.title ?? '').length ? s : a), items[0])
-  const longestExcerpt = items.reduce((a, s) => ((s.excerpt ?? '').length > (a.excerpt ?? '').length ? s : a), items[0])
-
   return (
     <section
       data-scene="thesis"
-      className="ax-bleed ax-scene ax-scene-tall relative isolate overflow-hidden px-5 py-20 md:px-8 lg:px-12 lg:py-0"
+      className="ax-scene relative isolate w-full overflow-hidden px-5 py-20 md:px-8 lg:px-12 lg:py-0"
     >
-      {/* The field the camera moves through. Sits behind the type, masked at the edges. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(105%_95%_at_60%_45%,#000_0%,rgba(0,0,0,0.35)_58%,transparent_86%)]"
-      >
-        <ThesisSystem />
-      </div>
-
-      <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.5fr)_minmax(0,1fr)] lg:items-center lg:gap-20">
-        {/* The claim. Stays in frame while the system is travelled. */}
-        <div className="flex flex-col gap-5">
-          <h2 className="ax-display-sm ax-h max-w-[12ch] text-cream">
-            <span data-ax="mask-dir" className="block">
+      <div className="ax-th-grid">
+        {/* ── left: the claim, the standfirst, the pagination ──────────────── */}
+        <div className="flex flex-col gap-7">
+          <h2 className="ax-th-title ax-h text-cream">
+            <span data-ax="th-title" className="block">
               {heading}
             </span>
           </h2>
+
           {description ? (
-            <div data-ax="rise" className="ax-body max-w-[42ch]">
+            <div data-ax="th-intro" className="ax-th-intro">
               <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
             </div>
           ) : null}
-          <div aria-hidden className="ax-dots mt-4 flex gap-2">
+
+          {/* Decorative: the six theses are all in the accessibility tree below, in order. */}
+          <div aria-hidden className="ax-th-dots mt-2">
             {items.map((_, i) => (
-              <span key={i} className="ax-dot" />
+              <span key={i} className="ax-th-dot" data-th-dot={i} />
             ))}
           </div>
         </div>
 
-        {/* The statements. Absolute states when pinned; a vertical journey when not. */}
-        <div className="relative">
-          {/* The rail only exists in the narrow, non-pinned layout. */}
-          <span
-            aria-hidden
-            data-ax="v-rail"
-            className="absolute top-2 bottom-2 left-[7px] w-px bg-line-strong lg:hidden"
-          />
+        {/* ── right: the active thesis, and the canvas beyond it ───────────── */}
+        <div className="ax-th-right">
+          <div className="ax-th-copy">
+            <div className="ax-th-stack">
+              {items.map((item, index) => (
+                <article key={item.id ?? `thesis-${index}`} className="ax-th-slide" data-th-slide={index}>
+                  <div className="flex items-center gap-3">
+                    {/* The marker beside each item in the mobile sequence; hidden once staged. */}
+                    <span aria-hidden className="ax-th-mark h-6 self-stretch lg:hidden" data-th-mark={index} />
+                    <span aria-hidden className="ax-th-index">
+                      {String(index + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}
+                    </span>
+                  </div>
 
-          <div className="ax-stack">
-            <div aria-hidden className="ax-sizer">
-              <h3 className="ax-display-sm">{longestTitle?.title}</h3>
-              <p className="ax-body mt-5 max-w-[46ch]">{longestExcerpt?.excerpt}</p>
+                  {item.title ? (
+                    <h3 className="ax-th-head ax-h mt-4 text-cream">
+                      <span data-th-head className="block">
+                        {item.title}
+                      </span>
+                    </h3>
+                  ) : null}
+
+                  {item.excerpt ? (
+                    <p className="ax-th-desc" data-th-desc>
+                      {item.excerpt}
+                    </p>
+                  ) : null}
+                </article>
+              ))}
             </div>
+          </div>
 
-            {items.map((item, index) => (
-              <article key={item.id ?? `thesis-${index}`} className="ax-state relative pl-8 lg:pl-0">
-                {/* Journey marker — the node on the rail, narrow layout only. */}
-                <span
-                  aria-hidden
-                  className="absolute top-2 left-0 h-3.5 w-3.5 rounded-full border border-line-strong bg-page lg:hidden"
-                />
-                <span aria-hidden className="ax-meta block">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                {item.title ? (
-                  <h3 className="ax-display-sm ax-h mt-3 max-w-[16ch] text-cream text-balance">{item.title}</h3>
-                ) : null}
-                {item.excerpt ? <p className="ax-body mt-5 max-w-[46ch]">{item.excerpt}</p> : null}
-              </article>
-            ))}
+          {/* Far-right canvas. Desktop only — below 900px the sequence carries its own markers
+              and a full node system would be noise on a narrow screen. */}
+          <div aria-hidden className="ax-th-canvas hidden lg:block">
+            <ThesisSystem />
           </div>
         </div>
       </div>

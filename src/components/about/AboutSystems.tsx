@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { THESIS_EDGES, THESIS_NODES, WAY_EDGES, WAY_STATES, edgePath } from './systems'
+import { WAY_EDGES, WAY_STATES, edgePath } from './systems'
 
 /**
  * The page's system graphics, server-rendered as plain SVG.
@@ -49,33 +49,54 @@ export function HeroField(): JSX.Element {
 }
 
 /**
- * Thesis — the field the camera travels through. Seven anchors, one per statement; the engine
- * scales and pans the whole group so scrolling the section moves through the system, and marks
- * the anchor belonging to the statement being read.
+ * Thesis — a restrained line system for the far-right canvas.
+ *
+ * REPLACES a full-bleed node field that sat behind the column and put circles and connections
+ * straight over the headline and body copy. This has no geometry outside its strip.
  */
 export function ThesisSystem(): JSX.Element {
+  // One curve and one node per thesis. The curves are shallow and vertical, so the whole system
+  // reads as a column of quiet activity rather than a diagram competing for attention.
+  //
+  // viewBox is a tall strip (40 wide, 200 tall) and the element is clipped to the far-right
+  // canvas, which begins at 70% of the right column — past where the copy can ever reach. The
+  // graphic has no geometry over the text because it has no box there.
+  //
+  // Node radius is 1.3 in a 40-unit-wide box, and the canvas caps the SVG at 220px, so a node
+  // can never paint wider than ~14px — inside the 18px ceiling at every viewport. Curve opacity is set in CSS and
+  // stays in the 0.08–0.18 band; only a live node reaches 0.8.
+  const curves = [
+    'M 6 12 C 22 26, 22 38, 8 52',
+    'M 8 46 C 26 60, 24 74, 10 88',
+    'M 10 82 C 28 96, 26 110, 12 124',
+    'M 12 118 C 30 132, 28 146, 14 160',
+    'M 14 154 C 32 166, 30 178, 16 190',
+    'M 4 24 C 18 44, 16 70, 6 96',
+  ]
+  const nodes = [
+    { x: 8, y: 52 },
+    { x: 10, y: 88 },
+    { x: 12, y: 124 },
+    { x: 14, y: 160 },
+    { x: 16, y: 190 },
+    { x: 6, y: 12 },
+  ]
+
   return (
-    <svg aria-hidden data-ax="thesis-system" className="ax-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" focusable="false">
-      <g data-ax-camera>
-        {THESIS_EDGES.map(([a, b], i) => (
-          <path
-            key={`e${i}`}
-            id={`ax-th-${i}`}
-            className={i < 6 ? 'ax-edge' : 'ax-edge ax-edge-faint'}
-            d={edgePath(THESIS_NODES[a], THESIS_NODES[b])}
-          />
-        ))}
-        {THESIS_NODES.map((p, i) => (
-          <g key={`n${i}`} data-ax-anchor={i}>
-            <circle className="ax-node-ring" cx={p.x} cy={p.y} r="3.4" opacity="0" />
-            <circle className="ax-node" cx={p.x} cy={p.y} r="1.5" />
-          </g>
-        ))}
-        {/* Signals ride the spokes. Green, and only here. */}
-        {[0, 2, 4].map((i) => (
-          <circle key={`s${i}`} className="ax-signal" data-ax-signal={`ax-th-${i}`} r="1" cx="0" cy="0" opacity="0" />
-        ))}
-      </g>
+    <svg
+      aria-hidden
+      data-ax="thesis-system"
+      className="ax-svg"
+      viewBox="0 0 40 200"
+      preserveAspectRatio="xMidYMid meet"
+      focusable="false"
+    >
+      {curves.map((d, i) => (
+        <path key={`c${i}`} id={`ax-thc-${i}`} className="ax-th-curve" d={d} data-th-curve={i} />
+      ))}
+      {nodes.map((n, i) => (
+        <circle key={`n${i}`} className="ax-th-node" data-th-node={i} cx={n.x} cy={n.y} r="1.3" />
+      ))}
     </svg>
   )
 }

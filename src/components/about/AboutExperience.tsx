@@ -174,96 +174,146 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
             }
           }
 
-          // ── SCENE 02 — THESIS: camera through a system ────────────────────
+          // ── SCENE 02 — THESIS: an editorial slider ────────────────────────
           for (const scene of q('[data-scene="thesis"]')) {
-            const camera = scene.querySelector('[data-ax-camera]')
-            const states = [...scene.querySelectorAll<HTMLElement>('.ax-state')]
-            const dots = [...scene.querySelectorAll<HTMLElement>('.ax-dot')]
-            const edges = [...scene.querySelectorAll<SVGPathElement>('.ax-edge')]
-            const anchors = [...scene.querySelectorAll<SVGGElement>('[data-ax-anchor]')]
+            const slides = [...scene.querySelectorAll<HTMLElement>('[data-th-slide]')]
+            const dots = [...scene.querySelectorAll<HTMLElement>('[data-th-dot]')]
+            const marks = [...scene.querySelectorAll<HTMLElement>('[data-th-mark]')]
+            const curves = [...scene.querySelectorAll<SVGPathElement>('[data-th-curve]')]
+            const nodes = [...scene.querySelectorAll<SVGCircleElement>('[data-th-node]')]
+            const title = scene.querySelector('[data-ax="th-title"]')
+            const intro = scene.querySelector('[data-ax="th-intro"]')
+            if (!slides.length) continue
 
-            // Wires draw across the whole time the reader is in the section. Triggered off the
-            // scene (normal flow), never off the graphic — the graphic is sticky/pinned, and a
-            // pinned box stops travelling, which makes ScrollTrigger resolve it as already
-            // complete. That bug shipped once already; it is not repeating.
-            if (edges.length) {
-              gsap.from(edges, {
-                drawSVG: '0%',
-                ease: 'none',
-                stagger: 0.06,
-                scrollTrigger: { trigger: scene, start: 'top 78%', end: 'bottom 90%', scrub: 0.6 },
+            if (title) maskLines(title, { stagger: 0.08 })
+            if (intro) {
+              gsap.from(intro, {
+                opacity: 0,
+                y: 22,
+                duration: 0.8,
+                ease: 'power3.out',
+                scrollTrigger: { trigger: scene, start: 'top 72%' },
               })
             }
 
-            if (wide && states.length > 1) {
-              sizeStage(scene)
-              scene.setAttribute('data-stage', 'on')
-              gsap.set(states.slice(1), { opacity: 0, yPercent: 8, scale: 0.94 })
-              dots[0]?.classList.add('is-on')
-              anchors[0]?.classList.add('is-live')
+            /** Move the whole scene to slide `i`: type, pagination, and one line + one node. */
+            const show = (i: number, from: number): void => {
+              const D = 0.8 // inside the 0.7–0.9s window
+              const out = slides[from]
+              const incoming = slides[i]
+              if (!incoming || i === from) return
 
-              const tl = gsap.timeline({
-                scrollTrigger: {
-                  trigger: scene,
-                  start: 'top top',
-                  end: () => `+=${states.length * window.innerHeight * 0.6}`,
-                  pin: true,
-                  scrub: 0.8,
-                  anticipatePin: 1,
-                  invalidateOnRefresh: true,
+              const tl = gsap.timeline()
+              if (out) {
+                // 1 — mask the current headline upward. 2 — fade its description slightly.
+                tl.to(out.querySelector('[data-th-head]'), { yPercent: -110, duration: D * 0.55, ease: 'power3.in' }, 0)
+                  .to(out.querySelector('[data-th-desc]'), { opacity: 0, duration: D * 0.4, ease: 'power2.in' }, 0)
+                  .set(out, { autoAlpha: 0 }, D * 0.55)
+              }
+              // 5 — reveal the next headline from below.
+              tl.set(incoming, { autoAlpha: 1 }, D * 0.5)
+                .fromTo(
+                  incoming.querySelector('[data-th-head]'),
+                  { yPercent: 110 },
+                  { yPercent: 0, duration: D * 0.7, ease: 'power3.out' },
+                  D * 0.5,
+                )
+                .fromTo(
+                  incoming.querySelector('[data-th-desc]'),
+                  { opacity: 0, y: 12 },
+                  { opacity: 1, y: 0, duration: D * 0.6, ease: 'power2.out' },
+                  D * 0.62,
+                )
+                .fromTo(
+                  incoming.querySelector('.ax-th-index'),
+                  { opacity: 0 },
+                  { opacity: 1, duration: D * 0.5, ease: 'none' },
+                  D * 0.55,
+                )
+
+              // 3 — redraw exactly one background line.
+              const curve = curves[i % curves.length]
+              if (curve) {
+                tl.fromTo(curve, { drawSVG: '0%' }, { drawSVG: '100%', duration: D, ease: 'power2.inOut' }, 0)
+                curves.forEach((c, n) => c.classList.toggle('is-lit', n === i % curves.length))
+              }
+              // 4 — pulse exactly one small green node.
+              const node = nodes[i % nodes.length]
+              if (node) {
+                nodes.forEach((n, k) => n.classList.toggle('is-live', k === i % nodes.length))
+                tl.fromTo(node, { scale: 0.7 }, { scale: 1.25, duration: D * 0.45, ease: 'power2.out', transformOrigin: 'center' }, 0)
+                  .to(node, { scale: 1, duration: D * 0.45, ease: 'power2.inOut' }, D * 0.45)
+              }
+              // 6 — update the active pagination marker.
+              dots.forEach((d, n) => d.classList.toggle('is-on', n === i))
+              marks.forEach((m, n) => m.classList.toggle('is-on', n === i))
+            }
+
+            if (wide) {
+              // Stage: stack the slides and show only the first.
+              const stack = scene.querySelector<HTMLElement>('.ax-th-stack')
+              if (stack) {
+                const tallest = Math.max(...slides.map((s) => s.scrollHeight))
+                stack.style.minHeight = `${Math.ceil(tallest)}px`
+              }
+              scene.setAttribute('data-thesis', 'on')
+              gsap.set(slides.slice(1), { autoAlpha: 0 })
+              dots[0]?.classList.add('is-on')
+              nodes[0]?.classList.add('is-live')
+              curves[0]?.classList.add('is-lit')
+
+              let current = 0
+              // The pin lasts exactly one hold per thesis — no more, so there is no blank scroll
+              // at either end, and no slide gets a shorter turn than another.
+              ScrollTrigger.create({
+                trigger: scene,
+                start: 'top top',
+                end: () => `+=${slides.length * window.innerHeight * 0.75}`,
+                pin: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+                onUpdate: (self) => {
+                  const i = Math.min(slides.length - 1, Math.floor(self.progress * slides.length * 0.999))
+                  if (i !== current) {
+                    show(i, current)
+                    current = i
+                  }
                 },
               })
 
-              states.forEach((state, i) => {
-                if (i === 0) return
-                const prev = states[i - 1]
-                // Camera: each hand-over pushes further into the field and re-centres on the
-                // anchor belonging to the statement now being read. This is the depth — the
-                // system is not sliding past, it is being travelled through.
-                const target = anchors[i % anchors.length]
-                const cx = Number(target?.querySelector('circle')?.getAttribute('cx') ?? 50)
-                const cy = Number(target?.querySelector('circle')?.getAttribute('cy') ?? 50)
-
-                tl.to(prev, { opacity: 0, yPercent: -8, scale: 0.94, duration: 0.4, ease: 'power2.in' })
-                  .to(state, { opacity: 1, yPercent: 0, scale: 1, duration: 0.5, ease: 'power3.out' }, '>-0.1')
-                  .to(
-                    camera,
-                    {
-                      scale: 1 + i * 0.16,
-                      xPercent: (50 - cx) * 0.5,
-                      yPercent: (50 - cy) * 0.5,
-                      transformOrigin: 'center center',
-                      duration: 0.9,
-                      ease: 'power2.inOut',
-                    },
-                    '<',
-                  )
-                  .add(() => {
-                    dots.forEach((d, n) => d.classList.toggle('is-on', n === i))
-                    anchors.forEach((a, n) => a.classList.toggle('is-live', n === i % anchors.length))
-                  }, '<')
-                  .to({}, { duration: 0.45 })
+              // The curves breathe slowly between transitions — movement, not activity.
+              curves.forEach((c, i) => {
+                gsap.to(c, {
+                  attr: { transform: 'translate(0,0)' },
+                  y: i % 2 ? 5 : -5,
+                  duration: 7 + i,
+                  ease: 'sine.inOut',
+                  repeat: -1,
+                  yoyo: true,
+                })
               })
             } else {
-              // Narrow: a vertical connected journey. Each statement rises as it is reached and
-              // the connector between them draws — no pin, no viewport-tall empty box.
-              states.forEach((state) => {
-                gsap.from(state, {
+              // Narrow: a plain vertical sequence. Each thesis rises as it is reached and lights
+              // its own marker; no pin, no canvas, nothing stacked.
+              slides.forEach((slide, i) => {
+                gsap.from(slide, {
                   opacity: 0,
-                  y: 34,
-                  duration: 0.85,
+                  y: 24,
+                  duration: 0.8,
                   ease: 'power3.out',
-                  scrollTrigger: { trigger: state, start: 'top 88%' },
+                  scrollTrigger: { trigger: slide, start: 'top 88%' },
+                })
+                ScrollTrigger.create({
+                  trigger: slide,
+                  start: 'top 66%',
+                  end: 'bottom 44%',
+                  onToggle: (self) => {
+                    if (!self.isActive) return
+                    dots.forEach((d, n) => d.classList.toggle('is-on', n === i))
+                    marks.forEach((m, n) => m.classList.toggle('is-on', n === i))
+                  },
                 })
               })
-              for (const rail of scene.querySelectorAll('[data-ax="v-rail"]')) {
-                gsap.from(rail, {
-                  scaleY: 0,
-                  transformOrigin: 'top center',
-                  ease: 'none',
-                  scrollTrigger: { trigger: scene, start: 'top 70%', end: 'bottom 80%', scrub: true },
-                })
-              }
             }
           }
 
