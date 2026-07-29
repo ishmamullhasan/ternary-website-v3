@@ -23,7 +23,7 @@ export function AboutEditorialCta({ heading, description, button_1, button_2 }: 
   return (
     <section
       data-scene="closing"
-      className="ax-bleed ax-scene relative isolate flex min-h-[84svh] flex-col justify-center overflow-hidden px-5 py-20 md:px-8 lg:min-h-[92svh] lg:px-12"
+      className="ax-black ax-scene relative isolate flex min-h-[92svh] w-full flex-col justify-center overflow-hidden px-5 py-24 md:px-10 lg:px-16"
     >
       <div
         aria-hidden
@@ -32,9 +32,9 @@ export function AboutEditorialCta({ heading, description, button_1, button_2 }: 
         <ClosingField />
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-12">
+      <div className="ax-above mx-auto flex w-full max-w-[1400px] flex-col gap-12">
         {heading ? (
-          <h2 className="ax-display ax-h max-w-[13ch] text-cream">
+          <h2 className="ax-hx ax-h max-w-[11ch]">
             <span data-ax="mask" className="block">
               {heading}
             </span>
@@ -43,7 +43,7 @@ export function AboutEditorialCta({ heading, description, button_1, button_2 }: 
 
         <div data-ax="cta" className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
           {description ? (
-            <div className="ax-body max-w-[52ch]">
+            <div className="ax-copy">
               <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
             </div>
           ) : null}

@@ -272,7 +272,8 @@ export function RenderBlocks({
   // restored around them, so that section keeps exactly the max-width, gutters and rhythm it
   // has on the live site. Its own markup is untouched; only its wrapper is involved, which is
   // the one change the preservation rule permits.
-  const aboutFrame = 'mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-20 lg:py-28'
+  const aboutFrame = 'ax-black w-full'
+  const aboutFrameInner = 'mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-24 lg:py-32'
 
   const content = (
     <div className={containerClass}>
@@ -284,7 +285,7 @@ export function RenderBlocks({
           if (isAbout && block.blockType === 'aboutLeadership') {
             return (
               <div className={aboutFrame} key={block.id || i}>
-                {el}
+                <div className={aboutFrameInner}>{el}</div>
               </div>
             )
           }

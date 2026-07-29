@@ -22,17 +22,18 @@ export function AboutBeliefsComponent({ heading, description, items }: AboutBeli
   return (
     <section
       data-scene="culture"
-      className="ax-bleed ax-scene relative isolate overflow-hidden px-5 py-20 transition-colors duration-700 md:px-8 lg:px-12 lg:py-28"
+      className="ax-black ax-scene relative isolate w-full overflow-hidden px-5 py-24 md:px-10 lg:px-16 lg:py-32"
     >
-      <div className="mx-auto w-full max-w-[1480px]">
+      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-black" />
+      <div className="ax-above mx-auto w-full max-w-[1400px]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
-          <h2 className="ax-display-sm ax-h max-w-[12ch] text-cream">
+          <h2 className="ax-label">
             <span data-ax="mask" className="block">
               {heading}
             </span>
           </h2>
           {description ? (
-            <div data-ax="rise" className="ax-body max-w-[44ch]">
+            <div data-ax="rise" className="ax-copy">
               <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
             </div>
           ) : null}
@@ -45,18 +46,18 @@ export function AboutBeliefsComponent({ heading, description, items }: AboutBeli
               className="ax-state grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-end lg:gap-20"
             >
               <div>
-                <span aria-hidden className="ax-meta block">
+                <span aria-hidden className="ax-label block">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 {item.title ? (
-                  <h3 className="ax-h mt-4 max-w-[13ch] font-display text-[clamp(2rem,7vw,5.5rem)] leading-[0.92] font-medium tracking-[-0.055em] text-cream text-balance">
+                  <h3 className="ax-hx ax-h mt-5 max-w-[11ch] text-balance">
                     <span data-ax="kw" className="block">
                       {item.title}
                     </span>
                   </h3>
                 ) : null}
               </div>
-              {item.excerpt ? <p className="ax-body max-w-[46ch]">{item.excerpt}</p> : null}
+              {item.excerpt ? <p className="ax-copy">{item.excerpt}</p> : null}
             </article>
           ))}
         </div>

@@ -28,19 +28,20 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
   return (
     <section
       data-scene="proof"
-      className="ax-bleed ax-scene relative isolate overflow-hidden px-5 py-20 md:px-8 lg:px-12 lg:py-28"
+      className="ax-white ax-scene relative isolate w-full overflow-hidden px-5 py-24 md:px-10 lg:px-16 lg:py-32"
     >
-      <div className="mx-auto w-full max-w-[1480px]">
+      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-white" />
+      <div className="ax-above mx-auto w-full max-w-[1400px]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
           {company?.heading ? (
-            <h2 className="ax-display-sm ax-h max-w-[14ch] text-cream">
+            <h2 className="ax-label">
               <span data-ax="mask" className="block">
                 {company.heading}
               </span>
             </h2>
           ) : null}
           {company?.description ? (
-            <div data-ax="rise" className="ax-body max-w-[46ch]">
+            <div data-ax="rise" className="ax-copy">
               <RichTextComp content={company.description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
             </div>
           ) : null}
@@ -55,9 +56,9 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
               return (
                 <div
                   key={item.id ?? index}
-                  className="ax-proof-row group grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-5 border-t border-line py-7 lg:grid-cols-[auto_minmax(0,1.05fr)_minmax(0,1fr)_auto] lg:gap-x-12 lg:py-9"
+                  className="ax-proof-row group grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-5 border-t border-[rgba(9,9,9,0.14)] py-8 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-x-12 lg:py-10"
                 >
-                  <span aria-hidden className="ax-meta ax-proof-index pt-3 group-[.is-active]:text-[color:var(--ax-green)]">
+                  <span aria-hidden className="ax-label ax-proof-index pt-4 group-[.is-active]:text-[color:var(--ax-green)]">
                     {String(index + 1).padStart(2, '0')}
                   </span>
 
@@ -75,7 +76,7 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
                           className="h-[26px] w-[26px] shrink-0 object-contain grayscale"
                         />
                       ) : null}
-                      <span className="ax-proof-title font-display text-[clamp(1.375rem,3.4vw,2.75rem)] leading-[1.05] font-medium tracking-[-0.04em] text-cream">
+                      <span className="ax-proof-title font-display text-[clamp(1.75rem,4.6vw,4.25rem)] leading-[0.92] font-medium tracking-[-0.055em]">
                         {item.name}
                       </span>
                     </div>
@@ -83,20 +84,20 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
 
                   {item.excerpt ? (
                     <div className="ax-proof-excerpt col-span-2 lg:col-span-1 lg:pt-2">
-                      <p className="ax-body mt-3 max-w-[46ch] lg:mt-0">{item.excerpt}</p>
+                      <p className="ax-copy mt-4 lg:mt-0">{item.excerpt}</p>
                     </div>
                   ) : null}
 
                   <span
                     aria-hidden
-                    className="ax-proof-arrow hidden self-center font-mono text-lg text-cream lg:block"
+                    className="ax-proof-arrow hidden self-center font-mono text-lg lg:block"
                   >
                     →
                   </span>
                 </div>
               )
             })}
-            <span aria-hidden className="h-px w-full bg-line" />
+            <span aria-hidden className="ax-hair" />
           </div>
         ) : null}
       </div>

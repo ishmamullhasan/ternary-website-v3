@@ -14,10 +14,75 @@ import { WAY_EDGES, WAY_STATES, edgePath } from './systems'
  * signals only.
  */
 
-/** Hero — a technical field of grid lines and points. Draws in, drifts, responds to the cursor. */
-export function HeroField(): JSX.Element {
-  const cols = [6, 14, 23, 31, 42, 50, 58, 69, 77, 86, 94]
-  const rows = [12, 26, 41, 55, 70, 84]
+/**
+ * Hero — an abstract monochrome atmosphere: large soft forms that drift, reshape and pass behind
+ * the statement like ink moving through water.
+ *
+ * REPLACES a technical grid of ruled lines. The grid read as a wireframe behind the type; this
+ * is weather instead of engineering drawing.
+ *
+ * NO `filter: blur()`, DELIBERATELY. Blurring a layer this size forces a full re-rasterise every
+ * frame — it took scrolling to single-digit fps when it was tried on the home CTA, and that
+ * lesson is written into processStory.css. Radial gradients are already soft, cost nothing to
+ * composite, and animate on transform alone.
+ *
+ * The forms are weighted to the edges and kept at low alpha, so the centre — where the headline
+ * and its paragraph sit — stays dark and low-contrast. No bright form is ever positioned behind
+ * the copy.
+ */
+export function HeroAtmosphere(): JSX.Element {
+  const forms = [
+    // x/y are percentages; each is a soft grey mass, brightest at the outer edges.
+    { c: 'rgba(242,240,234,0.16)', x: 78, y: 22, s: 62 },
+    { c: 'rgba(242,240,234,0.10)', x: 14, y: 74, s: 54 },
+    { c: 'rgba(242,240,234,0.07)', x: 92, y: 78, s: 46 },
+    { c: 'rgba(242,240,234,0.05)', x: 34, y: 12, s: 40 },
+  ]
+
+  return (
+    <div aria-hidden data-ax="atmos" className="absolute inset-0 overflow-hidden">
+      {forms.map((f, i) => (
+        <span
+          key={i}
+          data-atmos-form={i}
+          className="absolute block rounded-full"
+          style={{
+            left: `${f.x}%`,
+            top: `${f.y}%`,
+            width: `${f.s}vw`,
+            height: `${f.s}vw`,
+            transform: 'translate(-50%, -50%)',
+            background: `radial-gradient(circle at 50% 50%, ${f.c} 0%, rgba(242,240,234,0.04) 42%, transparent 70%)`,
+          }}
+        />
+      ))}
+
+      {/* The white mass that expands on scroll and carries the eye into the light section. */}
+      <span
+        data-atmos-bloom
+        className="absolute block rounded-full"
+        style={{
+          left: '50%',
+          bottom: '-40%',
+          width: '120vw',
+          height: '80vw',
+          transform: 'translateX(-50%) scale(0.6)',
+          background:
+            'radial-gradient(ellipse at 50% 50%, rgba(242,240,234,0.22) 0%, rgba(242,240,234,0.06) 45%, transparent 72%)',
+        }}
+      />
+
+      {/* Grain, for texture rather than glow. */}
+      <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:220px] opacity-[0.13] mix-blend-overlay" />
+    </div>
+  )
+}
+
+/**
+ * Hero — the small white points. Kept from the previous field; the ruled grid that used to sit
+ * behind them is gone. They take a slow cursor parallax and nothing else.
+ */
+export function HeroPoints(): JSX.Element {
   const points = [
     { x: 14, y: 26 },
     { x: 42, y: 12 },
@@ -29,19 +94,10 @@ export function HeroField(): JSX.Element {
   ]
 
   return (
-    <svg aria-hidden data-ax="field" className="ax-svg ax-grid" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
-      <g data-ax-field-lines>
-        {cols.map((x) => (
-          <line key={`c${x}`} x1={x} y1="0" x2={x} y2="100" />
-        ))}
-        {rows.map((y) => (
-          <line key={`r${y}`} x1="0" y1={y} x2="100" y2={y} />
-        ))}
-      </g>
-      {/* Points sit above the grid and take the cursor parallax. */}
+    <svg aria-hidden data-ax="field" className="ax-svg" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
       <g data-ax-field-points>
         {points.map((p, i) => (
-          <circle key={i} className="ax-node" cx={p.x} cy={p.y} r="0.45" opacity="0.75" />
+          <circle key={i} cx={p.x} cy={p.y} r="0.4" fill="#f2f0ea" opacity="0.7" />
         ))}
       </g>
     </svg>

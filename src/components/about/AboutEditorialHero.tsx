@@ -1,4 +1,4 @@
-import { HeroField } from '@/components/about/AboutSystems'
+import { HeroAtmosphere, HeroPoints } from '@/components/about/AboutSystems'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { HeroBlock } from '@/payload-types'
 import type { JSX } from 'react'
@@ -13,35 +13,40 @@ import type { JSX } from 'react'
  * drifts against the scroll and leans toward the cursor. On scroll the headline enlarges and
  * travels up behind the thesis rather than fading away.
  *
+ * The background is an abstract monochrome atmosphere — large soft forms that drift and reshape,
+ * with the small white points kept from the previous treatment. The ruled grid and the divider
+ * line are gone: they read as a wireframe behind the type. On scroll the lower bloom expands,
+ * carrying the eye into the white thesis section rather than stopping and handing over.
+ *
  * CONTENT: `heading` and `description` verbatim from the CMS.
  */
 export function AboutEditorialHero({ heading, description }: HeroBlock): JSX.Element {
   return (
     <section
       data-scene="hero"
-      className="ax-bleed ax-scene relative isolate flex min-h-[86svh] flex-col justify-center overflow-hidden px-5 py-16 md:px-8 lg:min-h-[94svh] lg:px-12"
+      className="ax-black ax-scene relative isolate flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 py-16 md:px-10 lg:px-16"
     >
-      {/* The field. Masked toward the edges so it reads as a drawing that fades, not a boxed
-          texture. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(120%_95%_at_30%_35%,#000_0%,rgba(0,0,0,0.4)_55%,transparent_88%)]"
-      >
-        <HeroField />
+      {/* The atmosphere: soft monochrome forms drifting behind the statement. No mask needed —
+          the forms are already soft-edged and weighted away from the centre, so the copy sits on
+          dark ground. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <HeroAtmosphere />
+      </div>
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <HeroPoints />
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 lg:gap-16">
+      <div className="ax-above mx-auto flex w-full max-w-[1400px] flex-col gap-8 lg:gap-10">
         {heading ? (
           // The page's single <h1>.
-          <h1 data-ax="chars" className="ax-display ax-h max-w-[15ch] text-cream">
+          <h1 data-ax="chars" className="ax-hx ax-h max-w-[13ch]">
             {heading}
           </h1>
         ) : null}
 
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
-          <span aria-hidden data-ax="rule" className="ax-rule h-px w-full bg-line-strong lg:max-w-[34%]" />
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-end lg:gap-20">
           {description ? (
-            <div data-ax="rise" className="ax-body max-w-[58ch]">
+            <div data-ax="rise" className="ax-copy">
               <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
             </div>
           ) : null}

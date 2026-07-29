@@ -39,9 +39,10 @@ export function AboutApproachComponent({ heading, description, items }: AboutApp
   return (
     <section
       data-scene="way"
-      className="ax-bleed ax-scene ax-scene-tall relative isolate overflow-hidden px-5 py-20 md:px-8 lg:px-12 lg:py-0"
+      className="ax-black ax-scene ax-scene-tall relative isolate w-full overflow-hidden px-5 py-24 md:px-10 lg:px-16 lg:py-0"
     >
-      <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20">
+      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-black" />
+      <div className="ax-above mx-auto grid w-full max-w-[1400px] grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:gap-24">
         {/* The system. */}
         <div className="relative order-2 h-[300px] w-full lg:order-1 lg:h-[62vh]">
           <WaySystem />
@@ -49,32 +50,32 @@ export function AboutApproachComponent({ heading, description, items }: AboutApp
 
         {/* The principles. */}
         <div className="order-1 flex flex-col lg:order-2">
-          <h2 className="ax-display-sm ax-h max-w-[13ch] text-cream">
+          <h2 className="ax-hx-sm ax-h max-w-[12ch]">
             <span data-ax="mask" className="block">
               {heading}
             </span>
           </h2>
           {description ? (
-            <div data-ax="rise" className="ax-body mt-5 max-w-[46ch]">
+            <div data-ax="rise" className="ax-copy mt-6">
               <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
             </div>
           ) : null}
 
           <div className="ax-stack mt-10 lg:mt-14">
             <div aria-hidden className="ax-sizer">
-              <h3 className="ax-display-sm">{longestTitle?.title}</h3>
-              <p className="ax-body mt-5 max-w-[46ch]">{longestExcerpt?.excerpt}</p>
+              <h3 className="ax-hx-sm max-w-[14ch]">{longestTitle?.title}</h3>
+              <p className="ax-copy mt-6">{longestExcerpt?.excerpt}</p>
             </div>
 
             {items.map((item, index) => (
               <article key={item.id ?? `way-${index}`} className="ax-state">
-                <span aria-hidden className="ax-meta block">
+                <span aria-hidden className="ax-label block">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 {item.title ? (
-                  <h3 className="ax-display-sm ax-h mt-3 max-w-[15ch] text-cream text-balance">{item.title}</h3>
+                  <h3 className="ax-hx-sm ax-h mt-4 max-w-[14ch] text-balance">{item.title}</h3>
                 ) : null}
-                {item.excerpt ? <p className="ax-body mt-5 max-w-[46ch]">{item.excerpt}</p> : null}
+                {item.excerpt ? <p className="ax-copy mt-6">{item.excerpt}</p> : null}
               </article>
             ))}
           </div>

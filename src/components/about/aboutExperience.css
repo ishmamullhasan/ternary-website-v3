@@ -166,6 +166,117 @@
   background: var(--ax-green);
 }
 
+
+/* ── GROUNDS ────────────────────────────────────────────────────────────────
+   The page alternates black and warm white, and the alternation is the pacing. Each ground is a
+   real full-width background on the section, so a transition is a whole-screen event rather than
+   a change of card colour.
+
+   Exact values from the brief. The white is genuinely bright (#F1EFE8), not a dark grey pretending
+   — that was the specific failure being corrected. */
+.ax-black {
+  background-color: #050505;
+  color: #f2f0ea;
+}
+.ax-white {
+  background-color: #f1efe8;
+  color: #090909;
+}
+.ax-black .ax-h,
+.ax-black h1,
+.ax-black h2,
+.ax-black h3 {
+  color: #f2f0ea;
+}
+.ax-black .ax-copy {
+  color: #a8a6a0;
+}
+.ax-black .ax-label {
+  color: #86847e;
+}
+.ax-white .ax-h,
+.ax-white h1,
+.ax-white h2,
+.ax-white h3 {
+  color: #090909;
+}
+/* On cream this is ~9.8:1 — clear of the AAA floor for body text. */
+.ax-white .ax-copy {
+  color: #3f3f46;
+}
+.ax-white .ax-label {
+  color: #52525b;
+}
+.ax-white .ax-hair {
+  background-color: rgba(9, 9, 9, 0.18);
+}
+.ax-black .ax-hair {
+  background-color: rgba(242, 240, 234, 0.16);
+}
+
+/* ── EDITORIAL TYPE ─────────────────────────────────────────────────────────
+   Tight, large, and close to its supporting copy. The old scale left headline lines drifting
+   apart and set major content at body-note size. */
+.ax-hx {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(72px, 9vw, 150px);
+  line-height: 0.84;
+  letter-spacing: -0.06em;
+  font-weight: 500;
+}
+.ax-hx-sm {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(44px, 5.4vw, 92px);
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  font-weight: 500;
+}
+.ax-copy {
+  font-size: clamp(17px, 1.25vw, 21px);
+  line-height: 1.45;
+  max-width: 42ch;
+}
+.ax-label {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── SECTION WIPES ──────────────────────────────────────────────────────────
+   The panel that carries one ground over the previous one. It is a child of the incoming
+   section, pinned to the top edge and scaled from zero height, so the incoming ground sweeps up
+   over the outgoing one instead of cross-fading. Base state is scaleY(0) applied by JS only —
+   with no JS the panel simply never paints and the sections butt cleanly. */
+.ax-wipe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  transform-origin: bottom center;
+  pointer-events: none;
+  z-index: 0;
+}
+.ax-wipe-white {
+  background-color: #f1efe8;
+}
+.ax-wipe-black {
+  background-color: #050505;
+}
+.ax-above {
+  position: relative;
+  z-index: 1;
+}
+
+/* A thin rule that a scene can contract into, becoming the next section's divider. */
+.ax-hair {
+  height: 1px;
+  width: 100%;
+  transform-origin: center;
+}
+
 /* ── SCENE 02: the thesis slider ────────────────────────────────────────────
    An editorial two-column slider. Everything here is scoped to `.ax-th*` so it cannot reach
    another scene.

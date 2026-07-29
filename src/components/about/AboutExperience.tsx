@@ -107,7 +107,6 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
           // ── SCENE 01 — HERO ───────────────────────────────────────────────
           for (const scene of q('[data-scene="hero"]')) {
             const heading = scene.querySelector('[data-ax="chars"]')
-            const field = scene.querySelector('[data-ax="field"]')
 
             if (heading) {
               // Characters, clipped by their own lines — not a fade-up. The two lines arrive
@@ -138,35 +137,62 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
               })
             }
 
-            if (field) {
-              const lines = [...field.querySelectorAll('line')]
-              gsap.from(lines, {
-                drawSVG: '0%',
-                duration: 1.8,
-                ease: 'power2.inOut',
-                stagger: { each: 0.035, from: 'random' },
-              })
-              gsap.to(field, {
-                yPercent: wide ? 14 : 8,
-                ease: 'none',
-                scrollTrigger: { trigger: scene, start: 'top top', end: 'bottom top', scrub: true },
+            const atmos = scene.querySelector('[data-ax="atmos"]')
+            if (atmos) {
+              const forms = [...atmos.querySelectorAll<HTMLElement>('[data-atmos-form]')]
+              const bloom = atmos.querySelector<HTMLElement>('[data-atmos-bloom]')
+
+              // Forms up from nothing on load — the atmosphere gathers behind the statement
+              // rather than being there before it.
+              gsap.from(forms, {
+                opacity: 0,
+                scale: 0.72,
+                duration: 2.4,
+                ease: 'power2.out',
+                stagger: 0.18,
               })
 
-              // Cursor response — the field leans toward the pointer. Pointer devices only, and
-              // small enough to read as depth rather than as a toy.
+              // Endless slow drift. Transform only, each on its own period so the masses never
+              // move in unison and the field never repeats visibly.
+              forms.forEach((f, i) => {
+                gsap.to(f, {
+                  xPercent: i % 2 ? 9 : -11,
+                  yPercent: i % 3 ? -7 : 8,
+                  scale: 1.14,
+                  duration: 16 + i * 5,
+                  ease: 'sine.inOut',
+                  repeat: -1,
+                  yoyo: true,
+                })
+              })
+
+              // On scroll the lower bloom expands, so the black hero opens into the light
+              // section instead of stopping and handing over.
+              if (bloom) {
+                gsap.to(bloom, {
+                  scale: 1.9,
+                  opacity: 1,
+                  ease: 'none',
+                  scrollTrigger: { trigger: scene, start: 'top top', end: 'bottom top', scrub: 0.6 },
+                })
+              }
+
+              // Cursor parallax — slow, and small enough to read as depth.
               if (wide && window.matchMedia('(hover: hover)').matches) {
-                const pts = field.querySelector('[data-ax-field-points]')
-                const xTo = gsap.quickTo(field, 'x', { duration: 1.1, ease: 'power3' })
-                const yTo = gsap.quickTo(field, 'y', { duration: 1.1, ease: 'power3' })
-                const pxTo = pts ? gsap.quickTo(pts, 'x', { duration: 0.9, ease: 'power3' }) : null
-                const pyTo = pts ? gsap.quickTo(pts, 'y', { duration: 0.9, ease: 'power3' }) : null
+                const pts = scene.querySelector('[data-ax-field-points]')
+                const movers = [...forms, ...(pts ? [pts] : [])]
+                const setters = movers.map((el, i) => ({
+                  x: gsap.quickTo(el, 'x', { duration: 1.6, ease: 'power3' }),
+                  y: gsap.quickTo(el, 'y', { duration: 1.6, ease: 'power3' }),
+                  depth: (i + 1) * 7,
+                }))
                 const onMove = (e: PointerEvent): void => {
-                  const cx = (e.clientX / window.innerWidth - 0.5) * 2
-                  const cy = (e.clientY / window.innerHeight - 0.5) * 2
-                  xTo(cx * 14)
-                  yTo(cy * 10)
-                  pxTo?.(cx * -26)
-                  pyTo?.(cy * -18)
+                  const cx = e.clientX / window.innerWidth - 0.5
+                  const cy = e.clientY / window.innerHeight - 0.5
+                  setters.forEach((s2) => {
+                    s2.x(cx * s2.depth)
+                    s2.y(cy * s2.depth * 0.7)
+                  })
                 }
                 window.addEventListener('pointermove', onMove, { passive: true })
                 context.add?.(() => window.removeEventListener('pointermove', onMove))
@@ -179,8 +205,8 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
             const slides = [...scene.querySelectorAll<HTMLElement>('[data-th-slide]')]
             const dots = [...scene.querySelectorAll<HTMLElement>('[data-th-dot]')]
             const marks = [...scene.querySelectorAll<HTMLElement>('[data-th-mark]')]
-            const curves = [...scene.querySelectorAll<SVGPathElement>('[data-th-curve]')]
-            const nodes = [...scene.querySelectorAll<SVGCircleElement>('[data-th-node]')]
+            const rule = scene.querySelector<HTMLElement>('[data-ax="th-rule"]')
+            const marker = scene.querySelector<HTMLElement>('[data-ax="th-marker"]')
             const title = scene.querySelector('[data-ax="th-title"]')
             const intro = scene.querySelector('[data-ax="th-intro"]')
             if (!slides.length) continue
@@ -231,18 +257,27 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
                   D * 0.55,
                 )
 
-              // 3 — redraw exactly one background line.
-              const curve = curves[i % curves.length]
-              if (curve) {
-                tl.fromTo(curve, { drawSVG: '0%' }, { drawSVG: '100%', duration: D, ease: 'power2.inOut' }, 0)
-                curves.forEach((c, n) => c.classList.toggle('is-lit', n === i % curves.length))
+              // 3 — the single rule contracts and extends again as the statement changes.
+              if (rule) {
+                tl.fromTo(
+                  rule,
+                  { scaleX: 1, transformOrigin: 'right center' },
+                  { scaleX: 0.12, duration: D * 0.45, ease: 'power2.inOut' },
+                  0,
+                ).fromTo(
+                  rule,
+                  { scaleX: 0.12, transformOrigin: 'left center' },
+                  { scaleX: 1, duration: D * 0.55, ease: 'power2.out' },
+                  D * 0.45,
+                )
               }
-              // 4 — pulse exactly one small green node.
-              const node = nodes[i % nodes.length]
-              if (node) {
-                nodes.forEach((n, k) => n.classList.toggle('is-live', k === i % nodes.length))
-                tl.fromTo(node, { scale: 0.7 }, { scale: 1.25, duration: D * 0.45, ease: 'power2.out', transformOrigin: 'center' }, 0)
-                  .to(node, { scale: 1, duration: D * 0.45, ease: 'power2.inOut' }, D * 0.45)
+              // 4 — the one green indicator travels the rule to its new position.
+              if (marker) {
+                tl.to(
+                  marker,
+                  { left: `${(i / Math.max(1, slides.length - 1)) * 100}%`, duration: D, ease: 'power2.inOut' },
+                  0,
+                )
               }
               // 6 — update the active pagination marker.
               dots.forEach((d, n) => d.classList.toggle('is-on', n === i))
@@ -259,8 +294,6 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
               scene.setAttribute('data-thesis', 'on')
               gsap.set(slides.slice(1), { autoAlpha: 0 })
               dots[0]?.classList.add('is-on')
-              nodes[0]?.classList.add('is-live')
-              curves[0]?.classList.add('is-lit')
 
               let current = 0
               // The pin lasts exactly one hold per thesis — no more, so there is no blank scroll
@@ -281,17 +314,7 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
                 },
               })
 
-              // The curves breathe slowly between transitions — movement, not activity.
-              curves.forEach((c, i) => {
-                gsap.to(c, {
-                  attr: { transform: 'translate(0,0)' },
-                  y: i % 2 ? 5 : -5,
-                  duration: 7 + i,
-                  ease: 'sine.inOut',
-                  repeat: -1,
-                  yoyo: true,
-                })
-              })
+
             } else {
               // Narrow: a plain vertical sequence. Each thesis rises as it is reached and lights
               // its own marker; no pin, no canvas, nothing stacked.
@@ -445,10 +468,10 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
             }
           }
 
-          // ── SCENE 05 — CULTURE: typographic states, black ↔ warm white ────
+          // ── SCENE 05 — CULTURE: typographic moments on black ──────────────
           for (const scene of q('[data-scene="culture"]')) {
             const states = [...scene.querySelectorAll<HTMLElement>('.ax-state')]
-            states.forEach((state, i) => {
+            states.forEach((state) => {
               const kw = state.querySelector('[data-ax="kw"]')
               if (kw) maskLines(kw, { stagger: 0.07 })
               gsap.from(state, {
@@ -458,17 +481,9 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
                 ease: 'power3.out',
                 scrollTrigger: { trigger: state, start: 'top 86%' },
               })
-              // Alternating ground. The flip is a real background change on the scene, driven
-              // by which principle is on screen, so the page swings between black and warm
-              // white as it is read rather than staying uniformly dark.
-              if (i % 2 === 1) {
-                ScrollTrigger.create({
-                  trigger: state,
-                  start: 'top 60%',
-                  end: 'bottom 40%',
-                  onToggle: (self) => scene.classList.toggle('ax-invert', self.isActive),
-                })
-              }
+              // No inversion inside this scene: the page's black/white alternation now happens
+              // BETWEEN sections, at full width, which is what makes it read as pacing. Culture
+              // stays black throughout so the flip either side of it lands.
             })
           }
 
@@ -529,6 +544,46 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
                 scrollTrigger: { trigger: scene, start: 'top 46%' },
               })
             }
+          }
+
+          // ── SECTION WIPES ─────────────────────────────────────────────────
+          // The incoming ground sweeps up over the previous section instead of cross-fading, so
+          // each black/white change is a whole-screen event. Scrubbed across the boundary, and
+          // set from JS only — with no JS the panel never paints and the sections butt cleanly.
+          // A pinned section is wrapped by GSAP in a pin-spacer, and the spacer is transparent —
+          // so the page ground showed through around the pinned white thesis, putting black bands
+          // either side of a section that is supposed to read as unmistakably light. Painting the
+          // spacer with the section's own background makes the ground continuous.
+          const paintSpacers = (): void => {
+            for (const sc of q('[data-scene]')) {
+              const spacer = sc.parentElement
+              if (spacer?.classList.contains('pin-spacer')) {
+                spacer.style.backgroundColor = getComputedStyle(sc).backgroundColor
+              }
+            }
+          }
+          paintSpacers()
+          ScrollTrigger.addEventListener('refresh', paintSpacers)
+          context.add?.(() => ScrollTrigger.removeEventListener('refresh', paintSpacers))
+
+          for (const wipe of q('[data-ax="wipe"]')) {
+            const scene = wipe.closest('section')
+            if (!scene) continue
+            gsap.fromTo(
+              wipe,
+              { scaleY: 1 },
+              {
+                scaleY: 0,
+                ease: 'none',
+                scrollTrigger: {
+                  trigger: scene,
+                  start: 'top bottom',
+                  end: 'top 45%',
+                  scrub: 0.4,
+                  invalidateOnRefresh: true,
+                },
+              },
+            )
           }
 
           // ── shared primitives ─────────────────────────────────────────────

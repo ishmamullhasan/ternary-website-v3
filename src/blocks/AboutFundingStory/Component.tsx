@@ -6,13 +6,14 @@ import type { JSX } from 'react'
 /**
  * SCENE 07 — independence, as an editorial statement rather than a rectangular banner.
  *
- * The CMS `backgroundImage` is deliberately not rendered any more. It was a full-colour uploaded
- * plate that pulled the page away from the black / warm-white / grey identity, and it needed a
- * heavy scrim to keep cream text legible over it — a scrim nobody has been able to tune, because
- * media serving returns 500 outside production and the plate has never once been visible in any
- * environment available for review. What replaces it speaks the page's own language: grain, a
- * horizontal signal line that draws across as the section is scrolled, and one green marker
- * travelling it. The field is the argument — a straight line held over distance.
+ * WHITE ground. The CMS `backgroundImage` — a full-colour uploaded plate — is deliberately not
+ * rendered: it broke the black / warm-white identity, and it needed a scrim nobody could tune,
+ * because media serving returns 500 outside production and the plate has never once been visible
+ * in any environment available for review.
+ *
+ * What carries the section instead is type and one line: a large black headline, a single rule
+ * drawn across the full measure as the section is scrolled, and one small green marker running
+ * it. The line is the argument — held straight over distance.
  *
  * The CMS field itself is untouched, so nothing is lost if this is reverted.
  *
@@ -32,17 +33,18 @@ export function AboutFundingStoryComponent({
   return (
     <section
       data-scene="funding"
-      className="ax-bleed ax-scene ax-grain relative isolate overflow-hidden px-5 py-24 md:px-8 lg:px-12 lg:py-36"
+      className="ax-white ax-scene relative isolate w-full overflow-hidden px-5 py-28 md:px-10 lg:px-16 lg:py-40"
     >
-      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10">
+      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-white" />
+      <div className="ax-above mx-auto flex w-full max-w-[1400px] flex-col gap-10">
         {eyebrow ? (
-          <span data-ax="rise" className="ax-meta">
+          <span data-ax="rise" className="ax-label">
             {eyebrow}
           </span>
         ) : null}
 
         {heading ? (
-          <h2 className="ax-display-sm ax-h max-w-[14ch] text-cream">
+          <h2 className="ax-hx ax-h max-w-[12ch]">
             <span data-ax="mask" className="block">
               {heading}
             </span>
@@ -52,7 +54,7 @@ export function AboutFundingStoryComponent({
         {/* The signal: one line drawn across the full measure with a single green marker running
             it — held, straight, over distance. The only green in the scene. */}
         <div aria-hidden className="relative h-px w-full">
-          <span data-ax="signal-line" className="absolute inset-0 block h-px w-full bg-line-strong" />
+          <span data-ax="signal-line" className="ax-hair absolute inset-0 block" />
           <span
             data-ax="signal-dot"
             className="absolute top-1/2 left-0 block h-1.5 w-1.5 -translate-y-1/2 rounded-full"
@@ -61,7 +63,7 @@ export function AboutFundingStoryComponent({
         </div>
 
         {description ? (
-          <div data-ax="rise" className="ax-body max-w-[56ch]">
+          <div data-ax="rise" className="ax-copy">
             <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
           </div>
         ) : null}
@@ -76,8 +78,8 @@ export function AboutFundingStoryComponent({
                     href={link?.url ?? '#'}
                     className={
                       isSecondary
-                        ? 'inline-flex h-11 items-center justify-center rounded-lg border border-line bg-button-dark px-5 font-display text-base font-normal text-cream transition-colors duration-200 hover:bg-button-dark/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink'
-                        : 'inline-flex h-11 items-center justify-center rounded-lg bg-cream px-5 font-display text-base font-normal text-ink/90 transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink'
+                        ? 'inline-flex h-11 items-center justify-center rounded-lg border border-[rgba(9,9,9,0.2)] px-5 font-display text-base font-normal text-[#090909] transition-colors duration-200 hover:bg-[rgba(9,9,9,0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#090909] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f1efe8]'
+                        : 'inline-flex h-11 items-center justify-center rounded-lg bg-[#090909] px-5 font-display text-base font-normal text-[#f1efe8] transition-colors duration-200 hover:bg-[#242424] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#090909] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f1efe8]'
                     }
                   >
                     {link?.label}
