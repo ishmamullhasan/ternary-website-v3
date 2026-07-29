@@ -26,10 +26,11 @@ interface ProcessCompProps {
  * was reserving space for copy that does not exist. The layout below is built to read
  * correctly either way — titles alone now, richer the moment descriptions are authored.
  *
- * Left is pinned: eyebrow, heading, blurb and the figure. Right is the sequence, with a
- * rail whose fill grows as you descend and one principle live at a time. Motion is
- * limited to progressive disclosure, a growing progress indicator and crossfade —
- * ProcessJourney owns the state, processJourney.css owns the timing.
+ * Left holds the frame — eyebrow, heading, blurb, figure — top-aligned with the first
+ * item. Right is the sequence, with a rail whose fill grows as you descend and one
+ * principle live at a time. Motion is limited to progressive disclosure, a growing
+ * progress indicator and crossfade — ProcessJourney owns the state, processJourney.css
+ * owns the timing.
  */
 export default function ProcessComp({ heading, description, process }: ProcessCompProps) {
   // Empty-state guard: with no steps there is nothing to render, so collapse the section
@@ -39,8 +40,12 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
   return (
     <ProcessJourney count={process.length}>
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)] lg:gap-16">
-        {/* Pinned side — the section's own frame stays put while the principles move past it. */}
-        <div className="flex flex-col gap-5 lg:sticky lg:top-28 lg:self-start">
+        {/* Top-aligned, NOT pinned. It was sticky, which reads fine while the section fills the
+            viewport but detaches the moment it does not: the column parks 112px down the
+            viewport while the list scrolls up past it, so the heading ends up level with the
+            middle of the list instead of with item 01. The section is only ~600px tall, so
+            pinning bought little and cost the alignment. */}
+        <div className="flex flex-col gap-5 lg:self-start">
           <p className="text-[12px] font-medium tracking-[0.14em] text-subtle uppercase">Process</p>
           {(heading || description) && (
             <div>
