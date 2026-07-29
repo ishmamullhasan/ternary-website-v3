@@ -1,5 +1,5 @@
 import ProcessFigure from '@/components/process/ProcessFigure'
-import ProcessJourney from '@/components/process/ProcessJourney'
+import ProcessStory from '@/components/process/ProcessStory'
 import type { RichText } from '@/components/richtext'
 import RichTextComp from '@/components/richtext'
 import type { JSX } from 'react'
@@ -17,83 +17,98 @@ interface ProcessCompProps {
 }
 
 /**
- * "How we operate" — a scroll-linked journey down one structure, replacing a 2-up grid
- * of five equal bullets.
+ * "How we operate" — a pinned storytelling stage: one operating principle on screen at a
+ * time, changing as the section is scrolled through.
  *
- * The old layout gave every principle the same weight, showed nothing connecting them,
- * and left roughly half the panel empty. The empty half had a cause worth naming: the
- * component renders each step's `description`, and all five are empty in the CMS, so it
- * was reserving space for copy that does not exist. The layout below is built to read
- * correctly either way — titles alone now, richer the moment descriptions are authored.
+ * Replaces a rail-and-list, and before that a 2-up grid. The list still asked the reader
+ * to scan five headlines at once; this presents one idea, holds it, then hands over.
  *
- * Left holds the frame — eyebrow, heading, blurb, figure — top-aligned with the first
- * item. Right is the sequence, with a rail whose fill grows as you descend and one
- * principle live at a time. Motion is limited to progressive disclosure, a growing
- * progress indicator and crossfade — ProcessJourney owns the state, processJourney.css
- * owns the timing.
+ * CONTENT NOTE, because it matters more here than in either previous version: every
+ * step's `description` is empty in the CMS. The stage is built around a principle plus
+ * one supporting line, so with titles alone it runs light. It reads correctly either way,
+ * but this is the design that most rewards those five sentences being written — and they
+ * are not invented here.
+ *
+ * Left holds the frame and the figure, centred against the stage. Right is the stage.
+ * ProcessStory owns the state; processStory.css owns the pin, the crossfade, and the
+ * fallback that keeps all five readable without JavaScript or under reduced motion.
  */
 export default function ProcessComp({ heading, description, process }: ProcessCompProps) {
   // Empty-state guard: with no steps there is nothing to render, so collapse the section
   // entirely and let the parent RenderBlocks rhythm own the surrounding spacing.
   if (!process || process.length === 0) return null
 
-  return (
-    <ProcessJourney count={process.length}>
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)] lg:gap-16">
-        {/* Top-aligned, NOT pinned. It was sticky, which reads fine while the section fills the
-            viewport but detaches the moment it does not: the column parks 112px down the
-            viewport while the list scrolls up past it, so the heading ends up level with the
-            middle of the list instead of with item 01. The section is only ~600px tall, so
-            pinning bought little and cost the alignment. */}
-        <div className="flex flex-col gap-5 lg:self-start">
-          <p className="text-[12px] font-medium tracking-[0.14em] text-subtle uppercase">Process</p>
-          {(heading || description) && (
-            <div>
-              {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
-              {description && (
-                <RichTextComp
-                  content={description as RichText}
-                  className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body max-w-md"
-                />
-              )}
-            </div>
-          )}
+  const steps = process
+  const longest = steps.reduce((a, s) => ((s.title ?? '').length > a.length ? (s.title ?? '') : a), '')
 
-          {/* One plate per principle. Courses already read stay solid, the live one is
-              bright, the rest are faint — the connection the old list never showed. */}
-          <div className="mt-2 hidden w-full max-w-[300px] lg:block">
-            <ProcessFigure count={process.length} />
+  return (
+    <ProcessStory count={steps.length}>
+      <div className="ps-pin">
+        <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] lg:gap-16">
+          {/* Frame — centred against the stage rather than top-aligned, so the composition
+              stays balanced when only one principle is showing. */}
+          <div className="flex flex-col gap-5">
+            <p className="text-[12px] font-medium tracking-[0.14em] text-subtle uppercase">Process</p>
+            {(heading || description) && (
+              <div>
+                {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
+                {description && (
+                  <RichTextComp
+                    content={description as RichText}
+                    className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body max-w-md"
+                  />
+                )}
+              </div>
+            )}
+
+            {/* Smaller than before, and it reacts: courses already read stay solid, the live
+                one is bright, the rest recede. */}
+            <div className="mt-1 hidden w-full max-w-[248px] lg:block">
+              <ProcessFigure count={steps.length} plateClass="ps-plate" />
+            </div>
+          </div>
+
+          {/* The stage. */}
+          <div>
+            <div className="ps-stage">
+              {/* Holds the stage open at the tallest slide's height so nothing jumps as the
+                  copy changes length. Hidden from sight and from screen readers — the real
+                  slides below carry the content. */}
+              <div aria-hidden className="ps-sizer">
+                <h3 className="font-display text-[clamp(1.75rem,3.4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em]">
+                  {longest}
+                </h3>
+                <p className="mt-4 text-[clamp(1rem,1.3vw,1.25rem)] leading-relaxed">&nbsp;</p>
+              </div>
+
+              {steps.map((item, index): JSX.Element => (
+                <article key={index} className="ps-slide">
+                  {item.title && (
+                    <h3 className="font-display max-w-[20ch] text-[clamp(1.75rem,3.4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-cream">
+                      {item.title}
+                    </h3>
+                  )}
+                  {/* Renders only when authored — the stage reserves no gap for copy that
+                      does not exist. */}
+                  {item.description && (
+                    <div className="mt-4 max-w-[46ch] text-[clamp(1rem,1.3vw,1.25rem)] leading-relaxed text-body">
+                      <RichTextComp content={item.description as RichText} className="prose-p:mb-0" />
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+
+            {/* Position indicator. Decorative — every slide stays in the accessibility tree,
+                so this repeats nothing a screen reader needs. */}
+            <div aria-hidden className="ps-dots mt-10 flex gap-2">
+              {steps.map((_, index) => (
+                <span key={index} className={`ps-dot${index === 0 ? ' is-on' : ''}`} />
+              ))}
+            </div>
           </div>
         </div>
-
-        {/* The sequence. `ol` because these are numbered and ordered. */}
-        <ol className="relative flex flex-col gap-10 lg:gap-14">
-          <span aria-hidden className="pj-rail">
-            <span className="pj-rail-fill" />
-          </span>
-
-          {process.map((item, index): JSX.Element => (
-            <li key={index} className="pj-step">
-              <span aria-hidden className="pj-dot" />
-              <span className="pj-num block text-[13px] text-cream">
-                {item.number ?? String(index + 1).padStart(2, '0')}
-              </span>
-              {item.title && (
-                <h3 className="pj-title font-display mt-2 text-[clamp(1.125rem,1.7vw,1.5rem)] leading-snug font-medium tracking-[-0.015em] text-cream">
-                  {item.title}
-                </h3>
-              )}
-              {/* Renders only when authored — no reserved gap for copy that is not there,
-                  which is what left the old panel half empty. */}
-              {item.description && (
-                <div className="pj-body mt-2 max-w-[52ch] text-[14.5px] leading-relaxed text-body">
-                  <RichTextComp content={item.description as RichText} className="prose-sm prose-p:mb-0" />
-                </div>
-              )}
-            </li>
-          ))}
-        </ol>
       </div>
-    </ProcessJourney>
+    </ProcessStory>
   )
 }

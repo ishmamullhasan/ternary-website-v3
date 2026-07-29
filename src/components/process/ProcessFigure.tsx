@@ -19,7 +19,7 @@ import type { JSX } from 'react'
  * Server-rendered: `iso` builds a string, so this ships no JavaScript. Which plate is
  * lit is decided in CSS from `data-active` on the section — see processJourney.css.
  */
-export default function ProcessFigure({ count }: { count: number }): JSX.Element {
+export default function ProcessFigure({ count, plateClass }: { count: number; plateClass: string }): JSX.Element {
   const g = iso(2.5, 26)
   const R = 3
   const SPAN = 26
@@ -34,7 +34,7 @@ export default function ProcessFigure({ count }: { count: number }): JSX.Element
 
   // Bottom course first: each plate's occluder has to cover the one beneath it.
   for (let i = 0; i < count; i++) {
-    g.open(`pj-plate pj-p${i}`)
+    g.open(`${plateClass} ${plateClass}-${i}`)
     g.box(0, 0, 4 + i * STEP, 19, 19, 3.4, R, 'ink')
     g.close()
   }
@@ -42,7 +42,7 @@ export default function ProcessFigure({ count }: { count: number }): JSX.Element
   /* viewBox is the figure's measured extents plus 8px. Guessing it clipped the base plate
      and let the ground grid run out of frame. */
   return (
-    <svg viewBox="-138 53 276 256" fill="none" aria-hidden className="sf-svg sf-solo pj-fig">
+    <svg viewBox="-138 53 276 256" fill="none" aria-hidden className="sf-svg sf-solo">
       <g dangerouslySetInnerHTML={{ __html: g.done() }} />
     </svg>
   )

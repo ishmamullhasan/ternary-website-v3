@@ -108,6 +108,11 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
   'careersGridTwo',
   'careersGrowth',
   'careersTeam',
+  // processSection renders its own <section>: the shared wrapper below is a Motion with
+  // initial opacity 0, and Motion strands that value when useReducedMotion() resolves
+  // true or when JS never runs — measured, the whole section computed opacity 0 under
+  // both. Its pinned stage also needs to not be nested in an extra layout box.
+  'processSection',
   'capabilityLedger',
 ])
 

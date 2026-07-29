@@ -1,0 +1,166 @@
+/* "How we operate" — a pinned narrative stage: one principle on screen at a time.
+ *
+ * BASE IS EVERY PRINCIPLE, READABLE, IN NORMAL FLOW. The pin, the absolute stacking and
+ * the one-at-a-time behaviour only exist under `[data-story='on']`, which ProcessStory
+ * sets from JavaScript and only when the visitor has not asked for reduced motion. So
+ * with JS off, before hydration, or under reduced motion the section is a plain readable
+ * list of all five — never four principles hidden behind an animation that will not run.
+ *
+ * Note the slides stay in the accessibility tree even when transparent: opacity does not
+ * remove content from it, so a screen reader still reads all five in order regardless of
+ * where the page is scrolled. That is deliberate — the one-at-a-time framing is a visual
+ * device, not a restriction on the content.
+ */
+
+.ps {
+  position: relative;
+  /* `clip`, NOT `hidden`. overflow:hidden makes this a scroll container, which silently
+     stops position:sticky working on anything inside it — the pin would simply never
+     engage. `clip` gives the same clipping with no scroll container. */
+  overflow: clip;
+  isolation: isolate;
+}
+
+/* ── ambient ground: grid + one faint bloom, no filter: blur() ───────────────
+   Blurring a layer this size forced a full re-rasterise every frame and took scrolling
+   to 2.9fps when it was tried on the home CTA. Gradients are already smooth. */
+.ps::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(244, 243, 236, 0.026) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244, 243, 236, 0.026) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(115% 80% at 28% 22%, #000 0%, rgba(0, 0, 0, 0.3) 55%, transparent 84%);
+  mask-image: radial-gradient(115% 80% at 28% 22%, #000 0%, rgba(0, 0, 0, 0.3) 55%, transparent 84%);
+}
+.ps::after {
+  content: '';
+  position: absolute;
+  inset: auto -12% -30% -12%;
+  height: 60%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 100%,
+    rgba(118, 92, 255, 0.13) 0%,
+    rgba(110, 88, 250, 0.04) 42%,
+    transparent 76%
+  );
+}
+.ps > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── the pin ────────────────────────────────────────────────────────────────
+   Scroll distance is (steps x --ps-step) on top of one viewport, so the stage holds for
+   a beat per principle and then releases. --ps-step is a little over half a viewport
+   rather than a full one: five full-height holds is 500vh of scrolling for one section,
+   which stops reading as pacing and starts reading as a scroll trap. */
+.ps[data-story='on'] {
+  height: calc(100vh + var(--ps-steps, 5) * var(--ps-step, 58vh));
+}
+.ps[data-story='on'] .ps-pin {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* ── the stage ──────────────────────────────────────────────────────────────
+   Only under the attribute do the slides leave the flow and stack. Height comes from the
+   tallest slide via a hidden sizer, so the stage never jumps as the copy changes length. */
+.ps[data-story='on'] .ps-stage {
+  position: relative;
+}
+.ps[data-story='on'] .ps-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(24px) scale(0.98);
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
+  pointer-events: none;
+}
+/* already read: leaves upward, so the sequence has a direction */
+.ps[data-story='on'] .ps-slide.is-past {
+  transform: translateY(-24px) scale(0.98);
+}
+.ps[data-story='on'] .ps-slide.is-on {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+/* Fallback spacing. With the pin off the slides sit in normal flow, and without this
+   they stack flush — five large headings with no air between them. Only applies when the
+   attribute is absent, so it costs the pinned version nothing. */
+.ps:not([data-story='on']) .ps-slide + .ps-slide {
+  margin-top: 2.25rem;
+}
+
+/* the sizer holds the stage open; never shown, never read */
+.ps-sizer {
+  visibility: hidden;
+  pointer-events: none;
+}
+.ps:not([data-story='on']) .ps-sizer {
+  display: none;
+}
+
+/* ── pagination ─────────────────────────────────────────────────────────────
+   Only meaningful once the stage is one-at-a-time; in the fallback every principle is
+   already on screen, so a position indicator would be describing nothing. */
+.ps:not([data-story='on']) .ps-dots {
+  display: none;
+}
+.ps-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(244, 243, 236, 0.22);
+  transition:
+    width 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    background-color 0.5s ease;
+}
+.ps-dot.is-on {
+  width: 20px;
+  background: var(--color-cream);
+}
+
+/* ── the figure reacts ──────────────────────────────────────────────────────
+   Fade the STROKES, never the group: fading the <g> takes its occluder with it, and a
+   see-through occluder stops hiding what is behind the plate — which put the ground grid
+   straight through the stack the first time this was built. */
+.ps .sf-solo .occ {
+  fill: var(--color-card);
+}
+.ps-plate :is(path, line):not(.occ) {
+  transition: opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.ps[data-story='on'] .ps-plate :is(path, line):not(.occ) {
+  opacity: 0.2;
+}
+.ps[data-story='on'] .ps-plate.is-built :is(path, line):not(.occ) {
+  opacity: 0.5;
+}
+.ps[data-story='on'] .ps-plate.is-live :is(path, line):not(.occ) {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps *,
+  .ps *::before,
+  .ps *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
