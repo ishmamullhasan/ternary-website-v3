@@ -1,3 +1,4 @@
+import type { RichText } from '@/components/richtext'
 import type { Page } from '@/payload-types'
 import type { TypedLocale } from 'payload'
 
@@ -5,7 +6,7 @@ import type { JSX } from 'react'
 import { Fragment } from 'react'
 
 import AboutEditorialCta from '@/components/about/AboutEditorialCta'
-import AboutEditorialHero from '@/components/about/AboutEditorialHero'
+import ShaderHero from '@/components/ShaderHero'
 import AboutExperience from '@/components/about/AboutExperience'
 import Motion from '@/components/animation/motion'
 import { AboutApproachComponent } from './AboutApproach/Component'
@@ -134,7 +135,14 @@ function renderBlock(block: BlockType, locale?: TypedLocale, slug?: string): JSX
 
   switch (block.blockType) {
     case 'hero':
-      return isAbout ? <AboutEditorialHero {...block} /> : <HeroComponent {...block} />
+      // About's hero is the WebGL shader field. AboutEditorialHero is no longer mounted, but the
+      // file remains in the repo if the shader is ever reverted. Every other page using `hero`
+      // renders the shared component unchanged.
+      return isAbout ? (
+        <ShaderHero heading={block.heading} description={block.description as RichText | null} locale={locale} />
+      ) : (
+        <HeroComponent {...block} />
+      )
     case 'heroFeatured':
       return <HeroFeaturedComponent {...block} />
     case 'industriesSection':
@@ -272,7 +280,11 @@ export function RenderBlocks({
   // restored around them, so that section keeps exactly the max-width, gutters and rhythm it
   // has on the live site. Its own markup is untouched; only its wrapper is involved, which is
   // the one change the preservation rule permits.
-  const aboutFrame = 'ax-black w-full'
+  // `bg-page`, NOT `ax-black`. The ax-black class carries the strict-contrast text rules, and
+  // those were measured reaching into the Leadership block and repainting its heading and
+  // paragraph (#f4f3ec/#aaaaaa -> #f2f0ea) — a styling change to a component that must stay
+  // byte-identical. This gives the same black ground and touches nothing inside.
+  const aboutFrame = 'bg-page w-full'
   const aboutFrameInner = 'mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-24 lg:py-32'
 
   const content = (

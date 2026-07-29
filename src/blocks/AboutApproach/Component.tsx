@@ -41,7 +41,7 @@ export function AboutApproachComponent({ heading, description, items }: AboutApp
       data-scene="way"
       className="ax-black ax-scene ax-scene-tall relative isolate w-full overflow-hidden px-5 py-24 md:px-10 lg:px-16 lg:py-0"
     >
-      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-black" />
+      <span aria-hidden data-ax="wipe" data-wipe="rise" className="ax-wipe ax-wipe-black" />
       <div className="ax-above mx-auto grid w-full max-w-[1400px] grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:gap-24">
         {/* The system. */}
         <div className="relative order-2 h-[300px] w-full lg:order-1 lg:h-[62vh]">

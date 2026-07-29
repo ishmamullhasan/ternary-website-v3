@@ -566,24 +566,66 @@ export default function AboutExperience({ children }: { children: ReactNode }): 
           ScrollTrigger.addEventListener('refresh', paintSpacers)
           context.add?.(() => ScrollTrigger.removeEventListener('refresh', paintSpacers))
 
-          for (const wipe of q('[data-ax="wipe"]')) {
+          // FIVE DISTINCT TREATMENTS, one per boundary. A single shared wipe made every
+          // black/white change read identically, which flattened the pacing the alternation was
+          // supposed to create. Each is still scrubbed across its own boundary and each start
+          // state is set from JS only — with no JS the panels never paint and the sections butt
+          // cleanly against each other.
+          for (const wipe of q<HTMLElement>('[data-ax="wipe"]')) {
             const scene = wipe.closest('section')
             if (!scene) continue
-            gsap.fromTo(
-              wipe,
-              { scaleY: 1 },
-              {
-                scaleY: 0,
-                ease: 'none',
-                scrollTrigger: {
-                  trigger: scene,
-                  start: 'top bottom',
-                  end: 'top 45%',
-                  scrub: 0.4,
-                  invalidateOnRefresh: true,
-                },
-              },
-            )
+            const kind = wipe.dataset.wipe ?? 'rise'
+
+            const st = {
+              trigger: scene,
+              start: 'top bottom',
+              end: 'top 40%',
+              scrub: 0.5,
+              invalidateOnRefresh: true,
+            } as const
+
+            if (kind === 'disc') {
+              // Hero -> thesis: an expanding light shape. A circle grown past the viewport
+              // diagonal, so the warm white opens out of the dark rather than sliding over it.
+              gsap.set(wipe, { borderRadius: '50%', transformOrigin: 'center center' })
+              gsap.fromTo(
+                wipe,
+                { scale: 0, opacity: 1 },
+                { scale: 1.9, ease: 'none', scrollTrigger: st, onComplete: () => gsap.set(wipe, { borderRadius: 0 }) },
+              )
+            } else if (kind === 'rise') {
+              // Thesis -> the Ternary Way: a black panel rises from the bottom edge and takes
+              // the screen.
+              gsap.fromTo(wipe, { yPercent: 100 }, { yPercent: 0, ease: 'none', scrollTrigger: st })
+            } else if (kind === 'rule') {
+              // The Ternary Way -> proof: the system contracts to a thin rule, and that rule
+              // becomes the light section — scaleY from a hairline out to full height.
+              gsap.set(wipe, { transformOrigin: 'center center' })
+              gsap.fromTo(
+                wipe,
+                { scaleY: 0.004, scaleX: 1 },
+                { scaleY: 1, ease: 'power2.in', scrollTrigger: st },
+              )
+            } else if (kind === 'zoom') {
+              // Proof -> culture: the panel scales up past the viewport, so black is revealed
+              // from behind the project titles rather than dropped over them.
+              gsap.set(wipe, { transformOrigin: '30% 50%' })
+              gsap.fromTo(
+                wipe,
+                { scale: 0.12, opacity: 1 },
+                { scale: 2.4, ease: 'power2.in', scrollTrigger: st },
+              )
+            } else if (kind === 'word') {
+              // Culture -> bootstrapped: a wide, short aperture opens vertically — the shape of
+              // an oversized word widening into the light section. Two axes on different curves
+              // so it reads as a word stretching open, not a box scaling.
+              gsap.set(wipe, { transformOrigin: 'center center' })
+              gsap.fromTo(
+                wipe,
+                { scaleX: 0.62, scaleY: 0.06 },
+                { scaleX: 1, scaleY: 1, ease: 'power2.inOut', scrollTrigger: st },
+              )
+            }
           }
 
           // ── shared primitives ─────────────────────────────────────────────
