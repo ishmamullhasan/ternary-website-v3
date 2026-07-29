@@ -3,25 +3,23 @@ import '@/components/solutions/solutionsFrame.css'
 import type { JSX } from 'react'
 
 /**
- * The capabilities hero figure — nine columns of equal height, rising from one base.
+ * Nine columns of equal height rising from one ruled base.
  *
- * Set against the solutions hero deliberately. That figure is horizontal: separate
- * plates spread across a plane, every one at the same level — different ways in, held
- * to one standard. This turns the same construction on its side. Columns instead of
- * plates, rising instead of lying, rooted in a single base instead of ringing an open
- * plane. A capability is not a way in; it is depth you have actually built.
+ * Shared by the /capabilities and /solutions heroes — ONE component rather than a copy
+ * each, so the two cannot quietly drift apart. It was built for capabilities ("Every
+ * discipline. One standard.") and reads the same way on solutions: several things, all
+ * held to one level, rooted in a single base.
  *
- * Two choices carry the page's own claim, "Every discipline. One standard.":
+ * Two choices carry that claim and should survive any retune:
  *
- *   • Every column is the SAME height. Varying them would have been the easy way to
- *     make the silhouette interesting, and it would have said some practices run
- *     deeper than others — the opposite of one standard.
- *   • They share one base. The standard is the thing underneath all of them, not a
- *     label applied to each.
+ *   • Every column is the SAME height. Varying them is the easy way to make the
+ *     silhouette interesting, and it would say some run deeper than others.
+ *   • They share one base. The standard is the thing underneath them, not a label on
+ *     each.
  *
  * Server-rendered: `iso` builds a string, so this ships no JavaScript. It reuses
- * solutionsFrame.css for the ink stroke language rather than restating it, which is
- * what keeps every figure on the site identical in weight.
+ * solutionsFrame.css for the ink stroke language rather than restating it, which keeps
+ * every figure on the site identical in weight.
  */
 function columnsOnOneBase(): string {
   const g = iso(3.0, 2)
@@ -61,7 +59,7 @@ function columnsOnOneBase(): string {
 
 /* viewBox is the figure's measured extents plus 8px — not a guessed box, which is how
    an earlier figure ended up carrying ~47px of blank space above it. */
-export default function CapabilityHeroMark(): JSX.Element {
+export default function ColumnsMark(): JSX.Element {
   return (
     <svg viewBox="-170 84 340 216" fill="none" aria-hidden className="sf-svg sf-solo sf-hero">
       <g dangerouslySetInnerHTML={{ __html: columnsOnOneBase() }} />

@@ -1,5 +1,5 @@
 import Motion from '@/components/animation/motion'
-import CapabilityHeroMark from '@/components/capability/CapabilityHeroMark'
+import ColumnsMark from '@/components/iso/ColumnsMark'
 import Link from '@/components/LocalizedLink'
 import RevealText from '@/components/text/RevealText'
 import { cn } from '@/lib/utils'
@@ -232,7 +232,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
           {/* Eight plates on one plane — the headline beside it, drawn. Hidden below lg,
               where the hero is a single column and it would only add scroll. */}
           <Motion className="hidden lg:block" {...reveal}>
-            <CapabilityHeroMark />
+            <ColumnsMark />
           </Motion>
         </div>
       </Section>

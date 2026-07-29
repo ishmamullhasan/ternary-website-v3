@@ -1,7 +1,8 @@
 import Motion from '@/components/animation/motion'
+import ColumnsMark from '@/components/iso/ColumnsMark'
 import Link from '@/components/LocalizedLink'
 import SolutionScene from '@/components/solutions/SolutionScene'
-import { SolutionMark, SolutionsHeroMark } from '@/components/solutions/SolutionsFrame'
+import { SolutionMark } from '@/components/solutions/SolutionsFrame'
 import '@/components/solutions/solutionsFrame.css'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
@@ -296,7 +297,7 @@ export default function SolutionsHubPage(): JSX.Element {
             half their contrast, so it backs the copy instead of competing with the h1.
             Hidden below lg, where the hero is one column and it would only add scroll. */}
           <Motion className="hidden lg:block" {...reveal}>
-            <SolutionsHeroMark />
+            <ColumnsMark />
           </Motion>
         </div>
       </Section>

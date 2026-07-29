@@ -182,52 +182,6 @@ function managed(): string {
   return g.done()
 }
 
-/* ── Hero · one standard behind all of them ──────────────────────────────
-   Fills the hero's right half with the sentence next to it rather than an
-   ornament: plates ringing a single ruled ground, every one at the same height.
-   The equal height is the whole point — different ways in, all held to one
-   level, which is what "one engineering standard behind all of them" claims.
-
-   Deliberately unlike the four scene marks it sits above. Those are objects,
-   read at object scale; this is a field — wider, flatter, quieter, and set at
-   roughly half their contrast — so it registers as the backdrop to the copy and
-   never competes with the headline for first read.
-
-   It is also the horizontal counterpart to the capabilities hero, which stands
-   equal columns UP from one base. Same construction, one lying down and one
-   standing: a way in versus a depth you have built. */
-function standard(): string {
-  const g = iso(3.1, 26)
-  const R = 3
-  const SPAN = 30
-  const RING = 19
-
-  // The shared ground — "one engineering standard behind all of them". Ruled rather
-  // than solid: a plane you can see through is quieter than a filled one, and the
-  // rules read as measurement rather than as a border.
-  for (let i = -SPAN; i <= SPAN; i += 10) {
-    g.line([i, -SPAN, 0], [i, SPAN, 0], 'ink faint')
-    g.line([-SPAN, i, 0], [SPAN, i, 0], 'ink faint')
-  }
-  g.face(0, 0, 0, SPAN, SPAN, R, 'ink')
-
-  // Plates ringing the plane, every one at the same height. The height is the point:
-  // different ways in, held to one level. Painted back to front — ascending x + y in
-  // this projection — so each box's occluder hides what sits behind it.
-  const plates = Array.from({ length: 8 }, (_, i) => {
-    const a = (i / 8) * Math.PI * 2 + Math.PI / 8
-    return { x: Math.cos(a) * RING, y: Math.sin(a) * RING, i }
-  }).sort((p, q) => p.x + p.y - (q.x + q.y))
-
-  for (const { x, y, i } of plates) {
-    g.open('sf-drift', `animation-delay:${(-i * 1.1).toFixed(1)}s`)
-    g.box(x, y, 3, 5, 5, 1.6, 2, 'ink')
-    g.close()
-  }
-
-  return g.done()
-}
-
 const ART = [product, transform, augmentation, managed] as const
 
 /**
@@ -293,18 +247,6 @@ const MARK_CY = 205
  * below, and not each scene's own extents, which would render the smallest
  * scene largest.
  */
-/**
- * The hero figure. Its viewBox is set from the measured extents of `standard()`
- * — see SolutionMark for why these are hardcoded rather than computed.
- */
-export function SolutionsHeroMark(): JSX.Element {
-  return (
-    <svg viewBox="-194 135 388 202" fill="none" aria-hidden className="sf-svg sf-solo sf-hero">
-      <g dangerouslySetInnerHTML={{ __html: standard() }} />
-    </svg>
-  )
-}
-
 /**
  * Prepare an art string to be drawn stroke by stroke.
  *
