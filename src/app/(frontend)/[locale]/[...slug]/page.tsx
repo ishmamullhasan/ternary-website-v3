@@ -102,7 +102,7 @@ export default async function Page({
   return (
     <div>
       {crumbs.length > 0 && <JsonLd data={breadcrumbList(crumbs)} />}
-      <RenderBlocks blocks={page.layout} locale={typedLocale} />
+      <RenderBlocks blocks={page.layout} locale={typedLocale} slug={slug[slug.length - 1]} />
     </div>
   )
 }
