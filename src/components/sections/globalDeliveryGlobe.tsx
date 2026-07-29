@@ -440,7 +440,11 @@ export default function GlobalDeliveryGlobe({
               onPointerMove={onPointerMove}
               onPointerUp={endDrag}
               onPointerLeave={endDrag}
-              onMouseEnter={() => !reduce && zoom.set(1.15)}
+              /* 1.08, down from 1.15. The card no longer clips this figure, so the zoom is what
+                 decides how far the sphere and its lanes travel outside the frame — 15% put the
+                 lanes into the card above and the sphere past the window edge on the right. 8%
+                 keeps the same gesture inside the budget documented in globalDeliveryComp. */
+              onMouseEnter={() => !reduce && zoom.set(1.08)}
               onMouseLeave={() => zoom.set(1)}
               className="h-full w-full cursor-grab touch-none opacity-0 transition-opacity duration-700 [contain:layout_paint_size]"
               style={{ opacity: mounted ? 1 : undefined }}

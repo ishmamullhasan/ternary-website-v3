@@ -140,6 +140,40 @@ html[data-a11y-links='underline'] footer a {
     padding: clamp(1.5rem, 3.5vw, 3rem) clamp(1.25rem, 3vw, 2.25rem);
   }
 
+  /* Lets a figure break the card frame — see globalDeliveryComp, where the globe and its shipping
+     lanes bleed past the top and right edges.
+
+     This widens the clip rectangle rather than switching to `overflow: visible`. Visible overflow
+     would let the figure's *bounding box* into the document's scrollable area, and the lanes'
+     canvas is 20% wider than the sphere it draws (it reserves room for arc peaks it rarely uses).
+     That measured 83px of horizontal document overflow — invisible, because the body propagates
+     `overflow-x: hidden` to the viewport, but still enough for a focused element to scroll the
+     page sideways. `clip` never contributes scrollable overflow at all, so the figure escapes the
+     frame and the document stays exactly one viewport wide.
+
+     48px, because the clip region still counts toward an ancestor's scroll area even though it is
+     never scrollable itself — so the margin cannot exceed the page gutter without widening the
+     document. 48px IS that gutter (the card sits 48px inside the layout viewport), which makes it
+     the hard ceiling on how far anything here can escape the frame in either direction. The figure
+     is positioned to land inside it: at the hover zoom the sphere reaches 43px past the right edge
+     and the lanes 46px above the top. Nothing paints below the card — the sphere sits 46px inside
+     the bottom edge even zoomed — so an even margin on all four sides is safe.
+
+     Unsupported browsers fall back to the plain `overflow: clip` above and simply crop, which is
+     the behaviour this replaced.
+
+     Written as an explicit rule rather than a Tailwind utility on the element: `.section-card`
+     lives in this same @layer, so the two would tie on specificity and the winner would fall out
+     of generated source order. A rule placed directly after the one it overrides is decided.
+
+     lg and up only. Below that the card runs nearly edge to edge and there is no gutter for a
+     bleed to live in, so the figure stays cropped. */
+  @media (width >= 64rem) {
+    .section-card-bleed {
+      overflow-clip-margin: 48px;
+    }
+  }
+
   /* Opt-in responsive type scale. Additive utilities only — these don't touch the global
      h1,h2 element rules. Use on display headlines / section headings where the fluid clamp
      and tracking are wanted. */
