@@ -1,4 +1,4 @@
-import { HeroAtmosphere, HeroPoints } from '@/components/about/AboutSystems'
+import AboutHeroVisual from '@/components/about/AboutHeroVisual'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { HeroBlock } from '@/payload-types'
 import type { JSX } from 'react'
@@ -13,9 +13,10 @@ import type { JSX } from 'react'
  * drifts against the scroll and leans toward the cursor. On scroll the headline enlarges and
  * travels up behind the thesis rather than fading away.
  *
- * The background is an abstract monochrome atmosphere — large soft forms that drift and reshape,
- * with the small white points kept from the previous treatment. The ruled grid and the divider
- * line are gone: they read as a wireframe behind the type. On scroll the lower bloom expands,
+ * The background is the uploaded Ternary structure, animated as a 2.5D object: it floats,
+ * drifts, breathes, rotates within ±1.2°, takes a light sweep and leans to the cursor, with
+ * restrained particles around it. It sits in the lower band of the hero so it never crosses the
+ * headline or the paragraph. No grid, no divider rule. On scroll the lower bloom expands,
  * carrying the eye into the white thesis section rather than stopping and handing over.
  *
  * CONTENT: `heading` and `description` verbatim from the CMS.
@@ -24,18 +25,12 @@ export function AboutEditorialHero({ heading, description }: HeroBlock): JSX.Ele
   return (
     <section
       data-scene="hero"
-      className="ax-black ax-scene relative isolate flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 py-16 md:px-10 lg:px-16"
+      className="ax-black ax-scene relative isolate grid min-h-[100svh] w-full grid-rows-[auto_minmax(0,1fr)] content-center gap-8 overflow-hidden px-5 py-16 md:px-10 lg:gap-10 lg:px-16"
     >
-      {/* The atmosphere: soft monochrome forms drifting behind the statement. No mask needed —
-          the forms are already soft-edged and weighted away from the centre, so the copy sits on
-          dark ground. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <HeroAtmosphere />
-      </div>
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <HeroPoints />
-      </div>
-
+      {/* COPY AND VISUAL ARE SEPARATE GRID ROWS. An absolutely-positioned band was measured
+          overlapping the paragraph at every width — with the copy vertically centred in a
+          100svh section there is no offset that holds. As its own row the structure cannot
+          reach the type, at any viewport, without any z-index involved. */}
       <div className="ax-above mx-auto flex w-full max-w-[1400px] flex-col gap-8 lg:gap-10">
         {heading ? (
           // The page's single <h1>.
@@ -51,6 +46,12 @@ export function AboutEditorialHero({ heading, description }: HeroBlock): JSX.Ele
             </div>
           ) : null}
         </div>
+      </div>
+
+      {/* The structure, animated as a 2.5D object: masked and darkened so its flat grey backdrop
+          dissolves into the black ground rather than sitting as a slab behind the page. */}
+      <div aria-hidden className="pointer-events-none mx-auto w-full max-w-[1400px]">
+        <AboutHeroVisual />
       </div>
     </section>
   )

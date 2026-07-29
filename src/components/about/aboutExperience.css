@@ -188,8 +188,12 @@
 .ax-black h3 {
   color: #f2f0ea;
 }
+/* Muted light. The brief specified 0.55, which measures 5.6:1 on #050505 — AA, but short of
+   the AAA 7:1 this project mandates for body text (CLAUDE.md, enforced by
+   tests/int/contrast.int.spec.ts). 0.63 is the lowest alpha that clears it, at 7.15:1, and is
+   visually all but identical. Raised deliberately; say the word and I will put it back. */
 .ax-black .ax-copy {
-  color: #a8a6a0;
+  color: rgba(242, 240, 234, 0.63);
 }
 .ax-black .ax-label {
   color: #86847e;
@@ -201,8 +205,11 @@
   color: #090909;
 }
 /* On cream this is ~9.8:1 — clear of the AAA floor for body text. */
+/* Muted dark. The brief specified 0.58, which measures 4.72:1 on #F1EFE8 — AA, not the AAA 7:1
+   this project mandates for body text. 0.69 is the lowest alpha that clears it, at exactly
+   7.0:1. Same reasoning as the light token above. */
 .ax-white .ax-copy {
-  color: #3f3f46;
+  color: rgba(9, 9, 9, 0.69);
 }
 .ax-white .ax-label {
   color: #52525b;
@@ -219,22 +226,34 @@
    apart and set major content at body-note size. */
 .ax-hx {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;
-  font-size: clamp(72px, 9vw, 150px);
-  line-height: 0.84;
+  font-size: clamp(64px, 7.5vw, 132px);
+  line-height: 0.88;
   letter-spacing: -0.06em;
   font-weight: 500;
 }
+/* Mobile wants a touch more leading or the descenders collide at these sizes. */
+@media (max-width: 767px) {
+  .ax-hx {
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+  }
+}
 .ax-hx-sm {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;
-  font-size: clamp(44px, 5.4vw, 92px);
-  line-height: 0.86;
+  font-size: clamp(54px, 6vw, 96px);
+  line-height: 0.9;
   letter-spacing: -0.055em;
   font-weight: 500;
 }
+@media (max-width: 767px) {
+  .ax-hx-sm {
+    line-height: 0.96;
+  }
+}
 .ax-copy {
-  font-size: clamp(17px, 1.25vw, 21px);
-  line-height: 1.45;
-  max-width: 42ch;
+  font-size: clamp(17px, 1.2vw, 20px);
+  line-height: 1.5;
+  max-width: 44ch;
 }
 .ax-label {
   font-family: var(--font-geist-mono), ui-monospace, monospace;

@@ -41,23 +41,34 @@ export function AboutBeliefsComponent({ heading, description, items }: AboutBeli
 
         <div className="mt-16 flex flex-col gap-20 lg:mt-24 lg:gap-32">
           {items.map((item, index) => (
+            // Alignment alternates down the column so the section has a rhythm rather than
+            // reading as four identical rows. Odd principles range right on desktop and swap
+            // the column order, so the eye crosses the page instead of running straight down.
             <article
               key={item.id ?? `culture-${index}`}
-              className="ax-state grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-end lg:gap-20"
+              className={`ax-state grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)] lg:items-end lg:gap-20 ${
+                index % 2 === 1 ? 'lg:text-right' : ''
+              }`}
             >
-              <div>
+              <div className={index % 2 === 1 ? 'lg:order-2' : ''}>
                 <span aria-hidden className="ax-label block">
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 {item.title ? (
-                  <h3 className="ax-hx ax-h mt-5 max-w-[11ch] text-balance">
+                  <h3
+                    className={`ax-hx ax-h mt-5 max-w-[11ch] text-balance ${
+                      index % 2 === 1 ? 'lg:ml-auto' : ''
+                    }`}
+                  >
                     <span data-ax="kw" className="block">
                       {item.title}
                     </span>
                   </h3>
                 ) : null}
               </div>
-              {item.excerpt ? <p className="ax-copy">{item.excerpt}</p> : null}
+              {item.excerpt ? (
+                <p className={`ax-copy ${index % 2 === 1 ? 'lg:order-1 lg:text-left' : ''}`}>{item.excerpt}</p>
+              ) : null}
             </article>
           ))}
         </div>
