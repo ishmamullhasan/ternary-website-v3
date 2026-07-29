@@ -287,7 +287,20 @@ export default function AboutComp({
   if (list.length === 0) return null
 
   return (
-    <section className="w-full">
+    /* VERTICALLY CENTRED HERO BAND. This block opens the home page, and the space above it
+       is not its own: <main> carries 88px to clear the fixed header pill, and RenderBlocks
+       adds pt-20 lg:pt-40 (80/160px). That put 248px above the text at lg against 104px
+       below it — the copy sat high in its band and read as top-aligned rather than centred.
+
+       Neither number can simply be deleted: the 88px is nav clearance, and the container
+       padding is shared with every other blocks-driven page. So the excess is split evenly
+       instead — pull the section up by half the difference and give the intro the same
+       amount back underneath, which lands the text at 176px above / 176px below at lg
+       (132/132 below it, where the container padding and the mobile card margin differ).
+
+       Safe to do here because this stack is home-only: /about is built from its own
+       AboutIntro/AboutThesis blocks and never renders this component. */
+    <section className="w-full -mt-9 lg:-mt-[72px]">
       <div className="flex flex-col items-center space-y-16">
         {/* section intro — ONE richText: heading nodes take the display style, paragraphs the body
             style. Arbitrary clamp values mirror .text-section (globals.css) — the plain class has
@@ -298,7 +311,7 @@ export default function AboutComp({
             tag="div"
             {...motionIntroProps}
             transition={{ duration: 0.7, ease: EASE }}
-            className="flex w-full max-w-[800px] flex-col items-center gap-4 text-center xl:gap-6"
+            className="flex w-full max-w-[800px] flex-col items-center gap-4 pb-9 text-center xl:gap-6 lg:pb-[72px]"
           >
             {content ? (
               /* Headings stay flush to each other (mt-0/mb-0) so a multi-line title reads as one block; the
