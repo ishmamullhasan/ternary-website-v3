@@ -1,3 +1,4 @@
+import type { RichText } from '@/components/richtext'
 import type { Page } from '@/payload-types'
 import type { TypedLocale } from 'payload'
 
@@ -5,7 +6,7 @@ import type { JSX } from 'react'
 import { Fragment } from 'react'
 
 import AboutEditorialCta from '@/components/about/AboutEditorialCta'
-import AboutEditorialHero from '@/components/about/AboutEditorialHero'
+import ShaderHero from '@/components/ShaderHero'
 import AboutExperience from '@/components/about/AboutExperience'
 import Motion from '@/components/animation/motion'
 import { AboutApproachComponent } from './AboutApproach/Component'
@@ -134,7 +135,14 @@ function renderBlock(block: BlockType, locale?: TypedLocale, slug?: string): JSX
 
   switch (block.blockType) {
     case 'hero':
-      return isAbout ? <AboutEditorialHero {...block} /> : <HeroComponent {...block} />
+      // About's hero is the WebGL shader field. AboutEditorialHero is no longer mounted, but the
+      // file remains in the repo if the shader is ever reverted. Every other page using `hero`
+      // renders the shared component unchanged.
+      return isAbout ? (
+        <ShaderHero heading={block.heading} description={block.description as RichText | null} />
+      ) : (
+        <HeroComponent {...block} />
+      )
     case 'heroFeatured':
       return <HeroFeaturedComponent {...block} />
     case 'industriesSection':
