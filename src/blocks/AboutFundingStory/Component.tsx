@@ -51,14 +51,14 @@ export function AboutFundingStoryComponent({
           </h2>
         ) : null}
 
-        {/* The signal: one line drawn across the full measure with a single green marker running
-            it — held, straight, over distance. The only green in the scene. */}
+        {/* The signal: one line drawn across the full measure with a single black marker running
+            it — held, straight, over distance. */}
         <div aria-hidden className="relative h-px w-full">
           <span data-ax="signal-line" className="ax-hair absolute inset-0 block" />
           <span
             data-ax="signal-dot"
             className="absolute top-1/2 left-0 block h-1.5 w-1.5 -translate-y-1/2 rounded-full"
-            style={{ backgroundColor: 'var(--ax-green)' }}
+            style={{ backgroundColor: '#090909' }}
           />
         </div>
 

@@ -272,7 +272,11 @@ export function RenderBlocks({
   // restored around them, so that section keeps exactly the max-width, gutters and rhythm it
   // has on the live site. Its own markup is untouched; only its wrapper is involved, which is
   // the one change the preservation rule permits.
-  const aboutFrame = 'ax-black w-full'
+  // `bg-page`, NOT `ax-black`. The ax-black class carries the strict-contrast text rules, and
+  // those were measured reaching into the Leadership block and repainting its heading and
+  // paragraph (#f4f3ec/#aaaaaa -> #f2f0ea) — a styling change to a component that must stay
+  // byte-identical. This gives the same black ground and touches nothing inside.
+  const aboutFrame = 'bg-page w-full'
   const aboutFrameInner = 'mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-24 lg:py-32'
 
   const content = (

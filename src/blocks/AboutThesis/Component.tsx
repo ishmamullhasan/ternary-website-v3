@@ -75,7 +75,7 @@ export function AboutThesisComponent({ heading, description, items }: AboutThesi
             aria-hidden
             data-ax="th-marker"
             className="absolute top-1/2 left-0 block h-2 w-2 -translate-y-1/2 rounded-full"
-            style={{ backgroundColor: 'var(--ax-green)' }}
+            style={{ backgroundColor: '#090909' }}
           />
         </div>
 

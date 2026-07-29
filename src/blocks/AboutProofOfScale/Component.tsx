@@ -19,8 +19,8 @@ import type { JSX } from 'react'
  * survives a reorder in the CMS; anything not matched simply falls to the archive.
  *
  * INTERACTION. One project is active at a time — scroll sets it, and on a pointer device so does
- * hover. The active title grows, its description opens, its index turns green and an arrow slides
- * in. Inactive projects stay legible rather than dimming away.
+ * hover. The active row is marked by a solid rule and a slight shift, and its arrow slides in.
+ * Every project stays fully legible at all times — nothing is dimmed or collapsed away.
  *
  * CONTENT: names and excerpts are the CMS strings, unchanged. No metric, count or claim is
  * introduced.
@@ -68,7 +68,7 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
                   key={item.id ?? `f${index}`}
                   className="ax-proof-row group grid grid-cols-1 gap-x-12 gap-y-4 border-t border-[rgba(9,9,9,0.14)] py-10 lg:grid-cols-[auto_minmax(0,1.1fr)_minmax(0,0.9fr)_auto] lg:items-start lg:py-14"
                 >
-                  <span aria-hidden className="ax-label ax-proof-index pt-3 group-[.is-active]:text-[color:var(--ax-green)]">
+                  <span aria-hidden className="ax-label ax-proof-index pt-3">
                     {String(index + 1).padStart(2, '0')}
                   </span>
 
@@ -113,7 +113,7 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
                 key={item.id ?? `a${index}`}
                 className="ax-proof-row group grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 gap-y-2 border-t border-[rgba(9,9,9,0.12)] py-6 lg:grid-cols-[auto_minmax(0,0.85fr)_minmax(0,1.15fr)_auto] lg:gap-x-12 lg:py-7"
               >
-                <span aria-hidden className="ax-label ax-proof-index group-[.is-active]:text-[color:var(--ax-green)]">
+                <span aria-hidden className="ax-label ax-proof-index">
                   {String(featured.length + index + 1).padStart(2, '0')}
                 </span>
                 {item.name ? (

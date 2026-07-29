@@ -17,7 +17,11 @@
  */
 
 .ax {
-  --ax-green: #1f9d6b;
+  /* The green accent is retired. The strict-contrast rule allows only warm white on dark and
+     black on light for text, labels and every navigation indicator, so there is nothing left for
+     it to mark. Kept as a variable so any stray reference resolves to warm white rather than to
+     an undefined colour. */
+  --ax-green: #f2f0ea;
   --ax-line: rgba(244, 243, 236, 0.13);
   --ax-line-mid: rgba(244, 243, 236, 0.3);
   --ax-line-hot: rgba(244, 243, 236, 0.62);
@@ -41,7 +45,7 @@
   color: #3f3f46;
 }
 .ax-invert .ax-meta {
-  color: #52525b;
+  color: #090909;
 }
 .ax-invert .ax-rule {
   background-color: rgba(5, 5, 5, 0.16);
@@ -148,22 +152,17 @@
 
 .ax-dot {
   width: 6px;
-  height: 6px;
+  height: 3px;
   border-radius: 999px;
-  background: rgba(244, 243, 236, 0.22);
-  transition:
-    width 0.5s var(--ax-ease),
-    background-color 0.5s ease;
+  background: #f2f0ea;
+  transition: width 0.5s var(--ax-ease);
 }
+/* Active state is WIDTH, not colour and not opacity — both markers stay full-strength. */
 .ax-dot.is-on {
-  width: 24px;
-  background: var(--ax-green);
+  width: 28px;
 }
-.ax-invert .ax-dot {
-  background: rgba(5, 5, 5, 0.2);
-}
-.ax-invert .ax-dot.is-on {
-  background: var(--ax-green);
+.ax-white .ax-dot {
+  background: #090909;
 }
 
 
@@ -188,15 +187,21 @@
 .ax-black h3 {
   color: #f2f0ea;
 }
-/* Muted light. The brief specified 0.55, which measures 5.6:1 on #050505 — AA, but short of
-   the AAA 7:1 this project mandates for body text (CLAUDE.md, enforced by
-   tests/int/contrast.int.spec.ts). 0.63 is the lowest alpha that clears it, at 7.15:1, and is
-   visually all but identical. Raised deliberately; say the word and I will put it back. */
-.ax-black .ax-copy {
-  color: rgba(242, 240, 234, 0.63);
+/* STRICT CONTRAST. Every piece of text on a dark ground is full-strength warm white — no grey
+   tier, no reduced alpha. The muted tiers that used to live here (and the AAA-corrected 0.63 /
+   0.69 alphas before them) are gone entirely: hierarchy is now carried by size, weight, spacing,
+   borders and position, never by fading text down. 18.9:1 on #050505. */
+.ax-black .ax-copy,
+.ax-black .ax-label,
+.ax-black p,
+.ax-black li,
+.ax-black span:not(.ax-dot):not(.ax-th-dot):not(.ax-wipe) {
+  color: #f2f0ea;
 }
+/* Superseded by the strict-contrast block below; kept at full strength so nothing can win a
+   grey value through specificity. */
 .ax-black .ax-label {
-  color: #86847e;
+  color: #f2f0ea;
 }
 .ax-white .ax-h,
 .ax-white h1,
@@ -205,14 +210,16 @@
   color: #090909;
 }
 /* On cream this is ~9.8:1 — clear of the AAA floor for body text. */
-/* Muted dark. The brief specified 0.58, which measures 4.72:1 on #F1EFE8 — AA, not the AAA 7:1
-   this project mandates for body text. 0.69 is the lowest alpha that clears it, at exactly
-   7.0:1. Same reasoning as the light token above. */
-.ax-white .ax-copy {
-  color: rgba(9, 9, 9, 0.69);
+/* Same rule inverted: full-strength black on the warm-white ground. 17.4:1 on #F1EFE8. */
+.ax-white .ax-copy,
+.ax-white .ax-label,
+.ax-white p,
+.ax-white li,
+.ax-white span:not(.ax-dot):not(.ax-th-dot):not(.ax-wipe) {
+  color: #090909;
 }
 .ax-white .ax-label {
-  color: #52525b;
+  color: #090909;
 }
 .ax-white .ax-hair {
   background-color: rgba(9, 9, 9, 0.18);
@@ -254,6 +261,8 @@
   font-size: clamp(17px, 1.2vw, 20px);
   line-height: 1.5;
   max-width: 44ch;
+  /* Inherits the ground's text colour — never a grey token. */
+  color: inherit;
 }
 .ax-label {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
@@ -261,6 +270,8 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   font-variant-numeric: tabular-nums;
+  /* Labels are separated from body by size, tracking and case — not by going grey. */
+  color: inherit;
 }
 
 /* ── SECTION WIPES ──────────────────────────────────────────────────────────
@@ -412,18 +423,16 @@
   gap: 12px;
   align-items: center;
 }
+/* The thesis sits on the warm-white ground, so its markers are black. Active is width only. */
 .ax-th-dot {
   height: 3px;
   width: 18px;
   border-radius: 999px;
-  background: rgba(244, 243, 236, 0.22);
-  transition:
-    width 0.6s var(--ax-ease),
-    background-color 0.6s var(--ax-ease);
+  background: #090909;
+  transition: width 0.6s var(--ax-ease);
 }
 .ax-th-dot.is-on {
-  width: 44px;
-  background: var(--ax-green);
+  width: 48px;
 }
 
 /* The restrained line system. Opacity stays inside the 0.08–0.18 band; only a live node is
@@ -450,8 +459,8 @@
   opacity: 0.16;
 }
 .ax-th-canvas .ax-th-node.is-live {
-  fill: var(--ax-green);
-  opacity: 0.8;
+  fill: #090909;
+  opacity: 1;
 }
 /* Beside each item in the mobile sequence — one small marker, nothing more. */
 .ax-th-mark {
@@ -460,7 +469,7 @@
   background: rgba(244, 243, 236, 0.18);
 }
 .ax-th-mark.is-on {
-  background: var(--ax-green);
+  background: #090909;
 }
 
 /* ── system graphics ────────────────────────────────────────────────────────
@@ -490,7 +499,7 @@
   vector-effect: non-scaling-stroke;
 }
 .ax-signal {
-  fill: var(--ax-green);
+  fill: #f2f0ea;
 }
 .ax-grid line {
   stroke: var(--ax-line);
@@ -518,44 +527,38 @@
     color 0.4s ease;
 }
 @media (hover: hover) and (min-width: 900px) {
+  /* Active/inactive is carried by the rule weight and a slight shift, NOT by fading rows down —
+     every project stays fully legible at all times. */
   .ax-proof[data-index='on'] .ax-proof-row {
-    opacity: 0.34;
+    border-top-color: rgba(9, 9, 9, 0.14);
   }
   .ax-proof[data-index='on'] .ax-proof-row.is-active {
-    opacity: 1;
+    border-top-color: #090909;
+    transform: translate3d(8px, 0, 0);
   }
+  /* Descriptions are NEVER collapsed or faded. An earlier version hid inactive excerpts with
+     max-height 0 / opacity 0, which both hides content by opacity and leaves text at opacity 0 —
+     exactly what the strict-contrast rule forbids. Every project's sentence is readable at all
+     times; the active row is distinguished by its rule and its shift. */
   .ax-proof-row .ax-proof-excerpt {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition:
-      max-height 0.55s var(--ax-ease),
-      opacity 0.4s ease;
-  }
-  .ax-proof-row.is-active .ax-proof-excerpt {
-    max-height: 8rem;
+    max-height: none;
     opacity: 1;
   }
+  /* The arrow moves, it does not fade. It is the last text-like glyph in the section, and
+     under the strict-contrast rule nothing text-like is allowed to sit at reduced opacity —
+     so the hover affordance is carried entirely by position. */
   .ax-proof-row .ax-proof-arrow {
-    opacity: 0;
     transform: translate3d(-10px, 0, 0);
-    transition:
-      opacity 0.4s ease,
-      transform 0.5s var(--ax-ease);
+    transition: transform 0.5s var(--ax-ease);
   }
   .ax-proof-row.is-active .ax-proof-arrow {
-    opacity: 1;
     transform: none;
   }
 }
 /* Touch: no hover to reveal anything, so everything stays open and visible. */
 @media (hover: none), (max-width: 899px) {
-  .ax-proof-row .ax-proof-excerpt {
-    max-height: none;
-    opacity: 1;
-  }
   .ax-proof-row .ax-proof-arrow {
-    opacity: 0.45;
+    opacity: 1;
   }
 }
 
