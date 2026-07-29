@@ -1,7 +1,9 @@
 'use client'
 
 import RichTextComp, { type RichText } from '@/components/richtext'
-import { useEffect, useRef, useState, type JSX } from 'react'
+import { animate, stagger } from 'animejs'
+import { Fragment, useEffect, useRef, useState, type JSX } from 'react'
+import './shaderHero.css'
 
 /**
  * Full-viewport WebGL hero for /about — a dark liquid-steel field behind the existing headline.
@@ -83,17 +85,111 @@ function compile(gl: WebGLRenderingContext, type: number, src: string): WebGLSha
   return sh
 }
 
+/**
+ * Splits a headline into per-character 3D blocks.
+ *
+ * Built by hand rather than with anime's `splitText` so spaces, word-wrapping and React keys are
+ * all under our control — `splitText` operates on an HTML template string and would fight the
+ * component's own rendering.
+ *
+ * Words are wrapped so the line can only break between words. Once every glyph is its own
+ * inline-block, the browser will otherwise happily break mid-word.
+ */
+function SplitHeadline({ text }: { text: string }): JSX.Element {
+  const words = text.split(' ')
+  return (
+    <>
+      {words.map((word, w) => (
+        <Fragment key={w}>
+          <span className="char-word">
+          {[...word].map((ch, i) => (
+            // Only the front face is a real text node. The top and bottom faces are CSS
+            // generated content driven by data-ch. Rendering them as spans tripled the
+            // headline's textContent — "AAAnnneeennnggg..." — which broke text selection and
+            // copy-paste, and put garbage in the page's <h1> for any crawler that executes JS.
+            // aria-hidden protected the accessibility tree but does nothing for either of those.
+            // Pseudo-element content is invisible to textContent, unselectable, and outside the
+            // accessibility tree, so one change fixes all three.
+            <span key={i} className="char3d" data-ch={ch}>
+              <span className="face-front">{ch}</span>
+            </span>
+          ))}
+          </span>
+          {/* A REAL space, and a SIBLING of the word wrapper rather than its last child. As a
+              child it sat inside an inline-block with white-space: nowrap, where a trailing
+              space is trimmed — textContent kept it but it painted nothing, so the headline
+              rendered as "Anengineeringinstitution...". Outside the wrapper it lays out
+              normally and stays copyable. */}
+          {w < words.length - 1 ? ' ' : null}
+        </Fragment>
+      ))}
+    </>
+  )
+}
+
 export default function ShaderHero({
   heading,
   description,
+  locale,
 }: {
   heading?: string | null
   description?: RichText | null
+  /** Active locale. The character reveal runs on `en` only — see the effect below. */
+  locale?: string
 }): JSX.Element {
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  // Server renders the plain headline; this only flips to true after mount, and only when the
+  // reveal is actually going to run. That keeps SSR and the first client paint identical, so
+  // there is no hydration mismatch, and it guarantees the un-split text is what a crawler and a
+  // no-JS visitor see.
+  const [split, setSplit] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   // Drives the no-WebGL fallback. Starts false so the server renders the canvas element and the
   // client only removes it if the context genuinely cannot be created.
   const [noWebGL, setNoWebGL] = useState(false)
+
+  // ── headline reveal ───────────────────────────────────────────────────────
+  // LOCALE-GATED. The split turns every glyph into its own inline-block, which breaks grapheme
+  // clusters and conjunct shaping in Bengali — /bn would render visibly wrong, not merely
+  // different. The reveal is enhancement, so non-Latin locales get the plain headline instead of
+  // a degraded one. Gated to `en` explicitly rather than by a script test: the field is localized
+  // and `en`/`bn` are the only locales, so an allowlist stays correct if a locale is added.
+  useEffect(() => {
+    if (!heading) return
+    if (locale !== 'en') return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    // Deferred a frame rather than set synchronously here. Two reasons: setting state in an
+    // effect body triggers a cascading render (the react-hooks rule flags it), and letting the
+    // plain headline paint first means the very first frame a visitor sees is readable text
+    // rather than an empty box waiting to be filled with character nodes.
+    const id = requestAnimationFrame(() => setSplit(true))
+    return () => cancelAnimationFrame(id)
+  }, [heading, locale])
+
+  // Runs after `split` has committed, so the character nodes exist to animate.
+  useEffect(() => {
+    if (!split) return
+    const root = headingRef.current
+    if (!root) return
+    const chars = root.querySelectorAll<HTMLElement>('.char3d')
+    if (!chars.length) return
+
+    const anim = animate(chars, {
+      rotateX: [-90, 0],
+      opacity: [0, 1],
+      duration: 800,
+      delay: stagger(34, { start: 180 }),
+      ease: 'out(3)',
+      // One shot. The reference loops, which tumbles the headline forever and makes it
+      // unreadable; this fires once on mount and then holds still.
+      loop: false,
+    })
+
+    return () => {
+      anim.pause()
+    }
+  }, [split])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -257,7 +353,9 @@ export default function ShaderHero({
 
       <div className="relative mx-auto flex w-full max-w-[1400px] flex-col gap-8 lg:gap-10" style={{ zIndex: 2 }}>
         {heading ? (
-          <h1 className="ax-hx ax-h max-w-[13ch]">{heading}</h1>
+          <h1 ref={headingRef} className="ax-hx ax-h hero-3d max-w-[13ch]">
+            {split ? <SplitHeadline text={heading} /> : heading}
+          </h1>
         ) : null}
 
         {description ? (

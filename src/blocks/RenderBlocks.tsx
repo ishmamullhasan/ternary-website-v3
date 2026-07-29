@@ -139,7 +139,7 @@ function renderBlock(block: BlockType, locale?: TypedLocale, slug?: string): JSX
       // file remains in the repo if the shader is ever reverted. Every other page using `hero`
       // renders the shared component unchanged.
       return isAbout ? (
-        <ShaderHero heading={block.heading} description={block.description as RichText | null} />
+        <ShaderHero heading={block.heading} description={block.description as RichText | null} locale={locale} />
       ) : (
         <HeroComponent {...block} />
       )
