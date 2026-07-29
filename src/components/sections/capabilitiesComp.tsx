@@ -225,7 +225,9 @@ export default function CapabilitiesComp({ heading, description, capability, sli
           wide enough to hold its figure. Rows are implicit rather than fixed — a card is as tall as
           its copy needs, floored at 379px, and the row equalises the rest. Hidden on mobile, where
           the carousel takes over. */}
-      <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+      {/* gap-5, not gap-4: a 16px gap put these cards at 302px against 299px everywhere
+          else. Same gap everywhere means one card width across the whole page. */}
+      <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-4">
         {capability.map((item, index): JSX.Element => {
           return (
             <Motion key={item.id ?? index} tag="div" className="h-full" {...revealItem(index)}>

@@ -64,22 +64,26 @@ export default function EngagementComp({ heading, description, model }: Engageme
         ))}
       </MobileCarousel>
 
-      {/* sm+ grid — hidden on mobile, where the carousel takes over. An empty left gutter (col 1 of
-          5) leaves the cards in the remaining four tracks, but with only three items those split the
-          right region into three columns so it fills without a trailing gap. */}
-      <div className="hidden w-full gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-5">
-        <div aria-hidden className="hidden lg:block" />
+      {/* sm+ grid — hidden on mobile, where the carousel takes over. FOUR tracks for three
+          cards, matching every other card section on the page; the fourth is left empty.
 
-        <div className="grid gap-5 sm:col-span-2 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-3">
-          {model.map((item, index): JSX.Element => (
-            <Motion key={index} {...revealItem(index)}>
-              {/* Three tiles fill four tracks' worth of width, so they run wider than the 1-track
-                  Industries/Scales tiles. Widen the aspect ratio at lg (3/5 → 4/5) so their rendered
-                  height matches those blocks; sm keeps 3/5 since the tiles are the same width there. */}
-              <EngagementCard item={item} index={index} aspect="aspect-[3/5] lg:aspect-[4/5]" />
-            </Motion>
-          ))}
-        </div>
+          This replaced a 5-track wrapper whose first track was an empty gutter and whose
+          remaining four were re-split into three by a nested grid. The effect was a block
+          1002px wide inside a 1257px page, indented from every heading above it and with
+          tiles at their own private width. One flat grid, one gap, same tracks as
+          everything else. */}
+      <div className="hidden w-full gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+        {model.map((item, index): JSX.Element => (
+          <Motion key={index} {...revealItem(index)}>
+            {/* A FIXED height at lg, not a ratio. Both this and the Scales tile are now one
+                track wide, but a ratio scales with the track and a floor does not — so they
+                only agreed at exactly 1440px and drifted everywhere else (324px at 1280,
+                391px at 1920, against Scales' constant 374). Same mechanism, same number,
+                so the two sections stay level at every width. The ratio stays below lg,
+                where the tiles are two-up and there is no Scales row to match. */}
+            <EngagementCard item={item} index={index} aspect="aspect-[3/5] lg:aspect-auto lg:h-[374px]" />
+          </Motion>
+        ))}
       </div>
     </section>
   )

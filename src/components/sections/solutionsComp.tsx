@@ -147,7 +147,7 @@ export default function SolutionsComp({ heading, description, items }: Solutions
         </MobileCarousel>
 
         {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
-        <div className="hidden gap-6 sm:grid lg:grid-cols-4 lg:gap-4">
+        <div className="hidden gap-6 sm:grid lg:grid-cols-4 lg:gap-5">
           {solutions.map((item, index: number): JSX.Element => {
             return (
               <Motion

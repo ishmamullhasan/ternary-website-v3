@@ -20,12 +20,14 @@ interface SalesCompProps {
 // claim on its own; the title and excerpt sit beneath it. Replaces the gradient panel, which was
 // the same ornament three times over and said nothing about any individual scale.
 //
-// The 372px floor plus a flexed figure area is what keeps the three cards a matched set whatever
+// The 374px floor plus a flexed figure area is what keeps the three cards a matched set whatever
 // length the CMS excerpts run to: the copy takes the height it needs, the figure absorbs the rest.
+// 374 rather than 372 so these land on exactly the same height as the Methods tiles, which are
+// ratio-driven (4/5 of a 299px track = 373.75) rather than floored. Same width, same height.
 function ScaleCard({ item, index }: { item: Scale; index: number }): JSX.Element {
   return (
     <Link href="/scales" className="group block h-full rounded-md">
-      <div className="sc-card flex h-full min-h-[372px] flex-col justify-between overflow-hidden rounded-md border border-line bg-ink p-5 transition-colors duration-[600ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:border-line-strong">
+      <div className="sc-card flex h-full min-h-[374px] flex-col justify-between overflow-hidden rounded-md border border-line bg-ink p-5 transition-colors duration-[600ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:border-line-strong">
         <div className="flex min-h-0 flex-1 items-center justify-center">
           <ScaleFigure title={item.title} index={index} />
         </div>
@@ -75,7 +77,10 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
       {/* sm+ grid — hidden on mobile, where the carousel takes over. The three scales sit as one
           clean full-width row (wider gradient panels), instead of the old 5-track layout whose
           empty gutter left them floating off-center. */}
-      <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+      {/* FOUR tracks for three cards, matching Industries / Capabilities / Solutions above.
+          On three tracks these tiles rendered 406px wide against everyone else's 299px, so
+          the section read as a different design. The fourth track is simply left empty. */}
+      <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-4">
         {scales.map((item, index): JSX.Element => (
           <Motion key={index} {...revealItem(index)}>
             <ScaleCard item={item} index={index} />
