@@ -233,6 +233,28 @@ export default function ShaderHero({
         />
       ) : null}
 
+      {/* SCRIM. Sits between the canvas and the copy so the type has a guaranteed dark ground.
+          Without it, contrast varies frame to frame: the field is full-range (vec3(0.012) troughs
+          against 0.68-0.74 specular bands), so white text can drift over a bright ridge mid-read.
+          That was the one section of the page not holding the strict-contrast rule.
+
+          Vertical, not left-to-right: the headline is ranged left but the standfirst is ranged
+          right, so the copy occupies both edges and only a horizontal band covers both.
+
+          0.88 at the centre is derived, not eyeballed. The brightest the shader gets is ~0.74
+          sRGB (relative luminance ~0.5); to hold #F2F0EA at 7:1 the backdrop must stay under
+          ~0.083 relative luminance, and (1 - 0.88) x 0.5 = 0.06 clears it even over a specular
+          peak. The field stays fully vivid above and below the band. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          zIndex: 1,
+          background:
+            'linear-gradient(to bottom, rgba(5,5,5,0) 0%, rgba(5,5,5,0.62) 18%, rgba(5,5,5,0.88) 38%, rgba(5,5,5,0.88) 68%, rgba(5,5,5,0.55) 86%, rgba(5,5,5,0) 100%)',
+        }}
+      />
+
       <div className="relative mx-auto flex w-full max-w-[1400px] flex-col gap-8 lg:gap-10" style={{ zIndex: 2 }}>
         {heading ? (
           <h1 className="ax-hx ax-h max-w-[13ch]">{heading}</h1>
