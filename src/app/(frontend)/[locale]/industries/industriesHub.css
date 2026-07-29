@@ -506,6 +506,69 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
   background-color: color-mix(in oklab, var(--color-card) 92%, var(--color-cream));
 }
 
+/* ── Blur reveal ──────────────────────────────────────────────────────────
+   The cards resolve rather than just arrive: they enter fractionally out of focus and
+   sharpen as they rise, so the row reads as coming into focus left to right on the
+   existing 70ms-per-card stagger.
+
+   The filter runs 1s against the 0.8s opacity and transform, so focus lands last — the
+   card has finished moving and is already opaque while the final sharpening happens.
+   Reversed, the blur would be gone before the card arrived and the effect would not
+   register at all.
+
+   The reduced-motion and no-script rules below have to out-weigh `.rv:not(.in)`, which
+   is what they are overriding — in both of those states `.in` is exactly the class that
+   never arrives.
+
+   The transition shorthand has to be restated rather than extended, and restating it
+   resets transition-delay to 0 — hence the delay again below, or the whole row would
+   fire at once and the stagger would be lost.
+
+   9px, not the 120-160px that made the home CTA unscrollable. That was a continuous
+   blur on ~2000px layers every frame; this is a small radius on a ~315x190 card that
+   runs once on entry and stops. Measured rather than assumed — see the commit. */
+.hub .ladder .step.rv {
+  transition:
+    opacity 0.8s var(--ease),
+    transform 0.8s var(--ease),
+    filter 1s var(--ease);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+/* `:not(.in)` rather than blurring the base and clearing it on `.in`. The end state is
+   then `filter: none`, not `blur(0px)` — and those are not the same thing: any filter
+   value at all keeps the element in a filter pipeline for the rest of the page's life,
+   which measured ~6fps of scroll across six cards that had long since finished
+   revealing. Transitioning to `none` is well defined (the absent filter is interpolated
+   as the identity), so the animation is unchanged and nothing is left behind. */
+.hub .ladder .step.rv:not(.in) {
+  filter: blur(9px);
+}
+/* `.hub .rv`'s reduced-motion rules clear opacity and transform but know nothing about
+   this filter, so without these the cards would sit permanently out of focus for anyone
+   who asked for less motion — the pre-animation state stuck on, which is the exact
+   failure mode this codebase keeps hitting. Both the OS query and the in-app toggle. */
+@media (prefers-reduced-motion: reduce) {
+  .hub .ladder .step.rv,
+  .hub .ladder .step.rv.in {
+    filter: none;
+    transition: none;
+  }
+}
+html[data-a11y-motion='reduce'] .hub .ladder .step.rv,
+html[data-a11y-motion='reduce'] .hub .ladder .step.rv.in {
+  filter: none;
+  transition: none;
+}
+/* Same reason as the hub.css `scripting: none` fallback, restated at this selector's
+   weight: that rule is `.hub .rv`, two classes short of this one, so without this the
+   cards would come back from opacity 0 and sit permanently blurred instead. */
+@media (scripting: none) {
+  .hub .ladder .step.rv {
+    filter: none;
+    transition: none;
+  }
+}
+
 .hub .step h3 {
   font-family: var(--font-poppins), ui-sans-serif, sans-serif;
   font-size: 19px;

@@ -118,6 +118,24 @@ html[data-a11y-motion='reduce'] .hub .rv {
   transition: none;
 }
 
+/* Without JavaScript the `.in` class is never added, so every revealed element on every
+   hub page stays at opacity 0 — the pages render as a nav, a footer and nothing between.
+   That predates the blur reveal (opacity 0 already hid them), but the blur is one more
+   pre-animation state depending on a class only the client can set, so the fallback is
+   worth having explicitly rather than by luck.
+
+   `scripting: none` matches only when scripting is actually off, so the normal path is
+   untouched; browsers that do not know the query simply never match it and are no worse
+   off than today. */
+@media (scripting: none) {
+  .hub .rv {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}
+
 /* Line-art graphic primitives. `ac`/`acf` (the "accent" stroke/fill) resolve to cream, not amber. */
 .hub .g .st {
   fill: none;
