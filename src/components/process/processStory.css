@@ -64,9 +64,14 @@
 .ps[data-story='on'] {
   height: calc(var(--ps-card, 560px) + var(--ps-steps, 5) * var(--ps-step, 58vh));
 }
+/* Pinned at the vertical centre of the viewport, not near the top. `--ps-card` is the
+   measured card height, so half of it below the midpoint puts the card's own centre on
+   the viewport's centre. `max()` is the guard: on a short viewport, or if the card ever
+   grows taller than the screen, the computed value goes negative and would pin the card
+   under the header — the floor keeps it clear of the fixed header pill instead. */
 .ps[data-story='on'] .ps-pin {
   position: sticky;
-  top: clamp(96px, 13vh, 152px);
+  top: max(88px, calc(50vh - var(--ps-card, 560px) / 2));
 }
 
 /* ── the stage ──────────────────────────────────────────────────────────────
