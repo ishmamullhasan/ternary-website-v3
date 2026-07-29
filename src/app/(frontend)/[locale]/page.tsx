@@ -1,4 +1,5 @@
 import { RenderBlocks } from '@/blocks/RenderBlocks'
+import HomeCta from '@/components/sections/homeCta'
 import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
 import { PAGES_EMBED_TAGS } from '@/utilities/cacheTags'
@@ -77,6 +78,11 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   return (
     <div>
       <RenderBlocks blocks={page?.layout} />
+      {/* Closing CTA, between the last block and the footer. Hardcoded rather than a CMS
+          block, matching how /solutions, /capabilities and /scales each carry their own
+          signature CTA — the home page was the only page that ran its last section
+          straight into the footer with nothing to act on. */}
+      <HomeCta />
     </div>
   )
 }
