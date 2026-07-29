@@ -30,7 +30,9 @@ function EngagementCard({
   const url = thumbnail?.url
 
   return (
-    <div className={`group relative w-full overflow-hidden rounded-md border border-line bg-ink ${aspect}`}>
+    <div
+      className={`group relative w-full overflow-hidden rounded-md border border-transparent bg-ink transition-colors duration-300 hover:border-line ${aspect}`}
+    >
       <GradientPanel tone={toneFor(undefined, index)} interactive />
 
       {url && <Image src={url} alt={item.title || 'engagement model'} fill className="relative object-cover" />}

@@ -43,7 +43,7 @@ function SolutionCard({
   return (
     <Link
       href="/solutions"
-      className="group/sol flex h-full flex-col gap-2.5 rounded-md p-4 transition-colors duration-200 hover:bg-ink"
+      className="group/sol flex h-full flex-col gap-2.5 rounded-md border border-transparent p-4 transition-colors duration-300 hover:border-line hover:bg-ink"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       onFocus={onEnter}

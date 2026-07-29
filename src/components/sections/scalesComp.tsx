@@ -27,7 +27,7 @@ interface SalesCompProps {
 function ScaleCard({ item, index }: { item: Scale; index: number }): JSX.Element {
   return (
     <Link href="/scales" className="group block h-full rounded-md">
-      <div className="sc-card flex h-full min-h-[374px] flex-col justify-between overflow-hidden rounded-md border border-line bg-ink p-5 transition-colors duration-[600ms] ease-[cubic-bezier(.16,1,.3,1)] group-hover:border-line-strong">
+      <div className="sc-card flex h-full min-h-[374px] flex-col justify-between overflow-hidden rounded-md border border-transparent bg-ink p-5 transition-colors duration-300 group-hover:border-line">
         <div className="flex min-h-0 flex-1 items-center justify-center">
           <ScaleFigure title={item.title} index={index} />
         </div>

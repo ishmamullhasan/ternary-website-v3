@@ -53,7 +53,7 @@ function iconFor(title: string | null | undefined, index: number): LucideIcon {
 function IndustryCard({ item }: { item: Industry }): JSX.Element {
   return (
     <Link href={item.slug ? `/industries/${item.slug}` : '#'} className={`group block h-full rounded-md ${focusRing}`}>
-      <div className="relative h-full min-h-[397px] overflow-hidden rounded-md border border-line bg-[#0F0E0E]">
+      <div className="relative h-full min-h-[397px] overflow-hidden rounded-md border border-transparent bg-[#0F0E0E] transition-colors duration-300 group-hover:border-line">
         {/* Isometric monoline blueprint — one motif per sector, filling the upper card, behind the text. */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[66%] transition-transform duration-[900ms] ease-out group-hover:scale-[1.03] motion-reduce:transform-none">
           <IndustryBlueprint title={item.title} />

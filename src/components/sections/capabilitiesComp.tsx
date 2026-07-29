@@ -157,7 +157,7 @@ function CapabilityCard({ item, index }: { item: Capability; index: number }): J
          industries, scales, engagement) sits on --color-ink #0f0e0e, and #14120b left this one
          section reading a shade warmer than the rest of the page. `bg-button-dark` stays what its
          name says — buttons, chips, and the /capabilities ledger stage. */
-      className={`cap-card group relative flex h-full min-h-[379px] flex-col overflow-hidden rounded-md bg-ink ${focusRing}`}
+      className={`cap-card group relative flex h-full min-h-[379px] flex-col overflow-hidden rounded-md border border-transparent bg-ink transition-colors duration-300 hover:border-line ${focusRing}`}
     >
       <span aria-hidden className="cap-lume" />
 
