@@ -507,10 +507,97 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
   line-height: 1.65;
   max-width: 48ch;
 }
+/* The rung the panel is describing, marked the same way hover marks one — so the pair
+   always reads as connected, including when scroll rather than the pointer chose it. */
+.hub .ladder-flow .step.is-active,
+.hub .ladder-stack .step.is-active {
+  background-color: color-mix(in oklab, var(--color-card) 92%, var(--color-cream));
+}
+
+/* ── Preview panel ────────────────────────────────────────────────────────
+   Fills what used to be dead space under the lead: the section's claim is short, the
+   ladder beside it is three tall tiles, and the leftover hole ran most of the section.
+
+   It is deliberately NOT another card. `.step` is --color-card on the page; this is the
+   page plus 2% white with a hairline — a surface you read through rather than one that
+   competes with the tiles for the same job.
+
+   That also makes it the darkest bed on the page, so any text token that clears AAA on
+   `.step` clears it here by a wider margin: --t2 (#aaaaaa) measures ~7.9:1 on this. */
+.hub .prev {
+  margin-top: 28px;
+  padding: 26px 28px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid color-mix(in oklab, var(--color-cream) 7%, transparent);
+}
+/* One grid cell, every summary in it. The panel then sizes to the tallest summary once,
+   instead of resizing under the pointer — and nothing has to be absolutely positioned,
+   so there is no height to hard-code and keep in sync with the copy. */
+.hub .prev-body {
+  display: grid;
+}
+.hub .prev-item {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.55s var(--ease),
+    transform 0.55s var(--ease);
+}
+/* Summaries already passed sit ABOVE, ones still to come sit below, so a change always
+   travels one way: the outgoing one leaves upward as the incoming one arrives from below.
+   Going back down the ladder reverses it, for free. */
+.hub .prev-item.is-past {
+  transform: translateY(-20px);
+}
+.hub .prev-item.is-on {
+  opacity: 1;
+  transform: none;
+}
+.hub .prev-key {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(2.1rem, 3.3vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--color-cream);
+}
+.hub .prev-line {
+  margin-top: 12px;
+  color: var(--t2);
+  font-size: 15px;
+  line-height: 1.55;
+  max-width: 26ch;
+}
+.hub .prev-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.hub .prev-chips li {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--t2);
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-cream) 5%, transparent);
+}
+
 @media (max-width: 860px) {
   .hub .split {
     grid-template-columns: 1fr;
     gap: 34px;
+  }
+  /* One column: the panel would sit between the lead and the tiles it summarises, which is
+     a summary of content the reader has not reached yet. There is no empty space to fill
+     here either — that was a two-column problem. */
+  .hub .prev {
+    display: none;
   }
 }
 
