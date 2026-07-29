@@ -68,14 +68,17 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
             </div>
           </div>
 
-          {/* The stage. */}
+          {/* The stage, set flush RIGHT. The figure anchors the left edge of the card and the
+              narrative the right, so the two ends of the composition are pinned and the space
+              opens in the middle rather than trailing off one side. `ml-auto` on the capped
+              blocks does the pushing; `text-right` turns the ragged edge inward to meet it. */}
           <div>
             <div className="ps-stage">
               {/* Holds the stage open at the tallest slide's height so nothing jumps as the
                   copy changes length. Hidden from sight and from screen readers — the real
                   slides below carry the content. */}
-              <div aria-hidden className="ps-sizer">
-                <h3 className="font-display text-[clamp(1.75rem,3.4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em]">
+              <div aria-hidden className="ps-sizer text-right">
+                <h3 className="font-display ml-auto text-[clamp(1.75rem,3.4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em]">
                   {longest}
                 </h3>
                 <p className="mt-4 text-[15px] leading-relaxed">
@@ -86,15 +89,15 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
               </div>
 
               {steps.map((item, index): JSX.Element => (
-                <article key={index} className="ps-slide">
+                <article key={index} className="ps-slide items-end text-right">
                   {item.title && (
-                    <h3 className="font-display max-w-[20ch] text-[clamp(1.75rem,3.4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-cream">
+                    <h3 className="font-display ml-auto max-w-[20ch] text-[clamp(1.75rem,3.4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em] text-balance text-cream">
                       {item.title}
                     </h3>
                   )}
                   {/* Renders only when authored, so clearing one in the admin leaves no gap. */}
                   {item.description && (
-                    <div className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-body">
+                    <div className="mt-4 ml-auto max-w-[52ch] text-[15px] leading-relaxed text-body">
                       {/* Size on prose-p, not the wrapper: RichTextComp emits prose classes that
                           set the paragraph's font-size, so a size on the parent is overridden. */}
                       <RichTextComp
@@ -109,7 +112,7 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
 
             {/* Position indicator. Decorative — every slide stays in the accessibility tree,
                 so this repeats nothing a screen reader needs. */}
-            <div aria-hidden className="ps-dots mt-10 flex gap-2">
+            <div aria-hidden className="ps-dots mt-10 flex justify-end gap-2">
               {steps.map((_, index) => (
                 <span key={index} className={`ps-dot${index === 0 ? ' is-on' : ''}`} />
               ))}
