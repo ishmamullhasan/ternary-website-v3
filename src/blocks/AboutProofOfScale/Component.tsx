@@ -1,24 +1,22 @@
-import AboutScene from '@/components/about/AboutScene'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutProofOfScaleBlock, Media } from '@/payload-types'
 import Image from 'next/image'
 import type { JSX } from 'react'
 
 /**
- * "Proof of work in the real world" — the organisations, as an editorial register.
+ * SCENE 04 — the work, as a full-width archive rather than a card grid.
  *
- * REPLACES a 4-up of raised `bg-ink` cards. Cards make a list of clients look like a set of
- * products; a register — index, name, one line of context, rule — reads as a record, which is
- * what this is.
+ * REPLACES a 4-up of raised cards with tiny body copy. One project is active at a time: its
+ * name is set oversized and its description opens, while the rest stay legible as a navigable
+ * index. Scroll changes the active entry; on a pointer device, so does hover. Monochrome
+ * throughout — the restrained green appears only on the active entry's index.
  *
- * MOTION. Rows reveal in sequence as the register comes up. On a pointer device, hovering one
- * row lifts it and pushes it right while the rest recede, and its arrow slides in — so the list
- * has a clear active state instead of eight rows of equal weight. The index numerals ride the
- * scroll.
+ * Cards are gone deliberately. A card grid makes a list of organisations look like a set of
+ * products; an archive reads as a record, which is what this is.
  *
- * The hover state is CSS, not JS, so it responds on the first frame the pointer arrives. It is
- * scoped to `(hover: hover)` — on touch there is no hover to reveal it, so the arrow simply
- * stays visible rather than hiding behind an interaction that cannot happen.
+ * The hover/active presentation is CSS so it lands on the first frame with no JS in the path;
+ * the engine only decides which row is active. On touch, where there is no hover to reveal
+ * anything, every description stays open.
  *
  * CONTENT: names and excerpts are the CMS strings, unchanged. No metric, count or claim is
  * introduced.
@@ -28,82 +26,80 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
   if (!hasCompany) return null
 
   return (
-    <AboutScene tag="section" className="w-full">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-        {company?.heading ? (
-          <h2 className="font-display max-w-[18ch] text-[clamp(1.75rem,3.2vw,2.75rem)] leading-[1.06] font-medium tracking-[-0.04em] text-cream text-balance">
-            <span data-anim="mask" className="block">
-              {company.heading}
-            </span>
-          </h2>
-        ) : null}
-        {company?.description ? (
-          <div data-anim="rise" className="max-w-[48ch]">
-            <RichTextComp
-              content={company.description as RichText}
-              className="prose-p:mb-0 prose-p:text-[16px] prose-p:leading-[1.6] prose-p:text-body"
-            />
+    <section
+      data-scene="proof"
+      className="ax-bleed ax-scene relative isolate overflow-hidden px-5 py-20 md:px-8 lg:px-12 lg:py-28"
+    >
+      <div className="mx-auto w-full max-w-[1480px]">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
+          {company?.heading ? (
+            <h2 className="ax-display-sm ax-h max-w-[14ch] text-cream">
+              <span data-ax="mask" className="block">
+                {company.heading}
+              </span>
+            </h2>
+          ) : null}
+          {company?.description ? (
+            <div data-ax="rise" className="ax-body max-w-[46ch]">
+              <RichTextComp content={company.description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
+            </div>
+          ) : null}
+        </div>
+
+        {company?.items?.length ? (
+          <div className="ax-proof mt-14 flex flex-col lg:mt-20">
+            {company.items.map((item, index) => {
+              const logo = item.logo as Media | undefined
+              const logoUrl = logo?.url ?? undefined
+
+              return (
+                <div
+                  key={item.id ?? index}
+                  className="ax-proof-row group grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-5 border-t border-line py-7 lg:grid-cols-[auto_minmax(0,1.05fr)_minmax(0,1fr)_auto] lg:gap-x-12 lg:py-9"
+                >
+                  <span aria-hidden className="ax-meta ax-proof-index pt-3 group-[.is-active]:text-[color:var(--ax-green)]">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+
+                  {item.name ? (
+                    <div className="flex items-center gap-3">
+                      {/* All eight items are `logo: none` in the CMS, so the previous generic
+                          cube fallback was not a fallback — it was one lucide `Box` glyph
+                          repeated eight times. The name is the stronger mark. */}
+                      {logoUrl ? (
+                        <Image
+                          src={logoUrl}
+                          alt={logo?.alt ?? ''}
+                          width={26}
+                          height={26}
+                          className="h-[26px] w-[26px] shrink-0 object-contain grayscale"
+                        />
+                      ) : null}
+                      <span className="ax-proof-title font-display text-[clamp(1.375rem,3.4vw,2.75rem)] leading-[1.05] font-medium tracking-[-0.04em] text-cream">
+                        {item.name}
+                      </span>
+                    </div>
+                  ) : null}
+
+                  {item.excerpt ? (
+                    <div className="ax-proof-excerpt col-span-2 lg:col-span-1 lg:pt-2">
+                      <p className="ax-body mt-3 max-w-[46ch] lg:mt-0">{item.excerpt}</p>
+                    </div>
+                  ) : null}
+
+                  <span
+                    aria-hidden
+                    className="ax-proof-arrow hidden self-center font-mono text-lg text-cream lg:block"
+                  >
+                    →
+                  </span>
+                </div>
+              )
+            })}
+            <span aria-hidden className="h-px w-full bg-line" />
           </div>
         ) : null}
       </div>
-
-      {company?.items?.length ? (
-        <div data-anim-group className="asc-rows mt-12 flex flex-col lg:mt-16">
-          {company.items.map((item, index) => {
-            const logo = item.logo as Media | undefined
-            const logoUrl = logo?.url ?? undefined
-
-            return (
-              <div
-                key={item.id ?? index}
-                data-anim-item
-                data-anim-step
-                className="asc-row grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-5 border-t border-line py-6 lg:grid-cols-[auto_minmax(0,0.9fr)_minmax(0,1.1fr)_auto] lg:gap-x-10 lg:py-7"
-              >
-                <span
-                  aria-hidden
-                  data-anim="num"
-                  className="font-mono text-[13px] tracking-[0.1em] text-cream tabular-nums"
-                >
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-
-                {item.name ? (
-                  <div className="flex items-center gap-2.5">
-                    {/* Logo when the CMS has one — nothing when it does not. All eight items are
-                        `logo: none` on the staging cluster, so the previous generic-cube
-                        fallback was not a fallback, it was the design: one lucide `Box` glyph
-                        eight times over. The name is the stronger mark. */}
-                    {logoUrl ? (
-                      <Image
-                        src={logoUrl}
-                        alt={logo?.alt ?? ''}
-                        width={22}
-                        height={22}
-                        className="h-[22px] w-[22px] shrink-0 object-contain grayscale"
-                      />
-                    ) : null}
-                    <span className="font-display text-[19px] leading-[1.2] font-medium tracking-[-0.03em] text-cream lg:text-[21px]">
-                      {item.name}
-                    </span>
-                  </div>
-                ) : null}
-
-                {item.excerpt ? (
-                  <p className="col-span-2 mt-2 text-[15px] leading-[1.62] text-body lg:col-span-1 lg:mt-0">
-                    {item.excerpt}
-                  </p>
-                ) : null}
-
-                <span aria-hidden className="asc-arrow hidden font-mono text-[15px] text-cream lg:block">
-                  →
-                </span>
-              </div>
-            )
-          })}
-          <span aria-hidden className="h-px w-full bg-line" />
-        </div>
-      ) : null}
-    </AboutScene>
+    </section>
   )
 }

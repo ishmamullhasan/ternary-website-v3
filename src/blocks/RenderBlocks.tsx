@@ -6,6 +6,7 @@ import { Fragment } from 'react'
 
 import AboutEditorialCta from '@/components/about/AboutEditorialCta'
 import AboutEditorialHero from '@/components/about/AboutEditorialHero'
+import AboutExperience from '@/components/about/AboutExperience'
 import Motion from '@/components/animation/motion'
 import { AboutApproachComponent } from './AboutApproach/Component'
 import { AboutBeliefsComponent } from './AboutBeliefs/Component'
@@ -251,13 +252,42 @@ export function RenderBlocks({
 }): JSX.Element | null {
   if (!blocks?.length) return null
 
-  return (
-    <div className="flex flex-col gap-16 lg:gap-[72px] text-cream max-w-7xl mx-auto w-full px-5 md:px-8 lg:px-12 pt-20 lg:pt-40 lg:pb-24 pb-10">
+  const isAbout = slug === 'about'
+
+  // About runs as one continuous scene experience: the scenes are full-bleed and own their own
+  // vertical rhythm, so the shared container's gap and top padding would only insert dead space
+  // between them. Every other page keeps the standard container exactly as before.
+  // BLOCK, NOT FLEX, and that is load-bearing. GSAP pins by wrapping the section in a
+  // pin-spacer that reserves the scroll distance; as a flex item that spacer stops sizing
+  // correctly, so the following scene slid up underneath the still-pinned one and two or three
+  // scenes rendered on top of each other between roughly 16% and 50% of the page. Measured, not
+  // theorised. The scenes are full-width blocks and never needed flex.
+  const containerClass = isAbout
+    ? 'block w-full text-cream pb-10 lg:pb-24'
+    : 'flex flex-col gap-16 lg:gap-[72px] text-cream max-w-7xl mx-auto w-full px-5 md:px-8 lg:px-12 pt-20 lg:pt-40 lg:pb-24 pb-10'
+
+  // On About the container itself goes full-width so the scenes can hold the viewport edge to
+  // edge without a 100vw trick (which overhangs by the scrollbar and scrolls the page
+  // sideways). Blocks that are NOT scenes — the Leadership block — get the shared container
+  // restored around them, so that section keeps exactly the max-width, gutters and rhythm it
+  // has on the live site. Its own markup is untouched; only its wrapper is involved, which is
+  // the one change the preservation rule permits.
+  const aboutFrame = 'mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12 py-20 lg:py-28'
+
+  const content = (
+    <div className={containerClass}>
       {blocks.map((block, i) => {
         const el = renderBlock(block, locale, slug)
         if (!el) return null
         // Self-wrapping granular blocks already render their own Motion section — render directly.
         if (SELF_WRAPPED_BLOCKS.has(block.blockType)) {
+          if (isAbout && block.blockType === 'aboutLeadership') {
+            return (
+              <div className={aboutFrame} key={block.id || i}>
+                {el}
+              </div>
+            )
+          }
           return <Fragment key={block.id || i}>{el}</Fragment>
         }
         return (
@@ -268,4 +298,9 @@ export function RenderBlocks({
       })}
     </div>
   )
+
+  // One engine for the whole About page, not a wrapper per block — that is what lets the scenes
+  // hand over to each other rather than behave as independent widgets. The Leadership block sits
+  // inside it but carries no scene marker, so nothing in the engine reaches it.
+  return isAbout ? <AboutExperience>{content}</AboutExperience> : content
 }

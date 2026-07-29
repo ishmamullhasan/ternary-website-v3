@@ -1,100 +1,78 @@
-import AboutScene from '@/components/about/AboutScene'
+import { ClosingField } from '@/components/about/AboutSystems'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import { Button } from '@/components/ui/button'
-import type { CtaBlock, Media } from '@/payload-types'
+import type { CtaBlock } from '@/payload-types'
 import type { JSX } from 'react'
 
 /**
- * The About page's closing call — an About-only treatment of the shared `ctaBlock`.
+ * SCENE 08 — the close. An About-only treatment of the shared `ctaBlock`; Industries, Scales,
+ * Solutions and Capabilities render the shared component unchanged (see RenderBlocks).
  *
- * SCOPE: reached only when the page slug is `about` (see RenderBlocks). Industries, Scales,
- * Solutions and Capabilities render the shared CtaBlockComponent exactly as before.
+ * The page comes back to where it started: the hero's grid returns, then collapses toward a
+ * single horizon line as the statement settles. The statement itself is set at the hero's scale
+ * so the two read as bookends. The CTA arrives only once the statement has landed, and picks up
+ * a restrained magnetic pull on pointer devices.
  *
- * The shared block and the funding band immediately above it are both full-width panels over
- * imagery, and stacked they read as the same beat played twice. This keeps the horizontal
- * split — statement left, actions right — that the shared block already used, so the two bands
- * differ in composition rather than only in copy: a tall plate with the statement at its foot,
- * then a compact line that asks for the click.
+ * The CMS `backgroundImage` is not rendered here. It was a full-colour plate that broke the
+ * black / warm-white / grey identity in the page's final frame; the field does that work now.
+ * The field is untouched in the CMS.
  *
  * CONTENT: heading, description and both button labels come from the CMS unchanged.
  */
-export function AboutEditorialCta({
-  heading,
-  description,
-  backgroundImage,
-  button_1,
-  button_2,
-}: CtaBlock): JSX.Element {
-  const bgUrl = (backgroundImage as Media)?.url
-
+export function AboutEditorialCta({ heading, description, button_1, button_2 }: CtaBlock): JSX.Element {
   return (
-    <AboutScene
-      tag="section"
-      className="relative isolate overflow-hidden rounded-md border border-white/[0.04] px-6 py-12 md:px-10 lg:px-14 lg:py-16"
+    <section
+      data-scene="closing"
+      className="ax-bleed ax-scene relative isolate flex min-h-[84svh] flex-col justify-center overflow-hidden px-5 py-20 md:px-8 lg:min-h-[92svh] lg:px-12"
     >
-      <span
+      <div
         aria-hidden
-        className="absolute inset-0 -z-10"
-        style={{
-          background: bgUrl
-            ? `url(${bgUrl}) center/cover no-repeat`
-            : 'linear-gradient(135deg, #1e3a5f 0%, #4c1d95 60%, #2e1065 100%)',
-        }}
-      />
-      {/* The signature grain, and a scrim weighted to the left where the type sits. */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 bg-[url('/noise.svg')] bg-[length:240px] bg-repeat opacity-[0.15] mix-blend-overlay"
-      />
-      <span aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-r from-page/70 via-page/45 to-transparent" />
+        className="pointer-events-none absolute inset-0 -z-10 [mask-image:radial-gradient(110%_90%_at_50%_50%,#000_0%,rgba(0,0,0,0.35)_55%,transparent_88%)]"
+      >
+        <ClosingField />
+      </div>
 
-      <div className="flex flex-col gap-9 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
-        <div className="flex max-w-[46ch] flex-col gap-3">
-          {heading ? (
-            <h2 className="font-display text-[clamp(1.625rem,3vw,2.5rem)] leading-[1.1] font-medium tracking-[-0.04em] text-cream text-balance">
-              <span data-anim="mask" className="block">
-                {heading}
-              </span>
-            </h2>
-          ) : null}
+      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-12">
+        {heading ? (
+          <h2 className="ax-display ax-h max-w-[13ch] text-cream">
+            <span data-ax="mask" className="block">
+              {heading}
+            </span>
+          </h2>
+        ) : null}
+
+        <div data-ax="cta" className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
           {description ? (
-            <div data-anim="rise" className="max-w-[52ch]">
-              <RichTextComp
-                content={description as RichText}
-                className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-[1.6] prose-p:text-cream"
-              />
+            <div className="ax-body max-w-[52ch]">
+              <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-inherit" />
             </div>
           ) : null}
-        </div>
 
-        <div
-          data-anim="rise"
-          className="flex w-full shrink-0 flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
-        >
-          {button_1?.label ? (
-            <span data-anim="magnetic" className="inline-block">
-            <Button
-              asChild
-              className="h-auto w-full px-5 py-2.5 text-base bg-button-dark text-cream hover:bg-button-dark/90 sm:w-auto"
-            >
-              <Link href={(button_1?.link as string) || '#'}>{button_1.label}</Link>
-            </Button>
-            </span>
-          ) : null}
-          {button_2?.label ? (
-            <span data-anim="magnetic" className="inline-block">
-            <Button
-              asChild
-              className="h-auto w-full px-5 py-2.5 text-base bg-cream text-ink hover:bg-cream-hover sm:w-auto"
-            >
-              <Link href={(button_2?.link as string) || '#'}>{button_2.label}</Link>
-            </Button>
-            </span>
-          ) : null}
+          <div className="flex w-full shrink-0 flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
+            {button_1?.label ? (
+              <span data-ax="magnetic" className="inline-block">
+                <Link
+                  href={(button_1?.link as string) || '#'}
+                  className="inline-flex h-12 w-full items-center justify-center rounded-lg border border-line bg-button-dark px-6 font-display text-base text-cream transition-colors duration-200 hover:bg-button-dark/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink sm:w-auto"
+                >
+                  {button_1.label}
+                </Link>
+              </span>
+            ) : null}
+            {button_2?.label ? (
+              <span data-ax="magnetic" className="inline-block">
+                <Link
+                  href={(button_2?.link as string) || '#'}
+                  className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-cream px-6 font-display text-base text-ink transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink sm:w-auto"
+                >
+                  {button_2.label}
+                </Link>
+              </span>
+            ) : null}
+          </div>
         </div>
       </div>
-    </AboutScene>
+    </section>
   )
 }
 
