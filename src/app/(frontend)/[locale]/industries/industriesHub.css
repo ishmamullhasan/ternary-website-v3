@@ -86,9 +86,13 @@
    here uses it so the rail, the indicator and the panel settle together. */
 
 /* The scroll track. Its height is the card plus a beat per sector, so the pin releases exactly
-   when the last sector has had its turn. 34vh a step, not a full viewport: nine sectors at one
-   screen each is nine screens of scrolling for one section, which stops reading as pacing and
-   starts reading as a scroll trap — the same limit the home page's process section ran into. */
+   when the last sector has had its turn.
+
+   50vh a step. At 34vh the dial turned faster than the eye could take a sector in — nine of them
+   went past in three screens. Half a viewport each gives every sector a beat of its own and still
+   stops short of a full screen apiece, which for nine would be nine screens of scrolling for one
+   section: the point where pacing turns into a scroll trap, and the same limit the home page's
+   process section ran into. */
 .hub .ix-track {
   position: relative;
 }
@@ -103,7 +107,7 @@
    shape the reduced-motion and no-JavaScript paths already fall back to. */
 @media (min-width: 900px) {
   .hub .ix-track[data-pin='on'] {
-    height: calc(var(--ix-card, 620px) + var(--ix-steps, 9) * var(--ix-step, 34vh));
+    height: calc(var(--ix-card, 620px) + var(--ix-steps, 9) * var(--ix-step, 50vh));
   }
   .hub .ix-track[data-pin='on'] .ix-pin {
     position: sticky;
@@ -143,7 +147,7 @@
 }
 @media (min-width: 900px) {
   .hub .ix-track[data-pin='on'] .ix-window {
-    height: min(58vh, 460px);
+    height: min(64vh, 560px);
     /* 8%/92%, not 16%/84%. At the wider ramp the rows two out from centre sat inside the dissolve
      and one measured 4.5:1 — a whole readable row dimmed by the aperture rather than by the
      ladder. Pulled in, the ramp only catches the sliver of a row genuinely leaving the window. */
@@ -163,8 +167,6 @@
 .hub .ix-item {
   position: relative;
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 14px;
   align-items: baseline;
   width: 100%;
   /* A CONSTANT ROW PITCH, which is what makes this a dial rather than a list that reflows.
@@ -172,8 +174,11 @@
      would move every offset the slide is measured against WHILE the slide is running, and the
      focused row settled up to 48px off the centre line. At a fixed pitch the name grows inside
      its row, the geometry never moves, and the translate is exact.
-     88px also puts ~5 rows in the 460px aperture, which is the ladder the brief describes. */
-  height: 88px;
+     112px, not 88px: the focused name is up to 36px and three of the nine wrap to two lines at
+     the rail's width — measured 102px of content in an 88px row, so those three overflowed and
+     crowded their neighbours. 112 holds the tallest with room, and five of them fill the 560px
+     aperture, which is the ladder the brief describes. */
+  height: 112px;
   align-content: center;
   padding: 0 14px 0 22px;
   border: 0;
@@ -207,17 +212,6 @@
   transform: scaleY(1);
 }
 
-.hub .ix-num {
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  color: var(--t3);
-  transition:
-    color 0.65s var(--ease),
-    opacity 0.65s var(--ease);
-}
-.hub .ix-item[data-state='active'] .ix-num {
-  color: var(--color-cream);
-}
 .hub .ix-mid {
   display: flex;
   flex-direction: column;
@@ -284,7 +278,6 @@
   .hub .ix-item,
   .hub .ix-name,
   .hub .ix-caps,
-  .hub .ix-num,
   .hub .ix-line,
   .hub .ix-rail {
     transition: none;

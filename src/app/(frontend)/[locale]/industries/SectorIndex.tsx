@@ -328,9 +328,6 @@ export default function SectorIndex() {
                   onMouseEnter={canHover ? () => pick(sector.num) : undefined}
                 >
                   <span className="ix-line" aria-hidden="true" />
-                  <span className="ix-num" aria-hidden="true">
-                    {sector.num}
-                  </span>
                   <span className="ix-mid">
                     <span className="ix-name">{sector.name}</span>
                     <span className="ix-caps">{(CAPS[sector.num] ?? []).slice(0, 3).join('  ·  ')}</span>
