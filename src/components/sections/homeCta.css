@@ -47,17 +47,17 @@
    spotlight. `margin-left` centres it so `transform` stays free for the drift. */
 .hc-bloom {
   left: 50%;
-  bottom: -30%;
-  width: 150%;
-  height: 82%;
-  margin-left: -75%;
+  bottom: -6%;
+  width: 145%;
+  height: 52%;
+  margin-left: -72.5%;
   background: radial-gradient(
-    ellipse at bottom,
-    rgba(118, 92, 255, 0.46) 0%,
-    rgba(118, 92, 255, 0.16) 35%,
-    transparent 75%
+    ellipse 100% 100% at 50% 100%,
+    rgba(124, 96, 255, 0.62) 0%,
+    rgba(118, 92, 255, 0.3) 30%,
+    rgba(110, 88, 250, 0.09) 55%,
+    transparent 78%
   );
-  filter: blur(120px);
   will-change: transform;
   animation: hcDrift 18s ease-in-out infinite;
 }
@@ -66,14 +66,17 @@
    Off to one side, so the bloom is not one flat hue. This is what stops the panel
    reading as "purple gradient" and starts it reading as light. */
 .hc-blue {
-  left: 26%;
-  bottom: -20%;
-  width: 62%;
-  height: 62%;
-  margin-left: -31%;
-  background: radial-gradient(circle, rgba(84, 140, 255, 0.27), transparent 70%);
-  filter: blur(140px);
-  will-change: transform;
+  left: 30%;
+  bottom: -14%;
+  width: 70%;
+  height: 44%;
+  margin-left: -35%;
+  background: radial-gradient(
+    ellipse 100% 100% at 50% 100%,
+    rgba(84, 140, 255, 0.4) 0%,
+    rgba(84, 140, 255, 0.1) 42%,
+    transparent 74%
+  );
   animation: hcSwell 22s ease-in-out infinite;
 }
 
@@ -81,20 +84,19 @@
    Almost invisible on its own. Removing it is not obvious; keeping it is what makes
    the right-hand side stop being empty. */
 .hc-amb {
-  right: 14%;
-  bottom: -12%;
-  width: 52%;
-  height: 52%;
-  background: radial-gradient(circle, rgba(177, 113, 255, 0.15), transparent 80%);
-  filter: blur(160px);
+  right: 6%;
+  bottom: -10%;
+  width: 56%;
+  height: 38%;
+  background: radial-gradient(ellipse 100% 100% at 50% 100%, rgba(177, 113, 255, 0.22) 0%, transparent 76%);
 }
 
 /* ── 5 · bottom light ───────────────────────────────────────────────────────
    Lifts the very bottom edge so the panel does not end on a hard dark line. */
 .hc-bottom {
   inset: auto 0 0 0;
-  height: 42%;
-  background: linear-gradient(180deg, transparent, rgba(135, 96, 255, 0.14));
+  height: 36%;
+  background: linear-gradient(180deg, transparent, rgba(135, 96, 255, 0.16));
 }
 
 /* ── 6 · dot matrix ─────────────────────────────────────────────────────────
@@ -107,8 +109,10 @@
   background-size: 22px 22px;
   -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.55) 30%, transparent 62%);
   mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.55) 30%, transparent 62%);
-  opacity: 0.25;
-  animation: hcDots 14s ease-in-out infinite;
+  /* Static. Animating opacity on a masked layer re-composites it through the mask every
+     frame; of the three motions the dot pulse was the least visible and the most
+     expensive per unit of effect, so it is the one that goes. */
+  opacity: 0.3;
 }
 
 /* ── 7 · grain ──────────────────────────────────────────────────────────────── */
@@ -116,8 +120,11 @@
   inset: 0;
   background-image: url('/noise.svg');
   background-size: 240px;
-  opacity: 0.035;
-  mix-blend-mode: overlay;
+  /* Plain alpha, NOT mix-blend-mode: overlay. The blend forced the whole panel through
+     a separate compositing pass on every frame and measured as the single biggest cost
+     left after the blur came out (13.0 -> 23.1 fps with this layer disabled). At 4.5%
+     the dithering is indistinguishable and the pass is gone. */
+  opacity: 0.045;
 }
 
 /* ── motion ─────────────────────────────────────────────────────────────────
@@ -141,23 +148,12 @@
     transform: scale(1.08);
   }
 }
-@keyframes hcDots {
-  0%,
-  100% {
-    opacity: 0.25;
-  }
-  50% {
-    opacity: 0.45;
-  }
-}
-
 /* Every base rule above is a finished, visible state — the animations only move things
    that are already painted, so switching them off lands on the composed panel rather
    than on an empty one. */
 @media (prefers-reduced-motion: reduce) {
   .hc-bloom,
-  .hc-blue,
-  .hc-dots {
+  .hc-blue {
     animation: none;
   }
 }
