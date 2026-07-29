@@ -1,7 +1,5 @@
-'use client'
-
-import Motion from '@/components/animation/motion'
-import { reveal, revealItem } from '@/components/animation/reveal'
+import ProcessFigure from '@/components/process/ProcessFigure'
+import ProcessJourney from '@/components/process/ProcessJourney'
 import type { RichText } from '@/components/richtext'
 import RichTextComp from '@/components/richtext'
 import type { JSX } from 'react'
@@ -18,62 +16,79 @@ interface ProcessCompProps {
     | null
 }
 
+/**
+ * "How we operate" — a scroll-linked journey down one structure, replacing a 2-up grid
+ * of five equal bullets.
+ *
+ * The old layout gave every principle the same weight, showed nothing connecting them,
+ * and left roughly half the panel empty. The empty half had a cause worth naming: the
+ * component renders each step's `description`, and all five are empty in the CMS, so it
+ * was reserving space for copy that does not exist. The layout below is built to read
+ * correctly either way — titles alone now, richer the moment descriptions are authored.
+ *
+ * Left is pinned: eyebrow, heading, blurb and the figure. Right is the sequence, with a
+ * rail whose fill grows as you descend and one principle live at a time. Motion is
+ * limited to progressive disclosure, a growing progress indicator and crossfade —
+ * ProcessJourney owns the state, processJourney.css owns the timing.
+ */
 export default function ProcessComp({ heading, description, process }: ProcessCompProps) {
   // Empty-state guard: with no steps there is nothing to render, so collapse the section
   // entirely and let the parent RenderBlocks rhythm own the surrounding spacing.
   if (!process || process.length === 0) return null
 
   return (
-    <section className="section-card">
-      <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
-        {/* Header — pinned to the left, mirroring the capability "How we do it" rhythm. */}
-        <Motion className="flex shrink-0 flex-col gap-4 lg:w-[32%]" {...reveal}>
-          <p className="text-[12px] font-medium uppercase tracking-[0.14em] text-subtle">Process</p>
-          {/* Heading + description grouped so their gap matches the other sections (natural flow),
-              while the eyebrow keeps the container's gap-4 rhythm above the heading. */}
+    <ProcessJourney count={process.length}>
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1fr)] lg:gap-16">
+        {/* Pinned side — the section's own frame stays put while the principles move past it. */}
+        <div className="flex flex-col gap-5 lg:sticky lg:top-28 lg:self-start">
+          <p className="text-[12px] font-medium tracking-[0.14em] text-subtle uppercase">Process</p>
           {(heading || description) && (
             <div>
               {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
               {description && (
                 <RichTextComp
                   content={description as RichText}
-                  className="max-w-md prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body"
+                  className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body max-w-md"
                 />
               )}
             </div>
           )}
-        </Motion>
 
-        {/* Steps — a 2-up card grid offset under a left gutter; the final/odd step spans full width. */}
-        <div className="lg:pl-[20%]">
-          <ol className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {process.map((item, index): JSX.Element => {
-              const isLast = index === process.length - 1
-              const spansFull = isLast && process.length % 2 === 1
-              return (
-                <Motion
-                  tag="li"
-                  key={index}
-                  className={`flex flex-col gap-6${spansFull ? ' lg:col-span-2' : ''}`}
-                  {...revealItem(index)}
-                >
-                  <span className="text-[14px] tabular-nums text-cream">
-                    {item.number ?? String(index + 1).padStart(2, '0')}
-                  </span>
-                  <div className="flex flex-col gap-2">
-                    {item.title && <h3 className="text-[16px] font-medium leading-snug text-cream">{item.title}</h3>}
-                    {item.description && (
-                      <div className="max-w-2xl text-[14px] leading-relaxed text-cream">
-                        <RichTextComp content={item.description as RichText} className="prose-sm" />
-                      </div>
-                    )}
-                  </div>
-                </Motion>
-              )
-            })}
-          </ol>
+          {/* One plate per principle. Courses already read stay solid, the live one is
+              bright, the rest are faint — the connection the old list never showed. */}
+          <div className="mt-2 hidden w-full max-w-[300px] lg:block">
+            <ProcessFigure count={process.length} />
+          </div>
         </div>
+
+        {/* The sequence. `ol` because these are numbered and ordered. */}
+        <ol className="relative flex flex-col gap-10 lg:gap-14">
+          <span aria-hidden className="pj-rail">
+            <span className="pj-rail-fill" />
+          </span>
+
+          {process.map((item, index): JSX.Element => (
+            <li key={index} className="pj-step">
+              <span aria-hidden className="pj-dot" />
+              <span className="pj-num block text-[13px] text-cream">
+                {item.number ?? String(index + 1).padStart(2, '0')}
+              </span>
+              {item.title && (
+                <h3 className="pj-title font-display mt-2 text-[clamp(1.125rem,1.7vw,1.5rem)] leading-snug font-medium tracking-[-0.015em] text-cream">
+                  {item.title}
+                </h3>
+              )}
+              {/* Renders only when authored — no reserved gap for copy that is not there,
+                  which is what left the old panel half empty. */}
+              {item.description && (
+                <div className="pj-body mt-2 max-w-[52ch] text-[14.5px] leading-relaxed text-body">
+                  <RichTextComp content={item.description as RichText} className="prose-sm prose-p:mb-0" />
+                </div>
+              )}
+            </li>
+          ))}
+        </ol>
       </div>
-    </section>
+    </ProcessJourney>
   )
 }
