@@ -1,55 +1,40 @@
-/* Living Engineering Network — the capabilities hero field.
+/* Capabilities hero — engineering mesh with circuit routing.
  *
- * BASE IS THE COMPOSED FIGURE. Every rule below paints first and animates second, so the
- * network is fully drawn with JavaScript off, before hydration, and under
- * prefers-reduced-motion. Nothing is visible only while an animation is mid-cycle.
+ * BASE IS THE COMPOSED FIGURE. Every rule paints first and animates second, so the mesh
+ * is fully drawn with JavaScript off, before hydration, and under prefers-reduced-motion.
+ * Nothing is visible only while an animation is mid-cycle.
  *
- * The brief's palette, held to exactly: lines rgba(255,255,255,.14), nodes .22, active
- * white, and one restrained violet. No neon, no colour gradients across the field.
+ * WHAT ANIMATES, AND WHY SO LITTLE. The previous build animated everything and the honest
+ * critique was that motion existed because it looked good, not because it said anything.
+ * Here the fabric is STILL — it is structure, and structure does not shimmer. Only three
+ * things move: packets travelling the routed traces, eight cells holding light and handing
+ * off, and the core. That is also what keeps it cheap: measured on the previous version,
+ * static geometry cost nothing detectable and `offset-distance` was the entire budget.
  *
- * Timings are 9–22s on purpose. The test is "is it moving?" — if a visitor can time the
- * loop, it has become decoration. Every cycle is prime-ish against its neighbours so the
- * field never visibly repeats.
+ * Palette held to the brief: traces rgba(255,255,255,.14), mesh far below that, pads .22,
+ * live white, one restrained violet. No neon.
  */
 
 .nw {
   position: relative;
   width: 100%;
-  aspect-ratio: 620 / 520;
+  aspect-ratio: 640 / 540;
   isolation: isolate;
 }
 
-/* ── bloom ──────────────────────────────────────────────────────────────────
-   Off-centre and low, so it lights the field from behind rather than sitting on it.
-   A gradient, not a blur: blurring an element this size costs a full re-rasterise a
-   frame and is what took the home CTA to 2.9fps. */
+/* One bloom behind the core. A gradient, never a blur — blurring a layer this size costs
+   a full re-rasterise per frame and is what took the home CTA to 2.9fps. */
 .nw-bloom {
   position: absolute;
-  inset: -18% -12% -24% -12%;
+  inset: -14% -10% -18% -10%;
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(
-    ellipse 62% 58% at 52% 50%,
-    rgba(139, 92, 246, 0.17) 0%,
-    rgba(124, 92, 255, 0.06) 38%,
-    transparent 72%
+    ellipse 54% 52% at 50% 50%,
+    rgba(139, 92, 246, 0.16) 0%,
+    rgba(124, 92, 255, 0.05) 40%,
+    transparent 74%
   );
-}
-
-/* ── engineering grid ───────────────────────────────────────────────────────
-   Masked to dissolve outward: a grid with an edge reads as a swatch, one that fades
-   reads as depth. Kept under 3% so it never competes with the network. */
-.nw-grid {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgba(244, 243, 236, 0.026) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(244, 243, 236, 0.026) 1px, transparent 1px);
-  background-size: 46px 46px;
-  -webkit-mask-image: radial-gradient(58% 58% at 52% 50%, #000 0%, rgba(0, 0, 0, 0.4) 55%, transparent 82%);
-  mask-image: radial-gradient(58% 58% at 52% 50%, #000 0%, rgba(0, 0, 0, 0.4) 55%, transparent 82%);
 }
 
 .nw-svg {
@@ -58,203 +43,65 @@
   width: 100%;
   height: 100%;
   display: block;
-  overflow: visible;
 }
 
-/* ── the centre ─────────────────────────────────────────────────────────────
-   The one place the field resolves. Breathes slowest of anything here. */
-.nw-heart {
-  opacity: 0.85;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: nwHeart 17s ease-in-out infinite;
-}
-@keyframes nwHeart {
-  0%,
-  100% {
-    opacity: 0.66;
-    transform: scale(0.94);
-  }
-  50% {
-    opacity: 0.95;
-    transform: scale(1.04);
-  }
-}
-
-/* The hard point at the centre — what the strands actually leave from. */
-.nw-core-dot {
-  fill: #ffffff;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: nwCoreDot 17s ease-in-out infinite;
-}
-@keyframes nwCoreDot {
-  0%,
-  100% {
-    opacity: 0.85;
-    transform: scale(0.92);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-}
-
-/* Orbits: dotted ellipses the strands cross, so the gaps read as depth not emptiness. */
-.nw-orbit {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.1);
-  stroke-width: 0.8;
+/* ── the fabric ─────────────────────────────────────────────────────────────
+   Sub-pixel and very faint. ~300 of these: at any weight that reads individually the
+   figure becomes a net. The weight is the balance point: at .07 the fabric was so faint
+   it did not reward looking closer, which was the whole reason for 446 of them; at .10 it
+   is still nothing from across the room and intricate up close. Held still. */
+.nw-cell {
+  stroke: rgba(255, 255, 255, 0.105);
+  stroke-width: 0.6;
   vector-effect: non-scaling-stroke;
-  animation: nwOrbit 19s ease-in-out infinite;
-}
-@keyframes nwOrbit {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.85;
-  }
 }
 
-/* Dot-matrix patches — the measured texture at the edges of the field. */
-.nw-dot {
-  fill: rgba(255, 255, 255, 0.3);
-}
-.nw-patch {
-  animation: nwDot 12s ease-in-out infinite;
-}
-@keyframes nwDot {
-  0%,
-  100% {
-    opacity: 0.25;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-/* Mid-strand markers: held, never animated. Something has to stay still or the whole
-   field shimmers and stops reading as a system. */
-.nw-node.is-quiet {
-  fill: rgba(255, 255, 255, 0.28);
-  animation: none;
-}
-
-/* ── connections ────────────────────────────────────────────────────────────
-   Hairline, non-scaling so they stay hairline at any render size, and they illuminate
-   rather than draw — a stroke-dash draw-in would read as loading, not as a live system. */
-.nw-edge {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.26);
+/* Eight cells carry light at a time, out of phase, so the fabric reads as in use. */
+.nw-cell.is-live {
+  stroke: rgba(196, 181, 253, 0.75);
   stroke-width: 0.9;
-  vector-effect: non-scaling-stroke;
-  opacity: 0.55;
-  animation: nwEdge 13s ease-in-out infinite;
-}
-
-/* Animates OPACITY, not the stroke colour. Interpolating stroke repaints every path on
-   every frame — with 20 strands that measured ~10fps of scroll against the rest of the
-   page. Opacity composites, so the same illumination costs nothing to paint. The stroke
-   is set at the bright end and the base opacity brings it back to the brief's .14. */
-@keyframes nwEdge {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.nw-edge.is-sweep {
-  opacity: 0.36;
-}
-
-/* The sweeps sit a touch fainter than the radial strands, so the centre still reads as
-   the origin and they read as passing through rather than competing with it. */
-.nw-edge.is-sweep {
-  stroke: rgba(255, 255, 255, 0.17);
-  animation-duration: 21s;
-}
-
-/* ── signals ────────────────────────────────────────────────────────────────
-   One pulse per route, fading in and out across the run so it arrives and leaves rather
-   than looping visibly past the join. */
-.nw-signal {
-  fill: #ffffff;
-  offset-rotate: 0deg;
   opacity: 0;
-  animation: nwSignal 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation: nwCell 14s ease-in-out infinite;
 }
-@keyframes nwSignal {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  12% {
-    opacity: 0.95;
-  }
-  76% {
-    opacity: 0.95;
-  }
-  92%,
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-
-/* ── nodes ──────────────────────────────────────────────────────────────────
-   They breathe: opacity and a hair of scale, never position. Nodes that drift turn the
-   constellation into a screensaver. */
-.nw-node {
-  fill: rgba(255, 255, 255, 0.22);
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: nwNode 9.5s ease-in-out infinite;
-}
-.nw-node.is-accent {
-  fill: #ffffff;
-}
-@keyframes nwNode {
+@keyframes nwCell {
   0%,
+  62%,
   100% {
-    opacity: 0.55;
-    transform: scale(0.9);
+    opacity: 0;
   }
-  50% {
+  18%,
+  44% {
     opacity: 1;
-    transform: scale(1.18);
   }
 }
 
-.nw-ring {
+.nw-junction {
+  fill: rgba(255, 255, 255, 0.22);
+}
+
+.nw-via {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.16);
+  stroke: rgba(255, 255, 255, 0.2);
   stroke-width: 0.7;
   vector-effect: non-scaling-stroke;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: nwRing 21s ease-in-out infinite;
-}
-@keyframes nwRing {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.12);
-  }
 }
 
-.nw-glow {
-  animation: nwGlow 15s ease-in-out infinite;
+/* ── routed traces ──────────────────────────────────────────────────────────
+   The only lines with real weight. Mitred rather than rounded — a board's corners are
+   cut, not softened, and rounding them starts pulling the figure back toward organic. */
+.nw-trace {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 1;
+  stroke-linejoin: miter;
+  stroke-linecap: butt;
+  vector-effect: non-scaling-stroke;
 }
-@keyframes nwGlow {
+.nw-trace.is-live {
+  stroke: rgba(255, 255, 255, 0.34);
+  animation: nwTrace 16s ease-in-out infinite;
+}
+@keyframes nwTrace {
   0%,
   100% {
     opacity: 0.5;
@@ -264,17 +111,98 @@
   }
 }
 
-/* Base rules are the composed figure, so switching the animations off lands on a drawn
-   network held still — which is the whole point of writing it this way round. */
+/* ── packets ────────────────────────────────────────────────────────────────
+   Rectangular, not round: a packet moving through routing, not a comet. They travel the
+   full trace and fade at both ends so each one arrives and departs rather than looping
+   visibly through the join. */
+.nw-signal {
+  fill: #ffffff;
+  offset-rotate: 0deg;
+  opacity: 0;
+  animation: nwSignal 9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes nwSignal {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 1;
+  }
+  92%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+/* ── modules ────────────────────────────────────────────────────────────────
+   Pads with a pin, held still. They are where the traces terminate; things that terminate
+   should not drift. */
+.nw-module {
+  fill: rgba(9, 9, 9, 0.92);
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+.nw-module.is-live {
+  stroke: rgba(255, 255, 255, 0.75);
+}
+.nw-module-pin {
+  fill: rgba(255, 255, 255, 0.28);
+}
+
+/* ── the core ───────────────────────────────────────────────────────────────
+   A package: outer block, die, pins. The glow behind it is the only thing that moves, so
+   the geometry stays readable — the earlier version let the light swallow its own centre. */
+.nw-heart {
+  opacity: 0.8;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nwHeart 18s ease-in-out infinite;
+}
+@keyframes nwHeart {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.92;
+    transform: scale(1.04);
+  }
+}
+
+.nw-core-block {
+  fill: rgba(9, 9, 9, 0.9);
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.nw-core-die {
+  fill: none;
+  stroke: rgba(196, 181, 253, 0.55);
+  stroke-width: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+.nw-core-pin {
+  fill: rgba(255, 255, 255, 0.45);
+}
+
+/* Base rules are the composed figure, so clearing the animations lands on a drawn mesh
+   held still — which is the whole reason it is written this way round. */
 @media (prefers-reduced-motion: reduce) {
   .nw *,
-  .nw-bloom,
-  .nw-grid {
+  .nw-bloom {
     animation: none !important;
     transition: none !important;
   }
-  .nw-signal {
-    /* the only element whose base opacity is 0, because it exists to travel */
+  /* the two elements whose base state is transparent, because they exist to arrive */
+  .nw-signal,
+  .nw-cell.is-live {
     display: none;
   }
 }
