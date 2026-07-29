@@ -48,7 +48,6 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
           {/* Frame — centred against the stage rather than top-aligned, so the composition
               stays balanced when only one principle is showing. */}
           <div className="flex flex-col gap-5">
-            <p className="text-[12px] font-medium tracking-[0.14em] text-subtle uppercase">Process</p>
             {(heading || description) && (
               <div>
                 {heading && <h2 className="font-display text-section text-cream">{heading}</h2>}
