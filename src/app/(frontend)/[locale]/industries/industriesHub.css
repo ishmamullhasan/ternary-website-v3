@@ -4,14 +4,15 @@
    scoped under `.hub` so it stays contained. */
 
 /* HERO — oversized type on the bare page. No ambient node-field and no rule beneath it: the hero
-   ends where the next section's spacing begins. No 100vh grab either — the layout already offsets
-   the floating header, so the hero fills the remaining viewport rather than a full one. */
+   ends where the next section's spacing begins.
+
+   Top-aligned, and no viewport-height floor. It used to reserve `100svh - 140px` and centre its
+   content inside that, which parked the copy in the middle of an 860px block and left 331px between
+   the hero and the first section — against 166px on the solutions hub, whose padding is otherwise
+   identical to this. Dropping the floor lets the padding alone set the rhythm, so the two hubs
+   space the same way and the copy starts at the top left rather than floating. */
 .hub .hero {
   position: relative;
-  min-height: calc(100svh - 140px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   padding: clamp(32px, 6vh, 72px) 0 clamp(48px, 7vh, 80px);
   overflow: hidden;
 }
@@ -45,7 +46,10 @@
 .hub .sec-head {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  /* start, not flex-end: the sentence used to hang off the BOTTOM of the heading, level with its
+     last line and reading as a footnote to it. At the top it is a counterweight, and the two sides
+     begin together however many lines the heading runs to. Matches the solutions hub. */
+  align-items: flex-start;
   gap: 24px;
   flex-wrap: wrap;
   margin-bottom: clamp(28px, 4vw, 56px);
@@ -56,13 +60,20 @@
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.04;
-  margin-top: 16px;
 }
 .hub .sec-sub {
   color: var(--t2);
   max-width: 44ch;
   font-size: 16px;
   line-height: 1.7;
+}
+/* Right-aligned only while it actually sits beside the heading. `.sec-head` wraps below this, and
+   a right-aligned paragraph under a left-aligned heading in one column reads as a mistake. Same
+   breakpoint the solutions hub uses for the same sentence (Tailwind `lg`). */
+@media (min-width: 64rem) {
+  .hub .sec-sub {
+    text-align: right;
+  }
 }
 
 /* SECTOR INDEX — signature accordion. The proof line is always visible; a named client (cream) is
@@ -166,7 +177,6 @@
 /* ── right stage ───────────────────────────────────────────────────────── */
 .hub .ix-stage {
   position: relative;
-  border: 1px solid var(--brd);
   border-radius: 8px;
   background: var(--panel);
   padding: 28px;
@@ -198,26 +208,37 @@
 }
 @media (min-width: 1120px) {
   .hub .ix-panel {
-    grid-template-columns: 1fr 1fr;
+    /* The art side takes the larger share. On an even split the drawing was capped by its column
+       at ~369px — nowhere near its 560px ceiling — and sat as a small figure in a large panel. */
+    grid-template-columns: 1.25fr 1fr;
     align-items: center;
   }
 }
+/* The artwork is components/industry/IndustryBlueprint — the same drawings the home page's
+   industry cards use. Sized to fill this panel rather than sit in the middle of it: 360px was
+   scaled for a 299px home card and left the stage looking half empty at 500px+. */
 .hub .ix-art {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 260px;
+  min-height: 380px;
 }
-.hub .ix-art svg {
+.hub .ix-art .ib {
   width: 100%;
-  max-width: 360px;
+  max-width: 560px;
   height: auto;
-  overflow: visible;
-  fill: none;
-  stroke: var(--color-cream);
-  stroke-width: 1;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  aspect-ratio: 400 / 360;
+  /* The blueprint is drawn latent (0.42) because on a home card it is an ornament behind copy.
+     Here it IS the panel, at ~1.6x the size and with nothing over it, so it carries its own
+     weight. There is no `.group` on this surface to lift it on hover either. */
+  opacity: 0.72;
+}
+/* IndustryBlueprint fills its occluders with the HOME card's ground (#0F0E0E) so edges behind a
+   solid form are hidden. This panel is --panel (#14120b), so those fills would read as dark holes
+   punched through the drawing. The occluders are the only elements it emits with no class, which
+   is what makes them addressable. */
+.hub .ix-art .ib path:not([class]) {
+  fill: var(--panel);
 }
 .hub .ix-copy {
   display: flex;
@@ -282,19 +303,6 @@
   border-radius: 999px;
   color: var(--color-body);
 }
-.hub .ix-cta {
-  align-self: start;
-  margin-top: 2px;
-  font-size: 14px;
-  color: var(--color-cream);
-  border-bottom: 1px solid var(--brd2);
-  padding-bottom: 2px;
-  transition: border-color 0.45s var(--ease);
-}
-.hub .ix-cta:hover {
-  border-color: var(--color-cream);
-}
-
 /* ── motion: supports readability, nothing decorative ──────────────────── */
 @keyframes ix-in {
   from {
@@ -339,97 +347,6 @@
   }
 }
 
-@keyframes im-draw {
-  0% {
-    stroke-dashoffset: 1;
-    opacity: 0;
-  }
-  6% {
-    opacity: 1;
-  }
-  30% {
-    stroke-dashoffset: 0;
-  }
-  82% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-  96% {
-    stroke-dashoffset: 1;
-    opacity: 0;
-  }
-  100% {
-    stroke-dashoffset: 1;
-    opacity: 0;
-  }
-}
-@keyframes im-pulse {
-  0%,
-  60% {
-    transform: scale(1);
-  }
-  72% {
-    transform: scale(1.16);
-  }
-  84%,
-  100% {
-    transform: scale(1);
-  }
-}
-@keyframes im-turn {
-  0%,
-  58% {
-    transform: rotate(0);
-  }
-  74% {
-    transform: rotate(22deg);
-  }
-  90%,
-  100% {
-    transform: rotate(0);
-  }
-}
-
-.hub .im-draw {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0; /* rest = fully drawn — also the reduced-motion fallback state */
-  animation: im-draw 5.6s var(--ease) infinite;
-}
-.hub .im-pulse {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: im-pulse 5.6s var(--ease) infinite;
-}
-.hub .im-turn {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: im-turn 5.6s var(--ease) infinite;
-}
-/* Only the active panel is mounted, so no pause gate is needed any more. */
-/* Reduced motion → the finished, still blueprint (overrides the global 0.01ms clamp for these). */
-@media (prefers-reduced-motion: reduce) {
-  .hub .im-draw,
-  .hub .im-pulse,
-  .hub .im-turn {
-    animation: none !important;
-  }
-  .hub .im-draw {
-    stroke-dashoffset: 0 !important;
-    opacity: 1 !important;
-  }
-}
-html[data-a11y-motion='reduce'] .hub .im-draw,
-html[data-a11y-motion='reduce'] .hub .im-pulse,
-html[data-a11y-motion='reduce'] .hub .im-turn {
-  animation: none !important;
-}
-html[data-a11y-motion='reduce'] .hub .im-draw {
-  stroke-dashoffset: 0 !important;
-  opacity: 1 !important;
-}
-
-/* (the accordion's responsive block lived here; the explorer handles its own breakpoints) */
-
 /* HOW WE ENTER / REGULATORY POSTURE — a lead, and the three points across from it.
    The lead is a claim, not a column of content: two lines and an eyebrow. Given a
    column of its own beside a stack of three tall tiles it left a hole running most of
@@ -459,7 +376,6 @@ html[data-a11y-motion='reduce'] .hub .im-draw {
   letter-spacing: -0.02em;
   line-height: 1.18;
   max-width: 14ch;
-  margin-top: 16px;
 }
 /* ── Ladder — surfaces, not rules ─────────────────────────────────────────
    No dividers and no spine. Each item is its own soft surface, so the structure
@@ -584,7 +500,8 @@ html[data-a11y-motion='reduce'] .hub .ladder .step.rv.in {
 }
 /* CTA — bold full-width statement */
 .hub .cta {
-  padding: clamp(64px, 6.5vw, 104px) 0;
+  /* was clamp(64px, 6.5vw, 104px) — 94px against every other section's 72px at 1440. One rhythm. */
+  padding: clamp(48px, 5vw, 80px) 0;
   text-align: center;
 }
 .hub .cta .eyebrow {

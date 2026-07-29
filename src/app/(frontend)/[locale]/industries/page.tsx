@@ -67,8 +67,7 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
       {/* HERO */}
       <section className="hero">
         <div className="wrap">
-          <Reveal className="eyebrow">Industries</Reveal>
-          <Reveal i={1}>
+          <Reveal>
             <Heading level={1}>We build where the stakes are specific.</Heading>
           </Reveal>
           <Reveal as="p" className="hero-sub" i={2}>
@@ -82,10 +81,7 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
       <section className="sec-b">
         <div className="wrap">
           <Reveal className="sec-head">
-            <div>
-              <span className="eyebrow">The sectors</span>
-              <Heading level={2}>Where we build</Heading>
-            </div>
+            <Heading level={2}>Where we build</Heading>
             <p className="sec-sub">
               Each entry opens into the work behind it. Where a client can be named, they are — proof, not a blurb.
             </p>
@@ -100,7 +96,6 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
       <section className="sec-b">
         <div className="wrap split">
           <Reveal x>
-            <span className="eyebrow">Our approach</span>
             <Heading level={2} className="split-lead">
               Before we write a line of code.
             </Heading>
@@ -123,7 +118,6 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
       <section className="sec-b">
         <div className="wrap split">
           <Reveal x>
-            <span className="eyebrow">Regulatory posture</span>
             <Heading level={2} className="split-lead">
               Built to be audited.
             </Heading>
@@ -145,7 +139,6 @@ export default async function IndustriesHubPage({ params }: { params: Promise<{ 
       {/* CTA */}
       <section className="cta">
         <div className="wrap">
-          <Reveal className="eyebrow">Start here</Reveal>
           <Reveal i={1}>
             <Heading level={2}>Don&rsquo;t see your industry?</Heading>
           </Reveal>
