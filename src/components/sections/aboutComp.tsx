@@ -1,5 +1,5 @@
 'use client'
-import LiquidText from '@/components/animation/LiquidText'
+import HomeHeroVisual from '@/components/sections/home/HomeHeroVisual'
 import Motion from '@/components/animation/motion'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import Link from '@/components/LocalizedLink'
@@ -96,12 +96,6 @@ const carouselSlideVariants = {
 }
 
 // Section intro reveal: the copy glides in from the right as it scrolls into view.
-const motionIntroProps = {
-  initial: { opacity: 0, x: 64 },
-  whileInView: { opacity: 1, x: 0 },
-  viewport: { once: true, amount: 0.5 as const },
-}
-
 function getItemHref(item: MultiRelation): string {
   if (typeof item.value === 'string' || !item.value.slug) return '#'
 
@@ -300,51 +294,52 @@ export default function AboutComp({
 
        Safe to do here because this stack is home-only: /about is built from its own
        AboutIntro/AboutThesis blocks and never renders this component. */
+    /* FULL-HEIGHT HERO BAND, then the cards unchanged beneath it.
+       The statement is ranged left with its supporting copy under it, and the structure runs
+       horizontally across its own row below — separate grid rows, so the visual can never
+       overlap the type at any viewport.
+
+       No full-bleed escape: the page ground is already #050505, so this reads as full-screen
+       black without the `100vw` trick, which overhangs by the scrollbar and scrolls the page
+       sideways.
+
+       The negative top margin still cancels the stacked nav clearance and container padding, as
+       before — see the note kept below.
+
+       Safe to do here because this stack is home-only: /about is built from its own
+       AboutIntro/AboutThesis blocks and never renders this component. */
     <section className="w-full -mt-9 lg:-mt-[72px]">
-      <div className="flex flex-col items-center space-y-16">
-        {/* section intro — ONE richText: heading nodes take the display style, paragraphs the body
-            style. Arbitrary clamp values mirror .text-section (globals.css) — the plain class has
-            no generated prose-headings: variants, so it can't be used here. */}
-        {/* section intro — glides in from the right as it enters the viewport (motionIntroProps) */}
+      <div className="flex w-full flex-col space-y-16">
         {(content || heading || description) && (
-          <Motion
-            tag="div"
-            {...motionIntroProps}
-            transition={{ duration: 0.7, ease: EASE }}
-            className="flex w-full max-w-[800px] flex-col items-center gap-4 pb-9 text-center xl:gap-6 lg:pb-[72px]"
-          >
-            {content ? (
-              /* Headings stay flush to each other (mt-0/mb-0) so a multi-line title reads as one block; the
-                 gap below the title comes from the paragraphs' top margin — 16px, 24px from xl.
-                 mt-0 also kills prose's default 2em heading top margin on the leading heading: the
-                 Lexical converter nests output in a `.payload-richtext` div, so typography's
-                 `.prose > :first-child` reset lands on that div and never reaches the heading —
-                 leaving 128px of dead space above the title at the xl 64px size. */
-              <LiquidText>
-                <RichTextComp
-                  content={content}
-                  className="prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-4 xl:prose-p:mt-6 prose-p:mb-0 prose-p:text-base prose-p:text-body"
-                />
-              </LiquidText>
-            ) : (
-              <>
-                {heading && (
-                  <LiquidText>
-                    <RichTextComp
-                      content={heading as RichText}
-                      className="prose-p:mt-0 prose-p:mb-0 prose-p:text-2xl xl:prose-p:text-[64px] prose-p:leading-[1.15] prose-p:tracking-[-0.02em] prose-p:font-display prose-p:font-medium prose-p:text-cream prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-2xl xl:prose-headings:text-[64px] prose-headings:leading-[1.15] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream"
-                    />
-                  </LiquidText>
+          <div className="hh">
+            <div className="hh-copy">
+              {/* NO LiquidText HERE, deliberately. It paints the headline into a <canvas> with
+                  ctx.textAlign = 'center', so the DOM heading underneath can be left-ranged (it
+                  is: left 48px, text-align left) while the visible type renders centred — which
+                  is exactly what was happening. The hero brief calls for a left editorial
+                  headline, and real DOM text is also selectable, searchable and readable by
+                  assistive tech, which canvas type is not. The copy itself is untouched.
+                  LiquidText still runs on the rest of the page. */}
+              <div className="hh-head">
+                {content ? (
+                  <RichTextComp content={content} className="prose-headings:text-cream prose-p:text-body" />
+                ) : (
+                  heading && (
+                    <RichTextComp content={heading as RichText} className="prose-headings:text-cream prose-p:text-cream" />
+                  )
                 )}
-                {description && (
-                  <RichTextComp
-                    content={description as RichText}
-                    className="prose-p:mb-0 prose-p:text-base prose-p:text-body"
-                  />
-                )}
-              </>
-            )}
-          </Motion>
+              </div>
+
+              {/* Supporting copy sits to the right of the statement on desktop, under it below. */}
+              {!content && description ? (
+                <div className="hh-sub">
+                  <RichTextComp content={description as RichText} className="prose-p:mb-0 prose-p:text-body" />
+                </div>
+              ) : null}
+            </div>
+
+            <HomeHeroVisual />
+          </div>
         )}
 
         {/* mobile / tablet: uniform same-height carousel (below xl) */}
