@@ -78,10 +78,40 @@
 
 /* SECTOR INDEX — signature accordion. The proof line is always visible; a named client (cream) is
    the star. Row titles are spans; the whole header is the button. */
-/* ── Sector explorer — sticky split view ──────────────────────────────────
-   Left rail lists every sector; the right stage is one large preview that
-   crossfades. Nothing expands, so the layout never reflows and no whitespace
-   opens up under the pointer. */
+/* ── Sector explorer — a pinned focus navigator ────────────────────────────
+   One sector is dominant and the rest are context, the way a picker works: the dial turns
+   under a fixed centre line while the panel beside it answers.
+
+   ONE CURVE FOR THE WHOLE SECTION. --ease is already cubic-bezier(.22,1,.36,1); everything
+   here uses it so the rail, the indicator and the panel settle together. */
+
+/* The scroll track. Its height is the card plus a beat per sector, so the pin releases exactly
+   when the last sector has had its turn. 34vh a step, not a full viewport: nine sectors at one
+   screen each is nine screens of scrolling for one section, which stops reading as pacing and
+   starts reading as a scroll trap — the same limit the home page's process section ran into. */
+.hub .ix-track {
+  position: relative;
+}
+.hub .ix-pin {
+  position: relative;
+}
+/* THE PIN ONLY EXISTS WHERE THE TWO-COLUMN LAYOUT DOES. Below 900px the aperture and the panel
+   stack, so the pinned block is taller than a phone viewport — sticky centring collapses to the
+   88px floor and the dial turns against a stage the reader cannot see at the same time. It also
+   asked for a 4012px track on a 390px screen, which is a scroll trap for one section. Below this
+   the track keeps its natural height and the rail is an ordinary readable list, which is the same
+   shape the reduced-motion and no-JavaScript paths already fall back to. */
+@media (min-width: 900px) {
+  .hub .ix-track[data-pin='on'] {
+    height: calc(var(--ix-card, 620px) + var(--ix-steps, 9) * var(--ix-step, 34vh));
+  }
+  .hub .ix-track[data-pin='on'] .ix-pin {
+    position: sticky;
+    /* Centred in the viewport, but never under the floating header. */
+    top: max(88px, calc(50vh - var(--ix-card, 620px) / 2));
+  }
+}
+
 .hub .ix {
   display: grid;
   grid-template-columns: 1fr;
@@ -90,16 +120,46 @@
 }
 @media (min-width: 900px) {
   .hub .ix {
-    grid-template-columns: minmax(260px, 34%) 1fr;
+    grid-template-columns: minmax(300px, 38%) 1fr;
     gap: 48px;
+    align-items: center;
   }
 }
 
-/* ── left rail ─────────────────────────────────────────────────────────── */
+/* ── the aperture ──────────────────────────────────────────────────────────
+   A fixed window with the list sliding behind it. The mask is what makes it read as a dial
+   rather than a cropped list: rows dissolve at the top and bottom edges instead of being cut.
+
+   Unpinned (no JS, reduced motion) the window releases its height and shows the whole list,
+   so nothing depends on a transform that will never run. */
+.hub .ix-window {
+  position: relative;
+  overflow: hidden;
+}
+@media (max-width: 899px) {
+  .hub .ix-window {
+    height: auto;
+  }
+}
+@media (min-width: 900px) {
+  .hub .ix-track[data-pin='on'] .ix-window {
+    height: min(58vh, 460px);
+    /* 8%/92%, not 16%/84%. At the wider ramp the rows two out from centre sat inside the dissolve
+     and one measured 4.5:1 — a whole readable row dimmed by the aperture rather than by the
+     ladder. Pulled in, the ramp only catches the sliver of a row genuinely leaving the window. */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+  }
+}
 .hub .ix-rail {
   display: flex;
   flex-direction: column;
 }
+.hub .ix-track[data-pin='on'] .ix-rail {
+  transition: transform 0.65s var(--ease);
+  will-change: transform;
+}
+
 .hub .ix-item {
   position: relative;
   display: grid;
@@ -107,98 +167,53 @@
   gap: 14px;
   align-items: baseline;
   width: 100%;
-  padding: 18px 14px 18px 18px;
+  /* A CONSTANT ROW PITCH, which is what makes this a dial rather than a list that reflows.
+     The focused row's name goes 22px -> 36px over 650ms; if that changed the row's height it
+     would move every offset the slide is measured against WHILE the slide is running, and the
+     focused row settled up to 48px off the centre line. At a fixed pitch the name grows inside
+     its row, the geometry never moves, and the translate is exact.
+     88px also puts ~5 rows in the 460px aperture, which is the ladder the brief describes. */
+  height: 88px;
+  align-content: center;
+  padding: 0 14px 0 22px;
   border: 0;
-  border-top: 1px solid var(--brd);
   border-radius: 4px;
   background: transparent;
   text-align: left;
   cursor: pointer;
-  /* Scale toward the LEFT edge. The wheel changes each row's size, and scaling from the centre
-     would swing the names in and out horizontally as the selection moves; from the left they hold
-     one vertical axis and only their weight changes. */
-  transform-origin: left center;
   transition:
-    background-color 0.45s var(--ease),
-    color 0.45s var(--ease),
-    transform 0.45s var(--ease),
-    opacity 0.45s var(--ease);
+    color 0.65s var(--ease),
+    opacity 0.65s var(--ease);
 }
 
-/* ── the wheel ─────────────────────────────────────────────────────────────
-   Rows recede with distance from the selection, so the rail reads as a dial with the current
-   sector at its centre rather than as nine equal rows.
-
-   HOW FAR THE FADE CAN GO IS SET BY CONTRAST, NOT BY TASTE. Measured off rendered pixels, the
-   names are cream 16.09:1 when selected and #d5d5d5 13.13:1 otherwise, so there is real headroom —
-   but 0.75 is as far as it goes: measured off rendered pixels that lands at 7.4:1, just clear of
-   this project's AAA 7:1 body-text bar. 0.72 measured 7.04 — passing, but inside the noise of the
-   floor. 0.6 would be 5.2:1, AA only. The iOS dial this is modelled on fades much harder; it is
-   a picker of transient values, not nine pieces of content that have to stay readable while the
-   page scrolls past them.
-
-   SCALE IS ON THE ROW, OPACITY ONLY ON THE NAME AND NUMBER. Putting it on the row swept the
-   descriptor into the fade too, and that line has no headroom to give: measured at 2.7:1 on the
-   furthest rows. The name carries the fade, the descriptor holds one legible colour, and the two
-   together still read as one receding row. */
-.hub .ix-item[data-d='0'] {
-  transform: none;
-}
-.hub .ix-item[data-d='1'] {
-  transform: scale(0.968);
-}
-.hub .ix-item[data-d='2'] {
-  transform: scale(0.945);
-}
-.hub .ix-item[data-d='3'] {
-  transform: scale(0.93);
-}
-.hub .ix-item[data-d='1'] :is(.ix-num, .ix-name) {
-  opacity: 0.88;
-}
-.hub .ix-item[data-d='2'] :is(.ix-num, .ix-name) {
-  opacity: 0.79;
-}
-.hub .ix-item[data-d='3'] :is(.ix-num, .ix-name) {
-  opacity: 0.75;
-}
-/* Hovering a row previews it, so it should not look like a distant one. */
-.hub .ix-item:hover :is(.ix-num, .ix-name) {
-  opacity: 1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .hub .ix-item {
-    transition: none;
-  }
-}
-.hub .ix-item:last-child {
-  border-bottom: 1px solid var(--brd);
-}
-/* the accent line: 0 → 100%, the only thing that moves on hover */
+/* ── the indicator ─────────────────────────────────────────────────────────
+   A 2px rule that extends beside the focused row and retracts as the next takes over — not a
+   block highlight. It scales from the centre so it reads as growing out of the row rather than
+   dropping in from above. */
 .hub .ix-line {
   position: absolute;
   left: 0;
-  top: -1px;
-  height: calc(100% + 1px);
+  top: 50%;
+  height: 30px;
   width: 2px;
+  margin-top: -15px;
+  border-radius: 2px;
   background: var(--color-cream);
   transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 0.45s var(--ease);
+  transform-origin: center;
+  transition: transform 0.65s var(--ease);
 }
-.hub .ix-item:hover,
-.hub .ix-item[data-state='active'] {
-  background: color-mix(in oklab, var(--color-cream) 4%, transparent);
-}
-.hub .ix-item:hover .ix-line,
 .hub .ix-item[data-state='active'] .ix-line {
   transform: scaleY(1);
 }
+
 .hub .ix-num {
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: var(--dim);
-  transition: color 0.45s var(--ease);
+  color: var(--t3);
+  transition:
+    color 0.65s var(--ease),
+    opacity 0.65s var(--ease);
 }
 .hub .ix-item[data-state='active'] .ix-num {
   color: var(--color-cream);
@@ -209,39 +224,71 @@
   gap: 5px;
   min-width: 0;
 }
+
+/* ── focus and context ─────────────────────────────────────────────────────
+   The hierarchy is carried by SIZE and WEIGHT first — 36px/700 against 22px/500 is a 64% jump,
+   which is what actually makes one row dominant. Opacity only tunes the rest into context.
+
+   THE LADDER STOPS AT 0.6, AND THAT IS A CONTRAST FLOOR, NOT A PREFERENCE. Sampled off rendered
+   pixels against this page: white at 0.6 is 7.28:1, just clear of the project's AAA 7:1 bar for
+   body text — and it is exactly the "inactive 60%" in the brief's own typography table. The
+   15%/35% ring sketched alongside it measures 1.51:1 and 3.17:1, which is not dim, it is
+   unreadable. A picker fades that hard because its rows are transient numbers nobody reads; these
+   are nine pieces of content that sit on screen while the page scrolls past them. */
 .hub .ix-name {
   font-family: var(--font-poppins);
-  font-size: 16px;
-  line-height: 1.2;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.15;
   letter-spacing: -0.02em;
-  color: var(--color-body);
-  transition: color 0.45s var(--ease);
+  color: #fff;
+  transition:
+    font-size 0.65s var(--ease),
+    font-weight 0.65s var(--ease),
+    color 0.65s var(--ease);
 }
-.hub .ix-item:hover .ix-name,
 .hub .ix-item[data-state='active'] .ix-name {
-  color: var(--color-cream);
+  font-size: clamp(26px, 2.4vw, 36px);
+  font-weight: 700;
 }
-/* The focused row is the one being read: its name steps up a size and its descriptor lifts out of
-   the muted tier. Size is on the name alone rather than the row, so the number and the row's own
-   padding stay put and the list keeps its rhythm. */
-.hub .ix-item[data-state='active'] .ix-name {
-  font-size: 18px;
+.hub .ix-item[data-d='0'] {
+  opacity: 1;
 }
-.hub .ix-item[data-state='active'] .ix-caps {
-  color: var(--t2);
+.hub .ix-item[data-d='1'] {
+  opacity: 0.78;
 }
-/* This line was on --dim, the "faintest index links" token, and measured 2.59:1 against the page —
-   under AA before the wheel dimmed anything. --t3 is no better here: it resolves to #757571 in this
-   scope, 4.1:1, and still under. Mixed down from --t2 instead, which lands at ~8:1 and clears the
-   project's AAA body-text bar with the descriptor held out of the opacity fade entirely.
+.hub .ix-item[data-d='2'] {
+  opacity: 0.68;
+}
+.hub .ix-item[data-d='3'] {
+  opacity: 0.6;
+}
+.hub .ix-item:hover {
+  opacity: 1;
+}
 
-   The hierarchy against the name is carried by size (12px against 16, 18 when focused) and family,
-   not by a colour that cannot be read. */
+/* The descriptor belongs to the focused row. On the others it stays present but recedes to a
+   single legible tier rather than joining the fade — it was on --dim (2.59:1) and then --t3
+   (4.1:1), both under AA before anything dimmed them. This holds ~7.7:1. */
 .hub .ix-caps {
   font-size: 12px;
   line-height: 1.45;
   color: color-mix(in oklab, var(--t2) 78%, var(--n-950));
-  transition: color 0.45s var(--ease);
+  transition: color 0.65s var(--ease);
+}
+.hub .ix-item[data-state='active'] .ix-caps {
+  color: var(--t2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub .ix-item,
+  .hub .ix-name,
+  .hub .ix-caps,
+  .hub .ix-num,
+  .hub .ix-line,
+  .hub .ix-rail {
+    transition: none;
+  }
 }
 
 /* ── right stage ───────────────────────────────────────────────────────── */
@@ -396,47 +443,61 @@
   border-radius: 999px;
   color: var(--color-body);
 }
-/* ── motion: supports readability, nothing decorative ──────────────────── */
+/* ── panel motion ──────────────────────────────────────────────────────────
+   The panel does not swap, it resolves: copy and artwork arrive out of focus and sharpen, one
+   element behind the next, so the change reads as the section answering the dial rather than as
+   a card being replaced.
+
+   Blur reveal, per the brief: opacity 0 -> 1, blur 8px -> 0, translateY 20px -> 0. No fill-mode
+   forwards on the filter — once the run ends the base rule applies and the element carries no
+   filter at all, which matters because any filter value keeps an element in a filter pipeline for
+   the rest of the page's life. That cost ~5fps of scroll when it was left on the industries cards.
+
+   90ms apart, in reading order: title, description, proof, capabilities — with the artwork
+   leading, because it is the thing the eye lands on first.
+
+   THE OUTGOING PANEL IS REMOVED, NOT CROSS-FADED. A true crossfade needs both panels mounted, and
+   these are Radix tab panels: mounting all nine would put every sector in the accessibility tree
+   at once and a screen reader would read nine panels for a tabs widget that has one. The incoming
+   panel's 650ms rise over the same ground reads as the same gesture without that cost. */
 @keyframes ix-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    filter: blur(8px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
+    filter: blur(0);
     transform: none;
   }
 }
 .hub .ix-panel[data-state='active'] .ix-art {
-  animation: ix-in 500ms var(--ease) both;
+  animation: ix-in 650ms var(--ease);
 }
-/* text staggers 60ms behind the image, line by line */
 .hub .ix-panel[data-state='active'] .ix-copy > * {
-  animation: ix-in 500ms var(--ease) both;
+  animation: ix-in 650ms var(--ease) both;
 }
 .hub .ix-panel[data-state='active'] .ix-copy > *:nth-child(1) {
-  animation-delay: 60ms;
+  animation-delay: 90ms;
 }
 .hub .ix-panel[data-state='active'] .ix-copy > *:nth-child(2) {
-  animation-delay: 120ms;
-}
-.hub .ix-panel[data-state='active'] .ix-copy > *:nth-child(3) {
   animation-delay: 180ms;
 }
+.hub .ix-panel[data-state='active'] .ix-copy > *:nth-child(3) {
+  animation-delay: 270ms;
+}
 .hub .ix-panel[data-state='active'] .ix-copy > *:nth-child(4) {
-  animation-delay: 240ms;
+  animation-delay: 360ms;
 }
 .hub .ix-panel[data-state='active'] .ix-copy > *:nth-child(5) {
-  animation-delay: 300ms;
+  animation-delay: 450ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hub .ix-panel[data-state='active'] .ix-art,
   .hub .ix-panel[data-state='active'] .ix-copy > * {
     animation: none;
-  }
-  .hub .ix-line {
-    transition: none;
   }
 }
 

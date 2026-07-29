@@ -3,7 +3,7 @@
 import { useCanHover } from '@/components/hub/useCanHover'
 import IndustryBlueprint from '@/components/industry/IndustryBlueprint'
 import * as Tabs from '@radix-ui/react-tabs'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 
 /**
  * The sector index — a sticky split-view explorer. The left rail lists every sector with the
@@ -164,52 +164,128 @@ const CAPS: Record<string, string[]> = {
 export default function SectorIndex() {
   const [active, setActive] = useState(SECTORS[0].num)
   const canHover = useCanHover()
+  const trackRef = useRef<HTMLDivElement>(null)
+  const pinRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
-  // Pointer and keyboard beat scroll: while either is driving, the observer stands down.
-  const held = useRef(false)
 
-  const pick = useCallback((num: string) => {
-    held.current = true
-    setActive(num)
+  const activeIndex = Math.max(
+    0,
+    SECTORS.findIndex((s) => s.num === active),
+  )
+
+  /**
+   * Pin the section and take the selection from how far the reader has travelled through it, so one
+   * sector holds the centre of the dial and the next arrives as they keep scrolling.
+   *
+   * `data-pin` is set here, from JavaScript, and only when the visitor has not asked for reduced
+   * motion. Without it the stylesheet leaves the track at its natural height, the rail in normal
+   * flow and every sector readable — the section degrades to a list beside a panel rather than to a
+   * pinned stage that never advances. Same contract as the home page's process section.
+   */
+  useEffect(() => {
+    const track = trackRef.current
+    const pin = pinRef.current
+    if (!track || !pin) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    track.dataset.pin = 'on'
+
+    // The spacer is the card's own height plus a beat per sector, so the section ends when the dial
+    // does rather than at an arbitrary multiple of the viewport.
+    const measure = (): void => {
+      track.style.setProperty('--ix-card', String(Math.round(pin.getBoundingClientRect().height)) + 'px')
+    }
+    measure()
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null
+    ro?.observe(pin)
+
+    let raf = 0
+    const apply = (): void => {
+      raf = 0
+      const r = track.getBoundingClientRect()
+      const travel = r.height - window.innerHeight
+      const p = travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0
+      // nudge off the very end so the last sector holds instead of flickering at p === 1
+      const i = Math.min(SECTORS.length - 1, Math.floor(p * SECTORS.length * 0.999))
+      const num = SECTORS[i]?.num
+      if (num) setActive((prev) => (prev === num ? prev : num))
+    }
+    const onScroll = (): void => {
+      if (!raf) raf = requestAnimationFrame(apply)
+    }
+    apply()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      ro?.disconnect()
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
 
   /**
-   * Fit the artwork to its own ink.
+   * Slide the rail so the selected row sits on the aperture's centre line.
    *
-   * IndustryBlueprint draws every sector into one fixed 400x360 viewBox, which is right on the home
-   * page — nine cards in a grid want a common box so their figures share a baseline. Here a single
-   * figure IS the panel, and the fixed box meant each sector rendered at whatever size it happened
-   * to occupy: measured across the nine, ink ran from 217px wide (Consumer Goods) to 368px
-   * (Advanced Manufacturing) inside an identical 426px element, starting anywhere from 28px to
-   * 104px in. They read as different sizes and off-centre because they were.
-   *
-   * Re-fitting the viewBox to the drawn extent means the drawing fills the frame it is given
-   * instead of floating inside a canvas sized for the widest sector.
-   *
-   * Only the viewBox is set here. The FRAME is a fixed ratio in CSS, and the component already
-   * renders `preserveAspectRatio="xMidYMid meet"`, so the browser does the rest: a drawing wider
-   * than the frame meets its left and right edges, a taller one meets top and bottom, and either
-   * way it is centred on both axes. Setting the element's ratio to each drawing's own — which is
-   * what this did at first — makes every sector the same WIDTH but a different height, which grew
-   * the panel by 41px on the one near-square drawing. A fixed frame with a contain fit keeps the
-   * panel identical for all nine.
-   *
-   * Measured rather than baked into the component: `getBBox()` is the browser's own geometry, exact
-   * for the arcs and quadratics these drawings use, and it cannot go stale the way a hardcoded table
-   * of extents would the first time the art is edited. It also keeps IndustryBlueprint a pure server
-   * component for the home page, which never needs any of this.
-   *
-   * DRIVEN BY A MutationObserver, NOT BY THE RENDER. Radix mounts a tab's content in its own commit,
-   * after the one our state change produces — so an effect keyed on `active` (or even one with no
-   * deps) looks at a stage that does not hold the new drawing yet. It fitted on first load and
-   * silently missed every switch after it, which is precisely how this failed when it was written
-   * that way. Watching the stage for the swap catches whoever performs it and whenever.
+   * Measured, not a row height multiplied by an index: the rows are deliberately different sizes —
+   * 36px for the focused one against 22px for the rest — so there is no single row height to count
+   * in. The second pass on the next frame is because the focused row changes size, which moves the
+   * offsets this is measured against.
+   */
+  useEffect(() => {
+    const list = listRef.current
+    if (!list) return
+    const move = (): void => {
+      // Only where the dial exists. Below 900px the aperture releases its height to show the whole
+      // list, and sliding it there hid three rows outright behind the window's clip — measured.
+      if (!window.matchMedia('(min-width: 900px)').matches) {
+        list.style.transform = ''
+        return
+      }
+      const row = list.querySelector<HTMLElement>('[data-sector="' + active + '"]')
+      const win = list.parentElement
+      if (!row || !win) return
+      const y = win.clientHeight / 2 - (row.offsetTop + row.offsetHeight / 2)
+      list.style.transform = 'translateY(' + Math.round(y) + 'px)'
+    }
+    move()
+    const t = requestAnimationFrame(move)
+    window.addEventListener('resize', move)
+    return () => {
+      cancelAnimationFrame(t)
+      window.removeEventListener('resize', move)
+    }
+  }, [active])
+
+  /**
+   * Picking a sector scrolls to where that sector lives inside the pinned range rather than setting
+   * state the scroll handler would overwrite on the next frame. Scroll position stays the single
+   * source of truth, so pointer, keyboard and scroll cannot disagree.
+   */
+  const pick = useCallback((num: string) => {
+    const track = trackRef.current
+    const i = SECTORS.findIndex((s) => s.num === num)
+    if (!track || track.dataset.pin !== 'on' || i < 0) {
+      setActive(num)
+      return
+    }
+    const r = track.getBoundingClientRect()
+    const travel = r.height - window.innerHeight
+    window.scrollTo({
+      top: r.top + window.scrollY + travel * ((i + 0.5) / SECTORS.length),
+      behavior: 'smooth',
+    })
+  }, [])
+
+  /**
+   * Fit the artwork to its own ink. The drawings share one 400x360 canvas but occupy very different
+   * parts of it, so without this each sector renders at whatever size it happens to fill — measured
+   * 217px to 368px wide inside an identical element. Driven by a MutationObserver because Radix
+   * mounts a tab's content in its own commit, after the one our state change produces.
    */
   useEffect(() => {
     const stage = stageRef.current
     if (!stage) return
-
     const fit = (): void => {
       const svg = stage.querySelector<SVGSVGElement>('.ib')
       if (!svg) return
@@ -222,146 +298,85 @@ export default function SectorIndex() {
       if (!box.width || !box.height) return
       // getBBox is geometry, not ink: a 1.6 stroke sits 0.8 outside it on every edge.
       const pad = 3
-      const vb = `${(box.x - pad).toFixed(2)} ${(box.y - pad).toFixed(2)} ${(box.width + pad * 2).toFixed(2)} ${(box.height + pad * 2).toFixed(2)}`
-      // Guard the write: the observer watches this subtree, and re-setting an identical value would
-      // still be a mutation to react to.
+      const vb = [box.x - pad, box.y - pad, box.width + pad * 2, box.height + pad * 2]
+        .map((v) => v.toFixed(2))
+        .join(' ')
       if (svg.getAttribute('viewBox') === vb) return
       svg.setAttribute('viewBox', vb)
     }
-
     fit()
     const mo = new MutationObserver(fit)
     mo.observe(stage, { childList: true, subtree: true })
     return () => mo.disconnect()
   }, [])
 
-  /**
-   * Scroll-sync — the row nearest the viewport's middle is the selected one, so the rail reads as a
-   * dial turning under a fixed centre line and the stage beside it always shows what is centred.
-   *
-   * Nearest-to-centre, not an IntersectionObserver on a thin band. The band was 4% of the viewport
-   * against ~78px rows, so a row could cross it entirely between two frames of a fast scroll and
-   * never report: the selection skipped 01 straight to 03. Distance is defined for every row at
-   * every scroll position, so the selection can only ever move to a neighbour.
-   *
-   * Pointer and keyboard still win — `held` stands this down while either is driving.
-   */
-  useEffect(() => {
-    const root = listRef.current
-    if (!root) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const items = Array.from(root.querySelectorAll<HTMLElement>('[data-sector]'))
-    if (items.length === 0) return
-
-    let raf = 0
-    const apply = (): void => {
-      raf = 0
-      if (held.current) return
-      const middle = window.innerHeight / 2
-      let best: HTMLElement | null = null
-      let bestDistance = Infinity
-      for (const el of items) {
-        const r = el.getBoundingClientRect()
-        const d = Math.abs(r.top + r.height / 2 - middle)
-        if (d < bestDistance) {
-          bestDistance = d
-          best = el
-        }
-      }
-      const num = best?.getAttribute('data-sector')
-      if (num) setActive((prev) => (prev === num ? prev : num))
-    }
-
-    const onScroll = (): void => {
-      if (!raf) raf = requestAnimationFrame(apply)
-    }
-    apply()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [])
-
-  const activeIndex = Math.max(
-    0,
-    SECTORS.findIndex((s) => s.num === active),
-  )
-
   return (
-    <Tabs.Root
-      value={active}
-      onValueChange={pick}
-      orientation="vertical"
-      className="ix"
-      onPointerLeave={() => {
-        held.current = false
-      }}
-    >
-      <Tabs.List className="ix-rail" aria-label="Sectors" ref={listRef}>
-        {SECTORS.map((sector, i) => (
-          <Tabs.Trigger
-            key={sector.num}
-            value={sector.num}
-            data-sector={sector.num}
-            /* Rings out from the selection: 0 is the focused row, 3 is everything three or more
-               away. The rail styles size and weight off this, so the list reads as a wheel with
-               the current sector at its centre. Capped at 3 so nine sectors need four steps
-               rather than nine. */
-            data-d={Math.min(3, Math.abs(i - activeIndex))}
-            className="ix-item"
-            onMouseEnter={canHover ? () => pick(sector.num) : undefined}
-          >
-            {/* the accent line, 0 -> 100% */}
-            <span className="ix-line" aria-hidden="true" />
-            <span className="ix-num" aria-hidden="true">
-              {sector.num}
-            </span>
-            <span className="ix-mid">
-              <span className="ix-name">{sector.name}</span>
-              <span className="ix-caps">{(CAPS[sector.num] ?? []).slice(0, 3).join('  ·  ')}</span>
-            </span>
-          </Tabs.Trigger>
-        ))}
-      </Tabs.List>
+    <div className="ix-track" ref={trackRef} style={{ '--ix-steps': SECTORS.length } as CSSProperties}>
+      <div className="ix-pin" ref={pinRef}>
+        <Tabs.Root value={active} onValueChange={pick} orientation="vertical" className="ix">
+          {/* The aperture; the list slides behind it. */}
+          <div className="ix-window">
+            <Tabs.List className="ix-rail" aria-label="Sectors" ref={listRef}>
+              {SECTORS.map((sector, i) => (
+                <Tabs.Trigger
+                  key={sector.num}
+                  value={sector.num}
+                  data-sector={sector.num}
+                  /* Rings out from the selection: 0 is the focused row, 3 is three or more away. */
+                  data-d={Math.min(3, Math.abs(i - activeIndex))}
+                  className="ix-item"
+                  onMouseEnter={canHover ? () => pick(sector.num) : undefined}
+                >
+                  <span className="ix-line" aria-hidden="true" />
+                  <span className="ix-num" aria-hidden="true">
+                    {sector.num}
+                  </span>
+                  <span className="ix-mid">
+                    <span className="ix-name">{sector.name}</span>
+                    <span className="ix-caps">{(CAPS[sector.num] ?? []).slice(0, 3).join('  ·  ')}</span>
+                  </span>
+                </Tabs.Trigger>
+              ))}
+            </Tabs.List>
+          </div>
 
-      <div className="ix-stage" ref={stageRef}>
-        {SECTORS.map((sector) => (
-          <Tabs.Content key={sector.num} value={sector.num} className="ix-panel">
-            <div className="ix-art" aria-hidden="true">
-              <IndustryBlueprint title={sector.name} />
-            </div>
-            <div className="ix-copy">
-              <h3 className="ix-title">{sector.name}</h3>
-              <p className="ix-desc">{sector.desc}</p>
+          <div className="ix-stage" ref={stageRef}>
+            {SECTORS.map((sector) => (
+              <Tabs.Content key={sector.num} value={sector.num} className="ix-panel">
+                <div className="ix-art" aria-hidden="true">
+                  <IndustryBlueprint title={sector.name} />
+                </div>
+                <div className="ix-copy">
+                  <h3 className="ix-title">{sector.name}</h3>
+                  <p className="ix-desc">{sector.desc}</p>
 
-              <div className="ix-proof">
-                <span className="ix-lab">{sector.label}</span>
-                {sector.none ? (
-                  <span className="ix-none">{sector.none}</span>
-                ) : (
-                  sector.clients.map((client) => (
-                    <span className="ix-cli" key={client}>
-                      {client}
-                    </span>
-                  ))
-                )}
-              </div>
+                  <div className="ix-proof">
+                    <span className="ix-lab">{sector.label}</span>
+                    {sector.none ? (
+                      <span className="ix-none">{sector.none}</span>
+                    ) : (
+                      sector.clients.map((client) => (
+                        <span className="ix-cli" key={client}>
+                          {client}
+                        </span>
+                      ))
+                    )}
+                  </div>
 
-              <div className="ix-build">
-                <span className="ix-lab">What we build</span>
-                <ul className="ix-caplist">
-                  {(CAPS[sector.num] ?? []).map((cap) => (
-                    <li key={cap}>{cap}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </Tabs.Content>
-        ))}
+                  <div className="ix-build">
+                    <span className="ix-lab">What we build</span>
+                    <ul className="ix-caplist">
+                      {(CAPS[sector.num] ?? []).map((cap) => (
+                        <li key={cap}>{cap}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </Tabs.Content>
+            ))}
+          </div>
+        </Tabs.Root>
       </div>
-    </Tabs.Root>
+    </div>
   )
 }
