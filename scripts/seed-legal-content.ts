@@ -124,7 +124,13 @@ const run = async () => {
           locale: 'en' as never,
           data: { content: toLexical(blocks) } as never,
           overrideAccess: true,
-        })
+          // Atlas is a replica set, so Payload wraps the write + afterChange hook in a transaction.
+          // The hook's revalidateTag() throws outside a Next request, which would ABORT the
+          // transaction and silently roll the write back. Disable the transaction so the write
+          // commits before the hook runs (matching standalone-Mongo behaviour); the post-commit
+          // revalidate throw is then harmless and caught below.
+          disableTransaction: true,
+        } as never)
         log(`   ✓ content written`)
       } catch (e: any) {
         log(`   ✓ written (revalidate hook threw post-commit, expected): ${String(e?.message).slice(0, 60)}`)
