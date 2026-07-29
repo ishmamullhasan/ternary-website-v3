@@ -7,7 +7,7 @@
 import config from '@payload-config'
 import { writeFileSync } from 'node:fs'
 import { getPayload } from 'payload'
-import { LEGAL_CONTENT, type Block } from './content/legal-content.data'
+import { LEGAL_CONTENT, type Block, type TableData } from './content/legal-content.data'
 
 const DRY = process.env.SEED_DRY !== '0'
 const out: string[] = []
@@ -58,12 +58,37 @@ const bulletList = (items: string[]) => ({
   children: items.map((t, i) => listItem(t, i + 1)),
 })
 
+// Stable, deterministic ids for the seeded block + its array rows/cells. Payload usually
+// backfills missing array `id`s on save, but supplying them keeps the write idempotent and
+// avoids relying on that behaviour. Deterministic (counter, not random) so re-seeding is stable.
+let _blockId = 0
+const nextId = () => `seed-tbl-${(_blockId++).toString(36)}`
+
+// A `table` block node (BlocksFeature). `fields` mirrors src/blocks/Table/config.ts exactly.
+const tableBlock = (t: TableData) => ({
+  type: 'block',
+  format: '',
+  version: 2,
+  fields: {
+    id: nextId(),
+    blockType: 'table',
+    caption: t.caption ?? '',
+    hasHeaderRow: t.headerRow ?? true,
+    hasHeaderColumn: t.headerColumn ?? false,
+    rows: t.rows.map((cells) => ({
+      id: nextId(),
+      cells: cells.map((content) => ({ id: nextId(), content })),
+    })),
+  },
+})
+
 const toLexical = (blocks: Block[]) => {
   const children: unknown[] = []
   for (const b of blocks) {
     if ('h' in b) children.push(heading(b.h))
     else if ('p' in b) children.push(para(b.p))
     else if ('ul' in b) children.push(bulletList(b.ul))
+    else if ('table' in b) children.push(tableBlock(b.table))
   }
   return { root: { type: 'root', format: '', indent: 0, version: 1, direction: 'ltr' as const, children } }
 }
@@ -88,7 +113,8 @@ const run = async () => {
     const headings = blocks.filter((b) => 'h' in b).length
     const paras = blocks.filter((b) => 'p' in b).length
     const lists = blocks.filter((b) => 'ul' in b).length
-    log(`• ${slug} (${doc.title}): ${headings} sections, ${paras} paragraphs, ${lists} lists`)
+    const tables = blocks.filter((b) => 'table' in b).length
+    log(`• ${slug} (${doc.title}): ${headings} sections, ${paras} paragraphs, ${lists} lists, ${tables} tables`)
 
     if (!DRY) {
       try {
