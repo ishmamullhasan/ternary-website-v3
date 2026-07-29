@@ -50,7 +50,7 @@ async function fetchLegalList(locale: TypedLocale): Promise<PaginatedDocs<Legal>
 async function getLegalList(locale: TypedLocale): Promise<PaginatedDocs<Legal>> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchLegalList(locale)
-  return unstable_cache(() => fetchLegalList(locale), [`legal_list_${locale}_v3`], { tags: ['legal'] })()
+  return unstable_cache(() => fetchLegalList(locale), [`legal_list_${locale}_v4`], { tags: ['legal'] })()
 }
 
 async function fetchLegalCenter(locale: TypedLocale) {
@@ -130,7 +130,7 @@ async function fetchLegalBySlug(slug: string, locale: TypedLocale): Promise<Pagi
 async function getLegalBySlug(slug: string, locale: TypedLocale): Promise<PaginatedDocs<Legal>> {
   const { isEnabled: draft } = await draftMode()
   if (draft) return fetchLegalBySlug(slug, locale)
-  return unstable_cache(() => fetchLegalBySlug(slug, locale), [`legal_${slug}_${locale}_v3`], {
+  return unstable_cache(() => fetchLegalBySlug(slug, locale), [`legal_${slug}_${locale}_v4`], {
     tags: [`legal_${slug}`, 'legal'],
   })()
 }

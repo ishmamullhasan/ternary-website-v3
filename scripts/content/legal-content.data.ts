@@ -22,21 +22,6 @@ export type Block = { h: string } | { p: string } | { ul: string[] } | { table: 
 export const COMPANY = 'Ternary'
 
 export const PRIVACY: Block[] = [
-  {
-    table: {
-      headerRow: true,
-      headerColumn: true,
-      rows: [
-        ['Field', 'Value'],
-        ['Document owner', 'Chief Technology Officer'],
-        ['Version', '1.0'],
-        ['Effective date', 'On publication'],
-        ['Review cycle', 'Annual, or on material change'],
-        ['Applies to', 'ternary.solutions and all Ternary Solutions, Inc. business activities'],
-      ],
-    },
-  },
-
   { h: '1. Who we are and what this policy covers' },
   {
     p: 'Ternary Solutions, Inc. ("Ternary", "we", "us") designs, builds and operates custom software for client organisations. Our operating office is in Dhaka, Bangladesh. [CONFIRM: state or country of incorporation, and the registered address to publish here.]',
@@ -248,21 +233,6 @@ export const PRIVACY: Block[] = [
 ]
 
 export const TERMS: Block[] = [
-  {
-    table: {
-      headerRow: true,
-      headerColumn: true,
-      rows: [
-        ['Field', 'Value'],
-        ['Document owner', 'Chief Technology Officer'],
-        ['Version', '1.0'],
-        ['Effective date', 'On publication'],
-        ['Review cycle', 'Annual, or on material change'],
-        ['Applies to', 'ternary.solutions and the information and materials made available through it'],
-      ],
-    },
-  },
-
   { h: '1. About these terms' },
   {
     p: 'These terms govern your use of the Ternary Solutions, Inc. website at ternary.solutions ("the Site") and any information, materials or downloads made available through it. By using the Site you accept these terms. If you do not accept them, please do not use the Site.',
