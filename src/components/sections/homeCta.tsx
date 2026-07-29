@@ -2,7 +2,6 @@ import Link from '@/components/LocalizedLink'
 import { cn } from '@/lib/utils'
 import { ArrowRight } from 'lucide-react'
 import type { JSX } from 'react'
-import './homeCta.css'
 
 const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
@@ -39,18 +38,20 @@ export default function HomeCta(): JSX.Element {
           JavaScript disabled. A closing call to action that some visitors never see is not
           worth a 600ms rise, and this one is reached by scrolling to the bottom of the page,
           so it is already in view when you arrive. */}
-      {/* Bottom padding is deliberately ~2x the top: it is the room the bloom needs. The
-          glow occupies roughly the lower third and originates below the panel edge, so
-          the copy sits entirely on the dark part and needs no scrim over it. */}
-      <div className="hc px-6 pt-[clamp(56px,7vw,104px)] pb-[clamp(120px,14vw,220px)]">
-        {/* Decorative, every layer. See homeCta.css for the stack and why grain is on top. */}
-        <span aria-hidden>
-          <span className="hc-l hc-bloom" />
-          <span className="hc-l hc-blue" />
-          <span className="hc-l hc-amb" />
-          <span className="hc-l hc-bottom" />
-          <span className="hc-l hc-dots" />
-          <span className="hc-l hc-noise" />
+      <div className="relative overflow-hidden rounded-xl px-6 pt-[clamp(56px,7vw,104px)] pb-[clamp(96px,12vw,180px)]">
+        <span aria-hidden className="absolute inset-0">
+          <span className="absolute inset-0 bg-[#07060f]" />
+          <span
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                'radial-gradient(115% 92% at 50% 126%, #8b5cf6 0%, #6b38dd 16%, #3d2091 36%, #1b1244 60%, rgba(7,6,15,0) 86%)',
+            }}
+          />
+          {/* the signature grain, same as every other CTA on the site */}
+          <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
+          {/* keeps the upper third near-black so the headline never sits on the bright part */}
+          <span className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-transparent" />
         </span>
 
         <div className="relative z-10 mx-auto flex max-w-[46ch] flex-col items-center text-center">
