@@ -16,11 +16,6 @@ const nextConfig = {
       {
         pathname: '/api/media/file/**',
       },
-      // Static art shipped in /public (the home hero structure). Without an entry here
-      // next/image rejects the src outright and the page 500s — the allowlist is deny-by-default.
-      {
-        pathname: '/images/**',
-      },
     ],
   },
 
