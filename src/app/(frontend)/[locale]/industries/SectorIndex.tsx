@@ -235,24 +235,60 @@ export default function SectorIndex() {
     return () => mo.disconnect()
   }, [])
 
-  // Scroll-sync — whichever rail item crosses the viewport's middle band becomes active.
+  /**
+   * Scroll-sync — the row nearest the viewport's middle is the selected one, so the rail reads as a
+   * dial turning under a fixed centre line and the stage beside it always shows what is centred.
+   *
+   * Nearest-to-centre, not an IntersectionObserver on a thin band. The band was 4% of the viewport
+   * against ~78px rows, so a row could cross it entirely between two frames of a fast scroll and
+   * never report: the selection skipped 01 straight to 03. Distance is defined for every row at
+   * every scroll position, so the selection can only ever move to a neighbour.
+   *
+   * Pointer and keyboard still win — `held` stands this down while either is driving.
+   */
   useEffect(() => {
     const root = listRef.current
     if (!root) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const items = Array.from(root.querySelectorAll<HTMLElement>('[data-sector]'))
     if (items.length === 0) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (held.current) return
-        const num = entries.find((e) => e.isIntersecting)?.target.getAttribute('data-sector')
-        if (num) setActive(num)
-      },
-      { rootMargin: '-48% 0px -48% 0px', threshold: 0 },
-    )
-    items.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+
+    let raf = 0
+    const apply = (): void => {
+      raf = 0
+      if (held.current) return
+      const middle = window.innerHeight / 2
+      let best: HTMLElement | null = null
+      let bestDistance = Infinity
+      for (const el of items) {
+        const r = el.getBoundingClientRect()
+        const d = Math.abs(r.top + r.height / 2 - middle)
+        if (d < bestDistance) {
+          bestDistance = d
+          best = el
+        }
+      }
+      const num = best?.getAttribute('data-sector')
+      if (num) setActive((prev) => (prev === num ? prev : num))
+    }
+
+    const onScroll = (): void => {
+      if (!raf) raf = requestAnimationFrame(apply)
+    }
+    apply()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
   }, [])
+
+  const activeIndex = Math.max(
+    0,
+    SECTORS.findIndex((s) => s.num === active),
+  )
 
   return (
     <Tabs.Root
@@ -265,11 +301,16 @@ export default function SectorIndex() {
       }}
     >
       <Tabs.List className="ix-rail" aria-label="Sectors" ref={listRef}>
-        {SECTORS.map((sector) => (
+        {SECTORS.map((sector, i) => (
           <Tabs.Trigger
             key={sector.num}
             value={sector.num}
             data-sector={sector.num}
+            /* Rings out from the selection: 0 is the focused row, 3 is everything three or more
+               away. The rail styles size and weight off this, so the list reads as a wheel with
+               the current sector at its centre. Capped at 3 so nine sectors need four steps
+               rather than nine. */
+            data-d={Math.min(3, Math.abs(i - activeIndex))}
             className="ix-item"
             onMouseEnter={canHover ? () => pick(sector.num) : undefined}
           >

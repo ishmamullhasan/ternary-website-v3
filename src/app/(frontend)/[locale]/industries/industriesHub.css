@@ -114,9 +114,62 @@
   background: transparent;
   text-align: left;
   cursor: pointer;
+  /* Scale toward the LEFT edge. The wheel changes each row's size, and scaling from the centre
+     would swing the names in and out horizontally as the selection moves; from the left they hold
+     one vertical axis and only their weight changes. */
+  transform-origin: left center;
   transition:
     background-color 0.45s var(--ease),
-    color 0.45s var(--ease);
+    color 0.45s var(--ease),
+    transform 0.45s var(--ease),
+    opacity 0.45s var(--ease);
+}
+
+/* ── the wheel ─────────────────────────────────────────────────────────────
+   Rows recede with distance from the selection, so the rail reads as a dial with the current
+   sector at its centre rather than as nine equal rows.
+
+   HOW FAR THE FADE CAN GO IS SET BY CONTRAST, NOT BY TASTE. Measured off rendered pixels, the
+   names are cream 16.09:1 when selected and #d5d5d5 13.13:1 otherwise, so there is real headroom —
+   but 0.75 is as far as it goes: measured off rendered pixels that lands at 7.4:1, just clear of
+   this project's AAA 7:1 body-text bar. 0.72 measured 7.04 — passing, but inside the noise of the
+   floor. 0.6 would be 5.2:1, AA only. The iOS dial this is modelled on fades much harder; it is
+   a picker of transient values, not nine pieces of content that have to stay readable while the
+   page scrolls past them.
+
+   SCALE IS ON THE ROW, OPACITY ONLY ON THE NAME AND NUMBER. Putting it on the row swept the
+   descriptor into the fade too, and that line has no headroom to give: measured at 2.7:1 on the
+   furthest rows. The name carries the fade, the descriptor holds one legible colour, and the two
+   together still read as one receding row. */
+.hub .ix-item[data-d='0'] {
+  transform: none;
+}
+.hub .ix-item[data-d='1'] {
+  transform: scale(0.968);
+}
+.hub .ix-item[data-d='2'] {
+  transform: scale(0.945);
+}
+.hub .ix-item[data-d='3'] {
+  transform: scale(0.93);
+}
+.hub .ix-item[data-d='1'] :is(.ix-num, .ix-name) {
+  opacity: 0.88;
+}
+.hub .ix-item[data-d='2'] :is(.ix-num, .ix-name) {
+  opacity: 0.79;
+}
+.hub .ix-item[data-d='3'] :is(.ix-num, .ix-name) {
+  opacity: 0.75;
+}
+/* Hovering a row previews it, so it should not look like a distant one. */
+.hub .ix-item:hover :is(.ix-num, .ix-name) {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub .ix-item {
+    transition: none;
+  }
 }
 .hub .ix-item:last-child {
   border-bottom: 1px solid var(--brd);
@@ -168,10 +221,27 @@
 .hub .ix-item[data-state='active'] .ix-name {
   color: var(--color-cream);
 }
+/* The focused row is the one being read: its name steps up a size and its descriptor lifts out of
+   the muted tier. Size is on the name alone rather than the row, so the number and the row's own
+   padding stay put and the list keeps its rhythm. */
+.hub .ix-item[data-state='active'] .ix-name {
+  font-size: 18px;
+}
+.hub .ix-item[data-state='active'] .ix-caps {
+  color: var(--t2);
+}
+/* This line was on --dim, the "faintest index links" token, and measured 2.59:1 against the page —
+   under AA before the wheel dimmed anything. --t3 is no better here: it resolves to #757571 in this
+   scope, 4.1:1, and still under. Mixed down from --t2 instead, which lands at ~8:1 and clears the
+   project's AAA body-text bar with the descriptor held out of the opacity fade entirely.
+
+   The hierarchy against the name is carried by size (12px against 16, 18 when focused) and family,
+   not by a colour that cannot be read. */
 .hub .ix-caps {
   font-size: 12px;
   line-height: 1.45;
-  color: var(--dim);
+  color: color-mix(in oklab, var(--t2) 78%, var(--n-950));
+  transition: color 0.45s var(--ease);
 }
 
 /* ── right stage ───────────────────────────────────────────────────────── */
