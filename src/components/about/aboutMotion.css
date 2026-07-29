@@ -1,0 +1,135 @@
+/* About page — the editorial motion layer.
+ *
+ * BASE IS THE FINISHED STATE. Every rule that hides, offsets or clips something lives behind
+ * `[data-am='on']`, which AboutMotion sets from JavaScript and only when the visitor has not
+ * asked for reduced motion. So with JS off, before hydration, or under reduced motion the page
+ * is simply the page — nothing is waiting on an animation that will never run.
+ *
+ * That inversion is the point. The blocks this replaces used the shared <Motion> wrapper with
+ * `initial: { opacity: 0 }`, which serialises straight into the SSR HTML: the live About page
+ * ships 64 elements at inline opacity:0 and is blank without JavaScript. Nothing here can fail
+ * that way, because the hidden state does not exist until JavaScript adds it.
+ *
+ * Motion vocabulary follows Zajno's eight principles (motion.zajno.com) — easing, offset and
+ * delay, fade, transform, masking, dimension, parallax, zoom — expressed with transform and
+ * opacity only, per the project's motion rule.
+ */
+
+/* Shared easing + duration. One curve across the page so the whole thing feels like one hand. */
+.am {
+  --am-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --am-dur: 0.72s;
+}
+
+/* ── fade + rise ────────────────────────────────────────────────────────────
+   The workhorse reveal. `--am-d` carries the per-item stagger (offset and delay); it is set
+   inline by the caller so a group arrives in sequence rather than all at once. */
+.am[data-am='on'] .am-r {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition:
+    opacity var(--am-dur) var(--am-ease) var(--am-d, 0s),
+    transform var(--am-dur) var(--am-ease) var(--am-d, 0s);
+}
+.am[data-am='on'] .am-r.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── masking ────────────────────────────────────────────────────────────────
+   Editorial line reveal: the type rises out of its own box rather than fading in place. The
+   clip lives on the wrapper, the movement on the inner span — so the glyphs are genuinely
+   masked, not just faded.
+
+   `padding-bottom` + matching negative margin give descenders (g, y, p) room to live inside
+   the clip; without it the mask shears them off at the baseline. */
+.am-mask {
+  display: block;
+}
+.am[data-am='on'] .am-mask {
+  overflow: hidden;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.am[data-am='on'] .am-mask > .am-mask-i {
+  display: block;
+  transform: translate3d(0, 110%, 0);
+  transition: transform calc(var(--am-dur) + 0.16s) var(--am-ease) var(--am-d, 0s);
+}
+.am[data-am='on'] .am-mask.is-in > .am-mask-i {
+  transform: none;
+}
+
+/* ── dimension / parallax ───────────────────────────────────────────────────
+   `--am-p` runs roughly -1 → 1 across the element's pass through the viewport, written by
+   AboutMotion on scroll. `--am-amt` is the travel, set per element so foreground and
+   background layers move at different rates and the composition gains depth.
+
+   translate3d, never top/margin: this stays on the compositor and off the layout path. */
+.am[data-am='on'] .am-par {
+  transform: translate3d(0, calc(var(--am-p, 0) * var(--am-amt, 28px)), 0);
+  will-change: transform;
+}
+
+/* ── zoom ───────────────────────────────────────────────────────────────────
+   Media settles from slightly overscaled to rest. Paired with a mask on the figure so the
+   image moves inside a fixed frame. Long and slow — this should register as the picture
+   settling, not as a zoom effect. */
+.am[data-am='on'] .am-zoom {
+  transform: scale(1.06);
+  transition: transform 1.4s var(--am-ease);
+}
+.am[data-am='on'] .am-zoom.is-in {
+  transform: none;
+}
+
+/* ── hairline draw ──────────────────────────────────────────────────────────
+   Editorial rules draw themselves in rather than appearing. scaleX on a 1px line is free. */
+.am-rule {
+  transform-origin: left center;
+}
+.am[data-am='on'] .am-rule {
+  transform: scaleX(0);
+  transition: transform 0.9s var(--am-ease) var(--am-d, 0s);
+}
+.am[data-am='on'] .am-rule.is-in {
+  transform: none;
+}
+
+/* ── counter ────────────────────────────────────────────────────────────────
+   The numeral tied to a sticky rail: the reached ones stay legible, the live one is bright,
+   the rest recede. State only — the numerals themselves are real text in the markup. */
+.am-num {
+  transition:
+    opacity 0.5s var(--am-ease),
+    transform 0.5s var(--am-ease);
+}
+.am[data-am='on'] .am-num {
+  opacity: 0.3;
+}
+.am[data-am='on'] .am-num.is-past {
+  opacity: 0.6;
+}
+.am[data-am='on'] .am-num.is-live {
+  opacity: 1;
+}
+
+/* Belt and braces. The attribute already gates everything above, but a visitor who flips the
+   OS setting mid-session gets no re-render — this kills any transition still in flight. */
+@media (prefers-reduced-motion: reduce) {
+  .am,
+  .am *,
+  .am *::before,
+  .am *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .am[data-am='on'] .am-r,
+  .am[data-am='on'] .am-mask > .am-mask-i,
+  .am[data-am='on'] .am-rule,
+  .am[data-am='on'] .am-zoom,
+  .am[data-am='on'] .am-par {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

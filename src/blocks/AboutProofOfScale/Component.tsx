@@ -1,100 +1,98 @@
-import Motion from '@/components/animation/motion'
-import MobileCarousel from '@/components/layout/MobileCarousel'
+import AboutMotion from '@/components/about/AboutMotion'
+import MaskText from '@/components/about/MaskText'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutProofOfScaleBlock, Media } from '@/payload-types'
-import { Box } from 'lucide-react'
 import Image from 'next/image'
-import type { JSX } from 'react'
-
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
-
-const MOTION_BLOCK = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' as const },
-}
+import type { CSSProperties, JSX } from 'react'
 
 type CompanyItem = NonNullable<NonNullable<AboutProofOfScaleBlock['company']>['items']>[number]
 
-// Single company card — shared by the sm+ grid and the mobile carousel (excerpt → icon + brand
-// footer).
-function CompanyCard({ item }: { item: CompanyItem }): JSX.Element {
-  const logoUrl = (item.logo as Media | undefined)?.url ?? undefined
-  const logoAlt = (item.logo as Media | undefined)?.alt ?? item.name ?? ''
-  return (
-    <div className="group flex h-full min-h-[267px] flex-col justify-between rounded-sm bg-ink px-4 pb-4 pt-6 transition-[transform,background-color] duration-300 ease-out hover:-translate-y-1 hover:bg-[#151414]">
-      <div className="flex flex-col gap-4">
-        {item.excerpt ? <p className="text-base leading-snug text-body">{item.excerpt}</p> : null}
-      </div>
+/**
+ * "Proof of work in the real world" — the organisations, set as an editorial register.
+ *
+ * REPLACES a 4-up of raised `bg-ink` cards that lifted on hover. Cards make a list of clients
+ * look like a set of products; a register — name, rule, one line of context — reads as a record,
+ * which is what this is, and it sits closer to the page's voice.
+ *
+ * The name leads and the context follows it, rather than the previous order (context first,
+ * brand tucked into a footer). These are the proof; they should be the first thing read in
+ * their own cell.
+ *
+ * CONTENT: names and excerpts are the CMS strings, unchanged. No metric, count or claim is
+ * introduced — the block states who, and the sentence the CMS already carries.
+ */
+function Company({ item, index }: { item: CompanyItem; index: number }): JSX.Element {
+  const logo = item.logo as Media | undefined
+  const logoUrl = logo?.url ?? undefined
+  const logoAlt = logo?.alt ?? ''
 
-      {item.name ? (
-        <div className="mt-8 flex items-center gap-2 text-cream">
-          {logoUrl ? (
-            <Image src={logoUrl} alt={logoAlt} width={24} height={24} className="h-6 w-6 shrink-0 object-contain" />
-          ) : (
-            <Box aria-hidden className="h-6 w-6 text-cream/80" />
-          )}
-          <span className="text-2xl font-bold tracking-[-0.025em]">{item.name}</span>
-        </div>
-      ) : null}
+  return (
+    <div className="flex flex-col">
+      <span
+        aria-hidden
+        className="am-rule h-px w-full bg-line"
+        style={{ '--am-d': `${Math.min(index * 0.06, 0.32)}s` } as CSSProperties}
+      />
+      <div
+        className="am-r flex flex-col gap-3 pt-6"
+        style={{ '--am-d': `${Math.min(index * 0.06 + 0.05, 0.38)}s` } as CSSProperties}
+      >
+        {item.name ? (
+          <div className="flex items-center gap-2.5">
+            {/* Logo when the CMS has one — and nothing at all when it does not. No item in this
+                block carries a `logo` (checked against the staging cluster: all eight are
+                `logo: none`), so the previous generic-cube fallback was not a fallback, it was
+                the design: the same lucide `Box` glyph eight times in a row, denoting nothing.
+                The organisation's name is the stronger mark. */}
+            {logoUrl ? (
+              <Image
+                src={logoUrl}
+                alt={logoAlt}
+                width={22}
+                height={22}
+                className="h-[22px] w-[22px] shrink-0 object-contain grayscale"
+              />
+            ) : null}
+            <span className="font-display text-[19px] leading-[1.2] font-medium tracking-[-0.03em] text-cream">
+              {item.name}
+            </span>
+          </div>
+        ) : null}
+        {item.excerpt ? <p className="text-[15px] leading-[1.62] text-body">{item.excerpt}</p> : null}
+      </div>
     </div>
   )
 }
 
-/**
- * Companies We Work With — a single `bg-main` panel (design node 1615:1912): a 4-up grid of company
- * cards (excerpt → uppercase tag pills → icon + brand footer). The former "Proof at Scale" stats
- * panel was removed. All copy is CMS-driven; the items array is guarded so missing data collapses
- * rather than rendering empty.
- */
 export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock): JSX.Element | null {
   const hasCompany = Boolean(company?.heading || company?.items?.length)
-
   if (!hasCompany) return null
 
   return (
-    <section className="rounded-md bg-main p-6 lg:px-9 lg:py-12">
-      <Motion {...MOTION_BLOCK} transition={{ duration: 0.6, ease: EASE }}>
+    <AboutMotion tag="section" className="w-full">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
         {company?.heading ? (
-          <h2 className="max-w-xl font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream lg:text-3xl">
-            {company.heading}
+          <h2 className="font-display max-w-[18ch] text-[clamp(1.75rem,3.2vw,2.75rem)] leading-[1.06] font-medium tracking-[-0.04em] text-cream text-balance">
+            <MaskText>{company.heading}</MaskText>
           </h2>
         ) : null}
         {company?.description ? (
-          <RichTextComp
-            content={company.description as RichText}
-            className="mt-4 max-w-2xl prose-p:mb-0 prose-p:text-base prose-p:leading-relaxed prose-p:text-body"
-          />
+          <div className="am-r max-w-[48ch]" style={{ '--am-d': '0.14s' } as CSSProperties}>
+            <RichTextComp
+              content={company.description as RichText}
+              className="prose-p:mb-0 prose-p:text-[16px] prose-p:leading-[1.6] prose-p:text-body"
+            />
+          </div>
         ) : null}
-      </Motion>
+      </div>
 
       {company?.items?.length ? (
-        // Figma right-aligns the 4-up card grid at a fixed 1171px (≈280px cards), leaving the
-        // left edge open under the heading; below lg it relaxes to a full-width 1/2-col stack.
-        <>
-          {/* Mobile: horizontal snap carousel with pagination dots (mt-8 mirrors the grid's top
-              spacing, since the grid is hidden on mobile). */}
-          <MobileCarousel slideClassName="w-[280px]" className="mt-8">
-            {company.items.map((item, index) => (
-              <CompanyCard key={item.id ?? index} item={item} />
-            ))}
-          </MobileCarousel>
-
-          {/* sm+ grid — hidden on mobile, where the carousel takes over. */}
-          <div className="mt-8 hidden gap-4 sm:grid sm:grid-cols-2 lg:ml-auto lg:mt-8 lg:max-w-[1171px] lg:grid-cols-4">
-            {company.items.map((item, index) => (
-              <Motion
-                key={item.id ?? index}
-                className="h-full"
-                {...MOTION_BLOCK}
-                transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-              >
-                <CompanyCard item={item} />
-              </Motion>
-            ))}
-          </div>
-        </>
+        <div className="mt-12 grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
+          {company.items.map((item, index) => (
+            <Company key={item.id ?? index} item={item} index={index} />
+          ))}
+        </div>
       ) : null}
-    </section>
+    </AboutMotion>
   )
 }

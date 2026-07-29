@@ -1,153 +1,96 @@
-import Motion from '@/components/animation/motion'
-import Section from '@/components/layout/section'
-import { cn } from '@/lib/utils'
-import type { AboutBeliefsBlock, Media } from '@/payload-types'
-import { Zap } from 'lucide-react'
-import type { JSX } from 'react'
-
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+import AboutMotion from '@/components/about/AboutMotion'
+import MaskText from '@/components/about/MaskText'
+import RichTextComp, { type RichText } from '@/components/richtext'
+import type { AboutBeliefsBlock } from '@/payload-types'
+import type { CSSProperties, JSX } from 'react'
 
 /**
- * Icon + title + desc unit (design "Benefit block"): a 48px round `bg-page` icon badge, a 32px gap
- * to the text group, then 8px title→desc. Title Poppins Medium 24 at 90% opacity, desc Inter 16 at
- * 75% opacity. Each cell sits on its own `bg-main` card (5px radius, 24px padding), matching the comp.
+ * "Our culture" — set as a counted rail: the values pass at full width while an index in the
+ * margin keeps track of where the reader is in them.
+ *
+ * REPLACES the third and last instance of the About bento — the same round badge, the same
+ * repeated `Zap`, the same card. This is the page's closing argument before the team itself, so
+ * it is given the plainest and largest typographic treatment of the three: statements at
+ * near-headline size with air around them, and no container at all.
+ *
+ * The rail is the only ornament, and it is functional — the numeral for the value you are
+ * reading is bright, the ones behind you stay legible, the ones ahead recede. Under reduced
+ * motion or without JavaScript it is a static list of numerals beside a list of values, which
+ * is exactly what it is.
+ *
+ * CONTENT: headings, titles and excerpts are the CMS strings, unchanged.
  */
-function BenefitBlock({ title, desc }: { title?: string; desc?: string }): JSX.Element {
-  return (
-    <div className="flex h-full flex-col justify-end gap-8">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
-        <Zap aria-hidden className="h-6 w-6 text-cream" />
-      </div>
-      <div className="flex flex-col gap-2">
-        {title ? (
-          <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">{title}</h3>
-        ) : null}
-        {desc ? <p className="text-base leading-tight tracking-[-0.02em] text-body">{desc}</p> : null}
-      </div>
-    </div>
-  )
-}
-
-/**
- * Signature media layer for the featured belief cell (design node 1258:11849). A grayscale photo
- * occupies the right half of the card under the brand grain (`/noise.svg`); a left→right gradient
- * dissolves the photo into the `bg-main` card on its left edge so the icon/title hold legibility
- * over solid card colour. Sits at z-0 behind the cell's `relative z-10` text. Degrades to a violet
- * brand gradient when media is unavailable.
- */
-function BentoMedia({ url, alt }: { url?: string; alt?: string }): JSX.Element {
-  return (
-    <div aria-hidden className="absolute inset-y-0 right-0 z-0 w-full overflow-hidden md:w-1/2">
-      {url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={url}
-          alt={alt ?? ''}
-          className="absolute inset-0 h-full w-full scale-105 object-cover grayscale transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-        />
-      ) : (
-        <span
-          className="absolute inset-0 scale-105 transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-          style={{
-            backgroundImage: 'radial-gradient(135% 135% at 78% 14%, #7c3aed 0%, #3a1c8c 44%, #140f2c 100%)',
-          }}
-        />
-      )}
-      <span className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.16] mix-blend-overlay" />
-      {/* Photo dissolves into the card on its left edge (Figma 1258:11850 left→right fade). */}
-      <span className="absolute inset-0 bg-gradient-to-r from-main via-main/60 to-transparent" />
-    </div>
-  )
-}
-
-type BeliefItem = NonNullable<AboutBeliefsBlock['items']>[number]
-
-const MOTION_ITEM = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' as const },
-}
-
-/** A standard (non-featured) belief: the benefit block on its own card surface. */
-function BeliefCard({ item, index }: { item: BeliefItem; index: number }): JSX.Element {
-  return (
-    <Motion
-      className="h-full min-h-0"
-      {...MOTION_ITEM}
-      transition={{ duration: 0.5, ease: EASE, delay: Math.min(index * 0.05, 0.4) }}
-    >
-      <div className="h-full min-h-[360px] overflow-hidden rounded-md bg-main p-6">
-        <BenefitBlock title={item.title ?? undefined} desc={item.excerpt ?? undefined} />
-      </div>
-    </Motion>
-  )
-}
-
-/** The wide featured belief: photo on the right half with the benefit overlaid bottom-left. */
-function FeaturedBelief({ item }: { item: BeliefItem }): JSX.Element {
-  const imageUrl = item.media ? ((item.media as Media)?.url ?? undefined) : undefined
-  return (
-    <Motion className="h-full min-h-0" {...MOTION_ITEM} transition={{ duration: 0.5, ease: EASE }}>
-      <div className="group relative h-full min-h-[360px] overflow-hidden rounded-md bg-main">
-        <BentoMedia url={imageUrl} alt={item.title ?? undefined} />
-        <div className="relative z-10 flex h-full flex-col justify-end gap-8 p-6 lg:p-8">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-page">
-            <Zap aria-hidden className="h-6 w-6 text-cream" />
-          </div>
-          <div className="flex flex-col gap-2">
-            {item.title ? (
-              <h3 className="font-display text-2xl font-medium leading-[1.15] tracking-[-0.05em] text-cream/90">
-                {item.title}
-              </h3>
-            ) : null}
-            {item.excerpt ? (
-              <p className="max-w-md text-base leading-tight tracking-[-0.02em] text-body">{item.excerpt}</p>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </Motion>
-  )
-}
-
 export function AboutBeliefsComponent({ heading, description, items }: AboutBeliefsBlock): JSX.Element | null {
   if (!heading || !items?.length) return null
 
-  // Figma 1258:11841 lays the beliefs out as two flex rows rather than a uniform grid:
-  //   row 1 — wide featured (2) + one card (1);  row 2 — cards (1) with the last one wide (2).
-  const [featured, ...rest] = items
-  const row1Second = rest[0]
-  const row2 = rest.slice(1)
-
   return (
-    <div>
-      <Section title={heading ?? ''} desc={description ?? ''}>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-4 lg:flex-row">
-            <div className="lg:flex-[2]">
-              <FeaturedBelief item={featured} />
-            </div>
-            {row1Second ? (
-              <div className="lg:flex-1">
-                <BeliefCard item={row1Second} index={1} />
-              </div>
-            ) : null}
-          </div>
-
-          {row2.length ? (
-            <div className="flex flex-col gap-4 lg:flex-row">
-              {row2.map((item, i) => (
-                <div
-                  key={item.id ?? `belief-${i + 2}`}
-                  className={cn('lg:flex-1', i === row2.length - 1 ? 'lg:flex-[2]' : '')}
-                >
-                  <BeliefCard item={item} index={i + 2} />
-                </div>
-              ))}
+    <AboutMotion tag="section" className="w-full">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1fr)] lg:gap-20">
+        {/* ── the rail ───────────────────────────────────────────────────────
+            Heading, standfirst, and the index. Sticks on lg so the count stays in the
+            margin while the values pass it. */}
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <h2 className="font-display text-[clamp(1.75rem,3.2vw,2.75rem)] leading-[1.06] font-medium tracking-[-0.04em] text-cream text-balance">
+            <MaskText>{heading}</MaskText>
+          </h2>
+          {description ? (
+            <div className="am-r mt-5 max-w-[44ch]" style={{ '--am-d': '0.12s' } as CSSProperties}>
+              <RichTextComp
+                content={description as RichText}
+                className="prose-p:mb-0 prose-p:text-[16px] prose-p:leading-[1.6] prose-p:text-body"
+              />
             </div>
           ) : null}
+
+          {/* The index. Decorative — the values below are all in the accessibility tree in
+              order, so this repeats nothing a screen reader needs. */}
+          <ol aria-hidden className="mt-10 hidden flex-col gap-2.5 lg:flex">
+            {items.map((item, index) => (
+              <li key={item.id ?? `belief-num-${index}`} className="flex items-center gap-4">
+                {/* Exactly one `.am-num` per value — AboutMotion pairs numerals to steps by
+                    index, so a second one here would shift the whole mapping by one. */}
+                <span className="am-num font-mono text-[13px] tabular-nums tracking-[0.1em] text-cream">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span className="h-px w-8 bg-line-strong" />
+              </li>
+            ))}
+          </ol>
         </div>
-      </Section>
-    </div>
+
+        {/* ── the values ─────────────────────────────────────────────────────── */}
+        <div className="flex flex-col">
+          {items.map((item, index) => {
+            return (
+              <article
+                key={item.id ?? `belief-${index}`}
+                className="am-step border-t border-line py-10 first:border-t-0 first:pt-0 lg:py-14 lg:first:pt-0"
+              >
+                <div className="am-r flex flex-col gap-4" style={{ '--am-d': '0.06s' } as CSSProperties}>
+                  {/* Carries the count on narrow screens, where the rail's index is dropped. */}
+                  <span aria-hidden className="font-mono text-[12px] tabular-nums tracking-[0.14em] text-subtle lg:hidden">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+
+                  {item.title ? (
+                    <h3 className="font-display max-w-[20ch] text-[clamp(1.5rem,2.6vw,2.125rem)] leading-[1.1] font-medium tracking-[-0.035em] text-cream text-balance">
+                      {item.title}
+                    </h3>
+                  ) : null}
+                  {item.excerpt ? (
+                    <p className="max-w-[58ch] text-[16px] leading-[1.65] text-body lg:text-[17px]">{item.excerpt}</p>
+                  ) : null}
+
+                  {/* No plate here, deliberately. Every item in this block is `media: none` in
+                      the CMS, so a plate per value would mean five identical gradient panels
+                      down one column — colour noise, and the section is meant to be the page's
+                      plainest and most typographic. The thesis and the approach each carry one. */}
+                </div>
+              </article>
+            )
+          })}
+        </div>
+      </div>
+    </AboutMotion>
   )
 }

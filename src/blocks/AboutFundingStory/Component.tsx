@@ -1,24 +1,26 @@
-import Motion from '@/components/animation/motion'
+import AboutMotion from '@/components/about/AboutMotion'
+import MaskText from '@/components/about/MaskText'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutFundingStoryBlock, Media } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import Link from 'next/link'
-import type { JSX } from 'react'
-
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+import type { CSSProperties, JSX } from 'react'
 
 /**
- * Closing CTA band (Figma 2387:2164) — "Agentic Engineering. Human Orchestration.". A full-bleed
- * background image sits under a flat black/20 scrim with centered display copy and a single
- * eggshell CTA. The CMS `backgroundImage` IS the design's visual (the violet→amber grain field is
- * an uploaded image, not a CSS gradient), so it renders at full colour on top of the scrim rather
- * than desaturated beneath a gradient. When no image is set we fall back to the brand grain
- * gradient so the band never renders bare.
+ * "Bootstrapped and profitable" — the closing statement band.
  *
- * Cache-busting: the media `updatedAt` is appended as a query param via getMediaUrl. Media edits
- * bust every content tag (media.ts afterChange → bustAllTags), which regenerates this page's HTML;
- * the query param then forces the browser to refetch the replaced file instead of serving the
- * cached copy at the (unchanged) same-filename URL.
+ * KEPT: the CMS `backgroundImage` is the design's actual visual (an uploaded grain field, not a
+ * CSS gradient), so it still renders at full colour, and the media `updatedAt` cache-bust via
+ * getMediaUrl is unchanged — media edits must still force a refetch of the same-filename URL.
+ *
+ * CHANGED: the copy was centred in the band; it is now ranged left against the image with the
+ * statement masked in, and the plate drifts against the scroll. The band is the last thing
+ * before the CTA, so it reads as a closing line rather than as a second, competing CTA.
+ *
+ * LEGIBILITY: the previous flat `black/20` was thin cover for cream text over a full-colour
+ * photograph — the ratio depended entirely on which part of the image landed behind the words.
+ * It is now a directional scrim, heaviest under the copy and clearing toward the opposite edge,
+ * so the type has a guaranteed floor without flattening the image.
  */
 export function AboutFundingStoryComponent({
   heading,
@@ -36,70 +38,84 @@ export function AboutFundingStoryComponent({
   if (!heading && !description) return null
 
   return (
-    <Motion
+    <AboutMotion
       tag="section"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.6, ease: EASE }}
-      className="relative isolate flex flex-col items-center justify-center gap-6 overflow-hidden rounded-lg px-6 py-20 text-center lg:py-32"
+      className="relative isolate flex min-h-[420px] flex-col justify-end overflow-hidden rounded-md px-6 py-14 md:px-10 lg:min-h-[520px] lg:px-14 lg:py-20"
     >
-      {/* Background: the CMS image at full colour (Figma), or the brand grain gradient fallback. */}
-      {bgUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img aria-hidden src={bgUrl} alt="" className="absolute inset-0 -z-10 h-full w-full object-cover" />
-      ) : (
-        <span
-          aria-hidden
-          className="absolute inset-0 -z-10"
-          style={{
-            backgroundImage: 'radial-gradient(120% 120% at 22% 18%, #6d4bd1 0%, #3a2a8c 46%, #1a1b4b 100%)',
-          }}
-        />
-      )}
-      {/* Flat legibility scrim (Figma: black @ 20%). */}
-      <span aria-hidden className="absolute inset-0 -z-10 bg-black/20" />
+      {/* The plate. Inset vertically beyond the frame so it has room to travel without
+          exposing an edge as it drifts. */}
+      <span aria-hidden className="absolute inset-x-0 -inset-y-[12%] -z-10 overflow-hidden">
+        <span className="am-par block h-full w-full" style={{ '--am-amt': '26px' } as CSSProperties}>
+          {bgUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={bgUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span
+              className="block h-full w-full"
+              style={{
+                backgroundImage: 'radial-gradient(120% 120% at 22% 18%, #6d4bd1 0%, #3a2a8c 46%, #1a1b4b 100%)',
+              }}
+            />
+          )}
+        </span>
+      </span>
 
-      {/* Heading + description are a tight text block; the 24px section gap only separates it from
-          the CTA below (Figma pairs the copy closer than it sits from the button). */}
-      <div className="flex flex-col items-center">
+      {/* Directional scrim: heavy under the copy, clearing to the right so the image is still
+          an image.
+
+          NOT VERIFIED AGAINST THE REAL PLATE. Local media serving returns 500 without S3
+          credentials, so every check of this band was made over the gradient fallback — the
+          uploaded grain field only appears on the review deploy. The weighting is therefore set
+          to be safe rather than tuned: at 88% the composited backdrop is at most 12% of the
+          image, which keeps cream text far above its floor whatever the pixels underneath are
+          doing. Worth a look on the review URL, and worth loosening if it flattens the plate. */}
+      <span
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-gradient-to-r from-page/88 via-page/60 to-page/15"
+      />
+      <span aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-page/80 via-transparent to-transparent" />
+
+      <div className="flex max-w-[62ch] flex-col items-start gap-5">
         {eyebrow ? (
-          <span className="mb-3 font-mono text-xs font-medium uppercase tracking-[0.18em] text-cream/70">
-            {eyebrow}
-          </span>
+          <span className="am-r font-mono text-xs font-medium tracking-[0.18em] text-cream uppercase">{eyebrow}</span>
         ) : null}
+
         {heading ? (
-          <h2 className="max-w-[1276px] font-display text-[clamp(1.75rem,4vw,40px)] font-medium leading-[1.15] text-balance text-cream">
-            {heading}
+          <h2 className="font-display text-[clamp(1.875rem,4vw,3rem)] leading-[1.08] font-medium tracking-[-0.04em] text-cream text-balance">
+            <MaskText delay={0.06}>{heading}</MaskText>
           </h2>
         ) : null}
+
         {description ? (
-          <RichTextComp
-            content={description as RichText}
-            className="max-w-[768px] opacity-90 prose-p:mb-0 prose-p:text-base prose-p:leading-[1.15] prose-p:text-cream"
-          />
+          <div className="am-r max-w-[56ch]" style={{ '--am-d': '0.18s' } as CSSProperties}>
+            <RichTextComp
+              content={description as RichText}
+              className="prose-p:mb-0 prose-p:text-[16px] prose-p:leading-[1.6] prose-p:text-cream"
+            />
+          </div>
+        ) : null}
+
+        {ctas.length ? (
+          <div className="am-r mt-2 flex flex-wrap items-center gap-3" style={{ '--am-d': '0.26s' } as CSSProperties}>
+            {ctas.map((link, i) => {
+              const isSecondary = link?.style === 'secondary'
+              return (
+                <Link
+                  key={link?.id ?? i}
+                  href={link?.url ?? '#'}
+                  className={
+                    isSecondary
+                      ? 'inline-flex h-10 items-center justify-center rounded-lg border border-line bg-button-dark px-4 font-display text-base font-normal text-cream transition-colors duration-200 hover:bg-button-dark/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink'
+                      : 'inline-flex h-10 items-center justify-center rounded-lg bg-cream px-4 font-display text-base font-normal text-ink/90 transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink'
+                  }
+                >
+                  {link?.label}
+                </Link>
+              )
+            })}
+          </div>
         ) : null}
       </div>
-      {ctas.length ? (
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {ctas.map((link, i) => {
-            const isSecondary = link?.style === 'secondary'
-            return (
-              <Link
-                key={link?.id ?? i}
-                href={link?.url ?? '#'}
-                className={
-                  isSecondary
-                    ? 'inline-flex h-10 items-center justify-center rounded-lg border border-line bg-button-dark px-4 font-display text-base font-normal text-cream transition-colors duration-200 hover:bg-button-dark/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink'
-                    : 'inline-flex h-10 items-center justify-center rounded-lg bg-cream px-4 font-display text-base font-normal text-ink/90 transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-ink'
-                }
-              >
-                {link?.label}
-              </Link>
-            )
-          })}
-        </div>
-      ) : null}
-    </Motion>
+    </AboutMotion>
   )
 }
