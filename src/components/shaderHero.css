@@ -1,0 +1,68 @@
+/* Hero headline — 3D character reveal.
+ *
+ * PROGRESSIVE ENHANCEMENT, NOT STRUCTURE. The server renders the plain headline; the split into
+ * per-character faces happens after mount and only when the animation is actually going to run.
+ * A crawler, a no-JS visitor, a reduced-motion visitor and every non-Latin locale all get the
+ * plain <h1> text. Nothing here is required for the headline to be readable.
+ *
+ * ALL THREE FACES ARE #F2F0EA. The reference calls for a muted tone on the back faces, but the
+ * strict-contrast rule removed every muted tier from this page — there is no muted foreground in
+ * use on /about any more. Mid-flip a face is still the same character over the same moving field,
+ * so giving it a dimmer colour would reintroduce exactly the variable contrast the scrim was added
+ * to eliminate. Full strength on all three keeps the 7:1 floor intact through the entrance.
+ */
+
+/* Depth for the rotation. Without perspective on the parent the flip renders flat. */
+.hero-3d {
+  perspective: 600px;
+}
+
+.char3d {
+  display: inline-block;
+  position: relative;
+  transform-style: preserve-3d;
+  /* Pushing the origin back by half an em is what makes the character read as a block with
+     thickness rather than a card pivoting on its own surface. */
+  transform-origin: 50% 50% -0.5em;
+  will-change: transform;
+  color: #f2f0ea;
+}
+
+/* The two back faces are generated content, not elements. See the note in ShaderHero.tsx:
+   rendering them as spans tripled the headline's textContent and broke copy-paste. */
+.char3d::before,
+.char3d::after {
+  content: attr(data-ch);
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+.char3d::before {
+  transform: rotateX(90deg) translateZ(0.5em);
+  transform-origin: top;
+}
+.char3d::after {
+  transform: rotateX(-90deg) translateZ(0.5em);
+  transform-origin: bottom;
+}
+
+/* Words do not break mid-character-stack. Without this the split can hyphenate inside a word,
+   because every glyph is now its own inline-block. */
+.char-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Belt and braces: the component never splits under reduced motion, so this only catches a
+   preference that changes after the split has already happened. */
+@media (prefers-reduced-motion: reduce) {
+  .char3d {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .char3d::before,
+  .char3d::after {
+    display: none;
+  }
+}
