@@ -88,11 +88,11 @@
 /* The scroll track. Its height is the card plus a beat per sector, so the pin releases exactly
    when the last sector has had its turn.
 
-   50vh a step. At 34vh the dial turned faster than the eye could take a sector in — nine of them
-   went past in three screens. Half a viewport each gives every sector a beat of its own and still
-   stops short of a full screen apiece, which for nine would be nine screens of scrolling for one
-   section: the point where pacing turns into a scroll trap, and the same limit the home page's
-   process section ran into. */
+   65vh a step — the gap a reader crosses to move the dial on by one is roughly two thirds of
+   their screen. It has been walked up from 34vh, which turned faster than the eye could take a
+   sector in, through 50vh. It stops short of a full screen apiece deliberately: nine of those is
+   nine screens of scrolling for one section, the point where pacing turns into a scroll trap and
+   the same limit the home page's process section ran into. One value tunes it. */
 .hub .ix-track {
   position: relative;
 }
@@ -107,7 +107,7 @@
    shape the reduced-motion and no-JavaScript paths already fall back to. */
 @media (min-width: 900px) {
   .hub .ix-track[data-pin='on'] {
-    height: calc(var(--ix-card, 620px) + var(--ix-steps, 9) * var(--ix-step, 50vh));
+    height: calc(var(--ix-card, 620px) + var(--ix-steps, 9) * var(--ix-step, 65vh));
   }
   .hub .ix-track[data-pin='on'] .ix-pin {
     position: sticky;
@@ -257,9 +257,9 @@
 .hub .ix-item[data-d='3'] {
   opacity: 0.6;
 }
-.hub .ix-item:hover {
-  opacity: 1;
-}
+/* Deliberately no :hover state on a row. The dial answers to scroll alone now, so a row that lit
+   under the pointer would promise a selection it does not make. Tapping still seeks to it, and the
+   pointer already reads as interactive from the cursor. */
 
 /* The descriptor belongs to the focused row. On the others it stays present but recedes to a
    single legible tier rather than joining the fade — it was on --dim (2.59:1) and then --t3

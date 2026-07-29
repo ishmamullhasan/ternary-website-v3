@@ -1,6 +1,5 @@
 'use client'
 
-import { useCanHover } from '@/components/hub/useCanHover'
 import IndustryBlueprint from '@/components/industry/IndustryBlueprint'
 import * as Tabs from '@radix-ui/react-tabs'
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
@@ -163,7 +162,6 @@ const CAPS: Record<string, string[]> = {
 
 export default function SectorIndex() {
   const [active, setActive] = useState(SECTORS[0].num)
-  const canHover = useCanHover()
   const trackRef = useRef<HTMLDivElement>(null)
   const pinRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
@@ -258,9 +256,16 @@ export default function SectorIndex() {
   }, [active])
 
   /**
-   * Picking a sector scrolls to where that sector lives inside the pinned range rather than setting
-   * state the scroll handler would overwrite on the next frame. Scroll position stays the single
-   * source of truth, so pointer, keyboard and scroll cannot disagree.
+   * Tapping a sector goes straight to that sector's card.
+   *
+   * It moves the SCROLL POSITION rather than setting state, because scroll is what drives the dial —
+   * setting state directly would be overwritten on the next frame. Scroll position stays the single
+   * source of truth, so tap, keyboard and scroll cannot disagree.
+   *
+   * `auto`, not `smooth`. Inside the pinned range the section does not move on screen — only the
+   * dial's state does — so an instant seek reads as the dial jumping to the sector, which is what
+   * "take me to that one" should feel like. Smooth would have animated up to five screens of
+   * scrolling to show a card that is already on screen.
    */
   const pick = useCallback((num: string) => {
     const track = trackRef.current
@@ -273,7 +278,7 @@ export default function SectorIndex() {
     const travel = r.height - window.innerHeight
     window.scrollTo({
       top: r.top + window.scrollY + travel * ((i + 0.5) / SECTORS.length),
-      behavior: 'smooth',
+      behavior: 'auto',
     })
   }, [])
 
@@ -325,7 +330,6 @@ export default function SectorIndex() {
                   /* Rings out from the selection: 0 is the focused row, 3 is three or more away. */
                   data-d={Math.min(3, Math.abs(i - activeIndex))}
                   className="ix-item"
-                  onMouseEnter={canHover ? () => pick(sector.num) : undefined}
                 >
                   <span className="ix-line" aria-hidden="true" />
                   <span className="ix-mid">
