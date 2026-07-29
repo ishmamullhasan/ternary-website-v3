@@ -4,6 +4,8 @@ import type { TypedLocale } from 'payload'
 import type { JSX } from 'react'
 import { Fragment } from 'react'
 
+import AboutEditorialCta from '@/components/about/AboutEditorialCta'
+import AboutEditorialHero from '@/components/about/AboutEditorialHero'
 import Motion from '@/components/animation/motion'
 import { AboutApproachComponent } from './AboutApproach/Component'
 import { AboutBeliefsComponent } from './AboutBeliefs/Component'
@@ -121,10 +123,17 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
  * union, so each component gets fully-typed props (no casts). New blocks: register the config
  * on the Pages collection and add a case here.
  */
-function renderBlock(block: BlockType, locale?: TypedLocale): JSX.Element | null {
+function renderBlock(block: BlockType, locale?: TypedLocale, slug?: string): JSX.Element | null {
+  // About-scoped variants. `hero` is shared by six pages and `ctaBlock` by five, so the About
+  // redesign cannot edit either in place without changing Insights, Industries, Solutions,
+  // Stories, Capabilities and Scales as a side effect. Branching on the page slug keeps the
+  // editorial treatment on About and leaves every other page rendering the shared component
+  // unchanged. Both variants self-wrap, and both block types are already in SELF_WRAPPED_BLOCKS.
+  const isAbout = slug === 'about'
+
   switch (block.blockType) {
     case 'hero':
-      return <HeroComponent {...block} />
+      return isAbout ? <AboutEditorialHero {...block} /> : <HeroComponent {...block} />
     case 'heroFeatured':
       return <HeroFeaturedComponent {...block} />
     case 'industriesSection':
@@ -158,7 +167,7 @@ function renderBlock(block: BlockType, locale?: TypedLocale): JSX.Element | null
     case 'jobsBlock':
       return <JobsBlockComponent {...block} />
     case 'ctaBlock':
-      return <CtaBlockComponent {...block} />
+      return isAbout ? <AboutEditorialCta {...block} /> : <CtaBlockComponent {...block} />
     // Granular redesign blocks (Phase 2).
     case 'contactHero':
       return <ContactHeroComponent {...block} />
@@ -233,16 +242,19 @@ function renderBlock(block: BlockType, locale?: TypedLocale): JSX.Element | null
 export function RenderBlocks({
   blocks,
   locale,
+  slug,
 }: {
   blocks?: Page['layout']
   locale?: TypedLocale
+  /** Page slug, used to select page-scoped variants of otherwise shared blocks. */
+  slug?: string
 }): JSX.Element | null {
   if (!blocks?.length) return null
 
   return (
     <div className="flex flex-col gap-16 lg:gap-[72px] text-cream max-w-7xl mx-auto w-full px-5 md:px-8 lg:px-12 pt-20 lg:pt-40 lg:pb-24 pb-10">
       {blocks.map((block, i) => {
-        const el = renderBlock(block, locale)
+        const el = renderBlock(block, locale, slug)
         if (!el) return null
         // Self-wrapping granular blocks already render their own Motion section — render directly.
         if (SELF_WRAPPED_BLOCKS.has(block.blockType)) {
