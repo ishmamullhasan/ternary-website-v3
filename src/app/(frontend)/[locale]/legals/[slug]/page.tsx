@@ -178,6 +178,11 @@ export default async function Page({
     (b): b is { label?: string | null; link?: string | null } => Boolean(b?.label),
   )
 
+  // Draft state: the seeded copy still carries `[CONFIRM: …]` markers for facts awaiting sign-off.
+  // Detecting them here drives a "working draft" notice; the markers render as fill-in chips below
+  // (RichTextComp highlightPlaceholders). Cheap string scan of the serialized richText.
+  const hasPlaceholders = legal.content != null && JSON.stringify(legal.content).includes('[CONFIRM')
+
   return (
     <div className="min-h-screen antialiased">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-5 pb-16 lg:gap-24 lg:pb-24">
@@ -265,10 +270,15 @@ export default async function Page({
                     </span>
                   )}
                 </div>
-                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-                  <h1 className="font-display text-[30px] font-medium leading-[1.15] tracking-tight text-cream">
-                    {title}
-                  </h1>
+                <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
+                  <div className="flex flex-col gap-2">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-subtle">
+                      {legalCenter?.menuTitle || 'Legal'}
+                    </span>
+                    <h1 className="font-display text-[32px] font-medium leading-[1.08] tracking-tight text-cream lg:text-[40px]">
+                      {title}
+                    </h1>
+                  </div>
 
                   {legal.downloadLink && (
                     <a
@@ -284,14 +294,36 @@ export default async function Page({
                 </div>
               </Motion>
 
-              {/* Main document content. The richtext wrapper exposes a className we use to apply
-                  the design's section rhythm (gap-32 between blocks, gap-16 heading→body),
-                  Poppins-Medium section headings, and the Inter body tracking/color. */}
-              <Motion tag="article" {...blockReveal} transition={{ ...blockReveal.transition, delay: 0.08 }}>
+              {/* Working-draft notice — shown only while unconfirmed facts remain. Mirrors the
+                  amber fill-in chips in the body so a reader (and the editor) sees the page is not
+                  yet final. */}
+              {hasPlaceholders && (
+                <div className="not-prose rounded-md border-l-2 border-amber-400/60 bg-amber-400/10 px-5 py-4">
+                  <p className="text-[14px] leading-relaxed text-amber-100/90">
+                    <strong className="font-semibold text-amber-100">Working draft.</strong> A few company-specific
+                    details are still to be confirmed. They appear below as highlighted{' '}
+                    <span className="rounded border border-amber-400/50 bg-amber-400/10 px-1 py-0.5 font-mono text-[11px] uppercase tracking-wider text-amber-200">
+                      input needed
+                    </span>{' '}
+                    fill-ins, and must be completed before this document is published.
+                  </p>
+                </div>
+              )}
+
+              {/* Main document content. The richtext wrapper applies the design's section rhythm
+                  (hairline rule + padding above each section heading), Poppins-Medium headings, and
+                  the Inter body tracking/colour. Capped to a comfortable reading measure. */}
+              <Motion
+                tag="article"
+                className="w-full max-w-[72ch]"
+                {...blockReveal}
+                transition={{ ...blockReveal.transition, delay: 0.08 }}
+              >
                 {legal.content ? (
                   <RichTextComp
                     content={legal.content as RichText}
-                    className="max-w-none space-y-8 text-[16px] leading-[1.6] text-body prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-cream prose-h2:text-[24px] prose-h3:mb-4 prose-h3:mt-0 prose-h3:text-[24px] prose-p:my-0 prose-p:text-body prose-a:text-cream prose-a:underline prose-a:underline-offset-2 prose-li:text-body prose-strong:text-cream"
+                    highlightPlaceholders
+                    className="max-w-none space-y-8 text-[16px] leading-[1.65] text-body prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-cream prose-h2:border-t prose-h2:border-line prose-h2:pt-8 prose-h2:text-[22px] prose-h2:leading-snug prose-h3:mb-4 prose-h3:mt-0 prose-h3:text-[20px] prose-p:my-0 prose-p:text-body prose-a:text-cream prose-a:underline prose-a:underline-offset-2 prose-li:text-body prose-strong:text-cream"
                   />
                 ) : (
                   <div className="rounded-md border border-line bg-ink/60 px-6 py-12 text-center">
