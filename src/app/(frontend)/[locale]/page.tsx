@@ -48,14 +48,16 @@ const fetchHomePage = async (draft: boolean, locale: TypedLocale) => {
 // scales, team, …), so the read also carries every collection tag — editing an embedded doc busts
 // this cache too, not just its own detail page. Cache key bumped (now _v4) to force a fresh read on
 // this deploy so the new heroFeatured block (added to the home layout out-of-request) surfaces
-// instead of a stale cached layout. (Now _v11: seed-fit-copy rewrote the aboutSection PR title +
-// story/PR excerpts and the solution excerpts, all embedded here, via a direct DB write.) In draft
-// mode (live preview) we bypass the cache so editors
+// instead of a stale cached layout. (Now _v12: set-process-descriptions.ts filled the five empty
+// processSection step descriptions by direct DB write. Script-driven writes happen outside a
+// request, so the afterChange hook's revalidateTag() throws and is swallowed — the tag is never
+// busted and this cache keeps serving the old layout. Bumping the key is what actually forces the
+// re-read.) In draft mode (live preview) we bypass the cache so editors
 // always see the freshest draft.
 const getHomePage = (draft: boolean, locale: TypedLocale) =>
   draft
     ? fetchHomePage(true, locale)
-    : unstable_cache(() => fetchHomePage(false, locale), [`pages_home_${locale}_v11`], {
+    : unstable_cache(() => fetchHomePage(false, locale), [`pages_home_${locale}_v12`], {
         tags: [...new Set(['pages_home', ...PAGES_EMBED_TAGS])],
       })()
 

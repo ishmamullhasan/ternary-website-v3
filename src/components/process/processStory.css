@@ -12,36 +12,33 @@
  * device, not a restriction on the content.
  */
 
+/* `.ps` is only a scroll spacer — no background, no padding, no card. The CARD is
+   `.ps-pin`, which carries `section-card` and so sizes to its own content on the site's
+   standard padding scale. Previously the card WAS the tall element, so its surface ran
+   the full pinned range and filled the screen top to bottom. */
 .ps {
   position: relative;
-  /* `clip`, NOT `hidden`. overflow:hidden makes this a scroll container, which silently
-     stops position:sticky working on anything inside it — the pin would simply never
-     engage. `clip` gives the same clipping with no scroll container. */
+}
+
+/* The card. `clip`, NOT `hidden`: overflow:hidden would make this a scroll container and
+   silently stop the pin engaging. */
+.ps-pin {
+  position: relative;
   overflow: clip;
   isolation: isolate;
 }
 
-/* ── ambient ground: grid + one faint bloom, no filter: blur() ───────────────
-   Blurring a layer this size forced a full re-rasterise every frame and took scrolling
-   to 2.9fps when it was tried on the home CTA. Gradients are already smooth. */
-.ps::before {
+/* ── ambient ground ─────────────────────────────────────────────────────────
+   One faint bloom, and nothing else. The engineering grid that used to sit here is gone
+   — at card scale it read as a field of squares rather than as texture.
+
+   No filter: blur() — blurring a layer this size forced a full re-rasterise every frame
+   and took scrolling to 2.9fps when it was tried on the home CTA. */
+.ps-pin::after {
   content: '';
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgba(244, 243, 236, 0.026) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(244, 243, 236, 0.026) 1px, transparent 1px);
-  background-size: 56px 56px;
-  -webkit-mask-image: radial-gradient(115% 80% at 28% 22%, #000 0%, rgba(0, 0, 0, 0.3) 55%, transparent 84%);
-  mask-image: radial-gradient(115% 80% at 28% 22%, #000 0%, rgba(0, 0, 0, 0.3) 55%, transparent 84%);
-}
-.ps::after {
-  content: '';
-  position: absolute;
-  inset: auto -12% -30% -12%;
-  height: 60%;
+  inset: auto -12% -34% -12%;
+  height: 62%;
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(
@@ -51,7 +48,7 @@
     transparent 76%
   );
 }
-.ps > * {
+.ps-pin > * {
   position: relative;
   z-index: 1;
 }
@@ -61,15 +58,15 @@
    a beat per principle and then releases. --ps-step is a little over half a viewport
    rather than a full one: five full-height holds is 500vh of scrolling for one section,
    which stops reading as pacing and starts reading as a scroll trap. */
+/* Scroll distance is the card's own height plus a beat per principle. --ps-card is
+   measured and written by ProcessStory, so the spacer ends exactly when the last
+   principle has had its turn rather than at an arbitrary multiple of the viewport. */
 .ps[data-story='on'] {
-  height: calc(100vh + var(--ps-steps, 5) * var(--ps-step, 58vh));
+  height: calc(var(--ps-card, 560px) + var(--ps-steps, 5) * var(--ps-step, 58vh));
 }
 .ps[data-story='on'] .ps-pin {
   position: sticky;
-  top: 0;
-  display: flex;
-  align-items: center;
-  min-height: 100vh;
+  top: clamp(96px, 13vh, 152px);
 }
 
 /* ── the stage ──────────────────────────────────────────────────────────────
@@ -140,7 +137,7 @@
    Fade the STROKES, never the group: fading the <g> takes its occluder with it, and a
    see-through occluder stops hiding what is behind the plate — which put the ground grid
    straight through the stack the first time this was built. */
-.ps .sf-solo .occ {
+.ps-pin .sf-solo .occ {
   fill: var(--color-card);
 }
 .ps-plate :is(path, line):not(.occ) {

@@ -23,11 +23,11 @@ interface ProcessCompProps {
  * Replaces a rail-and-list, and before that a 2-up grid. The list still asked the reader
  * to scan five headlines at once; this presents one idea, holds it, then hands over.
  *
- * CONTENT NOTE, because it matters more here than in either previous version: every
- * step's `description` is empty in the CMS. The stage is built around a principle plus
- * one supporting line, so with titles alone it runs light. It reads correctly either way,
- * but this is the design that most rewards those five sentences being written — and they
- * are not invented here.
+ * The five step descriptions were empty in the CMS, which is what left the earlier
+ * versions of this section looking half empty. They are filled now by
+ * scripts/set-process-descriptions.ts — DRAFTS, written to be replaced, claiming nothing
+ * specific. The slot still renders only when authored, so clearing one in the admin
+ * degrades cleanly rather than leaving a gap.
  *
  * Left holds the frame and the figure, centred against the stage. Right is the stage.
  * ProcessStory owns the state; processStory.css owns the pin, the crossfade, and the
@@ -43,7 +43,7 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
 
   return (
     <ProcessStory count={steps.length}>
-      <div className="ps-pin">
+      <div className="ps-pin section-card">
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] lg:gap-16">
           {/* Frame — centred against the stage rather than top-aligned, so the composition
               stays balanced when only one principle is showing. */}
@@ -78,7 +78,11 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
                 <h3 className="font-display text-[clamp(1.75rem,3.4vw,3.25rem)] leading-[1.08] font-semibold tracking-[-0.03em]">
                   {longest}
                 </h3>
-                <p className="mt-4 text-[clamp(1rem,1.3vw,1.25rem)] leading-relaxed">&nbsp;</p>
+                <p className="mt-4 text-[15px] leading-relaxed">
+                  &nbsp;
+                  <br />
+                  &nbsp;
+                </p>
               </div>
 
               {steps.map((item, index): JSX.Element => (
@@ -88,11 +92,15 @@ export default function ProcessComp({ heading, description, process }: ProcessCo
                       {item.title}
                     </h3>
                   )}
-                  {/* Renders only when authored — the stage reserves no gap for copy that
-                      does not exist. */}
+                  {/* Renders only when authored, so clearing one in the admin leaves no gap. */}
                   {item.description && (
-                    <div className="mt-4 max-w-[46ch] text-[clamp(1rem,1.3vw,1.25rem)] leading-relaxed text-body">
-                      <RichTextComp content={item.description as RichText} className="prose-p:mb-0" />
+                    <div className="mt-4 max-w-[52ch] text-[15px] leading-relaxed text-body">
+                      {/* Size on prose-p, not the wrapper: RichTextComp emits prose classes that
+                          set the paragraph's font-size, so a size on the parent is overridden. */}
+                      <RichTextComp
+                        content={item.description as RichText}
+                        className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-relaxed prose-p:text-body"
+                      />
                     </div>
                   )}
                 </article>

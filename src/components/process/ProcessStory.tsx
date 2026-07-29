@@ -29,6 +29,16 @@ export default function ProcessStory({ count, children }: { count: number; child
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     root.dataset.story = 'on'
 
+    // The spacer's height follows the CARD's height, so the section ends when the story
+    // does. Re-measured on resize because the card reflows with the viewport.
+    const pin = root.querySelector<HTMLElement>('.ps-pin')
+    const measure = (): void => {
+      if (pin) root.style.setProperty('--ps-card', `${Math.round(pin.getBoundingClientRect().height)}px`)
+    }
+    measure()
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null
+    if (pin && ro) ro.observe(pin)
+
     const slides = [...root.querySelectorAll<HTMLElement>('.ps-slide')]
     const dots = [...root.querySelectorAll<HTMLElement>('.ps-dot')]
     const plates = [...root.querySelectorAll<HTMLElement>('.ps-plate')]
@@ -66,6 +76,7 @@ export default function ProcessStory({ count, children }: { count: number; child
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
     return () => {
+      ro?.disconnect()
       cancelAnimationFrame(raf)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
@@ -73,7 +84,7 @@ export default function ProcessStory({ count, children }: { count: number; child
   }, [count])
 
   return (
-    <section ref={ref} className="ps section-card w-full" style={{ '--ps-steps': count } as CSSProperties}>
+    <section ref={ref} className="ps w-full" style={{ '--ps-steps': count } as CSSProperties}>
       {children}
     </section>
   )
