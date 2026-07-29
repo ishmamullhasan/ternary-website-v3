@@ -20,7 +20,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
  *
  * The panel artwork is the SAME component the home page's industry cards use
  * (components/industry/IndustryBlueprint) rather than a second set of drawings maintained here.
- * It selects by keyword on the sector name, so the nine names map onto it without a lookup table,
+ * It selects by keyword on the sector name, so the eight names map onto it without a lookup table,
  * and the two surfaces can never drift apart.
  *
  * EVERY WORD HERE IS REAL. Sector names, one-line descriptions and named clients are the authored
@@ -50,64 +50,63 @@ type Sector = {
 
 const SECTORS: Sector[] = [
   {
+    // Banking & Capital Markets and Financial Services & Insurance were separate sectors. They drew
+    // on an identical set of five capabilities (the old CAPS '01' and '02' were the same list in a
+    // different order), so the split was in the naming rather than in the work.
+    //
+    // The description is merged from both originals' own words. The named clients come from the
+    // capital-markets side; the insurance side carried only a "Named work under NDA" placeholder,
+    // and real proof beats a placeholder.
     num: '01',
-    name: 'Banking & Capital Markets',
+    name: 'Banking & Financial Services',
     label: 'In the sector',
     clients: ['Dhaka Stock Exchange', 'LankaBangla Securities'],
-    desc: "Exchanges, brokerages, and systems that can't be down while markets are open.",
+    desc: "Exchanges, brokerages, and compliant platforms that scale with the book — and can't be down while markets are open.",
   },
   {
     num: '02',
-    name: 'Financial Services & Insurance',
-    label: 'In the sector',
-    clients: [],
-    none: 'Named work under NDA',
-    desc: 'Compliant platforms that scale with the book — and auditors who get real answers.',
-  },
-  {
-    num: '03',
     name: 'Health Care',
     label: 'In the sector',
     clients: ['Flex5 by Reality Meets Science'],
     desc: 'HIPAA-grade platforms where clinical trust and consumer ease have to live together.',
   },
   {
-    num: '04',
+    num: '03',
     name: 'Advanced Manufacturing',
     label: 'In the sector',
     clients: ['FAROGL'],
     desc: 'Connected plants, controlled processes, and operational intelligence from the floor up.',
   },
   {
-    num: '05',
+    num: '04',
     name: 'Sports & Entertainment',
     label: 'In the sector',
     clients: ['Alley Analytix', 'Turfly'],
     desc: 'Booking, performance data, and platforms that survive a matchday spike.',
   },
   {
-    num: '06',
+    num: '05',
     name: 'Hospitality & Travel',
     label: 'In the sector',
     clients: ['Counterfoil — attractions, activities & tours'],
     desc: 'Booking, inventory, and revenue systems for operators running thin margins against volatile demand.',
   },
   {
-    num: '07',
+    num: '06',
     name: 'Consumer Goods & Services',
     label: 'In the sector',
     clients: ['Hissho Sushi', 'DoYouWork'],
     desc: 'Field teams, franchise networks, and the last mile between insight and daily action.',
   },
   {
-    num: '08',
+    num: '07',
     name: 'Public Sector',
     label: 'Posture',
     clients: ['Cleared engineers · ATO-ready · Continuous compliance'],
     desc: 'Cleared engineers and ATO-ready delivery, with compliance that stays continuous — not a one-time certificate.',
   },
   {
-    num: '09',
+    num: '08',
     name: 'Technology Platforms',
     label: 'In the sector',
     clients: [],
@@ -125,6 +124,8 @@ const SECTORS: Sector[] = [
 // (every doc has an empty `layout` and a one-line excerpt), so no slot for them is rendered. Add
 // the fields, then render them here — do not backfill with generated copy.
 const CAPS: Record<string, string[]> = {
+  // '01' is the merged Banking & Financial Services. Both halves already listed these same five,
+  // so nothing had to be chosen or dropped here.
   '01': [
     'Data & Analytics',
     'Cloud Transformation',
@@ -133,25 +134,18 @@ const CAPS: Record<string, string[]> = {
     'Artificial Intelligence',
   ],
   '02': [
-    'Data & Analytics',
-    'Artificial Intelligence',
-    'Cloud Transformation',
-    'Platformization',
-    'DevOps & Automation',
-  ],
-  '03': [
     'Digital Experiences',
     'Cloud Transformation',
     'Data & Analytics',
     'Artificial Intelligence',
     'Platformization',
   ],
-  '04': ['Internet of Things', 'Data & Analytics', 'Platformization', 'Cloud Transformation', 'DevOps & Automation'],
-  '05': ['Digital Experiences', 'Data & Analytics', 'Cloud Transformation', 'Platformization'],
-  '06': ['Digital Experiences', 'Platformization', 'Data & Analytics', 'Cloud Transformation'],
-  '07': ['Digital Experiences', 'Data & Analytics', 'Artificial Intelligence', 'Platformization'],
-  '08': ['Cloud Transformation', 'DevOps & Automation', 'Data & Analytics', 'Platformization', 'Agentic Architecture'],
-  '09': [
+  '03': ['Internet of Things', 'Data & Analytics', 'Platformization', 'Cloud Transformation', 'DevOps & Automation'],
+  '04': ['Digital Experiences', 'Data & Analytics', 'Cloud Transformation', 'Platformization'],
+  '05': ['Digital Experiences', 'Platformization', 'Data & Analytics', 'Cloud Transformation'],
+  '06': ['Digital Experiences', 'Data & Analytics', 'Artificial Intelligence', 'Platformization'],
+  '07': ['Cloud Transformation', 'DevOps & Automation', 'Data & Analytics', 'Platformization', 'Agentic Architecture'],
+  '08': [
     'Platformization',
     'Agentic Architecture',
     'DevOps & Automation',
