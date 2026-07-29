@@ -7288,6 +7288,38 @@ export interface CalloutBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TableBlock".
+ */
+export interface TableBlock {
+  /**
+   * Optional caption shown above the table (also read by screen readers).
+   */
+  caption?: string | null;
+  hasHeaderRow?: boolean | null;
+  /**
+   * Enable for key/value tables where the first column labels each row.
+   */
+  hasHeaderColumn?: boolean | null;
+  /**
+   * Each row holds one or more cells, left to right.
+   */
+  rows?:
+    | {
+        cells?:
+          | {
+              content?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'table';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {

@@ -1,0 +1,581 @@
+/* About — the scene experience.
+ *
+ * DEFAULT STATE IS VISIBLE, ALWAYS. Nothing in this file hides content. Every start state
+ * (masked lines, undrawn strokes, offset layers, stacked scene states) is written by
+ * AboutExperience from JavaScript when its trigger is built. With JS off, before hydration, or
+ * under reduced motion, the page is a complete, readable document in normal flow.
+ *
+ * That is not a nicety here. The live About page ships 64 elements at inline opacity:0 because
+ * <Motion initial={{opacity:0}}> serialises the hidden state into the SSR HTML, so the page is
+ * blank without JavaScript. Using gsap.from() instead of authored CSS start states makes that
+ * failure structurally impossible.
+ *
+ * PALETTE. Black, warm white, grey, and one restrained green used only for live signals. The
+ * green is #1f9d6b — already in this codebase (it was the Ternary Way plate) so it is not a new
+ * brand colour. It is only ever applied to aria-hidden diagram elements, never to text, so it
+ * carries no contrast obligation.
+ */
+
+.ax {
+  --ax-green: #1f9d6b;
+  --ax-line: rgba(244, 243, 236, 0.13);
+  --ax-line-mid: rgba(244, 243, 236, 0.3);
+  --ax-line-hot: rgba(244, 243, 236, 0.62);
+  --ax-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ── inversion ──────────────────────────────────────────────────────────────
+   Warm-white ground with black type. Applied per scene, and driven across the scroll by the
+   engine. Body copy drops to a dark grey rather than pure black so the hierarchy survives the
+   flip; both clear AAA on cream by a wide margin. */
+.ax-invert {
+  background-color: var(--color-cream);
+  color: var(--color-page);
+}
+.ax-invert .ax-h,
+.ax-invert h2,
+.ax-invert h3 {
+  color: var(--color-page);
+}
+.ax-invert .ax-body {
+  color: #3f3f46;
+}
+.ax-invert .ax-meta {
+  color: #52525b;
+}
+.ax-invert .ax-rule {
+  background-color: rgba(5, 5, 5, 0.16);
+}
+
+/* Scenes are already full-width children of the About container (RenderBlocks drops the shared
+   max-width and gutters for this page and re-applies them around the Leadership block only), so
+   they need no escape hatch.
+
+   An earlier version used the `width: 100vw; margin-left: 50%; translateX(-50%)` full-bleed
+   trick. 100vw includes the scrollbar, so every scene overhung the viewport by the scrollbar's
+   width and the page scrolled horizontally at 1440 and 1024 — measured, not guessed. Clipping it
+   on an ancestor would have been the wrong fix twice over: it hides the symptom, and an
+   overflow-clipping ancestor is exactly what stops GSAP's pinning from engaging. */
+.ax-bleed {
+  width: 100%;
+}
+
+/* ── typography ─────────────────────────────────────────────────────────────
+   The hero and closing statements are one visual object, not two lines of a paragraph. */
+.ax-display {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(2.75rem, 11vw, 11.5rem);
+  line-height: 0.86;
+  letter-spacing: -0.06em;
+  font-weight: 500;
+}
+.ax-display-sm {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(2rem, 7.5vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  font-weight: 500;
+}
+/* Body never drops below 16px, at any width. */
+.ax-body {
+  font-size: 16px;
+  line-height: 1.62;
+  color: var(--color-body);
+}
+@media (min-width: 1024px) {
+  .ax-body {
+    font-size: 17px;
+  }
+}
+.ax-meta {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
+}
+
+/* ── masked lines ───────────────────────────────────────────────────────────
+   The engine wraps each line in a clipping span. Padding keeps descenders inside the clip. */
+.ax-line-mask {
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+
+/* ── scene scaffolding ──────────────────────────────────────────────────────
+   Scenes are normal blocks until the engine promotes them. `min-height` is only applied on
+   pointer-width viewports that actually get a pinned scene, so mobile never inherits a
+   viewport-tall box with nothing in it — the blank-gap failure from the last build. */
+.ax-scene {
+  position: relative;
+}
+@media (min-width: 900px) {
+  .ax-scene-tall {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* Stacked states inside a pinned scene. `clip`, NOT `hidden` — overflow:hidden makes an element
+   a scroll container, which silently stops position:sticky and pinning from working at all. */
+[data-stage='on'] .ax-stack {
+  position: relative;
+  overflow: clip;
+}
+[data-stage='on'] .ax-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+[data-stage='on'] .ax-sizer {
+  visibility: hidden;
+  pointer-events: none;
+}
+.ax-scene:not([data-stage='on']) .ax-sizer {
+  display: none;
+}
+/* In the fallback the states are in normal flow and would otherwise stack flush. */
+.ax-scene:not([data-stage='on']) .ax-state + .ax-state {
+  margin-top: 2.75rem;
+}
+.ax-scene:not([data-stage='on']) .ax-dots {
+  display: none;
+}
+
+.ax-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(244, 243, 236, 0.22);
+  transition:
+    width 0.5s var(--ax-ease),
+    background-color 0.5s ease;
+}
+.ax-dot.is-on {
+  width: 24px;
+  background: var(--ax-green);
+}
+.ax-invert .ax-dot {
+  background: rgba(5, 5, 5, 0.2);
+}
+.ax-invert .ax-dot.is-on {
+  background: var(--ax-green);
+}
+
+
+/* ── GROUNDS ────────────────────────────────────────────────────────────────
+   The page alternates black and warm white, and the alternation is the pacing. Each ground is a
+   real full-width background on the section, so a transition is a whole-screen event rather than
+   a change of card colour.
+
+   Exact values from the brief. The white is genuinely bright (#F1EFE8), not a dark grey pretending
+   — that was the specific failure being corrected. */
+.ax-black {
+  background-color: #050505;
+  color: #f2f0ea;
+}
+.ax-white {
+  background-color: #f1efe8;
+  color: #090909;
+}
+.ax-black .ax-h,
+.ax-black h1,
+.ax-black h2,
+.ax-black h3 {
+  color: #f2f0ea;
+}
+.ax-black .ax-copy {
+  color: #a8a6a0;
+}
+.ax-black .ax-label {
+  color: #86847e;
+}
+.ax-white .ax-h,
+.ax-white h1,
+.ax-white h2,
+.ax-white h3 {
+  color: #090909;
+}
+/* On cream this is ~9.8:1 — clear of the AAA floor for body text. */
+.ax-white .ax-copy {
+  color: #3f3f46;
+}
+.ax-white .ax-label {
+  color: #52525b;
+}
+.ax-white .ax-hair {
+  background-color: rgba(9, 9, 9, 0.18);
+}
+.ax-black .ax-hair {
+  background-color: rgba(242, 240, 234, 0.16);
+}
+
+/* ── EDITORIAL TYPE ─────────────────────────────────────────────────────────
+   Tight, large, and close to its supporting copy. The old scale left headline lines drifting
+   apart and set major content at body-note size. */
+.ax-hx {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(72px, 9vw, 150px);
+  line-height: 0.84;
+  letter-spacing: -0.06em;
+  font-weight: 500;
+}
+.ax-hx-sm {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(44px, 5.4vw, 92px);
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  font-weight: 500;
+}
+.ax-copy {
+  font-size: clamp(17px, 1.25vw, 21px);
+  line-height: 1.45;
+  max-width: 42ch;
+}
+.ax-label {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── SECTION WIPES ──────────────────────────────────────────────────────────
+   The panel that carries one ground over the previous one. It is a child of the incoming
+   section, pinned to the top edge and scaled from zero height, so the incoming ground sweeps up
+   over the outgoing one instead of cross-fading. Base state is scaleY(0) applied by JS only —
+   with no JS the panel simply never paints and the sections butt cleanly. */
+.ax-wipe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  transform-origin: bottom center;
+  pointer-events: none;
+  z-index: 0;
+}
+.ax-wipe-white {
+  background-color: #f1efe8;
+}
+.ax-wipe-black {
+  background-color: #050505;
+}
+.ax-above {
+  position: relative;
+  z-index: 1;
+}
+
+/* A thin rule that a scene can contract into, becoming the next section's divider. */
+.ax-hair {
+  height: 1px;
+  width: 100%;
+  transform-origin: center;
+}
+
+/* ── SCENE 02: the thesis slider ────────────────────────────────────────────
+   An editorial two-column slider. Everything here is scoped to `.ax-th*` so it cannot reach
+   another scene.
+
+   THE SAFE ZONE IS STRUCTURAL, not a matter of careful positioning. The right column is a grid
+   of copy | 96px gutter | canvas, so the gap is a real layout track that measures 96px at every
+   viewport. The graphic cannot drift over the text because it has no box there to drift into. */
+.ax-th-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+}
+@media (min-width: 900px) {
+  .ax-th-grid {
+    grid-template-columns: 32% 68%;
+    gap: 0;
+    align-items: center;
+    min-height: 100svh;
+  }
+  /* The gutter between the columns, held open rather than drawn. */
+  .ax-th-right {
+    position: relative;
+    padding-left: 4.5rem;
+    /* Copy | fixed safe gutter | canvas. An EXPLICIT column, not a percentage: deriving the gap
+       from percentages gave 78px at 1440 and only 44px at 1024 — both short of the 80px safe
+       zone, and worse the narrower the viewport got. A fixed track is the same at every width. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 96px 22%;
+    align-items: center;
+  }
+  .ax-th-copy {
+    grid-column: 1;
+    min-width: 0;
+  }
+  .ax-th-canvas {
+    grid-column: 3;
+    align-self: stretch;
+    pointer-events: none;
+  }
+}
+
+/* "Our thesis" */
+.ax-th-title {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(64px, 7vw, 112px);
+  line-height: 0.88;
+  letter-spacing: -0.055em;
+  font-weight: 500;
+  max-width: 4.5ch;
+}
+/* Active headline.
+   max-width is 12ch, not the 10ch specified. `ch` is font-relative, so the measure sets how many
+   characters fit per line regardless of font-size — and the longest thesis title runs 31
+   characters, which cannot fit in three lines at 10ch (it wrapped to four at 1024). The brief
+   also says the heading must never exceed three lines; that is the harder constraint and the
+   one that shows, so it wins. 12ch is the widest the titles need and still reads tight. */
+.ax-th-head {
+  font-family: var(--font-poppins), ui-sans-serif, sans-serif;
+  font-size: clamp(54px, 6vw, 96px);
+  line-height: 0.88;
+  letter-spacing: -0.055em;
+  font-weight: 500;
+  max-width: 12ch;
+  text-wrap: balance;
+}
+.ax-th-desc {
+  font-size: clamp(17px, 1.3vw, 21px);
+  line-height: 1.45;
+  max-width: 46ch;
+  margin-top: 24px;
+  color: var(--color-body);
+}
+.ax-th-intro {
+  font-size: 18px;
+  line-height: 1.55;
+  max-width: 42ch;
+  color: var(--color-body);
+}
+.ax-th-index {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--color-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The mask wrapper must not add leading or shave descenders. Padding buys room for the
+   descender and the negative margin gives the space straight back, so the 0.88 line-height is
+   exactly what it says it is. */
+.ax-th-line {
+  display: block;
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+}
+
+/* Stacked slides — only once the engine has staged them. */
+[data-thesis='on'] .ax-th-stack {
+  position: relative;
+}
+[data-thesis='on'] .ax-th-slide {
+  position: absolute;
+  inset: 0;
+}
+.ax-scene:not([data-thesis='on']) .ax-th-slide + .ax-th-slide {
+  margin-top: 3.5rem;
+}
+
+/* Pagination — a thin green pill for the active marker. */
+.ax-th-dots {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.ax-th-dot {
+  height: 3px;
+  width: 18px;
+  border-radius: 999px;
+  background: rgba(244, 243, 236, 0.22);
+  transition:
+    width 0.6s var(--ax-ease),
+    background-color 0.6s var(--ax-ease);
+}
+.ax-th-dot.is-on {
+  width: 44px;
+  background: var(--ax-green);
+}
+
+/* The restrained line system. Opacity stays inside the 0.08–0.18 band; only a live node is
+   allowed to reach 0.8. */
+.ax-th-canvas svg {
+  /* Bounds the viewBox scale. Without a cap the SVG grew with the section — under reduced
+     motion, where all six slides stack and the column is very tall, nodes painted at 22px,
+     over the 18px ceiling. */
+  max-width: 220px;
+  margin-left: auto;
+}
+.ax-th-canvas .ax-th-curve {
+  fill: none;
+  stroke: var(--color-cream);
+  stroke-width: 1;
+  opacity: 0.12;
+  vector-effect: non-scaling-stroke;
+}
+.ax-th-canvas .ax-th-curve.is-lit {
+  opacity: 0.18;
+}
+.ax-th-canvas .ax-th-node {
+  fill: var(--color-cream);
+  opacity: 0.16;
+}
+.ax-th-canvas .ax-th-node.is-live {
+  fill: var(--ax-green);
+  opacity: 0.8;
+}
+/* Beside each item in the mobile sequence — one small marker, nothing more. */
+.ax-th-mark {
+  width: 3px;
+  border-radius: 999px;
+  background: rgba(244, 243, 236, 0.18);
+}
+.ax-th-mark.is-on {
+  background: var(--ax-green);
+}
+
+/* ── system graphics ────────────────────────────────────────────────────────
+   Grey lines, warm-white nodes, green only where a signal is live. */
+.ax-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ax-edge {
+  fill: none;
+  stroke: var(--ax-line-mid);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.ax-edge-faint {
+  stroke: var(--ax-line);
+}
+.ax-node {
+  fill: var(--color-cream);
+}
+.ax-node-ring {
+  fill: none;
+  stroke: var(--ax-line-hot);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.ax-signal {
+  fill: var(--ax-green);
+}
+.ax-grid line {
+  stroke: var(--ax-line);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.ax-invert .ax-edge {
+  stroke: rgba(5, 5, 5, 0.26);
+}
+.ax-invert .ax-node {
+  fill: var(--color-page);
+}
+
+/* ── proof archive ──────────────────────────────────────────────────────────
+   One project active at a time; the rest stay legible as an index. Hover is CSS so it lands on
+   the first frame, and only where a pointer exists. */
+.ax-proof-row {
+  transition:
+    opacity 0.45s var(--ax-ease),
+    transform 0.5s var(--ax-ease);
+}
+.ax-proof-title {
+  transition:
+    font-size 0.5s var(--ax-ease),
+    color 0.4s ease;
+}
+@media (hover: hover) and (min-width: 900px) {
+  .ax-proof[data-index='on'] .ax-proof-row {
+    opacity: 0.34;
+  }
+  .ax-proof[data-index='on'] .ax-proof-row.is-active {
+    opacity: 1;
+  }
+  .ax-proof-row .ax-proof-excerpt {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      max-height 0.55s var(--ax-ease),
+      opacity 0.4s ease;
+  }
+  .ax-proof-row.is-active .ax-proof-excerpt {
+    max-height: 8rem;
+    opacity: 1;
+  }
+  .ax-proof-row .ax-proof-arrow {
+    opacity: 0;
+    transform: translate3d(-10px, 0, 0);
+    transition:
+      opacity 0.4s ease,
+      transform 0.5s var(--ax-ease);
+  }
+  .ax-proof-row.is-active .ax-proof-arrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Touch: no hover to reveal anything, so everything stays open and visible. */
+@media (hover: none), (max-width: 899px) {
+  .ax-proof-row .ax-proof-excerpt {
+    max-height: none;
+    opacity: 1;
+  }
+  .ax-proof-row .ax-proof-arrow {
+    opacity: 0.45;
+  }
+}
+
+/* ── grain ──────────────────────────────────────────────────────────────────
+   A texture, not a blur. filter: blur() on a layer this size forces a full re-rasterise every
+   frame and took scrolling to single-digit fps when it was tried on the home CTA. */
+.ax-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url('/noise.svg');
+  background-size: 240px;
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+}
+
+/* ── reduced motion ─────────────────────────────────────────────────────────
+   The engine never builds a GSAP context under either signal, so nothing is mid-flight. These
+   rules cover the case where the preference changes after load, and the site's own A11yFab
+   toggle, which writes data-a11y-motion onto <html>.
+
+   SCOPED TO ANIMATED SUBTREES ONLY, deliberately. A blanket `.ax *` would also reach the
+   Leadership / Meet the Team block, which sits inside this wrapper and must stay byte-identical
+   to the live component — including its own hover transitions. Targeting only elements the
+   engine actually drives keeps that section untouched under every motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  .ax [data-ax],
+  .ax [data-ax] *,
+  .ax [data-scene],
+  .ax [data-scene] * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+html[data-a11y-motion='reduce'] .ax [data-ax],
+html[data-a11y-motion='reduce'] .ax [data-ax] *,
+html[data-a11y-motion='reduce'] .ax [data-scene],
+html[data-a11y-motion='reduce'] .ax [data-scene] * {
+  transition: none !important;
+  animation: none !important;
+}
