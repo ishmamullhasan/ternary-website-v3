@@ -171,6 +171,16 @@ html[data-a11y-links='underline'] footer a {
   @media (width >= 64rem) {
     .section-card-bleed {
       overflow-clip-margin: 48px;
+      /* ...and then close the base again. The figure may break the top and the sides; it must
+         never hang below the card, so the bottom is clipped flush at the border box while the
+         other three edges keep their 48px.
+
+         `overflow-clip-margin` has no per-side longhands in practice — `overflow-clip-margin-bottom`
+         is not supported, and setting it silently collapses the shorthand to 0 and crops
+         everything — so the asymmetry has to come from a second clip that intersects the first.
+         The bottom corners are square rather than following the 8px radius, which is harmless
+         here: the sphere's widest point at the card's base still stops 88px short of the corner. */
+      clip-path: inset(-48px -48px 0 -48px);
     }
   }
 
