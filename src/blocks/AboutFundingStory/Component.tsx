@@ -1,10 +1,9 @@
-import AboutMotion from '@/components/about/AboutMotion'
-import MaskText from '@/components/about/MaskText'
+import AboutScene from '@/components/about/AboutScene'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutFundingStoryBlock, Media } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import Link from 'next/link'
-import type { CSSProperties, JSX } from 'react'
+import type { JSX } from 'react'
 
 /**
  * "Bootstrapped and profitable" — the closing statement band.
@@ -38,14 +37,14 @@ export function AboutFundingStoryComponent({
   if (!heading && !description) return null
 
   return (
-    <AboutMotion
+    <AboutScene
       tag="section"
       className="relative isolate flex min-h-[420px] flex-col justify-end overflow-hidden rounded-md px-6 py-14 md:px-10 lg:min-h-[520px] lg:px-14 lg:py-20"
     >
       {/* The plate. Inset vertically beyond the frame so it has room to travel without
           exposing an edge as it drifts. */}
       <span aria-hidden className="absolute inset-x-0 -inset-y-[12%] -z-10 overflow-hidden">
-        <span className="am-par block h-full w-full" style={{ '--am-amt': '26px' } as CSSProperties}>
+        <span data-anim="parallax" data-amt="10" className="block h-full w-full">
           {bgUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={bgUrl} alt="" className="h-full w-full object-cover" />
@@ -77,17 +76,19 @@ export function AboutFundingStoryComponent({
 
       <div className="flex max-w-[62ch] flex-col items-start gap-5">
         {eyebrow ? (
-          <span className="am-r font-mono text-xs font-medium tracking-[0.18em] text-cream uppercase">{eyebrow}</span>
+          <span data-anim="rise" className="font-mono text-xs font-medium tracking-[0.18em] text-cream uppercase">{eyebrow}</span>
         ) : null}
 
         {heading ? (
           <h2 className="font-display text-[clamp(1.875rem,4vw,3rem)] leading-[1.08] font-medium tracking-[-0.04em] text-cream text-balance">
-            <MaskText delay={0.06}>{heading}</MaskText>
+            <span data-anim="mask" className="block">
+              {heading}
+            </span>
           </h2>
         ) : null}
 
         {description ? (
-          <div className="am-r max-w-[56ch]" style={{ '--am-d': '0.18s' } as CSSProperties}>
+          <div data-anim="rise" className="max-w-[56ch]">
             <RichTextComp
               content={description as RichText}
               className="prose-p:mb-0 prose-p:text-[16px] prose-p:leading-[1.6] prose-p:text-cream"
@@ -96,7 +97,7 @@ export function AboutFundingStoryComponent({
         ) : null}
 
         {ctas.length ? (
-          <div className="am-r mt-2 flex flex-wrap items-center gap-3" style={{ '--am-d': '0.26s' } as CSSProperties}>
+          <div data-anim="rise" className="mt-2 flex flex-wrap items-center gap-3">
             {ctas.map((link, i) => {
               const isSecondary = link?.style === 'secondary'
               return (
@@ -116,6 +117,6 @@ export function AboutFundingStoryComponent({
           </div>
         ) : null}
       </div>
-    </AboutMotion>
+    </AboutScene>
   )
 }

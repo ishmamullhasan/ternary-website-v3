@@ -1,10 +1,9 @@
-import AboutMotion from '@/components/about/AboutMotion'
-import MaskText from '@/components/about/MaskText'
+import AboutScene from '@/components/about/AboutScene'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { Button } from '@/components/ui/button'
 import type { CtaBlock, Media } from '@/payload-types'
-import type { CSSProperties, JSX } from 'react'
+import type { JSX } from 'react'
 
 /**
  * The About page's closing call — an About-only treatment of the shared `ctaBlock`.
@@ -30,7 +29,7 @@ export function AboutEditorialCta({
   const bgUrl = (backgroundImage as Media)?.url
 
   return (
-    <AboutMotion
+    <AboutScene
       tag="section"
       className="relative isolate overflow-hidden rounded-md border border-white/[0.04] px-6 py-12 md:px-10 lg:px-14 lg:py-16"
     >
@@ -54,11 +53,13 @@ export function AboutEditorialCta({
         <div className="flex max-w-[46ch] flex-col gap-3">
           {heading ? (
             <h2 className="font-display text-[clamp(1.625rem,3vw,2.5rem)] leading-[1.1] font-medium tracking-[-0.04em] text-cream text-balance">
-              <MaskText>{heading}</MaskText>
+              <span data-anim="mask" className="block">
+                {heading}
+              </span>
             </h2>
           ) : null}
           {description ? (
-            <div className="am-r max-w-[52ch]" style={{ '--am-d': '0.12s' } as CSSProperties}>
+            <div data-anim="rise" className="max-w-[52ch]">
               <RichTextComp
                 content={description as RichText}
                 className="prose-p:mb-0 prose-p:text-[15px] prose-p:leading-[1.6] prose-p:text-cream"
@@ -68,28 +69,32 @@ export function AboutEditorialCta({
         </div>
 
         <div
-          className="am-r flex w-full shrink-0 flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
-          style={{ '--am-d': '0.2s' } as CSSProperties}
+          data-anim="rise"
+          className="flex w-full shrink-0 flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center"
         >
           {button_1?.label ? (
+            <span data-anim="magnetic" className="inline-block">
             <Button
               asChild
               className="h-auto w-full px-5 py-2.5 text-base bg-button-dark text-cream hover:bg-button-dark/90 sm:w-auto"
             >
               <Link href={(button_1?.link as string) || '#'}>{button_1.label}</Link>
             </Button>
+            </span>
           ) : null}
           {button_2?.label ? (
+            <span data-anim="magnetic" className="inline-block">
             <Button
               asChild
               className="h-auto w-full px-5 py-2.5 text-base bg-cream text-ink hover:bg-cream-hover sm:w-auto"
             >
               <Link href={(button_2?.link as string) || '#'}>{button_2.label}</Link>
             </Button>
+            </span>
           ) : null}
         </div>
       </div>
-    </AboutMotion>
+    </AboutScene>
   )
 }
 
