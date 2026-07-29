@@ -227,12 +227,27 @@
   width: 100%;
   max-width: 560px;
   height: auto;
+  /* Fallback only. SectorIndex replaces this with the drawing's own ratio once it has measured the
+     ink; without JavaScript the untouched 400x360 viewBox and this ratio still render correctly. */
   aspect-ratio: 400 / 360;
   /* The blueprint is drawn latent (0.42) because on a home card it is an ornament behind copy.
      Here it IS the panel, at ~1.6x the size and with nothing over it, so it carries its own
      weight. There is no `.group` on this surface to lift it on hover either. */
   opacity: 0.72;
 }
+/* The home cards' draw-in, played here when a sector becomes active rather than on hover. Radix
+   unmounts the inactive panel, so the new artwork is a fresh element every time the selection
+   changes and the animation simply runs on mount — no state, no replay trigger.
+
+   `ibDraw` is defined in industryBlueprint.css, which the component imports; keyframes are global,
+   so this is the same animation the home page runs, not a copy of it. Reduced motion is already
+   covered there too (`.ib, .ib * { animation: none !important }`), which is why there is no
+   media query here. */
+.hub .ix-art .ib .ln,
+.hub .ix-art .ib .thin {
+  animation: ibDraw 1.7s cubic-bezier(0.45, 0, 0.25, 1);
+}
+
 /* IndustryBlueprint fills its occluders with the HOME card's ground (#0F0E0E) so edges behind a
    solid form are hidden. This panel is --panel (#14120b), so those fills would read as dark holes
    punched through the drawing. The occluders are the only elements it emits with no class, which

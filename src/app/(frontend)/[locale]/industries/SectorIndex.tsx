@@ -165,12 +165,68 @@ export default function SectorIndex() {
   const [active, setActive] = useState(SECTORS[0].num)
   const canHover = useCanHover()
   const listRef = useRef<HTMLDivElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
   // Pointer and keyboard beat scroll: while either is driving, the observer stands down.
   const held = useRef(false)
 
   const pick = useCallback((num: string) => {
     held.current = true
     setActive(num)
+  }, [])
+
+  /**
+   * Fit the artwork to its own ink.
+   *
+   * IndustryBlueprint draws every sector into one fixed 400x360 viewBox, which is right on the home
+   * page — nine cards in a grid want a common box so their figures share a baseline. Here a single
+   * figure IS the panel, and the fixed box meant each sector rendered at whatever size it happened
+   * to occupy: measured across the nine, ink ran from 217px wide (Consumer Goods) to 368px
+   * (Advanced Manufacturing) inside an identical 426px element, starting anywhere from 28px to
+   * 104px in. They read as different sizes and off-centre because they were.
+   *
+   * Re-fitting the viewBox to the drawn extent makes every sector exactly as wide as the panel
+   * allows, and `aspectRatio` locks the height to that drawing's own proportions rather than
+   * stretching it — so the ratio holds and the flex centring has something uniform to centre.
+   *
+   * Measured rather than baked into the component: `getBBox()` is the browser's own geometry, exact
+   * for the arcs and quadratics these drawings use, and it cannot go stale the way a hardcoded table
+   * of extents would the first time the art is edited. It also keeps IndustryBlueprint a pure server
+   * component for the home page, which never needs any of this.
+   *
+   * DRIVEN BY A MutationObserver, NOT BY THE RENDER. Radix mounts a tab's content in its own commit,
+   * after the one our state change produces — so an effect keyed on `active` (or even one with no
+   * deps) looks at a stage that does not hold the new drawing yet. It fitted on first load and
+   * silently missed every switch after it, which is precisely how this failed when it was written
+   * that way. Watching the stage for the swap catches whoever performs it and whenever.
+   */
+  useEffect(() => {
+    const stage = stageRef.current
+    if (!stage) return
+
+    const fit = (): void => {
+      const svg = stage.querySelector<SVGSVGElement>('.ib')
+      if (!svg) return
+      let box: DOMRect
+      try {
+        box = svg.getBBox()
+      } catch {
+        return // not laid out yet; the untouched 400x360 viewBox is a fine fallback
+      }
+      if (!box.width || !box.height) return
+      // getBBox is geometry, not ink: a 1.6 stroke sits 0.8 outside it on every edge.
+      const pad = 3
+      const vb = `${(box.x - pad).toFixed(2)} ${(box.y - pad).toFixed(2)} ${(box.width + pad * 2).toFixed(2)} ${(box.height + pad * 2).toFixed(2)}`
+      // Guard the write: the observer watches this subtree, and re-setting an identical value would
+      // still be a mutation to react to.
+      if (svg.getAttribute('viewBox') === vb) return
+      svg.setAttribute('viewBox', vb)
+      svg.style.aspectRatio = `${(box.width + pad * 2).toFixed(2)} / ${(box.height + pad * 2).toFixed(2)}`
+    }
+
+    fit()
+    const mo = new MutationObserver(fit)
+    mo.observe(stage, { childList: true, subtree: true })
+    return () => mo.disconnect()
   }, [])
 
   // Scroll-sync — whichever rail item crosses the viewport's middle band becomes active.
@@ -224,7 +280,7 @@ export default function SectorIndex() {
         ))}
       </Tabs.List>
 
-      <div className="ix-stage">
+      <div className="ix-stage" ref={stageRef}>
         {SECTORS.map((sector) => (
           <Tabs.Content key={sector.num} value={sector.num} className="ix-panel">
             <div className="ix-art" aria-hidden="true">

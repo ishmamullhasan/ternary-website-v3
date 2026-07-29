@@ -36,10 +36,15 @@
 .ib .dim {
   stroke-opacity: 0.5;
 }
+/* The dotted ground plane and the drop lines under each form. Removed on BOTH surfaces — they
+   read as a faint dashed grid behind the drawing rather than as a floor, and at the size the
+   industries hub renders these they were the first thing the eye found.
+
+   `display: none` rather than deleting the emitters: they still carry the geometry that positions
+   everything above them, and `getBBox()` ignores display:none descendants, so hiding them also
+   keeps them out of the fitted viewBox the hub computes (see SectorIndex). */
 .ib .gr {
-  stroke-width: 1.3;
-  stroke-dasharray: 0.6 5;
-  stroke-opacity: 0.4;
+  display: none;
 }
 
 /* --- Hover: brighten toward cream (like the Capabilities cards) and redraw the strokes. ---------- */
