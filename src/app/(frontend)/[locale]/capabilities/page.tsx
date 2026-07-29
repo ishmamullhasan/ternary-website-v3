@@ -1,6 +1,6 @@
 import Motion from '@/components/animation/motion'
-import ColumnsMark from '@/components/iso/ColumnsMark'
 import Link from '@/components/LocalizedLink'
+import NetworkMark from '@/components/network/NetworkMark'
 import RevealText from '@/components/text/RevealText'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
@@ -229,11 +229,18 @@ export default function CapabilitiesHubPage(): JSX.Element {
             </Motion>
           </div>
 
-          {/* Eight plates on one plane — the headline beside it, drawn. Hidden below lg,
-              where the hero is a single column and it would only add scroll. */}
-          <Motion className="hidden lg:block" {...reveal}>
-            <ColumnsMark />
-          </Motion>
+          {/* The Living Engineering Network. Not a stack of objects: these disciplines are
+              interconnected practices, so the figure is a system — nodes, the paths between
+              them, and signals still moving. Hidden below lg, where the hero is a single
+              column and it would only add scroll. */}
+          {/* NOT wrapped in <Motion>. Motion commits its `initial` opacity 0 before
+              useReducedMotion() resolves and never clears it — measured, the figure had a
+              hidden ancestor under BOTH prefers-reduced-motion and JS-disabled, so the
+              whole network was invisible to those visitors. It is decorative and already
+              has its own ambient motion; it does not need a reveal on top. */}
+          <div className="hidden lg:block">
+            <NetworkMark />
+          </div>
         </div>
       </Section>
 

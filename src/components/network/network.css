@@ -1,0 +1,280 @@
+/* Living Engineering Network — the capabilities hero field.
+ *
+ * BASE IS THE COMPOSED FIGURE. Every rule below paints first and animates second, so the
+ * network is fully drawn with JavaScript off, before hydration, and under
+ * prefers-reduced-motion. Nothing is visible only while an animation is mid-cycle.
+ *
+ * The brief's palette, held to exactly: lines rgba(255,255,255,.14), nodes .22, active
+ * white, and one restrained violet. No neon, no colour gradients across the field.
+ *
+ * Timings are 9–22s on purpose. The test is "is it moving?" — if a visitor can time the
+ * loop, it has become decoration. Every cycle is prime-ish against its neighbours so the
+ * field never visibly repeats.
+ */
+
+.nw {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 620 / 520;
+  isolation: isolate;
+}
+
+/* ── bloom ──────────────────────────────────────────────────────────────────
+   Off-centre and low, so it lights the field from behind rather than sitting on it.
+   A gradient, not a blur: blurring an element this size costs a full re-rasterise a
+   frame and is what took the home CTA to 2.9fps. */
+.nw-bloom {
+  position: absolute;
+  inset: -18% -12% -24% -12%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 62% 58% at 52% 50%,
+    rgba(139, 92, 246, 0.17) 0%,
+    rgba(124, 92, 255, 0.06) 38%,
+    transparent 72%
+  );
+}
+
+/* ── engineering grid ───────────────────────────────────────────────────────
+   Masked to dissolve outward: a grid with an edge reads as a swatch, one that fades
+   reads as depth. Kept under 3% so it never competes with the network. */
+.nw-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(244, 243, 236, 0.026) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(244, 243, 236, 0.026) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(58% 58% at 52% 50%, #000 0%, rgba(0, 0, 0, 0.4) 55%, transparent 82%);
+  mask-image: radial-gradient(58% 58% at 52% 50%, #000 0%, rgba(0, 0, 0, 0.4) 55%, transparent 82%);
+}
+
+.nw-svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* ── the centre ─────────────────────────────────────────────────────────────
+   The one place the field resolves. Breathes slowest of anything here. */
+.nw-heart {
+  opacity: 0.85;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nwHeart 17s ease-in-out infinite;
+}
+@keyframes nwHeart {
+  0%,
+  100% {
+    opacity: 0.66;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.04);
+  }
+}
+
+/* The hard point at the centre — what the strands actually leave from. */
+.nw-core-dot {
+  fill: #ffffff;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nwCoreDot 17s ease-in-out infinite;
+}
+@keyframes nwCoreDot {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* Orbits: dotted ellipses the strands cross, so the gaps read as depth not emptiness. */
+.nw-orbit {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  animation: nwOrbit 19s ease-in-out infinite;
+}
+@keyframes nwOrbit {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* Dot-matrix patches — the measured texture at the edges of the field. */
+.nw-dot {
+  fill: rgba(255, 255, 255, 0.3);
+}
+.nw-patch {
+  animation: nwDot 12s ease-in-out infinite;
+}
+@keyframes nwDot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Mid-strand markers: held, never animated. Something has to stay still or the whole
+   field shimmers and stops reading as a system. */
+.nw-node.is-quiet {
+  fill: rgba(255, 255, 255, 0.28);
+  animation: none;
+}
+
+/* ── connections ────────────────────────────────────────────────────────────
+   Hairline, non-scaling so they stay hairline at any render size, and they illuminate
+   rather than draw — a stroke-dash draw-in would read as loading, not as a live system. */
+.nw-edge {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.26);
+  stroke-width: 0.9;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.55;
+  animation: nwEdge 13s ease-in-out infinite;
+}
+
+/* Animates OPACITY, not the stroke colour. Interpolating stroke repaints every path on
+   every frame — with 20 strands that measured ~10fps of scroll against the rest of the
+   page. Opacity composites, so the same illumination costs nothing to paint. The stroke
+   is set at the bright end and the base opacity brings it back to the brief's .14. */
+@keyframes nwEdge {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.nw-edge.is-sweep {
+  opacity: 0.36;
+}
+
+/* The sweeps sit a touch fainter than the radial strands, so the centre still reads as
+   the origin and they read as passing through rather than competing with it. */
+.nw-edge.is-sweep {
+  stroke: rgba(255, 255, 255, 0.17);
+  animation-duration: 21s;
+}
+
+/* ── signals ────────────────────────────────────────────────────────────────
+   One pulse per route, fading in and out across the run so it arrives and leaves rather
+   than looping visibly past the join. */
+.nw-signal {
+  fill: #ffffff;
+  offset-rotate: 0deg;
+  opacity: 0;
+  animation: nwSignal 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes nwSignal {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.95;
+  }
+  76% {
+    opacity: 0.95;
+  }
+  92%,
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+/* ── nodes ──────────────────────────────────────────────────────────────────
+   They breathe: opacity and a hair of scale, never position. Nodes that drift turn the
+   constellation into a screensaver. */
+.nw-node {
+  fill: rgba(255, 255, 255, 0.22);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nwNode 9.5s ease-in-out infinite;
+}
+.nw-node.is-accent {
+  fill: #ffffff;
+}
+@keyframes nwNode {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+.nw-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nwRing 21s ease-in-out infinite;
+}
+@keyframes nwRing {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.12);
+  }
+}
+
+.nw-glow {
+  animation: nwGlow 15s ease-in-out infinite;
+}
+@keyframes nwGlow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Base rules are the composed figure, so switching the animations off lands on a drawn
+   network held still — which is the whole point of writing it this way round. */
+@media (prefers-reduced-motion: reduce) {
+  .nw *,
+  .nw-bloom,
+  .nw-grid {
+    animation: none !important;
+    transition: none !important;
+  }
+  .nw-signal {
+    /* the only element whose base opacity is 0, because it exists to travel */
+    display: none;
+  }
+}
