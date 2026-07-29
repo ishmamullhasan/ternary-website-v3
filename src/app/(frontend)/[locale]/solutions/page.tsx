@@ -188,18 +188,6 @@ const PANEL = 'rounded-xl bg-card'
 const PANEL_HOVER = 'transition-colors duration-300 hover:bg-[#232119]'
 const CHIP = 'rounded-full bg-card transition-colors duration-200 hover:bg-[#2a2820]'
 
-// Eyebrow — uppercase micro-label. Its marker is a dot rather than the 6px rule it
-// used to be: it reads identically at a glance and adds no hairline to a page whose
-// structure is now carried entirely by surfaces.
-function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
-  return (
-    <span className="flex items-center gap-2.5 font-mono text-[12px] tracking-[0.16em] text-subtle uppercase">
-      <span aria-hidden className="size-1.5 rounded-full bg-cream/60" />
-      {children}
-    </span>
-  )
-}
-
 /* One wrapper for every section, so the max width, the gutters and the vertical
    rhythm are declared once here instead of being repeated six times and drifting
    apart — which is what left the sections misaligned with each other. */
@@ -213,22 +201,32 @@ function Section({ children, id, pad }: { children: ReactNode; id?: string; pad?
   )
 }
 
-/* Every section opens the same way — eyebrow + heading left, one supporting sentence
-   right, sharing a baseline. Previously each section hand-rolled this and they came
-   out on slightly different margins. */
-function SectionHead({ eyebrow, title, blurb }: { eyebrow: string; title: string; blurb: string }): JSX.Element {
+/* Every section opens the same way — heading left, one supporting sentence top right.
+   Previously each section hand-rolled this and they came out on slightly different
+   margins.
+
+   `items-start`, not `items-end`. The sentence used to hang off the bottom of the
+   heading block, which put it level with the heading's LAST line — two lines down and
+   reading as a footnote to it. At the top it reads as a counterweight instead, and the
+   two sides start together however many lines the heading runs to.
+
+   `text-right` so a sentence that wraps stays anchored to the same edge; left-aligned,
+   a second line would start a ragged column in the middle of the header. */
+function SectionHead({ title, blurb }: { title: string; blurb: string }): JSX.Element {
   return (
     <Motion
-      className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
+      className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16"
       {...reveal}
     >
-      <div className="flex flex-col gap-4">
-        <Eyebrow>{eyebrow}</Eyebrow>
-        <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-cream">
-          {title}
-        </h2>
-      </div>
-      <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:pb-2">{blurb}</p>
+      <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-cream">
+        {title}
+      </h2>
+      {/* No optical nudge needed, which is worth recording because it is not obvious: the
+          h2 is ~52px on 1.06 leading and this is 16px on 1.625, and those two half-leadings
+          happen to cancel to within a pixel. Measured off rendered pixels — ink starts
+          within 1px of the heading's at both 1440 and 1920, so `items-start` alone puts the
+          two first lines on the same line. Do not add padding here by eye. */}
+      <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:text-right">{blurb}</p>
     </Motion>
   )
 }
@@ -263,7 +261,6 @@ export default function SolutionsHubPage(): JSX.Element {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-16">
           <div>
             <Motion className="flex flex-col gap-7" {...reveal}>
-              <Eyebrow>Solutions · Ways in</Eyebrow>
               <h1 className="font-display max-w-[15ch] text-[clamp(2.75rem,7vw,6rem)] leading-[1.01] font-medium tracking-[-0.04em] text-cream">
                 Built to outlast.
               </h1>
@@ -305,7 +302,6 @@ export default function SolutionsHubPage(): JSX.Element {
       {/* ── FOUR AT A GLANCE ─────────────────────────────────────────────────────────────── */}
       <Section>
         <SectionHead
-          eyebrow="At a glance"
           title="The ways in"
           blurb="Pick the shape that fits where you are. Each opens onto the same standard of engineering."
         />
@@ -452,7 +448,6 @@ export default function SolutionsHubPage(): JSX.Element {
       {/* ── ENGAGEMENT MODELS ────────────────────────────────────────────────────────────── */}
       <Section>
         <SectionHead
-          eyebrow="Engagement models"
           title="How the work is structured"
           blurb="Shapes of engagement. Every solution runs on one — or moves between them as the work changes."
         />
@@ -480,7 +475,6 @@ export default function SolutionsHubPage(): JSX.Element {
       {/* ── COMPARE (the showpiece) ──────────────────────────────────────────────────────── */}
       <Section>
         <SectionHead
-          eyebrow="Compare"
           title="Side by side. Honest answers."
           blurb="No winner. The right column is the one that matches your situation."
         />
@@ -545,7 +539,6 @@ export default function SolutionsHubPage(): JSX.Element {
           </span>
 
           <div className="relative z-10 flex flex-col gap-6">
-            <Eyebrow>Start here</Eyebrow>
             <h2 className="max-w-[16ch] font-display text-[clamp(1.875rem,4vw,3rem)] font-medium leading-[1.08] tracking-[-0.02em] text-cream">
               Still not sure which one you need?
             </h2>
