@@ -35,7 +35,7 @@ export function AboutFundingStoryComponent({
       data-scene="funding"
       className="ax-white ax-scene relative isolate w-full overflow-hidden px-5 py-28 md:px-10 lg:px-16 lg:py-40"
     >
-      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-white" />
+      <span aria-hidden data-ax="wipe" data-wipe="word" className="ax-wipe ax-wipe-white" />
       <div className="ax-above mx-auto flex w-full max-w-[1400px] flex-col gap-10">
         {eyebrow ? (
           <span data-ax="rise" className="ax-label">

@@ -28,7 +28,7 @@ export function AboutThesisComponent({ heading, description, items }: AboutThesi
       className="ax-white ax-scene relative isolate w-full overflow-hidden px-5 py-24 md:px-10 lg:px-16 lg:py-0"
     >
       {/* The incoming white ground sweeps up over the black hero. */}
-      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-white" />
+      <span aria-hidden data-ax="wipe" data-wipe="disc" className="ax-wipe ax-wipe-white" />
 
       <div className="ax-above mx-auto flex w-full max-w-[1400px] flex-col justify-center lg:min-h-[100svh]">
         {/* Anchored small, upper left. */}

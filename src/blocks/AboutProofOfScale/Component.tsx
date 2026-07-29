@@ -41,7 +41,7 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
       data-scene="proof"
       className="ax-white ax-scene relative isolate w-full overflow-hidden px-5 py-24 md:px-10 lg:px-16 lg:py-32"
     >
-      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-white" />
+      <span aria-hidden data-ax="wipe" data-wipe="rule" className="ax-wipe ax-wipe-white" />
       <div className="ax-above mx-auto w-full max-w-[1400px]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
           {company?.heading ? (

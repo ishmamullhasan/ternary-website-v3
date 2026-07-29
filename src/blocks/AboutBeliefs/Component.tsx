@@ -24,7 +24,7 @@ export function AboutBeliefsComponent({ heading, description, items }: AboutBeli
       data-scene="culture"
       className="ax-black ax-scene relative isolate w-full overflow-hidden px-5 py-24 md:px-10 lg:px-16 lg:py-32"
     >
-      <span aria-hidden data-ax="wipe" className="ax-wipe ax-wipe-black" />
+      <span aria-hidden data-ax="wipe" data-wipe="zoom" className="ax-wipe ax-wipe-black" />
       <div className="ax-above mx-auto w-full max-w-[1400px]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-20">
           <h2 className="ax-label">

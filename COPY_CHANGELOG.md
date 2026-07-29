@@ -15,6 +15,30 @@ CMS later.
 
 ## Changes
 
+### About / "The Ternary Way" — stated count removed (staging)
+`pages.about.layout[aboutApproach].description` via `scripts/seed-about-approach-count.js`
+(idempotent). **Prod follow-up: replicate.**
+- **Old (en):** "…rooted in technical excellence and sustained accountability, defined by three
+  core principles."
+- **New (en):** "…rooted in technical excellence and sustained accountability."
+- **Old (bn):** "…একটি ইঞ্জিনিয়ারিং পার্টনারশিপ মডেল, যা তিনটি মূল নীতির দ্বারা সংজ্ঞায়িত।"
+- **New (bn):** "…একটি ইঞ্জিনিয়ারিং পার্টনারশিপ মডেল।"
+
+The intro claimed **three** core principles while the block holds **five** (Absolute ownership,
+Transparent execution, Proximity to impact, A certified global delivery hub, Three ways to
+engage). So it was wrong on the page, and it also broke the standing rule against stated counts
+(REDESIGN_PLAN.md — the same pass that turned "Eight disciplines. One standard." into a
+count-free line). Pure deletion of the count clause: no new wording, no claim added or removed
+beyond the incorrect number.
+
+Note the two locales are stored in different shapes on this field — `en` is Lexical richText,
+`bn` is a plain string — and the script preserves each rather than normalising them, since that
+would be a schema change rather than a copy fix.
+- Code (same pass): `[...slug]/page.tsx` cache key `pages_<path>_<locale>_v3 → _v4`. The edit was
+  made outside a Next request, so no afterChange hook fired to bust the `pages` tag; without the
+  bump the page keeps serving the old sentence.
+
+
 ### Header nav — "Work" added (staging)
 `globals.header.menu` via `scripts/seed-nav-work.js` (idempotent). **Prod follow-up: replicate.**
 - **Old:** Capabilities · Solutions · Industries · Scales · Stories
