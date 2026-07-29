@@ -464,7 +464,11 @@ export default function GlobalDeliveryGlobe({
           // eslint-disable-next-line @next/next/no-img-element
           <img src="/globalDelivery.svg" alt="Global delivery network" className="h-full w-full object-contain" />
         ) : (
-          <motion.div style={{ scale: zoom }} className="relative h-full w-full">
+          // Zoom grows from the TOP edge, not the centre. The card crops this figure's base and the
+          // 48px clip ceiling sits just above its crown, so a centre-origin zoom spent half its
+          // growth pushing the lanes into that ceiling. From the top the crown holds still and the
+          // growth goes downward into the crop, where it costs nothing.
+          <motion.div style={{ scale: zoom }} className="relative h-full w-full origin-top">
             <canvas
               ref={canvasRef}
               role="img"

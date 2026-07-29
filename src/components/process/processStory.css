@@ -53,6 +53,36 @@
   z-index: 1;
 }
 
+/* ── entry / exit fade ──────────────────────────────────────────────────────
+   Every other block on the home page is wrapped by RenderBlocks in a Motion section that
+   runs opacity 0 -> 1 and y 12 -> 0 with `once: false`, so cards fade both in and out as
+   they pass. This block self-wraps and opted out of that wrapper, so it did not fade at
+   all — it simply appeared.
+
+   It cannot use that wrapper either. The wrapper resolves reduced motion on the client,
+   after `motion.create()` has already written `opacity: 0` inline, and re-renders through
+   the same component type — so React keeps the DOM node and the inline zero is never
+   cleared. That is the bug that has made this block invisible before.
+
+   So: the same gesture, same duration and easing, driven from CSS. The BASE is the
+   finished state, and the pre-animation state exists only under `[data-story='on']` —
+   which ProcessStory sets from JavaScript and only when the visitor has not asked for
+   reduced motion. With JS off, before hydration, or under reduced motion there is no rule
+   that can hide this card.
+
+   `transform` on `.ps-pin` is safe: it is already the positioned element (sticky under
+   `[data-story='on']`), so it was a containing block for its descendants either way, and
+   a transform on a sticky element offsets it visually without disturbing the pin. */
+.ps[data-story='on'] .ps-pin {
+  transition:
+    opacity 0.4s ease-out,
+    transform 0.4s ease-out;
+}
+.ps[data-story='on'][data-in='false'] .ps-pin {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
 /* ── the pin ────────────────────────────────────────────────────────────────
    Scroll distance is (steps x --ps-step) on top of one viewport, so the stage holds for
    a beat per principle and then releases. --ps-step is a little over half a viewport

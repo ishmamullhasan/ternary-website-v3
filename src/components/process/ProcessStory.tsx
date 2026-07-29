@@ -39,10 +39,29 @@ export default function ProcessStory({ count, children }: { count: number; child
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null
     if (pin && ro) ro.observe(pin)
 
+    // Entry/exit fade, matching the `once: false` fade RenderBlocks gives every other block.
+    // Observed on the CARD, not on `.ps` — `.ps` is a multi-viewport scroll spacer, so the share
+    // of it that can ever be on screen is smaller than the 0.2 threshold and it would never
+    // qualify. The card is roughly viewport-sized and its ratio does move 0 -> 1 -> 0.
+    const io = pin
+      ? new IntersectionObserver(
+          ([e]) => {
+            if (e) root.dataset.in = e.isIntersecting ? 'true' : 'false'
+          },
+          { threshold: 0.2 },
+        )
+      : null
+    if (pin && io) io.observe(pin)
+
     const slides = [...root.querySelectorAll<HTMLElement>('.ps-slide')]
     const dots = [...root.querySelectorAll<HTMLElement>('.ps-dot')]
     const plates = [...root.querySelectorAll<HTMLElement>('.ps-plate')]
-    if (!slides.length) return
+    if (!slides.length) {
+      return () => {
+        ro?.disconnect()
+        io?.disconnect()
+      }
+    }
 
     let raf = 0
     let current = -1
@@ -77,6 +96,7 @@ export default function ProcessStory({ count, children }: { count: number; child
     window.addEventListener('resize', onScroll)
     return () => {
       ro?.disconnect()
+      io?.disconnect()
       cancelAnimationFrame(raf)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
