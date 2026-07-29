@@ -61,6 +61,32 @@ const ARC_SEGMENTS = 96
 const PULSE_MS = 2800 // one shipment's travel time, origin → destination
 const PULSE_TAIL = 0.14 // comet trail length, as a fraction of the arc
 
+// --color-card #1b1a17. Every lane stroke is pre-composited against this and drawn fully opaque,
+// because the figure straddles two backgrounds: the card, and --color-page where it bleeds past the
+// frame. A translucent stroke resolves lighter over the card than over the page, so one continuous
+// lane visibly stepped darker the moment it crossed the edge — measured at 72 relative luminance
+// inside the card against 51 outside it, on the same arc in the same frame. Compositing here rather
+// than letting the canvas do it against whatever happens to be behind makes a lane one colour
+// everywhere, including where it passes in front of the sphere.
+const CARD_RGB = [27, 26, 23] as const
+
+type Rgb = [number, number, number]
+
+/** A lane colour as it appears over the card at `alpha`, returned opaque. */
+const overCard = (c: Rgb, alpha: number): Rgb => [
+  Math.round(c[0] * alpha + CARD_RGB[0] * (1 - alpha)),
+  Math.round(c[1] * alpha + CARD_RGB[1] * (1 - alpha)),
+  Math.round(c[2] * alpha + CARD_RGB[2] * (1 - alpha)),
+]
+
+const mix = (a: Rgb, b: Rgb, t: number): Rgb => [
+  Math.round(a[0] + (b[0] - a[0]) * t),
+  Math.round(a[1] + (b[1] - a[1]) * t),
+  Math.round(a[2] + (b[2] - a[2]) * t),
+]
+
+const css = (c: Rgb): string => `rgb(${c[0]}, ${c[1]}, ${c[2]})`
+
 type Vec3 = [number, number, number]
 
 const DEG = Math.PI / 180
@@ -106,7 +132,9 @@ function greatCircleArc(a: Vec3, b: Vec3): Vec3[] {
 }
 
 type Marker = { location: [number, number]; size: number }
-type Arc = { points: Vec3[]; rgb: string }
+/** `base` is the resting lane, `peak` the full-strength colour the comet reaches. Both opaque —
+ *  the comet's trail ramps between them by colour rather than by alpha (see drawArcs). */
+type Arc = { points: Vec3[]; rgb: string; base: Rgb; peak: Rgb }
 
 /**
  * CMS lanes → what the globe actually draws: cobe markers (one per distinct endpoint, deduped so a
@@ -138,9 +166,15 @@ function buildGlobeData(input: GlobeLane[]): { markers: Marker[]; arcs: Arc[]; p
   lanes.forEach((lane, i) => {
     addMarker(lane.from.lat, lane.from.lng, ORIGIN_SIZE)
     addMarker(lane.to.lat, lane.to.lng, DESTINATION_SIZE)
+    const rgb = laneColor(lane.color, i).rgb
+    const peak = rgb.split(',').map((n) => parseInt(n, 10)) as Rgb
     arcs.push({
       points: greatCircleArc(toVec3([lane.from.lat, lane.from.lng]), toVec3([lane.to.lat, lane.to.lng])),
-      rgb: laneColor(lane.color, i).rgb,
+      rgb,
+      // What 22% of this colour used to resolve to over the card — the appearance the lane had
+      // inside the frame, now painted as a flat colour so it holds outside it too.
+      base: overCard(peak, 0.22),
+      peak,
     })
     const from = lane.from.label?.trim()
     const to = lane.to.label?.trim()
@@ -279,7 +313,7 @@ export default function GlobalDeliveryGlobe({
       ctx.lineJoin = 'round'
 
       for (let a = 0; a < arcs.length; a++) {
-        const { points, rgb } = arcs[a]!
+        const { points, rgb, base, peak } = arcs[a]!
         const projected = points.map((p) => project(p, currentPhi))
 
         // Lane: one path, broken wherever it passes behind the globe.
@@ -296,7 +330,7 @@ export default function GlobalDeliveryGlobe({
           else ctx.moveTo(x, y)
           penDown = true
         }
-        ctx.strokeStyle = `rgba(${rgb}, 0.22)`
+        ctx.strokeStyle = css(base)
         ctx.lineWidth = 1 * dpr
         ctx.stroke()
 
@@ -311,14 +345,17 @@ export default function GlobalDeliveryGlobe({
           const to = projected[i + 1]!
           if (occluded(from) || occluded(to)) continue
 
-          // Brightest at the head, fading back along the trail.
+          // Brightest at the head, cooling back along the trail. The ramp runs base -> head as a
+          // COLOUR, not as alpha: at the tail end it lands exactly on the lane it is travelling
+          // along, so the trail dissolves seamlessly into the lane instead of dissolving into
+          // whatever is behind the canvas. That is what keeps it identical on both backgrounds.
           const fade = 1 - (head - i) / (PULSE_TAIL * ARC_SEGMENTS)
           const [x0, y0] = toPixels(from, px)
           const [x1, y1] = toPixels(to, px)
           ctx.beginPath()
           ctx.moveTo(x0, y0)
           ctx.lineTo(x1, y1)
-          ctx.strokeStyle = `rgba(${rgb}, ${0.9 * fade})`
+          ctx.strokeStyle = css(mix(base, peak, fade))
           ctx.lineWidth = (0.8 + 1.6 * fade) * dpr
           ctx.stroke()
         }
@@ -330,7 +367,7 @@ export default function GlobalDeliveryGlobe({
           const [x, y] = toPixels(headPoint, px)
           ctx.beginPath()
           ctx.arc(x, y, 2.2 * dpr, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(${rgb}, 0.95)`
+          ctx.fillStyle = css(peak)
           ctx.shadowBlur = 8 * dpr
           ctx.shadowColor = `rgba(${rgb}, 0.8)`
           ctx.fill()
