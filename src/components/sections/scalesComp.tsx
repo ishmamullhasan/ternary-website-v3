@@ -82,7 +82,9 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
           the section read as a different design. The fourth track is simply left empty. */}
       <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-4">
         {scales.map((item, index): JSX.Element => (
-          <Motion key={index} {...revealItem(index)}>
+          /* The empty track sits at the FRONT, so the row ends flush with the section's right
+             edge. lg only — below that the tiles are two-up and an offset would strand one. */
+          <Motion key={index} {...revealItem(index)} className={index === 0 ? 'lg:col-start-2' : undefined}>
             <ScaleCard item={item} index={index} />
           </Motion>
         ))}

@@ -74,7 +74,9 @@ export default function EngagementComp({ heading, description, model }: Engageme
           everything else. */}
       <div className="hidden w-full gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-4">
         {model.map((item, index): JSX.Element => (
-          <Motion key={index} {...revealItem(index)}>
+          /* The empty track sits at the FRONT, so the row ends flush with the section's right
+             edge. lg only — below that the tiles are two-up and an offset would strand one. */
+          <Motion key={index} {...revealItem(index)} className={index === 0 ? 'lg:col-start-2' : undefined}>
             {/* A FIXED height at lg, not a ratio. Both this and the Scales tile are now one
                 track wide, but a ratio scales with the track and a floor does not — so they
                 only agreed at exactly 1440px and drifted everywhere else (324px at 1280,
