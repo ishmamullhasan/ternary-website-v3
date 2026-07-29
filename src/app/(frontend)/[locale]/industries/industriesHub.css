@@ -227,9 +227,17 @@
   width: 100%;
   max-width: 560px;
   height: auto;
-  /* Fallback only. SectorIndex replaces this with the drawing's own ratio once it has measured the
-     ink; without JavaScript the untouched 400x360 viewBox and this ratio still render correctly. */
-  aspect-ratio: 400 / 360;
+  /* One frame for all nine sectors, and a CONTAIN fit inside it: the component renders
+     `preserveAspectRatio="xMidYMid meet"`, so whichever axis is the binding one meets the frame's
+     edges and the other is centred with the ratio held. A wide drawing spans the full width, a tall
+     one the full height, and neither is cropped or stretched.
+
+     Fixed, not per-drawing. Sizing each sector to its own ratio made them all the same width but
+     different heights, which grew the panel 41px on the one near-square drawing; a constant frame
+     keeps the stage identical whichever sector is showing. 492x396 is the proportion marked on the
+     design. Without JavaScript the untouched 400x360 viewBox still fits this frame correctly — it
+     just sits smaller inside it. */
+  aspect-ratio: 492 / 396;
   /* The blueprint is drawn latent (0.42) because on a home card it is an ornament behind copy.
      Here it IS the panel, at ~1.6x the size and with nothing over it, so it carries its own
      weight. There is no `.group` on this surface to lift it on hover either. */

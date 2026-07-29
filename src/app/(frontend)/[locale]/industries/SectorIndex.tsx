@@ -184,9 +184,16 @@ export default function SectorIndex() {
    * (Advanced Manufacturing) inside an identical 426px element, starting anywhere from 28px to
    * 104px in. They read as different sizes and off-centre because they were.
    *
-   * Re-fitting the viewBox to the drawn extent makes every sector exactly as wide as the panel
-   * allows, and `aspectRatio` locks the height to that drawing's own proportions rather than
-   * stretching it — so the ratio holds and the flex centring has something uniform to centre.
+   * Re-fitting the viewBox to the drawn extent means the drawing fills the frame it is given
+   * instead of floating inside a canvas sized for the widest sector.
+   *
+   * Only the viewBox is set here. The FRAME is a fixed ratio in CSS, and the component already
+   * renders `preserveAspectRatio="xMidYMid meet"`, so the browser does the rest: a drawing wider
+   * than the frame meets its left and right edges, a taller one meets top and bottom, and either
+   * way it is centred on both axes. Setting the element's ratio to each drawing's own — which is
+   * what this did at first — makes every sector the same WIDTH but a different height, which grew
+   * the panel by 41px on the one near-square drawing. A fixed frame with a contain fit keeps the
+   * panel identical for all nine.
    *
    * Measured rather than baked into the component: `getBBox()` is the browser's own geometry, exact
    * for the arcs and quadratics these drawings use, and it cannot go stale the way a hardcoded table
@@ -220,7 +227,6 @@ export default function SectorIndex() {
       // still be a mutation to react to.
       if (svg.getAttribute('viewBox') === vb) return
       svg.setAttribute('viewBox', vb)
-      svg.style.aspectRatio = `${(box.width + pad * 2).toFixed(2)} / ${(box.height + pad * 2).toFixed(2)}`
     }
 
     fit()
