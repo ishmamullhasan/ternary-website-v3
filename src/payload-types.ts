@@ -1757,6 +1757,45 @@ export interface Solution {
     };
     [k: string]: unknown;
   } | null;
+  detail?: {
+    /**
+     * The detail page headline (e.g. "Take an idea to a real product."). The canonical `title` stays the nav/footer/card name.
+     */
+    h1?: string | null;
+    defn?: string | null;
+    intro?: string | null;
+    metaModels?: string | null;
+    metaShape?: string | null;
+    drawsOn?: (string | Capability)[] | null;
+    /**
+     * Wrap the emphasised span in *asterisks* — it renders italic.
+     */
+    pull?: string | null;
+    positionA?: string | null;
+    positionB?: string | null;
+    phases?:
+      | {
+          title?: string | null;
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    plainTerms?: string | null;
+    walkAway?:
+      | {
+          title?: string | null;
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    proof?: (string | Story)[] | null;
+    /**
+     * Shown alongside (or instead of) linked proof — e.g. the named-with-permission or under-NDA block.
+     */
+    proofNote?: string | null;
+    ctaHeading?: string | null;
+    ctaLine?: string | null;
+  };
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -2473,6 +2512,10 @@ export interface ContactRoutesBlock {
     | {
         title?: string | null;
         email?: string | null;
+        /**
+         * Internal path (e.g. /careers#roles). When set, the route CTA navigates here instead of opening email.
+         */
+        link?: string | null;
         description?: {
           root: {
             type: string;
@@ -4733,6 +4776,7 @@ export interface ContactRoutesBlockSelect<T extends boolean = true> {
     | {
         title?: T;
         email?: T;
+        link?: T;
         description?: T;
         replyWindow?: T;
         cta?: T;
@@ -5958,6 +6002,38 @@ export interface SolutionSelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  detail?:
+    | T
+    | {
+        h1?: T;
+        defn?: T;
+        intro?: T;
+        metaModels?: T;
+        metaShape?: T;
+        drawsOn?: T;
+        pull?: T;
+        positionA?: T;
+        positionB?: T;
+        phases?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+        plainTerms?: T;
+        walkAway?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+        proof?: T;
+        proofNote?: T;
+        ctaHeading?: T;
+        ctaLine?: T;
+      };
   meta?:
     | T
     | {
@@ -7285,6 +7361,38 @@ export interface CalloutBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'callout';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TableBlock".
+ */
+export interface TableBlock {
+  /**
+   * Optional caption shown above the table (also read by screen readers).
+   */
+  caption?: string | null;
+  hasHeaderRow?: boolean | null;
+  /**
+   * Enable for key/value tables where the first column labels each row.
+   */
+  hasHeaderColumn?: boolean | null;
+  /**
+   * Each row holds one or more cells, left to right.
+   */
+  rows?:
+    | {
+        cells?:
+          | {
+              content?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'table';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

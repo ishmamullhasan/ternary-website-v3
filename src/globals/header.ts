@@ -1,5 +1,5 @@
 import { NAV_ICON_OPTIONS } from '@/globals/nav/iconOptions'
-import { revalidateTag } from 'next/cache'
+import { revalidateTagSafe } from '@/utilities/revalidateTagSafe'
 import type { Field, GlobalConfig } from 'payload'
 
 // Factory helpers — Payload mutates field objects during sanitization, so every field must be a
@@ -48,7 +48,7 @@ const Header: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('header', { expire: 0 })
+        revalidateTagSafe('header', { expire: 0 })
       },
     ],
   },
