@@ -184,18 +184,8 @@ export default function ScalesHubPage(): JSX.Element {
             <Motion key={s.n} {...revealItem(i)}>
               <div
                 id={`s${s.n}`}
-                className="sc-card sc-tile grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 p-7 sm:p-9 lg:grid-cols-[19rem_minmax(0,1.05fr)_minmax(0,1fr)] lg:p-12"
+                className="sc-card sc-tile grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 p-7 sm:p-9 lg:grid-cols-[minmax(0,1fr)_21rem_minmax(0,1fr)] lg:p-12"
               >
-                {/* The same figure this scale carries on the home page, so both tell one story.
-                    Centred on both axes in a 19rem track — it is the only thing in this column now,
-                    and it was being held at 240x203 by scaleFigure.css's 220px max-height rather
-                    than by the space available. `sc-figure-xl` lifts that cap for this page only. */}
-                <div className="sc-figure-xl hidden lg:flex lg:items-center lg:justify-center" aria-hidden="true">
-                  <div className="w-full max-w-[300px]">
-                    <ScaleFigure title={s.name} index={i} />
-                  </div>
-                </div>
-
                 <div className="flex flex-col">
                   <span className="text-[11px] uppercase tracking-[0.12em] text-body">{s.name}</span>
                   <h2 className="mt-5 max-w-[15ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
@@ -204,6 +194,22 @@ export default function ScalesHubPage(): JSX.Element {
                   <p className="mt-6 max-w-[46ch] text-[clamp(1rem,1.5vw,1.1875rem)] leading-relaxed text-body">
                     {s.lede}
                   </p>
+                </div>
+
+                {/* The same figure this scale carries on the home page, so both tell one story.
+                    It sits in the MIDDLE track — copy left, figure centre, facts right — so it lands
+                    on the card's horizontal centre instead of in its left corner, and it is centred
+                    on the vertical too. The two flanking tracks are EQUAL (1fr and 1fr, not 1.05fr
+                    and 1fr) — an uneven pair pushed the middle track's centre 10px off the card's.
+
+                    Its size is capped by scaleFigure.css's `max-height: 220px`, which is why widening
+                    the track alone did nothing the first time. `sc-figure-xl` lifts that for this page
+                    only; the home cards keep the cap, where the figure is an ornament in the upper
+                    part of a 299px card rather than a column of its own. */}
+                <div className="sc-figure-xl hidden lg:flex lg:items-center lg:justify-center" aria-hidden="true">
+                  <div className="w-full max-w-[330px]">
+                    <ScaleFigure title={s.name} index={i} />
+                  </div>
                 </div>
 
                 {/* Proof sits at the foot of the right-hand column rather than under the lede. It is
