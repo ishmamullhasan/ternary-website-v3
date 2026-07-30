@@ -10,10 +10,74 @@ CMS later.
   still has the old flat `subItems` (empty dropdowns on the new code). Content authored below; seeded
   to staging via `scripts/seed-megamenu.js`. Also: drop the duplicate **"Software Platforms"** industry
   in favour of **"Technology Platforms"** (handoff naming resolution).
+- **Master fix plan run (2026-07-30)** — replicate every entry under "Master fix plan — CMS changes"
+  below. All are re-runnable seeds: `seed-legal-content`, `seed-stage1`, `seed-stage5` +
+  `seed-fix-hero`, `seed-stage6`, `seed-stage6b`, `seed-stage7` (all take `DATABASE_URI` env +
+  `SEED_DRY=0`, and use `disableTransaction` — REQUIRED on replica-set Mongo or writes silently
+  roll back). Delete production's "Test Press Release" / "Test Insight" / "Test Model" equivalents.
 
 ---
 
 ## Changes
+
+### Master fix plan — CMS changes (staging, 2026-07-29/30)
+
+One consolidated entry for the `ternary-master-fix-plan.md` run (Stages 1–9). Every change is a
+committed, idempotent seed script; per-doc detail lives in the script + `QA.md`/`AUDIT.md`.
+**Prod follow-up: replicate all.**
+
+**Legal pages** (`legal` collection, via `scripts/seed-legal-content.ts`; earlier same-arc pass)
+- `privacy-and-policy` + `terms-of-service` `content` fully rewritten from the counsel-draft PDFs:
+  new section structure, 4 tables (Privacy) via the new `table` block, `[CONFIRM: …]` placeholders
+  kept verbatim and rendered as amber "input needed" chips behind a "Working draft" banner.
+  The internal policy metadata header box (Document owner / Version / Review cycle) was later
+  REMOVED from both (not for public pages). `modern-slavery-statement` untouched.
+
+**Footer global** (via `scripts/seed-stage1.ts`)
+- `capabilities` relationship: 6 → **all 8**, in hub order (agentic-architecture → internet-of-things).
+
+**Page meta descriptions** (`pages` collection `meta.description`, via `scripts/seed-stage1.ts`)
+- home / about / careers / contact: were `null` → the plan's five named descriptions
+  (work's lives in code: `work/page.tsx` fallbackDescription).
+
+**Home page** (`pages.home.layout`, via `scripts/seed-stage5.ts` + `scripts/seed-fix-hero.ts`)
+- `processSection` ("How we operate"): all **5 empty step bodies filled** (drafted from the About
+  culture themes — flagged for copy review).
+- `engagementSection.model` order: Frame, Orchestra, Flow → **Frame, Flow, Orchestra**.
+- (A `heroFeatured` block was briefly added for an h1, then REMOVED — the aboutSection hero was
+  already the intended hero; its title was enlarged in code instead.)
+
+**Content integrity** (via `scripts/seed-stage6.ts`)
+- DELETED (were published): "Test Press Release — …", "Test Insight — …", "Test Model — Embedded Pod".
+- `industry/banking-capital-markets.excerpts`: generic "Digital transformation and secure
+  platforms for financial institutions" → "Exchanges, brokerages, and systems that can't be down
+  while markets are open."
+
+**Contact page** (`pages.contact.layout`, via `scripts/seed-stage6b.ts`)
+- Hero buttons: removed "Book a call" (`#`); "Email us" kept.
+- Routes: **Partnerships removed** (folded into New business as a "Best for" bullet:
+  "Agencies and technology partners who want to co-deliver"); **Careers** route now `link:
+  /careers#roles` + "See open roles" (new `link` field on ContactRoutes items) instead of a
+  fourth mailto; New business + General keep hello@.
+- Offices: cleared the placeholder phone "+1 (800) 123-4567" on New York.
+- Removed a junk `ctaBlock` (gibberish description, "123" buttons → `#`) that was live on the page.
+
+**About page restructure** (`pages.about.layout`, via `scripts/seed-stage7.ts`)
+- New order: hero → **Origin** (aboutIntro, new: "Born in New York. Scaled in Dhaka." + conviction /
+  two-cities paragraphs + "ISO 9001, ISO 27001, SOC 2 — one standard, two cities.") →
+  **aboutFundingStory** (eyebrow "Bootstrapped and profitable", heading now the pull statement
+  "Most software fails in year three. We're the ones paid to care about year three."; body/links
+  unchanged) → **aboutThesis = Principles ×4** (Absolute ownership · Transparent, low-noise
+  execution · Proximity to impact · Talent formed, not bought — merged from the old Thesis ×6 +
+  Ternary Way ×5 + Culture ×5, best existing copy verbatim) → **aboutBeliefs = Contrast ×3**
+  ("Not a consultancy." / "Not an AI studio." / "Not an offshore shop.", plan verbatim) →
+  **aboutProofOfScale** items trimmed 8 → 3 (Counterfoil Continuum, **Dhaka Stock Exchange**
+  [excerpt from its own story doc], LankaBangla Securities) → aboutLeadership → ctaBlock.
+- **aboutApproach block REMOVED** (copy merged into Principles; permanently removes the duplicated
+  "A certified global delivery hub" card).
+- Origin's first-client/first-system paragraph is intentionally ABSENT until the name is provided.
+- Code (same passes): legal cache keys → `_v4`, globals CACHE_VERSION `v5→v6`, pages key `v4→v6`,
+  home key `v12→v14` — script writes can't fire afterChange revalidation, the bumps force fresh reads.
 
 ### About / "The Ternary Way" — stated count removed (staging)
 `pages.about.layout[aboutApproach].description` via `scripts/seed-about-approach-count.js`
