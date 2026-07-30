@@ -1757,6 +1757,45 @@ export interface Solution {
     };
     [k: string]: unknown;
   } | null;
+  detail?: {
+    /**
+     * The detail page headline (e.g. "Take an idea to a real product."). The canonical `title` stays the nav/footer/card name.
+     */
+    h1?: string | null;
+    defn?: string | null;
+    intro?: string | null;
+    metaModels?: string | null;
+    metaShape?: string | null;
+    drawsOn?: (string | Capability)[] | null;
+    /**
+     * Wrap the emphasised span in *asterisks* — it renders italic.
+     */
+    pull?: string | null;
+    positionA?: string | null;
+    positionB?: string | null;
+    phases?:
+      | {
+          title?: string | null;
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    plainTerms?: string | null;
+    walkAway?:
+      | {
+          title?: string | null;
+          body?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    proof?: (string | Story)[] | null;
+    /**
+     * Shown alongside (or instead of) linked proof — e.g. the named-with-permission or under-NDA block.
+     */
+    proofNote?: string | null;
+    ctaHeading?: string | null;
+    ctaLine?: string | null;
+  };
   meta?: {
     title?: string | null;
     description?: string | null;
@@ -5963,6 +6002,38 @@ export interface SolutionSelect<T extends boolean = true> {
   excerpts?: T;
   thumbnail?: T;
   content?: T;
+  detail?:
+    | T
+    | {
+        h1?: T;
+        defn?: T;
+        intro?: T;
+        metaModels?: T;
+        metaShape?: T;
+        drawsOn?: T;
+        pull?: T;
+        positionA?: T;
+        positionB?: T;
+        phases?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+        plainTerms?: T;
+        walkAway?:
+          | T
+          | {
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+        proof?: T;
+        proofNote?: T;
+        ctaHeading?: T;
+        ctaLine?: T;
+      };
   meta?:
     | T
     | {

@@ -81,7 +81,7 @@ export async function AboutLeadershipComponent({
             transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
           >
             <p className="text-body">
-              {total} people across New York and Dhaka<span className="text-subtle"> — one standard.</span>
+              {total} people across two cities<span className="text-subtle"> — one standard.</span>
             </p>
             <Link
               href="/team"

@@ -83,14 +83,16 @@ const run = async () => {
   const cta = get('ctaBlock')
 
   // 2. Origin — new aboutIntro block.
+  // Copy direction (owner, 2026-07-30): no "year three" framing, keep New York mentions to a
+  // minimum (one, in the origin body).
   const origin = {
     blockType: 'aboutIntro',
     id: 'stage7-origin',
-    heading: 'Born in New York. Scaled in Dhaka.',
+    heading: 'Two cities. One standard.',
     description: rt('Our origin'),
     content: rt(
-      "Most software doesn't fail at launch — it fails in year three, when the shortcuts come due and almost nobody is paid to care. Ternary was founded on that conviction: someone should be.",
-      'New York set the standard. Dhaka gave us the depth to hold it — the place most of our engineering actually happens, run to the same bar.',
+      "Most software doesn't fail at launch — it fails later, quietly, when the shortcuts come due and no one is left accountable. Ternary was founded on the conviction that someone should be.",
+      'Headquartered in New York, engineered in Dhaka — where most of the work actually happens, run to the same bar.',
       'ISO 9001, ISO 27001, SOC 2 — one standard, two cities.',
     ),
     // NOTE (flagged): the first-client/first-system paragraph is intentionally absent until the
@@ -99,7 +101,7 @@ const run = async () => {
 
   // 3. Thesis pull + bootstrapped (existing description/links kept verbatim).
   funding.eyebrow = 'Bootstrapped and profitable'
-  funding.heading = "Most software fails in year three. We're the ones paid to care about year three."
+  funding.heading = 'We answer for what we build — long after launch day.'
 
   // 4. Principles — ONE list of four on the numbered-statement scroller.
   thesis.heading = 'Principles'
