@@ -1,4 +1,5 @@
 import { Callout } from '@/blocks/Callout/config'
+import { Table } from '@/blocks/Table/config'
 import ActivityLog from '@/collections/activityLog'
 import Analytics from '@/collections/analytics'
 import Capability from '@/collections/capability'
@@ -88,7 +89,7 @@ export default buildConfig({
   // blockquote, ordered/unordered lists, inline code, bold/italic/etc.) and layers on:
   //  - LinkFeature: internal links to the main content collections + external URLs.
   //  - UploadFeature: inline media images.
-  //  - BlocksFeature: the reusable Callout block (rendered via the JSX converter in
+  //  - BlocksFeature: the reusable Callout + Table blocks (rendered via the JSX converter in
   //    src/components/richtext/index.tsx).
   //  - Fixed + Inline toolbars so the controls are always reachable.
   // Lexical features are config-level only and do not alter generated types — richText
@@ -110,7 +111,7 @@ export default buildConfig({
         },
       }),
       BlocksFeature({
-        blocks: [Callout],
+        blocks: [Callout, Table],
       }),
       FixedToolbarFeature(),
       InlineToolbarFeature(),

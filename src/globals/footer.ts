@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache'
+import { revalidateTagSafe } from '@/utilities/revalidateTagSafe'
 import { GlobalConfig } from 'payload'
 
 const Footer: GlobalConfig = {
@@ -11,7 +11,7 @@ const Footer: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('footer', { expire: 0 })
+        revalidateTagSafe('footer', { expire: 0 })
       },
     ],
   },

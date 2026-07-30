@@ -16,6 +16,11 @@ const nextConfig = {
       {
         pathname: '/api/media/file/**',
       },
+      // Static art shipped in /public (the hero structure). Without an entry here next/image
+      // rejects the src outright and the page 500s — this allowlist is deny-by-default.
+      {
+        pathname: '/images/**',
+      },
     ],
   },
 
@@ -31,6 +36,12 @@ const nextConfig = {
     return [
       { source: '/stories/:slug', destination: '/case-studies/:slug', permanent: true },
       { source: '/bn/stories/:slug', destination: '/bn/case-studies/:slug', permanent: true },
+      // The stories hub is now /work.
+      { source: '/stories', destination: '/work', permanent: true },
+      { source: '/bn/stories', destination: '/bn/work', permanent: true },
+      // Taxonomy: "Software Platforms" retired in favour of the canonical "Technology Platforms".
+      { source: '/industries/software-platforms', destination: '/industries/technology-platforms', permanent: true },
+      { source: '/bn/industries/software-platforms', destination: '/bn/industries/technology-platforms', permanent: true },
     ]
   },
 

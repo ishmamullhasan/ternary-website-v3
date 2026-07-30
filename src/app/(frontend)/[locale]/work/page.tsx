@@ -32,7 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return generateMeta({
     doc: null,
     fallbackTitle: 'Work',
-    fallbackDescription: 'Systems Ternary designed, built, and still runs.',
+    fallbackDescription:
+      'Case studies, press, and insights from Ternary — production systems we designed, delivered, and stand behind.',
     pathname: '/work',
     locale: typedLocale,
   })
