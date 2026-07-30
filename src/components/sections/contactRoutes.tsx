@@ -95,7 +95,7 @@ function RouteCard({
           />
         </div>
         <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
-          <span className="font-mono text-[12px] tracking-normal text-cream">{route.email}</span>
+          <span className="font-mono text-[12px] tracking-normal text-cream">{route.email || route.link}</span>
           <ArrowUpRight
             size={16}
             className={`transition-all duration-300 ${
@@ -119,7 +119,8 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
 
   const selected = routes[selectedIndex] ?? routes[0]
   const selectedTone = TONE[selectedIndex % TONE.length]
-  const mailHref = selected.email ? `mailto:${selected.email}` : '#message'
+  // A route either deep-links into the site (link, e.g. Careers → /careers#roles) or opens email.
+  const ctaHref = selected.link || (selected.email ? `mailto:${selected.email}` : null)
 
   return (
     <Motion
@@ -224,29 +225,28 @@ export default function ContactRoutes({ data }: { data?: RoutesData }): JSX.Elem
             <div className="space-y-3 rounded-sm bg-card px-2 py-3 2xl:p-3">
               <div className="flex items-center gap-2">
                 <Mail size={14} className="shrink-0 text-cream" aria-hidden />
-                <span className="truncate text-[16px] tracking-[-0.05em] text-cream">{selected.email}</span>
+                <span className="truncate text-[16px] tracking-[-0.05em] text-cream">
+                  {selected.email || selected.link}
+                </span>
               </div>
-              {/* Buttons stack full-width up to 2xl, then sit side by side. */}
-              <div className="flex flex-col items-center gap-2 2xl:flex-row 2xl:items-end 2xl:gap-4">
-                <a
-                  href={mailHref}
-                  className={`group inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-cream px-8 py-2 font-display text-[16px] leading-[1.15] text-ink opacity-90 transition-[background-color,opacity] hover:opacity-100 hover:bg-cream-hover 2xl:flex-1 ${focusRing}`}
-                >
-                  {selected.cta || 'Start an engagement'}
-                  <ArrowUpRight
-                    size={14}
-                    strokeWidth={2.5}
-                    aria-hidden
-                    className="shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  />
-                </a>
-                <a
-                  href="#message"
-                  className={`inline-flex h-10 w-full shrink-0 items-center justify-center rounded-lg bg-button-dark px-8 py-2 font-display text-[16px] leading-[1.15] text-cream opacity-90 transition-opacity hover:opacity-100 2xl:w-auto ${focusRing}`}
-                >
-                  Learn more
-                </a>
-              </div>
+              {/* One honest CTA per route: deep link or email. (The old secondary "Learn more"
+                  pointed at a #message anchor with no form behind it — removed, Stage 6.5d.) */}
+              {ctaHref && (
+                <div className="flex flex-col items-center gap-2 2xl:flex-row 2xl:items-end 2xl:gap-4">
+                  <a
+                    href={ctaHref}
+                    className={`group inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-cream px-8 py-2 font-display text-[16px] leading-[1.15] text-ink opacity-90 transition-[background-color,opacity] hover:opacity-100 hover:bg-cream-hover 2xl:flex-1 ${focusRing}`}
+                  >
+                    {selected.cta || 'Start an engagement'}
+                    <ArrowUpRight
+                      size={14}
+                      strokeWidth={2.5}
+                      aria-hidden
+                      className="shrink-0 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    />
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>

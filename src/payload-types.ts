@@ -2473,6 +2473,10 @@ export interface ContactRoutesBlock {
     | {
         title?: string | null;
         email?: string | null;
+        /**
+         * Internal path (e.g. /careers#roles). When set, the route CTA navigates here instead of opening email.
+         */
+        link?: string | null;
         description?: {
           root: {
             type: string;
@@ -4733,6 +4737,7 @@ export interface ContactRoutesBlockSelect<T extends boolean = true> {
     | {
         title?: T;
         email?: T;
+        link?: T;
         description?: T;
         replyWindow?: T;
         cta?: T;
@@ -7285,6 +7290,38 @@ export interface CalloutBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'callout';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TableBlock".
+ */
+export interface TableBlock {
+  /**
+   * Optional caption shown above the table (also read by screen readers).
+   */
+  caption?: string | null;
+  hasHeaderRow?: boolean | null;
+  /**
+   * Enable for key/value tables where the first column labels each row.
+   */
+  hasHeaderColumn?: boolean | null;
+  /**
+   * Each row holds one or more cells, left to right.
+   */
+  rows?:
+    | {
+        cells?:
+          | {
+              content?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'table';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
