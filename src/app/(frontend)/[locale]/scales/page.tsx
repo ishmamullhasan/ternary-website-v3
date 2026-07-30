@@ -245,25 +245,33 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── THE POINT ────────────────────────────────────────────────────────────────────── */}
       <section>
-        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 md:px-8 lg:px-12 py-[clamp(48px,5vw,80px)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.15fr)] lg:gap-16">
+        {/* `justify-between` on a flex row, not a two-track grid. In the grid each block sat at the
+            left of its own track, so there was dead width after the statement AND after the copy —
+            two gaps rather than one. Flush left and flush right leaves a single measured gap between
+            them, and the blocks below are widened so that gap is a breath rather than a hole. */}
+        <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10 px-5 md:px-8 lg:px-12 py-[clamp(48px,5vw,80px)] lg:flex-row lg:items-start lg:justify-between lg:gap-16">
           {/* The statement arrives word by word, the same reveal the capabilities hub gives
               "A capability, to us, is not a keyword on a services page." Entry-triggered and then
               it finishes on its own — see RevealText on why this is not scroll-scrubbed. The second
               clause keeps its own tone, which is what `segments` is for. */}
           <RevealText
-            className="max-w-[16ch] font-display text-[clamp(1.75rem,3.6vw,2.75rem)] font-medium leading-[1.18] tracking-[-0.02em] text-cream"
+            className="max-w-[20ch] font-display text-[clamp(1.75rem,3.6vw,2.75rem)] font-medium leading-[1.18] tracking-[-0.02em] text-cream"
             segments={[
               { text: 'A startup and a stock exchange get' },
               { text: 'the same engineers.', className: 'text-body' },
             ]}
           />
-          <Motion className="flex flex-col gap-5 self-end" {...reveal}>
-            <p className="max-w-[56ch] text-[16px] leading-relaxed text-body">
+          {/* Right-aligned from lg, where it sits beside the statement — the same treatment the
+              solutions and industries hubs give their supporting sentence. Below lg it is the only
+              thing in its row, and right-aligned copy under a left-aligned statement reads as a
+              mistake. */}
+          <Motion className="flex flex-col gap-5 lg:text-right" {...reveal}>
+            <p className="max-w-[62ch] text-[16px] leading-relaxed text-body">
               They don&apos;t get the same process, oversight, or reporting rhythm — those should differ. But who we
               hire, how closely we check the work, and the people in the room don&apos;t change with the size of the
               bill.
             </p>
-            <p className="max-w-[56ch] text-[16px] leading-relaxed text-body">
+            <p className="max-w-[62ch] text-[16px] leading-relaxed text-body">
               <span className="font-medium text-cream">And the scales aren&apos;t sealed off from each other.</span> The
               startup we build for today becomes the enterprise program in three years — with the same people in the
               room who remember why every decision was made.
@@ -278,7 +286,16 @@ export default function ScalesHubPage(): JSX.Element {
           {/* The industries hub's "Before we write a line of code." shape: the lead is a claim,
               not a column of content, so it takes a narrow track and the cards run across from it.
               Stacked above them it left the width unused and the section twice as tall. */}
-          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.8fr)] lg:gap-16">
+          {/* 1.4fr, not 2.8fr. 2.8 is the industries hub's ratio and it is sized for THREE cards
+              across; with two, each came out ~460px wide holding items like "Who we hire", so half of
+              every card was empty. Narrowing the track fills the cards and hands the width back to
+              the lead, which has a four-line heading to place — the space moves somewhere it is
+              used rather than being left inside the cards. Walked down from 2.8 to 1.7 to 1.4,
+              measuring each time: 460px wide with ~200px unused, then 392, now 363 — inner 299,
+              widest item ("Our standard for finished work") 226px of ink, ~75px to spare and every
+              item still on one line. Narrower and they wrap, which trades one kind of untidiness for
+              another. */}
+          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-16">
             <Motion className="flex flex-col gap-4" {...reveal}>
               <h2 className="max-w-[18ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
                 What moves with your size — and what never does
