@@ -128,22 +128,6 @@ export function HeroFeaturedComponent({ thesis, headline, items }: HeroFeaturedB
             {thesis}
           </Motion>
         )}
-        {/* Signature home hero CTAs (Stage 5.1): primary → contact, ghost → work. Static because
-            this hero only ships on the home page and the actions never change per-edit. */}
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href="/contact"
-            className="inline-flex items-center rounded-md bg-cream px-5 py-2.5 text-sm font-medium text-page transition-colors hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page"
-          >
-            Start a conversation
-          </Link>
-          <Link
-            href="/work"
-            className="inline-flex items-center rounded-md border border-line-strong px-5 py-2.5 text-sm font-medium text-cream transition-colors hover:border-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page"
-          >
-            See our work
-          </Link>
-        </div>
       </div>
 
       {cards.length > 0 && (
