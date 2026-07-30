@@ -2473,6 +2473,10 @@ export interface ContactRoutesBlock {
     | {
         title?: string | null;
         email?: string | null;
+        /**
+         * Internal path (e.g. /careers#roles). When set, the route CTA navigates here instead of opening email.
+         */
+        link?: string | null;
         description?: {
           root: {
             type: string;
@@ -4733,6 +4737,7 @@ export interface ContactRoutesBlockSelect<T extends boolean = true> {
     | {
         title?: T;
         email?: T;
+        link?: T;
         description?: T;
         replyWindow?: T;
         cta?: T;

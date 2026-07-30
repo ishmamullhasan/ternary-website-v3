@@ -3,6 +3,7 @@ import Motion from '@/components/animation/motion'
 import { EASE } from '@/components/animation/reveal'
 import GradientPanel, { toneFor } from '@/components/layout/GradientPanel'
 import type { Media, Team } from '@/payload-types'
+import { stripPublicLevel } from '@/utilities/publicTitle'
 import { Linkedin } from 'lucide-react'
 import Image from 'next/image'
 import type { JSX } from 'react'
@@ -33,6 +34,8 @@ export function TeamMemberCard({
 }): JSX.Element {
   const media = (typeof member.image === 'object' ? member.image : null) as Media | null
   const href = member.linkedin || undefined
+  // Public display strips internal level markers ("Software Engineer I", "(Level 31)") — Stage 6.4.
+  const position = stripPublicLevel(member.position)
 
   return (
     <Motion
@@ -63,12 +66,12 @@ export function TeamMemberCard({
         <p className="text-sm text-cream transition-colors group-hover:text-cream lg:text-base">{member.name}</p>
         {showLinkedInIcon && href ? (
           <span className="mt-1 flex items-center justify-center gap-1.5">
-            {member.position && <span className="text-xs text-subtle lg:text-sm">{member.position}</span>}
+            {position && <span className="text-xs text-subtle lg:text-sm">{position}</span>}
             <Linkedin size={13} aria-hidden className="shrink-0 text-subtle transition-colors group-hover:text-cream" />
           </span>
-        ) : member.position ? (
+        ) : position ? (
           // Guard: a member without a role renders no line at all (no empty <p> gap).
-          <p className="mt-1 text-xs text-subtle lg:text-sm">{member.position}</p>
+          <p className="mt-1 text-xs text-subtle lg:text-sm">{position}</p>
         ) : null}
       </a>
     </Motion>
