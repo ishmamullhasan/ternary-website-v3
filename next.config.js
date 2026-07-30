@@ -36,6 +36,9 @@ const nextConfig = {
     return [
       { source: '/stories/:slug', destination: '/case-studies/:slug', permanent: true },
       { source: '/bn/stories/:slug', destination: '/bn/case-studies/:slug', permanent: true },
+      // Taxonomy: "Software Platforms" retired in favour of the canonical "Technology Platforms".
+      { source: '/industries/software-platforms', destination: '/industries/technology-platforms', permanent: true },
+      { source: '/bn/industries/software-platforms', destination: '/bn/industries/technology-platforms', permanent: true },
     ]
   },
 
