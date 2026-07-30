@@ -184,14 +184,16 @@ export default function ScalesHubPage(): JSX.Element {
             <Motion key={s.n} {...revealItem(i)}>
               <div
                 id={`s${s.n}`}
-                className="sc-card sc-tile grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 p-7 sm:p-9 lg:grid-cols-[15rem_minmax(0,1.1fr)_minmax(0,1fr)] lg:p-12"
+                className="sc-card sc-tile grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 p-7 sm:p-9 lg:grid-cols-[19rem_minmax(0,1.05fr)_minmax(0,1fr)] lg:p-12"
               >
                 {/* The same figure this scale carries on the home page, so both tell one story.
-                    Centred on both axes and given a 15rem track rather than 11rem: with the scale
-                    number gone it is the only thing in this column, and top-aligned at 176px wide it
-                    sat small in the corner of a card whose copy runs three or four times taller. */}
-                <div className="hidden lg:flex lg:items-center lg:justify-center" aria-hidden="true">
-                  <ScaleFigure title={s.name} index={i} />
+                    Centred on both axes in a 19rem track — it is the only thing in this column now,
+                    and it was being held at 240x203 by scaleFigure.css's 220px max-height rather
+                    than by the space available. `sc-figure-xl` lifts that cap for this page only. */}
+                <div className="sc-figure-xl hidden lg:flex lg:items-center lg:justify-center" aria-hidden="true">
+                  <div className="w-full max-w-[300px]">
+                    <ScaleFigure title={s.name} index={i} />
+                  </div>
                 </div>
 
                 <div className="flex flex-col">
@@ -202,27 +204,33 @@ export default function ScalesHubPage(): JSX.Element {
                   <p className="mt-6 max-w-[46ch] text-[clamp(1rem,1.5vw,1.1875rem)] leading-relaxed text-body">
                     {s.lede}
                   </p>
-                  <p className="mt-8 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[12px] tracking-[0.04em] text-subtle">
+                </div>
+
+                {/* Proof sits at the foot of the right-hand column rather than under the lede. It is
+                    evidence for the facts beside it, and `mt-auto` puts it on the card's baseline
+                    however many lines the facts above it run to. */}
+                <div className="flex flex-col gap-6 pt-2 lg:pt-1">
+                  <dl className="flex flex-col gap-6">
+                    {s.facts.map((f) => (
+                      <div
+                        key={f.k}
+                        className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] sm:gap-x-7"
+                      >
+                        <dt className="text-[11px] uppercase tracking-[0.1em] text-subtle">{f.k}</dt>
+                        <dd
+                          className={cn('text-[15px] leading-relaxed', f.lead ? 'font-medium text-cream' : 'text-body')}
+                        >
+                          {f.v}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+
+                  <p className="mt-auto flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-2 text-[12px] tracking-[0.04em] text-subtle">
                     <span className="uppercase tracking-[0.12em] text-cream/70">Recently at this scale</span>
                     <span>{s.proof.join(' · ')}</span>
                   </p>
                 </div>
-
-                <dl className="flex flex-col gap-6 pt-2 lg:pt-1">
-                  {s.facts.map((f) => (
-                    <div
-                      key={f.k}
-                      className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-[minmax(0,9rem)_minmax(0,1fr)] sm:gap-x-7"
-                    >
-                      <dt className="text-[11px] uppercase tracking-[0.1em] text-subtle">{f.k}</dt>
-                      <dd
-                        className={cn('text-[15px] leading-relaxed', f.lead ? 'font-medium text-cream' : 'text-body')}
-                      >
-                        {f.v}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
               </div>
             </Motion>
           ))}

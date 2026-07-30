@@ -21,6 +21,13 @@
   max-height: 220px;
   display: block;
 }
+/* Opt out of that cap. 220px is right for the home page, where the figure is an ornament in the
+   upper part of a 299px card. On the scales hub it has a column of its own beside copy that runs
+   four times taller, and the cap — not the column — was what held it small. Opt-in so the home
+   cards are untouched. */
+.sc-figure-xl .sc-svg {
+  max-height: none;
+}
 .sc-svg path,
 .sc-svg rect,
 .sc-svg circle {
