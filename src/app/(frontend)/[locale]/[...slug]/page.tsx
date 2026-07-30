@@ -53,7 +53,7 @@ const queryPageByPath = (segments: string[], draft: boolean, locale: TypedLocale
   if (draft) return fetchPageByPath(segments, true, locale)
   const slug = segments[segments.length - 1]
   const path = segments.join('/')
-  return unstable_cache(() => fetchPageByPath(segments, false, locale), [`pages_${path}_${locale}_v3`], {
+  return unstable_cache(() => fetchPageByPath(segments, false, locale), [`pages_${path}_${locale}_v5`], {
     tags: [...new Set([`pages_${slug}`, ...PAGES_EMBED_TAGS])],
   })()
 }
@@ -102,7 +102,7 @@ export default async function Page({
   return (
     <div>
       {crumbs.length > 0 && <JsonLd data={breadcrumbList(crumbs)} />}
-      <RenderBlocks blocks={page.layout} locale={typedLocale} />
+      <RenderBlocks blocks={page.layout} locale={typedLocale} slug={slug[slug.length - 1]} />
     </div>
   )
 }
