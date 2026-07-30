@@ -155,7 +155,9 @@ export default function StoriesList({
               className="h-9 rounded-full border border-line bg-page px-4 text-sm tracking-[-0.01em] text-subtle transition-colors hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-cream"
             >
               <option value="all">All ({counts.all})</option>
-              {FEED_CATEGORIES.map((key) => (
+              {/* A category with zero published documents is noise ("Research Report (0)") — hide it
+                  until something is published under it (Stage 6.2). */}
+              {FEED_CATEGORIES.filter((key) => (counts[key] ?? 0) > 0).map((key) => (
                 <option key={key} value={key}>
                   {FEED_CATEGORY_LABELS[key]} ({counts[key]})
                 </option>

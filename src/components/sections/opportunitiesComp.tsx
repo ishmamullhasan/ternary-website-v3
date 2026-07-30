@@ -7,6 +7,7 @@ import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { JobListing } from '@/lib/jobs-data'
+import { stripPublicLevel } from '@/utilities/publicTitle'
 import type { JSX } from 'react'
 
 interface OpportunitiesCompProps {
@@ -31,7 +32,8 @@ function JobCard({ item }: { item: JobListing }): JSX.Element {
       className={`group flex h-full min-h-[160px] flex-col rounded-md bg-ink p-5 transition-colors hover:bg-button-dark ${focusRing}`}
     >
       <div className="flex items-start justify-between gap-3">
-        <h3 className="font-display text-base font-medium text-cream">{item.title}</h3>
+        {/* Visible title drops internal level markers ("(Level 31)"); the role code keeps them. */}
+        <h3 className="font-display text-base font-medium text-cream">{stripPublicLevel(item.title)}</h3>
         <span className="shrink-0 font-display text-xs text-subtle">{item.slug}</span>
       </div>
 
@@ -51,7 +53,8 @@ function JobCard({ item }: { item: JobListing }): JSX.Element {
 export default function OpportunitiesComp({ heading, description, opportunity }: OpportunitiesCompProps) {
   const roles = opportunity ?? []
   return (
-    <section className="section-card">
+    // id="roles": stable deep-link target (/careers#roles) used by the Contact "Careers" route.
+    <section id="roles" className="section-card scroll-mt-24">
       {/* Header — heading ABOVE the supporting sentence, left-aligned. */}
       <Motion {...reveal} className="mb-8 flex max-w-2xl flex-col lg:mb-14">
         {heading && <h2 className="text-section font-display font-medium text-cream">{heading}</h2>}

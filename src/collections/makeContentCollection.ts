@@ -1,6 +1,6 @@
 import { detailPreviewURL } from '@/utilities/livePreview'
 import { revalidateTag } from 'next/cache'
-import { type CollectionConfig, slugField } from 'payload'
+import { type CollectionConfig, type Field, slugField } from 'payload'
 
 import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
@@ -29,6 +29,12 @@ export const makeContentCollection = (
      * live preview routed through /next/preview → `/<locale>/<previewPathSegment>/<slug>` (WEB-449).
      */
     previewPathSegment?: string
+    /**
+     * Collection-specific fields appended after the shared base set (e.g. the solution detail
+     * template group, WEB Stage 8). Lets one collection grow structured fields without forking
+     * the factory; collections that pass nothing are byte-identical to before.
+     */
+    extraFields?: Field[]
   },
 ): CollectionConfig => ({
   slug,
@@ -77,5 +83,6 @@ export const makeContentCollection = (
     { name: 'excerpts', label: 'Excerpts', type: 'textarea', localized: true },
     { name: 'thumbnail', label: 'Thumbnail', type: 'upload', relationTo: 'media' },
     { name: 'content', label: 'Content', type: 'richText', localized: true },
+    ...(adminOpts?.extraFields ?? []),
   ],
 })

@@ -20,6 +20,16 @@ export const ContactRoutes: Block = {
       fields: [
         { name: 'title', label: 'Title', type: 'text', required: false, localized: true, admin: { width: '50%' } },
         { name: 'email', label: 'Email', type: 'text', required: false, admin: { width: '50%' } },
+        {
+          name: 'link',
+          label: 'Link (instead of email)',
+          type: 'text',
+          required: false,
+          admin: {
+            width: '50%',
+            description: 'Internal path (e.g. /careers#roles). When set, the route CTA navigates here instead of opening email.',
+          },
+        },
         { name: 'description', label: 'Description', type: 'richText', required: false, localized: true },
         {
           name: 'replyWindow',

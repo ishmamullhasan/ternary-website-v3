@@ -1,0 +1,91 @@
+/* About hero — the structure, animated as a 2.5D object.
+ *
+ * Adapted from the visual built for the home hero (reverted there, kept here). Class prefix is
+ * `ahv-` so nothing can collide with another section.
+ *
+ * DEFAULT STATE IS THE FINISHED STATE. Nothing here hides anything: every start state is written
+ * by AboutHeroVisual from JavaScript. Without JS, or under reduced motion, this is a still image.
+ *
+ * PROPORTIONS ARE NEVER ALTERED. object-contain against the intrinsic 1448x1086 ratio, so the
+ * frame letterboxes rather than stretching, and it is never cropped into a vertical composition.
+ */
+
+.ahv-visual {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.ahv-stage,
+.ahv-float,
+.ahv-breathe {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+.ahv-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(1320px, 104%);
+  aspect-ratio: 1448 / 1086;
+  transform: translate(-50%, -50%);
+  /* The asset is a light structure on a flat mid-grey backdrop. Unmasked that backdrop reads as
+     a grey slab on black; this collapses almost to the structure itself so only the object
+     survives. Horizontally generous, vertically tight — it runs across, the empty grey above
+     and below it does not. Nothing is cropped; the frame simply fades where there was only
+     backdrop. */
+  -webkit-mask-image: radial-gradient(ellipse 46% 25% at 50% 50%, #000 0%, rgba(0, 0, 0, 0.7) 42%, transparent 66%);
+  mask-image: radial-gradient(ellipse 46% 25% at 50% 50%, #000 0%, rgba(0, 0, 0, 0.7) 42%, transparent 66%);
+}
+.ahv-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.18) brightness(0.62);
+  opacity: 0.95;
+}
+/* Light passing across the structure, inside the mask so it can only light the object. */
+.ahv-sweep {
+  position: absolute;
+  inset: -25% -65%;
+  background: linear-gradient(
+    100deg,
+    transparent 43%,
+    rgba(255, 255, 255, 0.09) 49%,
+    rgba(255, 255, 255, 0.15) 52%,
+    rgba(255, 255, 255, 0.09) 55%,
+    transparent 61%
+  );
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+/* Particles stay with the visual and never reach the copy. */
+.ahv-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 1023px) {
+  .ahv-frame {
+    width: 150%;
+  }
+  .ahv-img {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ahv-visual *,
+  .ahv-visual *::before {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+html[data-a11y-motion='reduce'] .ahv-visual *,
+html[data-a11y-motion='reduce'] .ahv-visual *::before {
+  transition: none !important;
+  animation: none !important;
+}
