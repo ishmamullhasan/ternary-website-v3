@@ -1,3 +1,4 @@
+import Link from '@/components/LocalizedLink'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import type { AboutProofOfScaleBlock, Media } from '@/payload-types'
 import Image from 'next/image'
@@ -13,19 +14,27 @@ import type { JSX } from 'react'
  * secondary archive. **No project is hidden or removed** — all eight are present, in their CMS
  * order, with their names, descriptions and routes unchanged. Featuring is presentation only.
  *
- * The three are named explicitly rather than sliced off the top, because the CMS order puts
- * LankaBangla Securities last: taking the first three would have featured Turfly and Alley
- * Analytix and buried the air-gapped LLM work. Matching on name keeps the choice deliberate and
- * survives a reorder in the CMS; anything not matched simply falls to the archive.
+ * The three are named explicitly rather than sliced off the top so the selection is deliberate
+ * and survives a CMS reorder; anything not matched simply falls to the archive.
+ *
+ * SELECTED PROOF (Stage 7.6): the section now carries THREE linked case references — Counterfoil,
+ * Dhaka Stock Exchange, LankaBangla — with "See all work →" pointing at the full /work reel where
+ * every engagement lives. Titles deep-link to their case studies.
  *
  * INTERACTION. One project is active at a time — scroll sets it, and on a pointer device so does
  * hover. The active row is marked by a solid rule and a slight shift, and its arrow slides in.
- * Every project stays fully legible at all times — nothing is dimmed or collapsed away.
  *
  * CONTENT: names and excerpts are the CMS strings, unchanged. No metric, count or claim is
  * introduced.
  */
-const FEATURED = ['Counterfoil Continuum', 'LankaBangla Securities', 'Alley Analytix']
+const FEATURED = ['Counterfoil Continuum', 'Dhaka Stock Exchange', 'LankaBangla Securities']
+
+// Case-study deep links for the featured trio (locale-less; LocalizedLink adds the prefix).
+const CASE_LINKS: Record<string, string> = {
+  'Counterfoil Continuum': '/case-studies/counterfoil-continuum',
+  'Dhaka Stock Exchange': '/case-studies/dhaka-stock-exchange',
+  'LankaBangla Securities': '/case-studies/lankabangla-securities',
+}
 
 export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock): JSX.Element | null {
   const hasCompany = Boolean(company?.heading || company?.items?.length)
@@ -84,7 +93,13 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
                         />
                       ) : null}
                       <h3 className="ax-proof-title font-display text-[clamp(2rem,5.2vw,4.75rem)] leading-[0.9] font-medium tracking-[-0.055em]">
-                        {item.name}
+                        {CASE_LINKS[item.name.trim()] ? (
+                          <Link href={CASE_LINKS[item.name.trim()]} className="hover:underline underline-offset-8">
+                            {item.name}
+                          </Link>
+                        ) : (
+                          item.name
+                        )}
                       </h3>
                     </div>
                   ) : null}
@@ -101,6 +116,16 @@ export function AboutProofOfScaleComponent({ company }: AboutProofOfScaleBlock):
                 </article>
               )
             })}
+            {/* The full record lives on /work — this section is a selection, not the archive. */}
+            <div className="border-t border-[rgba(9,9,9,0.14)] py-8 lg:py-10">
+              <Link
+                href="/work"
+                className="ax-copy group inline-flex items-center gap-2 font-medium hover:underline underline-offset-4"
+              >
+                See all work
+                <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+              </Link>
+            </div>
           </div>
         ) : null}
 
