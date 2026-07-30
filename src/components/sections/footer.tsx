@@ -131,13 +131,12 @@ const SOCIAL_LABELS: Record<SocialPlatform, string> = {
   github: 'GitHub',
 }
 
-// Rendered when the CMS has no social rows yet, so the icon row matches the design out of the box.
-const DEFAULT_SOCIALS: { platform: SocialPlatform; link: string }[] = [
-  { platform: 'facebook', link: '#' },
-  { platform: 'twitter', link: '#' },
-  { platform: 'linkedin', link: '#' },
-  { platform: 'instagram', link: '#' },
-]
+// No placeholder socials: dead `#` links shipped to production, so the row stays empty until the
+// CMS footer global has real social URLs. Re-enable by adding real links here (or, preferably, in
+// the CMS footer global's socials field), e.g.:
+//   { platform: 'linkedin', link: 'https://www.linkedin.com/company/ternary-solutions' },
+//   { platform: 'twitter',  link: 'https://x.com/ternary' },
+const DEFAULT_SOCIALS: { platform: SocialPlatform; link: string }[] = []
 
 function SocialIcon({ platform, className }: { platform: SocialPlatform; className?: string }) {
   return (

@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache'
+import { revalidateTagSafe } from '@/utilities/revalidateTagSafe'
 import type { GlobalConfig } from 'payload'
 
 // Every string, label, and href on the 404 page. The page itself is a Server Component that reads
@@ -22,7 +22,7 @@ const NotFound: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('not-found', { expire: 0 })
+        revalidateTagSafe('not-found', { expire: 0 })
       },
     ],
   },

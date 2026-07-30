@@ -123,6 +123,12 @@ function paintHeading(heading: HTMLElement, width: number, height: number, dpr: 
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${fontSize}px ${cs.fontFamily}`
+  // Honor the heading's CSS letter-spacing (ctx.font ignores it). Without this the canvas measures
+  // lines wider than the real text and can wrap where the DOM doesn't — a near-fit title then
+  // renders garbled. Supported in Chromium/modern engines; harmless where not.
+  if (cs.letterSpacing && cs.letterSpacing !== 'normal') {
+    ;(ctx as CanvasRenderingContext2D & { letterSpacing?: string }).letterSpacing = cs.letterSpacing
+  }
 
   const text = (heading.innerText || heading.textContent || '').trim()
   const lines = wrapLines(ctx, text, width)
