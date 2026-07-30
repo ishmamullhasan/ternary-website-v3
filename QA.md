@@ -34,9 +34,22 @@ cap is exhausted (my pushes + collaborators'). Consequences:
 | **5 — Homepage** | ✅ Done (DB) | Home layout was **missing its hero block** → no h1. Added `heroFeatured` (headline "Agentic Engineering. / Human Orchestration." = one h1, two lines) + thesis + two hero CTAs (contact / work). Filled the **5 empty "How we operate" bodies**. Engagement models reordered **Frame, Flow, Orchestra**. *Renders once the deploy cap clears.* |
 | **6 — Content integrity** | ✅ Done | Test fixtures deleted; banking subtitle distinct. Cleanup pass (verified via local Playwright): Contact = 3 honest routes (Careers → /careers#roles via new `link` field), Partnerships folded into New business, Book-a-call removed, dead #message button removed, fake NY phone cleared, junk ctaBlock removed; Dhaka office card already existed. Team render guards: level suffixes stripped (`stripPublicLevel`), incomplete entries skipped, job titles cleaned, `#roles` anchor added. Zero-count archive filters hidden. |
 | **7 — About restructure + team** | ✅ Done (verified) | New order: hero → Origin (aboutIntro) → year-three pull + Bootstrapped (aboutFundingStory) → **Principles ×4** (aboutThesis scroller; 6+5+5 lists merged) → **Contrast ×3** (aboutBeliefs) → **Selected proof ×3** (Counterfoil/DSE/LankaBangla, deep-linked, + "See all work →") → Leadership (3 cards, no bios, + "N people… Meet the team" strip) → CTA. aboutApproach removed (kills the dup "certified global delivery hub" card). 9/9 live assertions passed. /team kept as the on-design card grid (uniform-list variant flagged as optional). |
-| **8 — Solution detail copy** | ☐ Not started | Large: model the 7-section template as blocks + populate 4 solutions with the plan's **verbatim** copy. **Recommend a focused session** — it's a schema + content build worth reviewing the pattern on one solution first. |
+| **8 — Solution detail copy** | ✅ Done (verified) | Solution collection gained a structured `detail` group (the 7-section template); `/solutions/[slug]` rewritten to render it (breadcrumb → Solution · N of 4 → sentence h1 → definition → intro → meta row → pull-quote → How it runs + amber "In plain terms" → walk-away cards → linked Proof / honest notes → Capabilities rows → gradient CTA). All 4 solutions populated with the plan's copy **verbatim**; canonical titles untouched for nav/footer; old generic template + the flex5-bearing RELATED_WORK map removed; dead generic `content` bodies cleared. Verified: all 4 pages render locally, 1 h1 each, zero errors, DB read-back clean. **Flagged:** ET walk-away bodies + EA/MS phase bodies drafted (deck text unavailable) — review copy. |
 | **9 — Work + stories migration** | ◑ Partial | `/work` mobile hero **top-anchored** (≤768px); `/stories`→`/work` hub 308 added. **Remaining:** sweep any lingering "Stories" nav label + "See our work" CTA targets. |
 | **10 — QA** | ◑ This file | Live crawl/a11y/screenshots pending the deploy-cap reset. |
+
+## Final consistency sweep (Stage 10, source-level)
+Banned-phrase greps over `src/` (rendered strings): "measurable business value" 0 · "map the
+fastest path" 0 · "world-class" 0 · "scalable, high-quality digital products" 0 · "Software
+Platforms" 0 · "seamless" 0 rendered (2 code comments remain, not rendered — the one rendered
+caption was fixed). Level suffixes stripped at render. Redirects in next.config: /stories→/work,
+/industries/software-platforms→technology-platforms, stories/:slug→case-studies/:slug. Full live
+crawl + uniformity matrix still pending a successful yh16 deploy (free-plan cap).
+
+## About copy pass (owner direction, 2026-07-30)
+No "year three" framing anywhere on About; New York reduced to a single mention (origin body).
+Origin heading "Two cities. One standard."; thesis pull "We answer for what we build — long after
+launch day."; leadership strip "N people across two cities — one standard."
 
 ## Flags for the human (decisions needed)
 1. **Fonts** — plan wants 2 families; the redesign deliberately uses **Poppins + Inter + mono**. Kept the redesign. Confirm.

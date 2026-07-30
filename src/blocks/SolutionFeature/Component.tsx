@@ -38,7 +38,7 @@ const DEFAULTS = {
     label: 'Outcomes',
     text: 'Production-ready systems, full test coverage, CI/CD pipelines, and zero technical debt at launch.',
   },
-  stat: { label: 'Architecture · Zero-to-One', liveLabel: 'Live', value: '10x', caption: 'Scale handled seamlessly' },
+  stat: { label: 'Architecture · Zero-to-One', liveLabel: 'Live', value: '10x', caption: 'Scale handled from day one' },
   migration: {
     label: 'Migration Plan · Reversible at every step',
     connector: 'Dual-run',

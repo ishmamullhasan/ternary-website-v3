@@ -20,6 +20,27 @@ CMS later.
 
 ## Changes
 
+### Stage 8 — solution detail pages populated (staging, 2026-07-30)
+`solution` collection ×4 via `scripts/seed-stage8.ts`. **Prod follow-up: replicate (schema deploy
+first — the `detail` group ships in code).** Each doc gained the full 7-section template content
+(plan copy verbatim): detail.h1 sentence headline ("Take an idea to a real product." / "Replace
+what you've outgrown." / "Add senior engineers to your team." / "We run what we build."), defn,
+intro, meta (models/shape/drawsOn capability links), pull-quote, position paragraphs, 5 phases,
+"In plain terms", 4 walk-away items, proof story relations (PD: alley-analytix+turfly [Flex5
+excluded per safe default]; ET: dhaka-stock-exchange+farogl-odoo-erp; EA: none + named-with-
+permission note; MS: counterfoil-continuum + under-NDA note), CTA heading/line. `excerpts` +
+`meta.description` moved to the definition lines; the dead generic `content` body cleared.
+Canonical `title` values untouched. FLAGGED for copy review: ET walk-away bodies, EA/MS phase
+bodies (plan said "per the approved deck"; deck text unavailable — drafted faithfully).
+
+### About copy pass — owner direction (staging, 2026-07-30)
+`pages.about.layout` via re-run of `scripts/seed-stage7.ts`. No "year three" phrasing; New York
+reduced to one mention. Origin heading → "Two cities. One standard."; origin p1 → "…it fails
+later, quietly…"; p2 → "Headquartered in New York, engineered in Dhaka…"; fundingStory heading →
+"We answer for what we build — long after launch day." Code (same pass): leadership strip →
+"N people across two cities — one standard."; SolutionFeature stat caption "Scale handled
+seamlessly" → "Scale handled from day one".
+
 ### Master fix plan — CMS changes (staging, 2026-07-29/30)
 
 One consolidated entry for the `ternary-master-fix-plan.md` run (Stages 1–9). Every change is a
