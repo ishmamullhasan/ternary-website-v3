@@ -72,7 +72,7 @@ const SCALES = [
         lead: true,
       },
     ] as Fact[],
-    proof: ['Alley Analytix', 'Flex5 by Reality Meets Science'],
+    proof: ['Alley Analytix', 'Turfly'],
   },
   {
     n: '01',
