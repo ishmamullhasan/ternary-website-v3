@@ -27,7 +27,8 @@ export default function TeamComp({ heading, description, members: rawMembers }: 
   if (!rawMembers || rawMembers.length === 0) return null
 
   // Global manual roster order (admin drag-and-drop) wins over the relationship's pick order.
-  const members = sortByTeamOrder(rawMembers)
+  // Render guard (Stage 6.4): only complete entries (name + role) appear publicly.
+  const members = sortByTeamOrder(rawMembers).filter((m) => m.name?.trim() && m.position?.trim())
 
   const maxVisible = 3
   const total = members.length

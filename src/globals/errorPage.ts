@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache'
+import { revalidateTagSafe } from '@/utilities/revalidateTagSafe'
 import type { GlobalConfig } from 'payload'
 
 // Every string, label, and href on the unknown-error screen (error.tsx / global-error.tsx).
@@ -21,7 +21,7 @@ const ErrorPage: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('error-page', { expire: 0 })
+        revalidateTagSafe('error-page', { expire: 0 })
       },
     ],
   },
