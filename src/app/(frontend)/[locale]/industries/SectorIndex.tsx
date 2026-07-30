@@ -67,7 +67,7 @@ const SECTORS: Sector[] = [
     num: '02',
     name: 'Health Care',
     label: 'In the sector',
-    clients: ['Flex5 by Reality Meets Science'],
+    clients: ['Turfly'],
     desc: 'HIPAA-grade platforms where clinical trust and consumer ease have to live together.',
   },
   {

@@ -257,6 +257,16 @@
 /* ---------- responsive ---------- */
 
 @media (max-width: 768px) {
+  /* Top-anchor the hero text on mobile so the headline lands in the first screen instead of being
+     pushed to the bottom of a full-viewport scene (Stage 9.1 / the Stage 4 hero rule). Desktop keeps
+     its bottom-anchored reel. */
+  .wk-scene {
+    align-items: flex-start;
+  }
+  .wk-body {
+    padding-top: calc(var(--nav-h) + clamp(48px, 10svh, 96px));
+    padding-bottom: clamp(32px, 6vh, 64px);
+  }
   .wk-foot {
     flex-direction: column;
     align-items: flex-start;
