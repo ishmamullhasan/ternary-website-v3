@@ -129,19 +129,6 @@ const revealItem = (index: number) => ({
 const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/70 focus-visible:ring-offset-2 focus-visible:ring-offset-page'
 
-// Palantir-style section marker: "Section 02 / Label", tabular numerals, tight functional label.
-function SectionMarker({ index, label }: { index: number; label: string }): JSX.Element {
-  return (
-    <p className="flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] text-subtle">
-      <span className="tabular-nums text-cream/70">{`Section ${String(index).padStart(2, '0')}`}</span>
-      <span aria-hidden className="text-subtle/50">
-        /
-      </span>
-      <span>{label}</span>
-    </p>
-  )
-}
-
 // A Lexical richText value is non-empty when its root has at least one child node. Empty editors
 // still serialize a root with an empty children array, so a truthy check alone is not enough.
 function hasRichText(value: unknown): value is RichText {
@@ -165,7 +152,6 @@ export default async function Page({
 
   const hero = capability.heroSection
   const heroButton = hero?.button
-  const heroEyebrow = hero?.badge || 'Capability'
   const heroHeading = hero?.heading || capability.title || 'Capability'
 
   const what = capability.whatThisMeansToUs
@@ -196,8 +182,6 @@ export default async function Page({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: EASE }}
           >
-            <span className="text-[12px] uppercase tracking-[0.18em] text-subtle">{heroEyebrow}</span>
-
             <h1 className="font-display text-[clamp(2.5rem,6vw,4rem)] font-medium leading-[1.02] tracking-[-0.04em] text-cream">
               {heroHeading}
             </h1>
@@ -263,17 +247,26 @@ export default async function Page({
       {/* ── SECTION 01 · WHAT IT IS (single definitional moment) ─────────────────────────── */}
       {what?.heading && (
         <section className="w-full">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-            {/* Definition — text-forward left column */}
-            <Motion className="flex flex-col gap-6" {...reveal}>
-              <SectionMarker index={1} label={what.sectionLabel || 'What it is'} />
-              <h2 className="max-w-xl font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
+          {/* Lead, then the tiles beneath it at full width.
+              It was a two-track grid — copy in the left track, tiles in the right — which gave the
+              tiles a column they could not fill and squeezed three paragraphs into a narrow measure
+              beside them. The tiles now run across the whole width.
+
+              A STACKED LEAD, NOT THE HUBS' HEAD ROW, AND THAT IS DELIBERATE. The head row puts a
+              short claim left and one supporting sentence right; it works there because the right
+              block IS a sentence. Here `description` is authored body copy — measured 452px tall
+              against an 84px heading — so splitting them left/right opened a 368px hole under the
+              heading. Tried it, measured it, reverted. If a section ever carries a single sentence
+              the head row is right for it; these do not. */}
+          <div>
+            <Motion className="mb-[clamp(28px,4vw,56px)] flex max-w-2xl flex-col gap-5" {...reveal}>
+              <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
                 {what.heading}
               </h2>
               {hasRichText(what.description) && (
                 <RichTextComp
                   content={what.description as RichText}
-                  className="max-w-xl prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body"
+                  className="prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body"
                 />
               )}
             </Motion>
@@ -283,7 +276,7 @@ export default async function Page({
                 The hover transform lives on an inner div so Motion's reveal transform (which stays
                 inline on the wrapper) never fights the CSS translate. */}
             {whatItems.length > 0 && (
-              <div className="flex flex-col gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {whatItems.map((item, i) => {
                   const tone = toneFor(null, i)
                   return (
@@ -301,17 +294,10 @@ export default async function Page({
                           className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.06] mix-blend-overlay"
                         />
                         <div className="relative flex flex-col gap-2">
-                          <div className="flex items-baseline gap-3">
-                            <span className="text-[12px] tabular-nums text-cream/70">
-                              {String(i + 1).padStart(2, '0')}
-                            </span>
-                            {item.title && (
-                              <h3 className="text-[16px] font-medium tracking-[-0.02em] text-cream">{item.title}</h3>
-                            )}
-                          </div>
-                          {item.excerpt && (
-                            <p className="pl-[27px] text-[14px] leading-relaxed text-body">{item.excerpt}</p>
+                          {item.title && (
+                            <h3 className="text-[16px] font-medium tracking-[-0.02em] text-cream">{item.title}</h3>
                           )}
+                          {item.excerpt && <p className="text-[14px] leading-relaxed text-body">{item.excerpt}</p>}
                         </div>
                       </div>
                     </Motion>
@@ -335,8 +321,7 @@ export default async function Page({
               backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
             }}
           />
-          <Motion className="relative mb-14 flex max-w-2xl flex-col gap-5" {...reveal}>
-            <SectionMarker index={2} label={how.sectionLabel || 'How we do it'} />
+          <Motion className="relative mb-[clamp(28px,4vw,56px)] flex max-w-2xl flex-col gap-5" {...reveal}>
             <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
               {how.heading}
             </h2>
@@ -357,8 +342,7 @@ export default async function Page({
       {/* ── SECTION 03 · PROOF / SELECTED WORK (editorial rows) ──────────────────────────── */}
       {proof?.heading && (
         <section className="w-full">
-          <Motion className="mb-12 flex max-w-2xl flex-col gap-5" {...reveal}>
-            <SectionMarker index={3} label={proof.sectionLabel || 'Selected work'} />
+          <Motion className="mb-[clamp(28px,4vw,56px)] flex max-w-2xl flex-col gap-5" {...reveal}>
             <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
               {proof.heading}
             </h2>
@@ -465,7 +449,6 @@ export default async function Page({
         <section className="w-full">
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[0.8fr_2.2fr] lg:gap-12">
             <Motion className="flex flex-col gap-4" {...reveal}>
-              <SectionMarker index={4} label={related.sectionLabel || 'Related'} />
               <p className="max-w-xs font-display text-[clamp(1.25rem,2vw,1.5rem)] font-medium leading-tight tracking-[-0.02em] text-cream whitespace-pre-line">
                 {related.heading}
               </p>

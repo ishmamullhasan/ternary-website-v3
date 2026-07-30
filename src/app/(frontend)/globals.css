@@ -127,6 +127,20 @@ html[data-a11y-links='underline'] footer a {
     --nav-gap: 18px;
   }
 
+  /* Lexical writes a blank line as <p><br></p>, and the typography plugin then gives that empty
+     paragraph a full line-height AND a bottom margin. Authors use them as spacers, so the copy
+     arrives with 46px of dead air between every paragraph on top of the 20px the plugin already
+     adds — measured 3 of 6 paragraphs empty in one capability section alone, 138px wasted there and
+     4 such paragraphs on that page.
+
+     Hidden rather than stripped in the converter: the stored content is untouched, an author who
+     removes them sees no change, and this fixes every rich text on the site at once rather than one
+     collection's field. `:has(> br:only-child)` because the paragraph is not `:empty` — it holds
+     the <br>. */
+  .prose p:has(> br:only-child) {
+    display: none;
+  }
+
   /* Signature section surface (Figma `--surface/card`): each home/marketing content section sits on
      a raised near-black card, one step lighter than the page, with an 8px radius and no border —
      matching the design where the sections are cards rather than transparent pass-throughs. Padding
