@@ -188,7 +188,7 @@ export default async function Page({
   return (
     <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-24 px-5 pb-24 md:px-8 lg:gap-32 lg:px-12 lg:pb-32">
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
-      <section className="w-full pt-10 lg:pt-16">
+      <section className="w-full pt-6 lg:pt-10">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
           <Motion
             className="flex flex-col items-start gap-7"
@@ -230,28 +230,29 @@ export default async function Page({
           </Motion>
 
           {/* On-brand hero figure — the discipline's own line drawing (chosen by `animation`),
-              rendered latent on a faint framed panel. `cap-stage` carries the CSS defaults so it
-              draws correctly server-side without a pointer handler. Decorative → aria-hidden. */}
+              drawn straight onto the page. No panel: the framed box, its radial fill and its noise
+              overlay are gone.
+
+              `cap-stage` STAYS. It looks like presentation but it is not — the class declares
+              --cap-ink / --cap-hi / --cap-sd and the --cap-on pointer gate that the drawing's own
+              CSS reads. Drop it and the figure loses its colours.
+
+              The box now takes the art's OWN ratio, 240/190, and carries no inner padding. It was
+              520/440 with 48px of padding, which letterboxed a 505x412 drawing inside a 601x508
+              frame — the empty band inside the panel. Capped at 520 wide because the row's height
+              follows this column: at 601 the stage stood 508px against 226px of copy and centred it
+              in the middle, which is where the 141px of dead space above and below came from.
+
+              Decorative → aria-hidden. */}
           {capability.animation && (
             <Motion
-              className="cap-stage relative aspect-[520/440] w-full overflow-hidden rounded-md ring-1 ring-line"
+              className="cap-stage relative aspect-[240/190] w-full max-w-[520px] lg:ml-auto"
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: EASE, delay: 0.1 }}
               aria-hidden
             >
-              <span
-                aria-hidden
-                className="absolute inset-0"
-                style={{
-                  backgroundImage: 'radial-gradient(120% 120% at 72% 24%, #16151b 0%, #0d0c11 52%, #08080b 100%)',
-                }}
-              />
-              <span
-                aria-hidden
-                className="absolute inset-0 bg-[url('/noise.svg')] bg-[length:240px] opacity-[0.12] mix-blend-overlay"
-              />
-              <div className="absolute inset-0 flex items-center justify-center p-6 lg:p-12">
+              <div className="absolute inset-0 flex items-center justify-center">
                 <CapabilityArt animation={capability.animation} />
               </div>
             </Motion>
