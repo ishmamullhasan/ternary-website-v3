@@ -252,21 +252,25 @@ export default async function Page({
               tiles a column they could not fill and squeezed three paragraphs into a narrow measure
               beside them. The tiles now run across the whole width.
 
-              A STACKED LEAD, NOT THE HUBS' HEAD ROW, AND THAT IS DELIBERATE. The head row puts a
-              short claim left and one supporting sentence right; it works there because the right
-              block IS a sentence. Here `description` is authored body copy — measured 452px tall
-              against an 84px heading — so splitting them left/right opened a 368px hole under the
-              heading. Tried it, measured it, reverted. If a section ever carries a single sentence
-              the head row is right for it; these do not. */}
+              HEAD ROW: heading left, copy right and right-aligned. Requested directly, after a
+              first attempt at this was reverted for opening a 368px hole under the heading — the
+              copy is authored body text and outruns a two-line heading. Two things narrow that gap
+              now: the empty spacer paragraphs are hidden (globals.css), which took ~138px out of
+              the copy on its own, and the copy is given a 52ch measure so it sets in fewer lines.
+              Whatever remains is the honest cost of putting a paragraph block opposite a heading —
+              see the commit for the measured numbers. */}
           <div>
-            <Motion className="mb-[clamp(28px,4vw,56px)] flex max-w-2xl flex-col gap-5" {...reveal}>
-              <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
+            <Motion
+              className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16"
+              {...reveal}
+            >
+              <h2 className="max-w-[20ch] font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
                 {what.heading}
               </h2>
               {hasRichText(what.description) && (
                 <RichTextComp
                   content={what.description as RichText}
-                  className="prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body"
+                  className="max-w-[52ch] prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body lg:text-right"
                 />
               )}
             </Motion>
@@ -321,14 +325,17 @@ export default async function Page({
               backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
             }}
           />
-          <Motion className="relative mb-[clamp(28px,4vw,56px)] flex max-w-2xl flex-col gap-5" {...reveal}>
-            <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
+          <Motion
+            className="relative mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16"
+            {...reveal}
+          >
+            <h2 className="max-w-[20ch] font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
               {how.heading}
             </h2>
             {hasRichText(how.description) && (
               <RichTextComp
                 content={how.description as RichText}
-                className="prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body"
+                className="max-w-[52ch] prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body lg:text-right"
               />
             )}
           </Motion>
@@ -342,14 +349,17 @@ export default async function Page({
       {/* ── SECTION 03 · PROOF / SELECTED WORK (editorial rows) ──────────────────────────── */}
       {proof?.heading && (
         <section className="w-full">
-          <Motion className="mb-[clamp(28px,4vw,56px)] flex max-w-2xl flex-col gap-5" {...reveal}>
-            <h2 className="font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
+          <Motion
+            className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16"
+            {...reveal}
+          >
+            <h2 className="max-w-[20ch] font-display text-[clamp(1.75rem,3.4vw,2.375rem)] font-medium leading-[1.1] tracking-[-0.03em] text-cream whitespace-pre-line">
               {proof.heading}
             </h2>
             {hasRichText(proof.description) && (
               <RichTextComp
                 content={proof.description as RichText}
-                className="prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body"
+                className="max-w-[52ch] prose-p:text-[16px] prose-p:leading-relaxed prose-p:text-body lg:text-right"
               />
             )}
           </Motion>
