@@ -339,12 +339,26 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── THE CONSTANT ─────────────────────────────────────────────────────────────────── */}
       <section>
-        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 items-start gap-10 px-5 md:px-8 lg:px-12 py-[clamp(48px,5vw,80px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,2.8fr)] lg:gap-16">
-          <Motion className="flex flex-col gap-6" {...reveal}>
-            <h2 className="max-w-[16ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
+        {/* Head across the top, then the three cards at full width beneath it — the site's
+            SectionHead shape, the same one the solutions hub uses and the structure marked on the
+            reference.
+
+            It was a two-track grid with the heading and its paragraph stacked in the narrow left
+            track. That gave the heading 249-347px to work in and it ran to FOUR lines at 1440 and
+            FIVE at 1120, while the cards beside it were only using three of the row's columns. Given
+            the full width to break across, the heading settles in two. */}
+        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-[clamp(48px,5vw,80px)]">
+          <Motion
+            className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16"
+            {...reveal}
+          >
+            <h2 className="max-w-[24ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
               Whatever your size, the standard is the point.
             </h2>
-            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
+            {/* Right-aligned from lg, where it sits beside the heading — the treatment every other
+                supporting sentence on this page and the solutions hub gets. Below lg it is alone in
+                its row and stays left, where right-aligned copy would read as a mistake. */}
+            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:pt-1 lg:text-right">
               The work changes shape as you grow — the standard does not. Every team, at every size, brings the same
               careful review and the same senior hands. A startup&apos;s first product and a national program are built
               to the one bar.
