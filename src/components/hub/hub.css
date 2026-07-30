@@ -11,6 +11,20 @@
    line-art graphic primitives + idle motion, and the buttons.
    ------------------------------------------------------------------------------------------------ */
 
+/* ONE GROUND, NOT TWO.
+   `.hub` paints --color-page on its own element, but the root layout offsets that element by 88px
+   to clear the floating header — so the body's #050505 showed as a band across the top of the page,
+   above the #0f0e0e everything below it sits on. Measured: body rgb(5,5,5), .hub rgb(15,14,14)
+   starting at y=88.
+
+   Set on the body via `:has()` rather than a class, because the body lives in the shared root
+   layout and this is the only page that needs it — the selector is its own scope, so it cannot
+   affect a page without `.hub`. The literal rather than var(--n-950) because that token is declared
+   inside the `.hub` block below and is not in scope on the body. */
+body:has(.hub) {
+  background-color: #0f0e0e;
+}
+
 .hub {
   /* --- Ternary Design System — Color (July 2026) ---------------------------------------------
      Applied to the redesigned hub pages ONLY, by overriding the site's @theme colour tokens within
