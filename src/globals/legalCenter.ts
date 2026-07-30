@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache'
+import { revalidateTagSafe } from '@/utilities/revalidateTagSafe'
 import type { GlobalConfig } from 'payload'
 
 const LegalCenter: GlobalConfig = {
@@ -11,8 +11,8 @@ const LegalCenter: GlobalConfig = {
   hooks: {
     afterChange: [
       () => {
-        revalidateTag('legal-center', { expire: 0 })
-        revalidateTag('legal', { expire: 0 })
+        revalidateTagSafe('legal-center', { expire: 0 })
+        revalidateTagSafe('legal', { expire: 0 })
       },
     ],
   },

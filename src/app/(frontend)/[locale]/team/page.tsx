@@ -68,7 +68,9 @@ export default async function TeamPage({ params }: { params: Promise<{ locale: s
     category,
     title,
     // Docs predating the category field count as 'general' (mirrors the field's defaultValue).
-    members: members.filter((m) => (m.category ?? 'general') === category),
+    // Render guard (Stage 6.4): only complete entries (name + role) appear publicly — incomplete
+    // rows are skipped rather than rendered broken.
+    members: members.filter((m) => (m.category ?? 'general') === category && m.name?.trim() && m.position?.trim()),
   })).filter((s) => s.members.length > 0)
 
   return (
