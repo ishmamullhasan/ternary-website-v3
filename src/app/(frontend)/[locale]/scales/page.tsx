@@ -1,10 +1,11 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
 import ScaleFigure from '@/components/scales/ScaleFigure'
+import RevealText from '@/components/text/RevealText'
 import { cn } from '@/lib/utils'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { Metadata } from 'next'
-import type { JSX, ReactNode } from 'react'
+import type { JSX } from 'react'
 
 /**
  * Scales — landing redesign, ported from public/hub/scales-hub-ternary.html into Ternary's own
@@ -130,20 +131,10 @@ const SHAPED_TO_YOU = [
   'How much documentation',
 ] as const
 
-// Eyebrow — hairline rule + uppercase micro-label, in the reference's design language.
-function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
-  return (
-    <span className="flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.16em] text-subtle">
-      <span aria-hidden className="h-px w-6 bg-cream/60" />
-      {children}
-    </span>
-  )
-}
-
 // ---------------------------------------------------------------------------------------------
 export default function ScalesHubPage(): JSX.Element {
   return (
-    <div className="w-full pb-24 lg:pb-32">
+    <div className="w-full pb-[clamp(48px,5vw,80px)]">
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         {/* faint vertical rule field — quiet engineering texture */}
@@ -154,9 +145,8 @@ export default function ScalesHubPage(): JSX.Element {
             backgroundImage: 'repeating-linear-gradient(90deg, rgba(244,243,236,0.02) 0 1px, transparent 1px 120px)',
           }}
         />
-        <div className="relative mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 pb-16 lg:pt-32 lg:pb-24">
+        <div className="relative mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-[clamp(32px,6vh,72px)] pb-[clamp(48px,7vh,80px)]">
           <Motion className="flex flex-col gap-7" {...reveal}>
-            <Eyebrow>Scales · 00–10 · base 3</Eyebrow>
             <h1 className="max-w-[18ch] font-display text-[clamp(2.75rem,7vw,6rem)] font-medium leading-[1.01] tracking-[-0.04em] text-cream">
               From founding teams to national institutions.
             </h1>
@@ -177,9 +167,6 @@ export default function ScalesHubPage(): JSX.Element {
                   FOCUS_RING,
                 )}
               >
-                <span className="font-mono tabular-nums text-cream/45 transition-colors duration-200 group-hover:text-cream">
-                  {s.n}
-                </span>
                 {s.name}
               </Link>
             ))}
@@ -188,26 +175,27 @@ export default function ScalesHubPage(): JSX.Element {
       </section>
 
       {/* ── THE THREE SCALES (centerpiece) ───────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12">
+      {/* Carries the same py as every other section. Without it this one sat flush against the hero
+          above and the statement below, and the page's two shortest gaps (117px and 121px against a
+          169px median on the solutions and capabilities hubs) were both here. */}
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-[clamp(48px,5vw,80px)]">
         <div className="grid gap-4 lg:gap-5">
           {SCALES.map((s, i) => (
             <Motion key={s.n} {...revealItem(i)}>
               <div
                 id={`s${s.n}`}
-                className="sc-card sc-tile grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 p-7 sm:p-9 lg:grid-cols-[11rem_minmax(0,1.1fr)_minmax(0,1fr)] lg:p-12"
+                className="sc-card sc-tile grid scroll-mt-28 grid-cols-1 gap-x-8 gap-y-8 p-7 sm:p-9 lg:grid-cols-[15rem_minmax(0,1.1fr)_minmax(0,1fr)] lg:p-12"
               >
-                <div className="flex flex-col gap-7">
-                  <span className="font-display text-[15px] font-mono tabular-nums text-subtle">{s.n}</span>
-                  {/* the same figure this scale carries on the home page, so both tell one story */}
-                  <div className="hidden lg:block" aria-hidden="true">
-                    <ScaleFigure title={s.name} index={i} />
-                  </div>
+                {/* The same figure this scale carries on the home page, so both tell one story.
+                    Centred on both axes and given a 15rem track rather than 11rem: with the scale
+                    number gone it is the only thing in this column, and top-aligned at 176px wide it
+                    sat small in the corner of a card whose copy runs three or four times taller. */}
+                <div className="hidden lg:flex lg:items-center lg:justify-center" aria-hidden="true">
+                  <ScaleFigure title={s.name} index={i} />
                 </div>
 
                 <div className="flex flex-col">
-                  <span className="text-[11px] uppercase tracking-[0.12em] text-subtle">
-                    {s.mark} · <span className="text-body">{s.name}</span>
-                  </span>
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-body">{s.name}</span>
                   <h2 className="mt-5 max-w-[15ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
                     {s.title}
                   </h2>
@@ -243,12 +231,18 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── THE POINT ────────────────────────────────────────────────────────────────────── */}
       <section>
-        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.15fr)] lg:gap-16 lg:py-32">
-          <Motion {...reveal}>
-            <p className="max-w-[16ch] font-display text-[clamp(1.75rem,3.6vw,2.75rem)] font-medium leading-[1.18] tracking-[-0.02em] text-cream">
-              A startup and a stock exchange get <span className="text-body">the same engineers.</span>
-            </p>
-          </Motion>
+        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-10 px-5 md:px-8 lg:px-12 py-[clamp(48px,5vw,80px)] lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.15fr)] lg:gap-16">
+          {/* The statement arrives word by word, the same reveal the capabilities hub gives
+              "A capability, to us, is not a keyword on a services page." Entry-triggered and then
+              it finishes on its own — see RevealText on why this is not scroll-scrubbed. The second
+              clause keeps its own tone, which is what `segments` is for. */}
+          <RevealText
+            className="max-w-[16ch] font-display text-[clamp(1.75rem,3.6vw,2.75rem)] font-medium leading-[1.18] tracking-[-0.02em] text-cream"
+            segments={[
+              { text: 'A startup and a stock exchange get' },
+              { text: 'the same engineers.', className: 'text-body' },
+            ]}
+          />
           <Motion className="flex flex-col gap-5 self-end" {...reveal}>
             <p className="max-w-[56ch] text-[16px] leading-relaxed text-body">
               They don&apos;t get the same process, oversight, or reporting rhythm — those should differ. But who we
@@ -266,53 +260,56 @@ export default function ScalesHubPage(): JSX.Element {
 
       {/* ── WHAT MOVES / WHAT NEVER DOES ─────────────────────────────────────────────────── */}
       <section>
-        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-24 lg:py-32">
-          <Motion className="mb-14 flex flex-col gap-4 lg:mb-20" {...reveal}>
-            <Eyebrow>In practice</Eyebrow>
-            <h2 className="max-w-[24ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
-              What moves with your size — and what never does
-            </h2>
-          </Motion>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Motion className="h-full" {...revealItem(0)}>
-              <div className="sc-tile flex h-full flex-col rounded-xl p-8">
-                <span className="text-[11px] uppercase tracking-[0.12em] text-cream/70">Never moves</span>
-                <p className="mt-2 text-[13px] text-subtle">Constant at every scale.</p>
-                <ul className="mt-6 flex flex-col gap-1">
-                  {NEVER_MOVES.map((item) => (
-                    <li key={item} className="flex items-baseline gap-3 py-2 text-[15px] text-cream">
-                      <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-cream/70" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        <div className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 py-[clamp(48px,5vw,80px)]">
+          {/* The industries hub's "Before we write a line of code." shape: the lead is a claim,
+              not a column of content, so it takes a narrow track and the cards run across from it.
+              Stacked above them it left the width unused and the section twice as tall. */}
+          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.8fr)] lg:gap-16">
+            <Motion className="flex flex-col gap-4" {...reveal}>
+              <h2 className="max-w-[18ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
+                What moves with your size — and what never does
+              </h2>
             </Motion>
 
-            <Motion className="h-full" {...revealItem(1)}>
-              <div className="sc-tile flex h-full flex-col rounded-xl p-8">
-                <span className="text-[11px] uppercase tracking-[0.12em] text-subtle">Shaped to you</span>
-                <p className="mt-2 text-[13px] text-subtle">Fitted to your size and stakes.</p>
-                <ul className="mt-6 flex flex-col gap-1">
-                  {SHAPED_TO_YOU.map((item) => (
-                    <li key={item} className="flex items-baseline gap-3 py-2 text-[15px] text-body">
-                      <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-subtle" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Motion>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Motion className="h-full" {...revealItem(0)}>
+                <div className="sc-tile flex h-full flex-col rounded-xl p-8">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-cream/70">Never moves</span>
+                  <p className="mt-2 text-[13px] text-subtle">Constant at every scale.</p>
+                  <ul className="mt-6 flex flex-col gap-1">
+                    {NEVER_MOVES.map((item) => (
+                      <li key={item} className="flex items-baseline gap-3 py-2 text-[15px] text-cream">
+                        <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-cream/70" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Motion>
+
+              <Motion className="h-full" {...revealItem(1)}>
+                <div className="sc-tile flex h-full flex-col rounded-xl p-8">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-subtle">Shaped to you</span>
+                  <p className="mt-2 text-[13px] text-subtle">Fitted to your size and stakes.</p>
+                  <ul className="mt-6 flex flex-col gap-1">
+                    {SHAPED_TO_YOU.map((item) => (
+                      <li key={item} className="flex items-baseline gap-3 py-2 text-[15px] text-body">
+                        <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-sm bg-subtle" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Motion>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── THE CONSTANT ─────────────────────────────────────────────────────────────────── */}
       <section>
-        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 gap-12 px-5 md:px-8 lg:px-12 py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-20 lg:py-32">
+        <div className="mx-auto grid w-full max-w-[1480px] grid-cols-1 items-start gap-10 px-5 md:px-8 lg:px-12 py-[clamp(48px,5vw,80px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,2.8fr)] lg:gap-16">
           <Motion className="flex flex-col gap-6" {...reveal}>
-            <Eyebrow>The constant</Eyebrow>
             <h2 className="max-w-[16ch] font-display text-[clamp(1.875rem,4vw,3.25rem)] font-medium leading-[1.06] tracking-[-0.03em] text-cream">
               Whatever your size, the standard is the point.
             </h2>
@@ -323,7 +320,7 @@ export default function ScalesHubPage(): JSX.Element {
             </p>
           </Motion>
 
-          <div className="grid gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 k: 'a',
@@ -342,11 +339,8 @@ export default function ScalesHubPage(): JSX.Element {
               },
             ].map((s, i) => (
               <Motion key={s.k} className="sc-tile flex flex-col gap-2 rounded-xl p-6" {...revealItem(i)}>
-                <h3 className="flex items-baseline gap-3.5 text-[18px] font-medium tracking-[-0.01em] text-cream">
-                  <span className="font-display text-[13px] font-mono tabular-nums text-cream/50">{s.k}.</span>
-                  {s.title}
-                </h3>
-                <p className="max-w-[48ch] pl-[26px] text-[15px] leading-relaxed text-body">{s.body}</p>
+                <h3 className="text-[18px] font-medium tracking-[-0.01em] text-cream">{s.title}</h3>
+                <p className="max-w-[48ch] text-[15px] leading-relaxed text-body">{s.body}</p>
               </Motion>
             ))}
           </div>
@@ -354,7 +348,10 @@ export default function ScalesHubPage(): JSX.Element {
       </section>
 
       {/* ── CTA (signature noise-gradient moment) ────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12 pt-24 lg:pt-32">
+      {/* No pt of its own: the section above already ends on 72px, and adding another 72 here made the
+          gap before the CTA double every other gap on the page. The capabilities hub ends the same
+          way — its CTA is 0/0 and the preceding section supplies the whole gap. */}
+      <section className="mx-auto w-full max-w-[1480px] px-5 md:px-8 lg:px-12">
         <Motion tag="div" className="sc-tile relative overflow-hidden p-10 lg:p-16" {...reveal}>
           <span aria-hidden className="absolute inset-0">
             <span
@@ -368,7 +365,6 @@ export default function ScalesHubPage(): JSX.Element {
           </span>
 
           <div className="relative z-10 flex flex-col gap-6">
-            <Eyebrow>Start here</Eyebrow>
             <h2 className="max-w-[18ch] font-display text-[clamp(1.875rem,4vw,3rem)] font-medium leading-[1.08] tracking-[-0.02em] text-cream">
               Tell us where you are. We&apos;ll show up shaped for it.
             </h2>
