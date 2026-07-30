@@ -300,7 +300,7 @@ export default function AboutComp({
 
        Safe to do here because this stack is home-only: /about is built from its own
        AboutIntro/AboutThesis blocks and never renders this component. */
-    <section className="w-full -mt-14 lg:-mt-[104px]">
+    <section className="w-full -mt-10 lg:-mt-20">
       <div className="flex flex-col items-center space-y-16">
         {/* section intro — ONE richText: heading nodes take the display style, paragraphs the body
             style. Arbitrary clamp values mirror .text-section (globals.css) — the plain class has
@@ -311,7 +311,7 @@ export default function AboutComp({
             tag="div"
             {...motionIntroProps}
             transition={{ duration: 0.7, ease: EASE }}
-            className="flex w-full max-w-[800px] flex-col items-center gap-4 pb-9 text-center xl:gap-6 lg:pb-[72px]"
+            className="flex w-full max-w-[960px] flex-col items-center gap-4 pb-9 text-center xl:gap-6 lg:pb-[72px]"
           >
             {content ? (
               /* Headings stay flush to each other (mt-0/mb-0) so a multi-line title reads as one block; the
@@ -323,7 +323,7 @@ export default function AboutComp({
               <LiquidText>
                 <RichTextComp
                   content={content}
-                  className="prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-4xl lg:prose-headings:text-[56px] xl:prose-headings:text-[80px] prose-headings:leading-[1.1] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-4 xl:prose-p:mt-6 prose-p:mb-0 prose-p:text-base prose-p:text-body"
+                  className="max-w-none prose-headings:mt-0 prose-headings:mb-0 prose-headings:text-3xl lg:prose-headings:text-[48px] xl:prose-headings:text-[72px] prose-headings:leading-[1.12] prose-headings:tracking-[-0.02em] prose-headings:font-display prose-headings:font-medium prose-headings:text-cream prose-p:mt-4 xl:prose-p:mt-6 prose-p:mb-0 prose-p:text-base prose-p:text-body prose-p:max-w-[720px] prose-p:mx-auto"
                 />
               </LiquidText>
             ) : (
