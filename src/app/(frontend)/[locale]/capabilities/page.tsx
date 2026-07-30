@@ -143,17 +143,6 @@ const PANEL = 'rounded-xl bg-card'
 const PANEL_HOVER = 'transition-colors duration-300 hover:bg-[#232119]'
 const CHIP = 'rounded-full bg-card transition-colors duration-200 hover:bg-[#2a2820]'
 
-// Eyebrow — uppercase micro-label. A dot rather than the 6px rule it used to carry: it
-// reads the same and adds no hairline to a page whose structure is now surfaces.
-function Eyebrow({ children }: { children: ReactNode }): JSX.Element {
-  return (
-    <span className="flex items-center gap-2.5 font-mono text-[12px] tracking-[0.16em] text-subtle uppercase">
-      <span aria-hidden className="size-1.5 rounded-full bg-cream/60" />
-      {children}
-    </span>
-  )
-}
-
 /* One wrapper for every section, so max width, gutters and rhythm are declared once
    instead of repeated per section and drifting apart. Spacing follows the industries
    hub's system, as /solutions does. */
@@ -167,23 +156,22 @@ function Section({ children, id, pad }: { children: ReactNode; id?: string; pad?
   )
 }
 
-/* Every section opens the same way — eyebrow + heading left, one supporting sentence
-   right, sharing a baseline. */
-function SectionHead({ eyebrow, title, blurb }: { eyebrow: string; title: string; blurb?: string }): JSX.Element {
+/* Every section opens the same way — heading left, one supporting sentence top right.
+   `items-start`, not `items-end`: hung off the heading's bottom the sentence sat level with its
+   LAST line, two lines down, reading as a footnote to it. From the top the two sides begin
+   together however many lines the heading runs to. */
+function SectionHead({ title, blurb }: { title: string; blurb?: string }): JSX.Element {
   return (
     <Motion
-      className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16"
+      className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16"
       {...reveal}
     >
-      <div className="flex flex-col gap-4">
-        <Eyebrow>{eyebrow}</Eyebrow>
-        {/* `text-balance` so a heading breaks into even lines instead of orphaning its last
-            word — "One standard across them / all" was the case that showed it. */}
-        <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-balance text-cream">
-          {title}
-        </h2>
-      </div>
-      {blurb ? <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:pb-2">{blurb}</p> : null}
+      {/* `text-balance` so a heading breaks into even lines instead of orphaning its last
+          word — "One standard across them / all" was the case that showed it. */}
+      <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-balance text-cream">
+        {title}
+      </h2>
+      {blurb ? <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">{blurb}</p> : null}
     </Motion>
   )
 }
@@ -200,7 +188,6 @@ export default function CapabilitiesHubPage(): JSX.Element {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-16">
           <div>
             <Motion className="flex flex-col gap-7" {...reveal}>
-              <Eyebrow>Capability index</Eyebrow>
               <h1 className="font-display max-w-[15ch] text-[clamp(2.75rem,7vw,6rem)] leading-[1.01] font-medium tracking-[-0.04em] text-cream">
                 Every discipline. One standard.
               </h1>
@@ -249,7 +236,9 @@ export default function CapabilitiesHubPage(): JSX.Element {
           paragraph started at its own track's left edge and floated mid-page; `justify-between`
           puts it flush right, where every other section's supporting sentence sits. */}
       <Section>
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+        {/* `items-start` for the same reason as SectionHead: the sentence belongs level with the
+            statement's first line, not hung off its last. */}
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
           <RevealText
             className="max-w-[36ch] font-display text-[clamp(1.75rem,3vw,2.5rem)] font-medium leading-[1.26] tracking-[-0.025em] text-cream"
             segments={[
@@ -258,7 +247,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
             ]}
           />
           <Motion {...reveal}>
-            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:pb-2">
+            <p className="max-w-[46ch] text-[16px] leading-relaxed text-body">
               Each one below has people who own it, methods we can defend, and clients who can vouch for it. We only
               list what we currently run for clients — nothing aspirational, nothing outsourced to a slide.
             </p>
@@ -271,7 +260,6 @@ export default function CapabilitiesHubPage(): JSX.Element {
         {/* Blurb rewritten: it used to read "Numbered in base three — it's in the name",
             which pointed at ordinals this section no longer carries. */}
         <SectionHead
-          eyebrow="The index"
           title="What we practice"
           blurb="Eight practices, one bar. Open any of them for the methods, the standards, and the work behind it."
         />
@@ -326,7 +314,6 @@ export default function CapabilitiesHubPage(): JSX.Element {
       {/* ── COMBINATIONS ─────────────────────────────────────────────────────────────────── */}
       <Section>
         <SectionHead
-          eyebrow="In practice"
           title="They ship together"
           blurb="Most engagements draw on several capabilities at once. A modernization is never just cloud. A product is never just interface."
         />
@@ -377,7 +364,7 @@ export default function CapabilitiesHubPage(): JSX.Element {
           into the narrower 568px track. Heading on top, cards across the full width, like
           every other section here: both dead zones go and the cards gain ~780px. */}
       <Section>
-        <SectionHead eyebrow="The bar" title="One standard across them all" />
+        <SectionHead title="One standard across them all" />
 
         {/* Three items separated by hairlines, each labelled a. b. c. Three surfaces now —
             the gaps do the separating, and the titles carry themselves without the letters,
@@ -409,7 +396,6 @@ export default function CapabilitiesHubPage(): JSX.Element {
           </span>
 
           <div className="relative z-10 flex flex-col gap-6">
-            <Eyebrow>Start here</Eyebrow>
             <h2 className="max-w-[16ch] font-display text-[clamp(1.875rem,4vw,3rem)] font-medium leading-[1.08] tracking-[-0.02em] text-cream">
               Not sure which capability you need?
             </h2>
