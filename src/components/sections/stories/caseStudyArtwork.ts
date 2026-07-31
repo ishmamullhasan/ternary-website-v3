@@ -2,12 +2,14 @@
  * Client-supplied product screens for the case-study pages, shipped as repo assets.
  *
  * WHY THESE ARE IN CODE AND NOT ONLY IN THE CMS. `story.thumbnail` and `story.gallery` are the real
- * home for these, and when they are set they win — this map is only consulted for a story that has
- * neither. But the CMS is per-environment, and every deployment reads a different database, so
- * content loaded into one is simply absent from the others: the pages there open on a brand gradient
- * with no product on them at all. Shipping the artwork with the code gives every environment the
- * same page and leaves the CMS free to override it, which is the same contract the hub blocks use
- * for their copy — authored default in code, CMS first when authored.
+ * home for these, and real authored media still wins. But the CMS is per-environment — every
+ * deployment reads a different database — so media loaded into one is simply absent from the others,
+ * and those pages open on a decorative gradient with no product on them at all. Shipping the artwork
+ * with the code gives every environment the same page while leaving the CMS free to override it: the
+ * same contract the hub blocks use for their copy, authored default in code, CMS first when authored.
+ *
+ * The one exception is the gradient stand-ins listed at the foot of this file — a story carrying one
+ * of those is treated as having no thumbnail, because filler is not authorship.
  *
  * The files are webp at a 1600px long edge with their transparency intact: 13.5MB of source PNG
  * comes to 1.43MB across all eight. Dimensions are recorded here because the hero frame sizes itself
@@ -96,4 +98,29 @@ export const CASE_STUDY_ARTWORK: Record<string, CaseStudyArtwork[]> = {
       caption: 'Turfly — venue discovery through to instant confirmation.',
     },
   ],
+}
+
+/**
+ * Decorative gradient stand-ins currently sitting in `thumbnail` on some environments — the purple
+ * and amber fields these pages used to open on. They are filler, not content: 10–244kB of flat
+ * gradient with no detail in them, checked by eye and by filesize.
+ *
+ * A story whose thumbnail is one of these is treated as having none, so the shipped product screen
+ * wins. Matched on EXACT filename rather than a pattern like /^story-/, which would also swallow a
+ * genuine screenshot an author happened to name that way; an unrecognised filename means the CMS
+ * keeps control, which is the safe direction to fail. Delete an entry once real media replaces it.
+ */
+const PLACEHOLDER_THUMBNAILS = new Set([
+  'MagicPattern.design-2.webp',
+  'MagicPattern.design-5.webp',
+  'MagicPattern.design-22.webp',
+  'story-hissho-sushiops360.webp',
+  'story-doyouwork.webp',
+  'story-farogl-odoo-erp.webp',
+  'story-flex5.webp',
+])
+
+/** True when this media is one of the gradient stand-ins above rather than real artwork. */
+export function isPlaceholderThumbnail(filename?: string | null): boolean {
+  return typeof filename === 'string' && PLACEHOLDER_THUMBNAILS.has(filename)
 }

@@ -4,7 +4,7 @@ import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import NumberedSteps from '@/components/NumberedSteps'
 import RichTextComp, { type RichText } from '@/components/richtext'
-import { CASE_STUDY_ARTWORK } from '@/components/sections/stories/caseStudyArtwork'
+import { CASE_STUDY_ARTWORK, isPlaceholderThumbnail } from '@/components/sections/stories/caseStudyArtwork'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
 import { cn } from '@/lib/utils'
 import type { Media, Story } from '@/payload-types'
@@ -98,9 +98,14 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   const heroTone = toneFor('story', 0)
   const tags = cleanList(story.tags, 'name')
 
-  const heroMedia = asMedia(story.thumbnail)
-  /* Shipped artwork, used only when this environment's CMS has none — see caseStudyArtwork.ts. */
-  const artwork = heroMedia ? [] : (CASE_STUDY_ARTWORK[story.slug ?? ''] ?? [])
+  const cmsHero = asMedia(story.thumbnail)
+  /* Shipped artwork wins when the CMS has no thumbnail, OR when what it has is one of the
+     decorative gradient stand-ins — which is what every one of these stories carried on the
+     deployment this was reported from. A real authored image still wins over both. */
+  const shipped = CASE_STUDY_ARTWORK[story.slug ?? ''] ?? []
+  const useShipped = shipped.length > 0 && (!cmsHero || isPlaceholderThumbnail(cmsHero.filename))
+  const heroMedia = useShipped ? null : cmsHero
+  const artwork = useShipped ? shipped : []
   const heroArt = artwork[0]
   const heroUrl = heroMedia ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : (heroArt?.src ?? '')
   const heroAlt = heroMedia?.alt || heroArt?.alt || ''
