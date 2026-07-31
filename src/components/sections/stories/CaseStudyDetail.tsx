@@ -14,9 +14,9 @@ import type { JSX } from 'react'
 /**
  * Case-study detail — editorial, media-forward presentation (fantasy.co study, see
  * audit/case-studies/INSPIRATION.md): one large hero media moment, short confident
- * statements, mono numbered section markers, and a roomy single-idea vertical rhythm.
- * Every band is guarded on its data; missing media renders a clearly-labeled brand
- * GradientPanel placeholder structured to accept a client image/video later.
+ * statements, and a roomy single-idea vertical rhythm. Every band is guarded on its data and is
+ * simply absent when unauthored — the section markers and the "coming soon" placeholder tiles are
+ * both gone, the latter because an admin note has no business printed on a live client page.
  */
 
 /** A related-case-study card for the carousel — real thumbnail when present, gradient otherwise. */
@@ -50,6 +50,9 @@ function hasText(value?: string | null): value is string {
   return typeof value === 'string' && value.trim().length > 0
 }
 
+/** Tallest a hero may be, in px. Paired with a width cap derived from the artwork's ratio. */
+const HERO_MAX_H = 720
+
 /** Populated media doc (depth ≥ 1) or null — string ids have nothing to render. */
 function asMedia(value: Story['thumbnail']): Media | null {
   return value && typeof value === 'object' ? value : null
@@ -71,33 +74,19 @@ function ShowcaseCell({
 
   return (
     <Motion tag="figure" {...revealItem(index)} className="flex flex-col gap-3">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md ring-1 ring-white/5">
+      {/* `object-contain`, not cover: these are composed product screens, and cropping one to fit a
+          4/3 cell cuts the edges off the very thing the cell exists to show. */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md">
         {isVideo ? (
           // Silent product-visual clips; any caption text renders in the adjacent <figcaption>.
-          <video src={url} controls muted playsInline preload="metadata" className="size-full object-cover" />
+          <video src={url} controls muted playsInline preload="metadata" className="size-full object-contain" />
         ) : (
-          <img src={url} alt={media.alt || ''} loading="lazy" className="size-full object-cover" />
+          <img src={url} alt={media.alt || ''} loading="lazy" className="size-full object-contain" />
         )}
       </div>
       {hasText(caption) && (
         <figcaption className="font-mono text-[12px] tracking-[-0.01em] text-subtle">{caption}</figcaption>
       )}
-    </Motion>
-  )
-}
-
-/** Placeholder tile for the showcase grid — brand gradient, clearly labeled, awaiting client assets. */
-function ShowcasePlaceholder({ tone, index }: { tone: Tone; index: number }): JSX.Element {
-  return (
-    <Motion tag="div" {...revealItem(index)}>
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md ring-1 ring-white/5">
-        <GradientPanel tone={tone} scrim="none" />
-        <div className="relative flex h-full items-end p-5">
-          <span className="rounded-full bg-black/30 px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-cream/85 backdrop-blur-sm">
-            Product visuals — coming soon
-          </span>
-        </div>
-      </div>
     </Motion>
   )
 }
@@ -109,6 +98,14 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   const heroMedia = asMedia(story.thumbnail)
   const heroUrl = heroMedia ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : ''
   const heroIsVideo = typeof heroMedia?.mimeType === 'string' && heroMedia.mimeType.startsWith('video/')
+  /* The hero frame takes the artwork's OWN ratio, clamped, instead of a fixed 16/7.
+     These mockups run from 2.25:1 (a wide analytics board) to 0.81:1 (a column of phone screens);
+     cover-cropping all of them into one letterbox threw away most of every portrait one, and
+     containing them inside it left a portrait image filling ~39% of the width with bars either
+     side. Sized to itself, each one fills its frame exactly. Clamped so a freak ratio cannot
+     produce a hero taller than the viewport or a hairline strip. */
+  const heroRatio =
+    heroMedia?.width && heroMedia?.height ? Math.min(2.4, Math.max(0.85, heroMedia.width / heroMedia.height)) : null
 
   // Meta strip — only cells that carry a value (empty slots never render).
   const meta = story.caseMeta
@@ -127,14 +124,11 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   )
   const showSteps = steps.length >= 2
 
-  // Media showcase — populated gallery rows only; falls back to a labeled placeholder grid.
+  // Media showcase — populated gallery rows only; the band is absent when there are none.
   const galleryItems = (story.gallery ?? []).flatMap((row) => {
     const media = asMedia(row.media ?? null)
     return media ? [{ media, caption: row.caption ?? null }] : []
   })
-
-  // Section numbering, derived rather than hardcoded so a band that doesn't render for this story
-  // never leaves a gap in the "01 / 02 / 03" sequence.
 
   return (
     <article className="w-full pb-24 lg:pb-32">
@@ -185,13 +179,31 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
         className="mx-auto mt-12 w-full max-w-7xl px-5 md:px-8 lg:mt-16 lg:px-12"
       >
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md ring-1 ring-white/5 sm:aspect-[16/8] lg:aspect-[16/7]">
+        <div
+          className={cn(
+            'relative mx-auto w-full overflow-hidden rounded-md',
+            !heroRatio && 'aspect-[16/10] ring-1 ring-white/5 sm:aspect-[16/8] lg:aspect-[16/7]',
+          )}
+          style={
+            heroRatio
+              ? {
+                  aspectRatio: String(heroRatio),
+                  maxHeight: `${HERO_MAX_H}px`,
+                  // Cap the WIDTH at whatever that height allows for this ratio. Without it a
+                  // portrait mockup keeps the full column width, the height cap wins, and the
+                  // contained image floats in ~357px of empty bar on each side. With it the frame
+                  // shrinks to the artwork and centres — a narrower hero, but no dead space in it.
+                  maxWidth: `${Math.round(HERO_MAX_H * heroRatio)}px`,
+                }
+              : undefined
+          }
+        >
           {heroUrl ? (
             heroIsVideo ? (
               // Silent hero product clip; the surrounding article carries the narrative.
-              <video src={heroUrl} controls muted playsInline preload="metadata" className="size-full object-cover" />
+              <video src={heroUrl} controls muted playsInline preload="metadata" className="size-full object-contain" />
             ) : (
-              <img src={heroUrl} alt={heroMedia?.alt || ''} className="size-full object-cover" />
+              <img src={heroUrl} alt={heroMedia?.alt || ''} className="size-full object-contain" />
             )
           ) : (
             <>
@@ -252,29 +264,25 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         </section>
       )}
 
-      {/* Media showcase — gallery when authored; a clearly-labeled placeholder grid otherwise. */}
-      <section className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12">
-        <Motion tag="div" {...reveal} className="mb-10 flex max-w-2xl flex-col gap-5">
-          <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
-            The work, up close.
-          </h2>
-        </Motion>
-        {/* Two across, but a single visual takes the full width rather than a half-width cell with
-            nothing beside it — which is what every case study carrying one screen had. */}
-        {galleryItems.length > 0 ? (
+      {/* Media showcase — only when there is something to show. It used to fall back to three
+          gradient tiles reading "awaiting client-supplied assets", which is an admin note printed
+          on a live client page. The hero now carries a case study's first visual, so this band is
+          for the ones that have MORE than one; with a single visual there is nothing left for it
+          and the section is simply absent. */}
+      {galleryItems.length > 0 && (
+        <section className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12">
+          <Motion tag="div" {...reveal} className="mb-10 flex max-w-2xl flex-col gap-5">
+            <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
+              The work, up close.
+            </h2>
+          </Motion>
           <div className={cn('grid gap-4', galleryItems.length > 1 && 'sm:grid-cols-2')}>
             {galleryItems.map((item, index) => (
               <ShowcaseCell key={item.media.id ?? index} media={item.media} caption={item.caption} index={index} />
             ))}
           </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {(['indigo', 'magenta', 'emerald'] as const).map((tone, index) => (
-              <ShowcasePlaceholder key={tone} tone={tone} index={index} />
-            ))}
-          </div>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* Related case studies */}
       {related.length > 0 && (

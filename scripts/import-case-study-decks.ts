@@ -174,14 +174,23 @@ export const importDecks = async (payload: BasePayload, dry = DRY): Promise<stri
     const data: Record<string, unknown> = {}
     // An empty `sections` means visuals only — leave the existing write-up alone.
     if (deck.sections.length) data.content = richText(deck.sections)
+    /* The FIRST visual is the hero; the rest fill the showcase.
+       Every one of these pages opened on a brand gradient with a "Feature media — coming soon" chip
+       printed on it. Putting the same screen in the hero AND the showcase would show it twice on
+       one page, so the showcase takes only what the hero did not — and with a single visual that
+       band is now correctly absent rather than repeating the hero. */
     if (mediaIds.length) {
-      data.gallery = [...mediaIds.map((id, i) => ({ media: id, caption: deck.visuals[i]?.caption ?? '' })), ...keptRows]
+      data.thumbnail = mediaIds[0]
+      data.gallery = [
+        ...mediaIds.slice(1).map((id, i) => ({ media: id, caption: deck.visuals[i + 1]?.caption ?? '' })),
+        ...keptRows,
+      ]
     }
 
     say(
       `${dry ? 'DRY  ' : 'WRITE'} ${deck.slug.padEnd(22)} ` +
         `${deck.sections.length ? `${deck.sections.length} sections` : 'visuals only'}, ` +
-        `${mediaIds.length} visual${mediaIds.length === 1 ? '' : 's'} (${uploaded} new)` +
+        `${mediaIds.length} visual${mediaIds.length === 1 ? '' : 's'} (${uploaded} new, hero + ${Math.max(0, mediaIds.length - 1)} shown)` +
         `${deck.withheld ? `  [withheld: ${deck.withheld}]` : ''}`,
     )
 
