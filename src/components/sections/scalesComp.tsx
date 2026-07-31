@@ -54,10 +54,17 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
   if (!scales || scales.length === 0) return null
 
   return (
-    <section className="section-card flex w-full flex-col gap-8">
-      {/* Header stacked above the grid, left-aligned — the Industries/Capabilities treatment —
-          with the hub link top-right, level with the h2's first line. */}
-      <Motion className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8" {...reveal}>
+    /* lg+: one row on the section's 4-track rhythm — the header takes the first track (where an
+       empty spacer track used to sit) and the three cards fill the rest, so the copy and the
+       figures read as a single line and the section loses the whole header band of height
+       (owner direction 2026-07-31). Below lg the header stacks above the cards as before. */
+    <section className="section-card flex w-full flex-col gap-8 lg:grid lg:grid-cols-4 lg:items-stretch lg:gap-5">
+      {/* Header — left-aligned; below lg the hub link sits top-right, level with the h2's first
+          line; at lg it drops beneath the copy inside the narrow first column. */}
+      <Motion
+        className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-8 lg:flex-col lg:justify-start lg:gap-7"
+        {...reveal}
+      >
         <div className="max-w-[544px]">
           {heading ? <h2 className="text-section font-display font-medium text-cream">{heading}</h2> : null}
           {description ? (
@@ -74,17 +81,12 @@ export default function SalesComp({ heading, description, scales }: SalesCompPro
         ))}
       </MobileCarousel>
 
-      {/* sm+ grid — hidden on mobile, where the carousel takes over. The three scales sit as one
-          clean full-width row (wider gradient panels), instead of the old 5-track layout whose
-          empty gutter left them floating off-center. */}
-      {/* FOUR tracks for three cards, matching Industries / Capabilities / Solutions above.
-          On three tracks these tiles rendered 406px wide against everyone else's 299px, so
-          the section read as a different design. The fourth track is simply left empty. */}
-      <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+      {/* sm+ grid — hidden on mobile, where the carousel takes over. Three tracks inside the
+          section's last three columns: same card width as the old empty-track layout, without
+          the empty track. */}
+      <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:col-span-3 lg:grid-cols-3">
         {scales.map((item, index): JSX.Element => (
-          /* The empty track sits at the FRONT, so the row ends flush with the section's right
-             edge. lg only — below that the tiles are two-up and an offset would strand one. */
-          <Motion key={index} {...revealItem(index)} className={index === 0 ? 'lg:col-start-2' : undefined}>
+          <Motion key={index} {...revealItem(index)}>
             <ScaleCard item={item} index={index} />
           </Motion>
         ))}
