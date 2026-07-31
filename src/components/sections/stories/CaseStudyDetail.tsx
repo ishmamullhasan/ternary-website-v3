@@ -5,6 +5,7 @@ import Link from '@/components/LocalizedLink'
 import NumberedSteps from '@/components/NumberedSteps'
 import RichTextComp, { type RichText } from '@/components/richtext'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
+import { cn } from '@/lib/utils'
 import type { Media, Story } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
@@ -52,19 +53,6 @@ function hasText(value?: string | null): value is string {
 /** Populated media doc (depth ≥ 1) or null — string ids have nothing to render. */
 function asMedia(value: Story['thumbnail']): Media | null {
   return value && typeof value === 'object' ? value : null
-}
-
-// Mirrors the capability detail's Palantir-style marker: "01 / Label", mono + tabular.
-function SectionMarker({ index, label }: { index: number; label: string }): JSX.Element {
-  return (
-    <p className="flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.14em] text-subtle">
-      <span className="tabular-nums text-cream/70">{String(index).padStart(2, '0')}</span>
-      <span aria-hidden className="text-subtle/50">
-        /
-      </span>
-      <span>{label}</span>
-    </p>
-  )
 }
 
 /** One gallery cell — image now, `<video>` for video mimeTypes, caption underneath. */
@@ -147,13 +135,6 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
 
   // Section numbering, derived rather than hardcoded so a band that doesn't render for this story
   // never leaves a gap in the "01 / 02 / 03" sequence.
-  const sections = [
-    ...(hasBody ? (['story'] as const) : []),
-    ...(showSteps ? (['steps'] as const) : []),
-    'product' as const,
-    ...(related.length > 0 ? (['related'] as const) : []),
-  ]
-  const sectionNo = (key: (typeof sections)[number]): number => sections.indexOf(key) + 1
 
   return (
     <article className="w-full pb-24 lg:pb-32">
@@ -171,10 +152,10 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
       {/* Hero — eyebrow, big statement title, one confident line, chips */}
       <header className="mx-auto w-full max-w-7xl px-5 pt-12 md:px-8 lg:px-12 lg:pt-20">
         <Motion tag="div" {...reveal} transition={{ duration: 0.7, ease: EASE }} className="max-w-4xl">
-          <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-subtle">
-            Case study{hasText(meta?.industry) ? ` · ${meta!.industry!}` : ''}
-          </p>
-          <h1 className="mt-6 font-display text-[clamp(2.25rem,5.5vw,3.75rem)] font-medium leading-[1.04] tracking-[-0.04em] text-cream">
+          {/* No "Case study · <industry>" eyebrow. The breadcrumb directly above already says
+              All case studies, the industry is one of the cells in the meta strip below, and the
+              route is /case-studies/<slug> — three places the reader is already told. */}
+          <h1 className="font-display text-[clamp(2.25rem,5.5vw,3.75rem)] font-medium leading-[1.04] tracking-[-0.04em] text-cream">
             {story.title}
           </h1>
           {hasText(story.excerpts) && (
@@ -242,8 +223,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         <div className="mx-auto w-full max-w-7xl px-5 py-24 md:px-8 lg:px-12 lg:py-32">
           <Motion tag="div" {...reveal} className="grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-16">
             <div className="lg:sticky lg:top-28 lg:self-start">
-              <SectionMarker index={sectionNo('story')} label="The story" />
-              <p className="mt-4 text-[15px] leading-[1.5] tracking-[-0.01em] text-body">
+              <p className="text-[15px] leading-[1.5] tracking-[-0.01em] text-body">
                 How we approached the work, what we built, and why it matters.
               </p>
             </div>
@@ -268,9 +248,6 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
           is the "so how did you actually do it" beat before the screens. Hidden when unauthored. */}
       {showSteps && (
         <section className="mx-auto w-full max-w-7xl px-5 pb-24 md:px-8 lg:px-12 lg:pb-32">
-          <Motion tag="div" {...reveal} className="mb-10 flex max-w-2xl flex-col gap-5">
-            <SectionMarker index={sectionNo('steps')} label="How we worked" />
-          </Motion>
           <NumberedSteps steps={steps} />
         </section>
       )}
@@ -278,13 +255,14 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
       {/* Media showcase — gallery when authored; a clearly-labeled placeholder grid otherwise. */}
       <section className="mx-auto w-full max-w-7xl px-5 md:px-8 lg:px-12">
         <Motion tag="div" {...reveal} className="mb-10 flex max-w-2xl flex-col gap-5">
-          <SectionMarker index={sectionNo('product')} label="In the product" />
           <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium leading-[1.15] tracking-[-0.03em] text-cream">
             The work, up close.
           </h2>
         </Motion>
+        {/* Two across, but a single visual takes the full width rather than a half-width cell with
+            nothing beside it — which is what every case study carrying one screen had. */}
         {galleryItems.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className={cn('grid gap-4', galleryItems.length > 1 && 'sm:grid-cols-2')}>
             {galleryItems.map((item, index) => (
               <ShowcaseCell key={item.media.id ?? index} media={item.media} caption={item.caption} index={index} />
             ))}
@@ -303,7 +281,6 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         <section className="mx-auto w-full max-w-7xl px-5 pt-24 md:px-8 lg:px-12 lg:pt-32">
           <div className="mb-10 flex items-end justify-between gap-4">
             <div className="flex flex-col gap-5">
-              <SectionMarker index={sectionNo('related')} label="More of the work" />
               <h2 className="font-display text-[clamp(1.5rem,3vw,1.875rem)] font-medium tracking-[-0.04em] text-cream">
                 Related case studies.
               </h2>
@@ -379,9 +356,10 @@ function RelatedStoryCard({ card, index }: { card: RelatedStoryCardData; index: 
             <GradientPanel tone={card.tone} interactive />
           )}
           <div className="relative flex h-full flex-col justify-between p-5">
-            <span className="inline-flex w-fit items-center rounded-full bg-black/30 px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-cream backdrop-blur-sm">
-              {card.categoryLabel ?? 'Case Study'}
-            </span>
+            {/* No "Case Study" chip. On a case study page, under a heading that reads "Related
+                case studies.", it named the thing three times. An authored categoryLabel is a real
+                distinction and still shows in the footer row below. */}
+            <span aria-hidden />
             {(card.code || card.date) && (
               <div className="flex items-center justify-between font-mono text-[12px] tracking-[-0.02em] text-cream/85">
                 <span>{card.code ?? ''}</span>
@@ -399,7 +377,7 @@ function RelatedStoryCard({ card, index }: { card: RelatedStoryCardData; index: 
             <p className="mt-3 line-clamp-2 text-[15px] leading-[1.5] tracking-[-0.01em] text-body">{card.excerpt}</p>
           )}
           <div className="mt-5 flex items-center justify-between border-t border-subtle/60 pt-4 text-[12px] tracking-[-0.02em] text-body">
-            <span className="truncate">{card.categoryLabel ?? 'Case Study'}</span>
+            <span className="truncate">{card.categoryLabel ?? ''}</span>
             <span className="flex shrink-0 items-center gap-1 text-sm text-cream transition-all group-hover:gap-2 motion-reduce:group-hover:gap-1">
               Read <ArrowUpRight size={14} aria-hidden />
             </span>
