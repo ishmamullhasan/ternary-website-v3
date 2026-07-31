@@ -36,12 +36,30 @@ export async function GET(req: NextRequest): Promise<Response> {
     const segments = path.split('/').filter(Boolean)
     if (LOCALES.includes(segments[0] as (typeof LOCALES)[number])) segments.shift()
     const slug = segments[segments.length - 1] ?? 'home'
+
+    // The detail routes are not Pages, and this used to bust `pages_<slug>` for them regardless —
+    // a tag nothing reads. createContentDetailPage caches each one under
+    // [`<collection>_<slug>`, '<collection>'] (contentDetailPage.tsx), so a case study asked to
+    // revalidate simply did not, silently, with a 303 that looked like it had worked. Found by
+    // importing case-study copy and watching one page keep serving the old write-up through a
+    // cache MISS while Payload's own API on the same deployment returned the new one.
+    const DETAIL_ROUTES: Record<string, string> = {
+      'case-studies': 'story',
+      insights: 'insight',
+      'press-release': 'pressRelease',
+    }
+    const collection = segments.length > 1 ? DETAIL_ROUTES[segments[0] as string] : undefined
+    const tag = collection ? `${collection}_${slug}` : `pages_${slug}`
+
     // expire:0 expires the entry immediately, so the redirected request already renders fresh. Every
     // revalidateTag on the site now uses this rather than the `'max'` stale-while-revalidate profile
     // — SWR hands the *stale* copy to the next reader and only refreshes behind them, which defeats
     // both this redirect and the live-refresh poller (WEB-490).
-    revalidateTag(`pages_${slug}`, { expire: 0 })
-    return NextResponse.redirect(back, { status: 303, headers: { 'x-reval': `pages_${slug}` } })
+    revalidateTag(tag, { expire: 0 })
+    // The collection-wide tag too: index and related-card lists are cached under it, so a detail
+    // edit that changes a title would otherwise stay stale everywhere it is linked from.
+    if (collection) revalidateTag(collection, { expire: 0 })
+    return NextResponse.redirect(back, { status: 303, headers: { 'x-reval': tag } })
   }
 
   const secret = req.nextUrl.searchParams.get('secret')
