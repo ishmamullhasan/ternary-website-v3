@@ -269,6 +269,11 @@ export function RenderBlocks({
   if (!blocks?.length) return null
 
   const isAbout = slug === 'about'
+  // Hub-block pages (solutions, careers) open with their own full hero and manage their own
+  // rhythm — under the standard container's pt-40 the h1 landed a whole band down the viewport
+  // (owner: "huge whitespace at the top"). They keep the container's width/gutters but drop the
+  // big top padding; the hero block supplies what little it needs.
+  const startsWithHub = ['solutionsHub', 'careersHub'].includes(blocks[0]?.blockType ?? '')
 
   // About runs as one continuous scene experience: the scenes are full-bleed and own their own
   // vertical rhythm, so the shared container's gap and top padding would only insert dead space
@@ -280,7 +285,9 @@ export function RenderBlocks({
   // theorised. The scenes are full-width blocks and never needed flex.
   const containerClass = isAbout
     ? 'block w-full text-cream pb-10 lg:pb-24'
-    : 'flex flex-col gap-16 lg:gap-[72px] text-cream max-w-7xl mx-auto w-full px-5 md:px-8 lg:px-12 pt-20 lg:pt-40 lg:pb-24 pb-10'
+    : startsWithHub
+      ? 'flex flex-col gap-16 lg:gap-[72px] text-cream max-w-7xl mx-auto w-full px-5 md:px-8 lg:px-12 pt-4 lg:pt-6 lg:pb-24 pb-10'
+      : 'flex flex-col gap-16 lg:gap-[72px] text-cream max-w-7xl mx-auto w-full px-5 md:px-8 lg:px-12 pt-20 lg:pt-40 lg:pb-24 pb-10'
 
   // On About the container itself goes full-width so the scenes can hold the viewport edge to
   // edge without a 100vw trick (which overhangs by the scrollbar and scrolls the page

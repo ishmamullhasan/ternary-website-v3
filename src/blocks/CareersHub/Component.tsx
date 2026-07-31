@@ -159,7 +159,9 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
   return (
     <div className="w-full">
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
-      <Section pad="pt-[clamp(24px,5vh,56px)] pb-[clamp(40px,6vh,72px)]">
+      {/* Tight top pad — the container already clears the header; anything more pushed the h1 a
+          whole band down the viewport (owner direction 2026-07-31). */}
+      <Section pad="pt-2 lg:pt-4 pb-[clamp(40px,6vh,72px)]">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)] lg:gap-16">
           <div>
             <Motion className="flex flex-col gap-7" {...reveal}>

@@ -303,7 +303,9 @@ export function SolutionsHubComponent(cms: Partial<SolutionsHubBlock> = {}): JSX
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
       {/* The repeating vertical rule field that used to sit behind this, and the rule closing
           the section, are both gone — they were the loudest lines on the page. */}
-      <Section pad="pt-[clamp(32px,6vh,72px)] pb-[clamp(48px,7vh,80px)]">
+      {/* Tight top pad — the container already clears the header; anything more pushed the h1 a
+          whole band down the viewport (owner direction 2026-07-31). */}
+      <Section pad="pt-2 lg:pt-4 pb-[clamp(48px,7vh,80px)]">
         {/* Copy left, figure right. The right half was empty at lg and up — enough of a hole
           that the hero read as unfinished rather than airy. */}
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-16">
