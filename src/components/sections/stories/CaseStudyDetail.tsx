@@ -4,6 +4,7 @@ import MobileCarousel from '@/components/layout/MobileCarousel'
 import Link from '@/components/LocalizedLink'
 import NumberedSteps from '@/components/NumberedSteps'
 import RichTextComp, { type RichText } from '@/components/richtext'
+import { CASE_STUDY_ARTWORK } from '@/components/sections/stories/caseStudyArtwork'
 import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories/gradient'
 import { cn } from '@/lib/utils'
 import type { Media, Story } from '@/payload-types'
@@ -60,17 +61,19 @@ function asMedia(value: Story['thumbnail']): Media | null {
 
 /** One gallery cell — image now, `<video>` for video mimeTypes, caption underneath. */
 function ShowcaseCell({
-  media,
+  url,
+  alt,
   caption,
+  isVideo,
   index,
 }: {
-  media: Media
+  url: string
+  alt: string
   caption?: string | null
+  isVideo?: boolean
   index: number
 }): JSX.Element | null {
-  const url = getMediaUrl(media.url, media.updatedAt)
   if (!url) return null
-  const isVideo = typeof media.mimeType === 'string' && media.mimeType.startsWith('video/')
 
   return (
     <Motion tag="figure" {...revealItem(index)} className="flex flex-col gap-3">
@@ -81,7 +84,7 @@ function ShowcaseCell({
           // Silent product-visual clips; any caption text renders in the adjacent <figcaption>.
           <video src={url} controls muted playsInline preload="metadata" className="size-full object-contain" />
         ) : (
-          <img src={url} alt={media.alt || ''} loading="lazy" className="size-full object-contain" />
+          <img src={url} alt={alt} loading="lazy" className="size-full object-contain" />
         )}
       </div>
       {hasText(caption) && (
@@ -96,7 +99,11 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   const tags = cleanList(story.tags, 'name')
 
   const heroMedia = asMedia(story.thumbnail)
-  const heroUrl = heroMedia ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : ''
+  /* Shipped artwork, used only when this environment's CMS has none — see caseStudyArtwork.ts. */
+  const artwork = heroMedia ? [] : (CASE_STUDY_ARTWORK[story.slug ?? ''] ?? [])
+  const heroArt = artwork[0]
+  const heroUrl = heroMedia ? getMediaUrl(heroMedia.url, heroMedia.updatedAt) : (heroArt?.src ?? '')
+  const heroAlt = heroMedia?.alt || heroArt?.alt || ''
   const heroIsVideo = typeof heroMedia?.mimeType === 'string' && heroMedia.mimeType.startsWith('video/')
   /* The hero frame takes the artwork's OWN ratio, clamped, instead of a fixed 16/7.
      These mockups run from 2.25:1 (a wide analytics board) to 0.81:1 (a column of phone screens);
@@ -104,8 +111,9 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
      containing them inside it left a portrait image filling ~39% of the width with bars either
      side. Sized to itself, each one fills its frame exactly. Clamped so a freak ratio cannot
      produce a hero taller than the viewport or a hairline strip. */
-  const heroRatio =
-    heroMedia?.width && heroMedia?.height ? Math.min(2.4, Math.max(0.85, heroMedia.width / heroMedia.height)) : null
+  const heroW = heroMedia?.width ?? heroArt?.width
+  const heroH = heroMedia?.height ?? heroArt?.height
+  const heroRatio = heroW && heroH ? Math.min(2.4, Math.max(0.85, heroW / heroH)) : null
 
   // Meta strip — only cells that carry a value (empty slots never render).
   const meta = story.caseMeta
@@ -124,11 +132,19 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   )
   const showSteps = steps.length >= 2
 
-  // Media showcase — populated gallery rows only; the band is absent when there are none.
-  const galleryItems = (story.gallery ?? []).flatMap((row) => {
+  /* Media showcase — authored rows, or whatever the shipped artwork has beyond its hero. Both are
+     flattened to url/alt/caption here so the band renders identically either way, and the band is
+     absent when there is nothing at all. */
+  const cmsItems = (story.gallery ?? []).flatMap((row) => {
     const media = asMedia(row.media ?? null)
-    return media ? [{ media, caption: row.caption ?? null }] : []
+    const url = media ? getMediaUrl(media.url, media.updatedAt) : ''
+    return media && url
+      ? [{ url, alt: media.alt || '', caption: row.caption ?? null, isVideo: media.mimeType?.startsWith('video/') }]
+      : []
   })
+  const galleryItems = cmsItems.length
+    ? cmsItems
+    : artwork.slice(1).map((a) => ({ url: a.src, alt: a.alt, caption: a.caption, isVideo: false }))
 
   return (
     <article className="w-full pb-24 lg:pb-32">
@@ -203,7 +219,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
               // Silent hero product clip; the surrounding article carries the narrative.
               <video src={heroUrl} controls muted playsInline preload="metadata" className="size-full object-contain" />
             ) : (
-              <img src={heroUrl} alt={heroMedia?.alt || ''} className="size-full object-contain" />
+              <img src={heroUrl} alt={heroAlt} className="size-full object-contain" />
             )
           ) : (
             <>
@@ -278,7 +294,14 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
           </Motion>
           <div className={cn('grid gap-4', galleryItems.length > 1 && 'sm:grid-cols-2')}>
             {galleryItems.map((item, index) => (
-              <ShowcaseCell key={item.media.id ?? index} media={item.media} caption={item.caption} index={index} />
+              <ShowcaseCell
+                key={item.url}
+                url={item.url}
+                alt={item.alt}
+                caption={item.caption}
+                isVideo={item.isVideo}
+                index={index}
+              />
             ))}
           </div>
         </section>
