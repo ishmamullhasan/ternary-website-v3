@@ -1,20 +1,30 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
+import RevealText from '@/components/text/RevealText'
 import { cn } from '@/lib/utils'
 import type { CareersHubBlock } from '@/payload-types'
 import { ArrowRight } from 'lucide-react'
 import type { JSX, ReactNode } from 'react'
 
 /**
- * Careers hub — the careers narrative rebuilt in the hub design language (owner direction
- * 2026-07-31), replacing the bento-card grids. Same contract as SolutionsHub: design in code,
- * copy CMS-first with the authored default as fallback, so a half-edited doc never renders
- * broken. The team-voices carousel (careersTeam) and the roles list (jobsBlock) follow this
- * block on the page.
+ * Careers hub — the careers narrative in the hub design language (owner direction 2026-07-31),
+ * replacing the bento-card grids. Same contract as SolutionsHub: design in code, copy CMS-first
+ * with the authored default as fallback, so a half-edited doc never renders broken. The
+ * team-voices carousel (careersTeam) and the roles list (jobsBlock) follow this block.
  *
- * Structure: hero (the page h1, CTAs to #roles and /team) → how we work (numbered principle
- * rows, aligned with About's canonical Principles ×4) → how you grow (card panel: ladder rail +
- * three columns) → the two-cities line.
+ * Structure: hero (the page h1, CTAs to #roles and /team) → how we work (four principle cards) →
+ * how you grow (the ladder, then three cards) → the two-cities statement.
+ *
+ * STRUCTURE COMES FROM SURFACES, NOT RULES — the rule /capabilities and /solutions are built on,
+ * and now this page too. Nothing here is divided by a hairline: sections separate on the gaps
+ * between panels, and a block that needs an internal division gets an inset surface rather than a
+ * line. This page used to carry the only two `border-*-line` rules left across the four hubs.
+ *
+ * NOTHING IS NUMBERED. The principles were 01–04 and read as a sequence; they are not one — they
+ * are four standing commitments, true at the same time and in no order. The ordinals promised a
+ * progression the copy never delivers, so they are gone. The growth ladder is the one genuinely
+ * ordered thing on the page, and it shows its order with arrows between the rungs, which is the
+ * order itself rather than a count of it.
  */
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
@@ -109,7 +119,9 @@ function SectionHead({ title, blurb }: { title: string; blurb: string }): JSX.El
       className="mb-[clamp(28px,4vw,56px)] flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between lg:gap-16"
       {...reveal}
     >
-      <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-cream">
+      {/* `text-balance` so a heading breaks into even lines instead of orphaning its last word,
+          matching /capabilities. */}
+      <h2 className="font-display max-w-[20ch] text-[clamp(1.875rem,4vw,3.25rem)] leading-[1.06] font-medium tracking-[-0.03em] text-balance text-cream">
         {title}
       </h2>
       <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:text-right">{blurb}</p>
@@ -154,13 +166,23 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
     : D.growthCols
   const placesLine = cms.placesLine || D.placesLine
 
+  // Split the two-cities line into a display claim and its supporting sentence(s) at the first
+  // sentence break. `. ` rather than a regex on `.`, so an abbreviation or a decimal inside the
+  // copy cannot break the line in the middle of a word. No break → the whole line is the claim
+  // and the right column simply does not render.
+  const placesBreak = placesLine.indexOf('. ')
+  const placesLead = placesBreak > -1 ? placesLine.slice(0, placesBreak + 1) : placesLine.trim()
+  const placesBody = placesBreak > -1 ? placesLine.slice(placesBreak + 2).trim() : ''
+
   return (
     <div className="w-full">
       {/* ── HERO ─────────────────────────────────────────────────────────────────────────── */}
       {/* Tight top pad — the container already clears the header; anything more pushed the h1 a
           whole band down the viewport (owner direction 2026-07-31). */}
       <Section pad="pt-2 lg:pt-4 pb-[clamp(40px,6vh,72px)]">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)] lg:gap-16">
+        {/* 1fr / 0.85fr — the hero split /capabilities and /solutions use. It was 0.7fr here, so
+            the figure sat in a visibly narrower column than the same figure slot on those pages. */}
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-16">
           <div>
             {/* No eyebrow above the h1. Every hub on the site had its section labels removed (owner
                 direction); this was the last one left, and the only label anywhere on /careers —
@@ -195,25 +217,42 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
             </Motion>
           </div>
 
-          <Motion className="hidden lg:block" {...reveal}>
+          {/* NOT wrapped in <Motion>, for the reason /capabilities records against NetworkMark:
+              Motion commits its `initial` opacity 0 inline before useReducedMotion() resolves and
+              never clears it, so the figure keeps a hidden ancestor under BOTH
+              prefers-reduced-motion and JS-disabled. It is decorative; it does not need a reveal. */}
+          <div className="hidden lg:block">
             <LadderMark />
-          </Motion>
+          </div>
         </div>
       </Section>
 
       {/* ── HOW WE WORK ──────────────────────────────────────────────────────────────────── */}
       <Section>
         <SectionHead title={principlesHeading} blurb={principlesIntro} />
-        <div>
+
+        {/* Was four rows on an ordinal / title / body track split, each opened by a hairline. The
+            ordinal column alone reserved 80px on every row and carried nothing but a count.
+
+            Four surfaces on a 2×2 now, the same card the /capabilities index and the /solutions
+            models are built from. Two columns rather than four across: at four, each principle
+            gets ~330px and every body wraps to six or seven lines against a one-line title, which
+            is a much worse ratio than the copy deserves. */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {principles.map((p, i) => (
-            <Motion key={p.title || i} {...revealItem(i)}>
-              <div className="grid grid-cols-1 gap-3 border-t border-line py-8 sm:grid-cols-[80px_minmax(0,0.9fr)_minmax(0,1.4fr)] sm:gap-x-8 lg:py-10">
-                <p className="font-mono text-[13px] tabular-nums text-subtle">{String(i + 1).padStart(2, '0')}</p>
-                <h3 className="font-display text-[clamp(1.25rem,2.2vw,1.625rem)] leading-[1.15] font-medium tracking-[-0.02em] text-cream">
-                  {p.title}
-                </h3>
-                <p className="max-w-[58ch] text-[15.5px] leading-relaxed text-body">{p.body}</p>
-              </div>
+            <Motion
+              key={p.title || i}
+              className={cn('flex h-full flex-col gap-3 p-7 lg:p-8', PANEL)}
+              {...revealItem(i)}
+            >
+              {/* `md:min-h-[2.24em]` = two lines at this size and leading, the same reservation
+                  /capabilities makes on its index cards. Without it "Transparent, low-noise
+                  execution" wraps to two lines while "Absolute ownership" takes one, and the two
+                  bodies in that row start on different baselines. */}
+              <h3 className="font-display max-w-[20ch] text-[clamp(1.375rem,2.2vw,1.75rem)] leading-[1.12] font-medium tracking-[-0.02em] text-cream md:min-h-[2.24em]">
+                {p.title}
+              </h3>
+              <p className="max-w-[52ch] text-[15.5px] leading-relaxed text-body">{p.body}</p>
             </Motion>
           ))}
         </div>
@@ -222,9 +261,22 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
       {/* ── HOW YOU GROW ─────────────────────────────────────────────────────────────────── */}
       <Section>
         <SectionHead title={growthHeading} blurb={growthIntro} />
-        <Motion className={cn('p-7 lg:p-10', PANEL)} {...reveal}>
-          {/* Ladder rail — the path itself, in the label voice. */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line pb-7 lg:pb-8">
+
+        {/* The ladder, on its own surface. It used to be the top half of one tall panel, cut off
+            from the three columns below by a `border-b` — the second of the page's two hairlines.
+            Two panels with a gap between them divide the same two ideas without drawing anything,
+            which is how /solutions separates "Ideal for" from the body of a model card.
+
+            Rail left, note right at lg: the same counterweight rhythm as SectionHead, so the note
+            reads as a gloss on the path rather than a caption stranded under it. */}
+        <Motion
+          className={cn(
+            'flex flex-col gap-5 p-7 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:p-10',
+            PANEL,
+          )}
+          {...reveal}
+        >
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             {ladder.map((step, i) => (
               <span key={step || i} className="flex items-center gap-4">
                 <span
@@ -240,28 +292,46 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
                 )}
               </span>
             ))}
-            <p className="mt-2 w-full max-w-[70ch] text-[14px] leading-relaxed text-body lg:mt-3">{ladderNote}</p>
           </div>
-
-          <div className="grid grid-cols-1 gap-8 pt-7 md:grid-cols-3 lg:gap-10 lg:pt-8">
-            {growthCols.map((c, i) => (
-              <Motion key={c.title || i} {...revealItem(i)}>
-                <h3 className="mb-2.5 font-display text-[17px] leading-[1.2] font-medium tracking-[-0.01em] text-cream">
-                  {c.title}
-                </h3>
-                <p className="text-[14.5px] leading-relaxed text-body">{c.body}</p>
-              </Motion>
-            ))}
-          </div>
+          <p className="max-w-[52ch] text-[14.5px] leading-relaxed text-body lg:text-right">{ladderNote}</p>
         </Motion>
 
-        {/* The two-cities line — one quiet sentence, not a section. */}
-        <Motion {...reveal}>
-          <p className="mx-auto mt-[clamp(40px,5vw,64px)] max-w-[68ch] text-center text-[15.5px] leading-relaxed text-body">
-            {placesLine}
-          </p>
-        </Motion>
+        {/* Three bare columns inside the old panel become three cards, matching the three-across
+            sets on /capabilities ("One standard across them all") and /solutions. */}
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+          {growthCols.map((c, i) => (
+            <Motion key={c.title || i} className={cn('flex h-full flex-col gap-2 p-7', PANEL)} {...revealItem(i)}>
+              <h3 className="text-[18px] font-medium tracking-[-0.01em] text-cream">{c.title}</h3>
+              <p className="text-[15px] leading-relaxed text-body">{c.body}</p>
+            </Motion>
+          ))}
+        </div>
       </Section>
+
+      {/* ── THE TWO CITIES ───────────────────────────────────────────────────────────────── */}
+      {/* Was a centred paragraph tacked onto the foot of the growth section — the one centred
+          block on the page, in a layout that is otherwise left-anchored throughout, and small
+          enough to read as a footnote to the cards above it.
+
+          It is a framing statement now, built like the one on /capabilities ("A capability, to us,
+          is not a keyword…"): the claim set in display type on the left, the detail as body copy on
+          the right. The split is the first sentence, the same way CareersHero splits its heading;
+          if the CMS copy has no sentence break the whole line simply becomes the statement. */}
+      {placesLead && (
+        <Section>
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-16">
+            <RevealText
+              className="font-display max-w-[26ch] text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.26] font-medium tracking-[-0.025em] text-cream"
+              segments={[{ text: placesLead }]}
+            />
+            {placesBody ? (
+              <Motion {...reveal}>
+                <p className="max-w-[46ch] text-[16px] leading-relaxed text-body lg:text-right">{placesBody}</p>
+              </Motion>
+            ) : null}
+          </div>
+        </Section>
+      )}
     </div>
   )
 }
