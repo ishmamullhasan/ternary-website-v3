@@ -1,5 +1,6 @@
 import Motion from '@/components/animation/motion'
 import ContinuousPath from '@/components/careers/ContinuousPath'
+import GrowthLine from '@/components/careers/GrowthLine'
 import HeroSequence from '@/components/careers/HeroSequence'
 import Link from '@/components/LocalizedLink'
 import RevealText from '@/components/text/RevealText'
@@ -86,7 +87,29 @@ const D = {
   growthHeading: 'How you grow',
   growthIntro:
     'A defined path, paired with the kind of work that actually stretches you — increasing technical depth alongside expanding ownership and delivery responsibility.',
-  ladder: ['Associate', 'Engineer', 'Senior', 'Lead'],
+  /* DRAFT COPY — the four bodies below are mine, not authored. The ladder used to be four names and
+     one shared sentence; the growth line arrives at each level in turn and needs something to say
+     when it gets there. They are written to the same voice as the principles above, but they make
+     claims about how Ternary actually promotes people and should be reviewed by someone who does
+     it. Each is editable per step in the CMS; a step left empty falls back to the ladder note. */
+  ladder: [
+    {
+      step: 'Associate',
+      body: 'You join a team that is already shipping, and you ship with it in your first weeks — small, real, reviewed. The work is scoped so you can finish it, and the review is where you learn why it was scoped that way.',
+    },
+    {
+      step: 'Engineer',
+      body: 'You own features end to end and answer for them in production. The scope stops being handed to you in pieces: you are trusted to take a problem, decide how it should be built, and stay with it after it ships.',
+    },
+    {
+      step: 'Senior',
+      body: 'You own systems, not features, and the decisions that are expensive to reverse. You are also the reason someone more junior is getting better — reviewing their work, and being clear about the standard rather than quietly raising it.',
+    },
+    {
+      step: 'Lead',
+      body: 'You set the technical direction for a team and carry the consequences of it. You still build; leading here is not a move away from the work, it is being accountable for more of it.',
+    },
+  ],
   ladderNote:
     'Advance on the strength of your skill and judgment, with the expectations at every level written down — not discovered after the fact.',
   growthCols: [
@@ -154,7 +177,9 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
     : D.principles
   const growthHeading = cms.growthHeading || D.growthHeading
   const growthIntro = cms.growthIntro || D.growthIntro
-  const ladder = cms.ladder?.length ? cms.ladder.map((l) => l.step ?? '') : D.ladder
+  const ladder = cms.ladder?.length
+    ? cms.ladder.map((l) => ({ step: l.step ?? '', body: l.body ?? '' }))
+    : D.ladder.map((l) => ({ ...l }))
   const ladderNote = cms.ladderNote || D.ladderNote
   const growthCols = cms.growthCols?.length
     ? cms.growthCols.map((c) => ({ title: c.title ?? '', body: c.body ?? '' }))
@@ -272,46 +297,28 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
       </Section>
 
       {/* ── HOW YOU GROW ─────────────────────────────────────────────────────────────────── */}
+      {/* The ladder is the interaction now, not a caption. It was a row of four names with one
+          sentence beside it — the section named a career path and then said nothing about any step
+          on it. GrowthLine pins the section and walks the reader through the four levels: the line
+          fills, a signal runs the segment it just gained, and that level's copy settles in.
+
+          The heading travels INSIDE the pinned frame, so it holds while the ladder advances rather
+          than scrolling away from the thing it introduces.
+
+          The three growth cards stay below, outside the pin. They are cross-cutting — mentorship,
+          full-lifecycle work and the stack are true at every level, not at one — so pairing them
+          off against rungs would assert a mapping the copy does not support. They are also what the
+          section releases into, which is what ends the pin cleanly. */}
       <Section>
-        <SectionHead title={growthHeading} blurb={growthIntro} />
-
-        {/* The ladder, on its own surface. It used to be the top half of one tall panel, cut off
-            from the three columns below by a `border-b` — the second of the page's two hairlines.
-            Two panels with a gap between them divide the same two ideas without drawing anything,
-            which is how /solutions separates "Ideal for" from the body of a model card.
-
-            Rail left, note right at lg: the same counterweight rhythm as SectionHead, so the note
-            reads as a gloss on the path rather than a caption stranded under it. */}
-        <Motion
-          className={cn(
-            'flex flex-col gap-5 p-7 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:p-10',
-            PANEL,
-          )}
-          {...reveal}
-        >
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            {ladder.map((step, i) => (
-              <span key={step || i} className="flex items-center gap-4">
-                <span
-                  className={cn(
-                    'font-mono text-[13px] uppercase tracking-[0.1em]',
-                    i === ladder.length - 1 ? 'text-cream' : 'text-body',
-                  )}
-                >
-                  {step}
-                </span>
-                {i < ladder.length - 1 && (
-                  <ArrowRight size={14} strokeWidth={1.5} aria-hidden className="text-subtle" />
-                )}
-              </span>
-            ))}
-          </div>
-          <p className="max-w-[52ch] text-[14.5px] leading-relaxed text-body lg:text-right">{ladderNote}</p>
-        </Motion>
+        <GrowthLine
+          stages={ladder}
+          note={ladderNote}
+          head={<SectionHead title={growthHeading} blurb={growthIntro} />}
+        />
 
         {/* Three bare columns inside the old panel become three cards, matching the three-across
             sets on /capabilities ("One standard across them all") and /solutions. */}
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mt-[clamp(40px,5vw,64px)] grid grid-cols-1 gap-4 md:grid-cols-3">
           {growthCols.map((c, i) => (
             <Motion key={c.title || i} className={cn('flex h-full flex-col gap-2 p-7', PANEL)} {...revealItem(i)}>
               <h3 className="text-[18px] font-medium tracking-[-0.01em] text-cream">{c.title}</h3>

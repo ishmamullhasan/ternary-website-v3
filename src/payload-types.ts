@@ -3443,6 +3443,7 @@ export interface CareersHubBlock {
   ladder?:
     | {
         step?: string | null;
+        body?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -5383,6 +5384,7 @@ export interface CareersHubBlockSelect<T extends boolean = true> {
     | T
     | {
         step?: T;
+        body?: T;
         id?: T;
       };
   ladderNote?: T;

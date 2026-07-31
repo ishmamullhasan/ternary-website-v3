@@ -1,0 +1,324 @@
+/* The Growth Line — "How you grow" as a pinned progression.
+ *
+ * BASE IS THE READABLE STATE. Everything outside `[data-pin='on']` is what a visitor gets with
+ * JavaScript off, before hydration, under reduced motion, and below 900px: the track at its natural
+ * height, all four stages stacked in normal flow in order, the line filled end to end. Nothing here
+ * can leave a stage hidden behind an interaction that never runs.
+ *
+ * The pinned behaviour lives entirely under `[data-pin='on']`, an attribute GrowthLine sets from JS
+ * and only when reduced motion is off. Same contract as industriesHub.css and processStory.css.
+ */
+
+.gl-track {
+  --gl-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --gl-rest: color-mix(in oklab, var(--color-cream) 14%, transparent);
+}
+
+/* ── The rail ─────────────────────────────────────────────────────────────────────────────────── */
+
+.gl-rail {
+  position: relative;
+  margin-top: clamp(28px, 3vw, 40px);
+}
+
+/* Spans dot-centre to dot-centre: the steps are a grid of equal columns with each dot at its
+   column's start, so the last dot sits at (n-1)/n across and the line stops exactly there. */
+.gl-line {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: calc(100% / var(--gl-steps, 4));
+  height: 1px;
+  background: var(--gl-rest);
+}
+
+.gl-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 100%; /* base: the whole path, already travelled */
+  background: var(--color-cream);
+  transition: width 0.6s var(--gl-ease);
+}
+
+/* The signal. Hidden at rest — a lit mark parked mid-line with nothing moving reads as a fault.
+   Under the pin it is remounted on each change and runs one 0.5s travel into its new position. */
+.gl-signal {
+  display: none;
+  position: absolute;
+  top: -1px;
+  width: 26px;
+  height: 3px;
+  margin-left: -26px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-cream));
+}
+
+.gl-steps {
+  display: grid;
+  grid-template-columns: repeat(var(--gl-steps, 4), minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gl-node {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gl-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--color-card);
+  box-shadow: inset 0 0 0 1px var(--gl-rest);
+  transition:
+    background 0.45s var(--gl-ease),
+    box-shadow 0.45s var(--gl-ease);
+}
+
+.gl-node[data-on] .gl-dot {
+  box-shadow: inset 0 0 0 1px var(--color-cream);
+}
+
+.gl-node[data-active] .gl-dot {
+  background: var(--color-cream);
+  box-shadow: inset 0 0 0 1px var(--color-cream);
+}
+
+/* Mono voice and tracking carried over from the row this replaces, so the ladder still reads as the
+   ladder. Note this is the ONE uppercase run left on the page, and it is content — the rungs are
+   the career levels themselves, not a label sitting above something else. */
+.gl-name {
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-body);
+  transition: color 0.45s var(--gl-ease);
+}
+
+.gl-node[data-active] .gl-name {
+  color: var(--color-cream);
+}
+
+/* ── The stages ───────────────────────────────────────────────────────────────────────────────── */
+
+.gl-stage {
+  margin-top: clamp(32px, 4vw, 52px);
+}
+
+.gl-panel + .gl-panel {
+  margin-top: 28px;
+}
+
+.gl-panel-title {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-cream);
+}
+
+.gl-panel-body {
+  max-width: 58ch;
+  margin-top: 8px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--color-body);
+}
+
+/* Larger under the pin, and only there. This copy is the whole content of a frame the reader is
+   held on for 175vh — at the 15.5px it uses in the unpinned list it set three short lines under a
+   full-width rail and read as a caption to it rather than the thing being said. Unpinned it is one
+   of four stacked entries and 15.5px is right. */
+[data-pin='on'] .gl-panel-body {
+  max-width: 46ch;
+  font-size: clamp(1.0625rem, 1.6vw, 1.375rem);
+  line-height: 1.55;
+  color: var(--color-cream);
+}
+
+/* Under the pin the stage title is redundant — the rail already names the live step in the same
+   words, directly above it. It stays in the DOM for the unpinned reading, where the stages are a
+   list and each one needs its own heading. */
+[data-pin='on'] .gl-panel-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Pinned ───────────────────────────────────────────────────────────────────────────────────── */
+
+.gl-track[data-pin='on'] {
+  /* The frame's own height plus a beat per stage: the section ends when the ladder does. */
+  height: calc(var(--gl-frame, 60vh) + var(--gl-steps, 4) * var(--gl-step, 45vh));
+}
+
+[data-pin='on'] .gl-pin {
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+[data-pin='on'] .gl-signal {
+  display: block;
+  animation: gl-travel 0.5s var(--gl-ease);
+}
+
+/* Panels share one box and cross over in place. `visibility` rather than `display` so the
+   transition has something to run on, and so the box keeps the height of its tallest stage instead
+   of resizing under the reader as the copy changes. */
+[data-pin='on'] .gl-stage {
+  display: grid;
+}
+[data-pin='on'] .gl-panel {
+  grid-area: 1 / 1;
+  margin-top: 0;
+  transition:
+    opacity 0.5s var(--gl-ease),
+    transform 0.5s var(--gl-ease),
+    visibility 0.5s;
+}
+[data-pin='on'] .gl-panel[data-state='in'] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+}
+/* Already travelled: lifts away upward. Still ahead: waiting below. So the copy moves the same
+   direction as the reader, and reversing the scroll reverses it. */
+[data-pin='on'] .gl-panel[data-state='past'] {
+  opacity: 0;
+  transform: translateY(-14px);
+  visibility: hidden;
+}
+[data-pin='on'] .gl-panel[data-state='next'] {
+  opacity: 0;
+  transform: translateY(14px);
+  visibility: hidden;
+}
+
+@keyframes gl-travel {
+  from {
+    opacity: 0;
+    transform: translateX(calc(-100% / (var(--gl-steps, 4) - 1) * 0.6));
+  }
+  40% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────────────────────────────── */
+/* JS never sets `data-pin` under the OS preference, so this covers the in-app A11yFab toggle, which
+   can flip after mount, and any preference change mid-session. Collapses to the base reading. */
+@media (prefers-reduced-motion: reduce) {
+  .gl-track[data-pin='on'] {
+    height: auto;
+  }
+  [data-pin='on'] .gl-pin {
+    position: static;
+    transform: none;
+  }
+  [data-pin='on'] .gl-stage {
+    display: block;
+  }
+  [data-pin='on'] .gl-panel,
+  [data-pin='on'] .gl-panel[data-state='past'],
+  [data-pin='on'] .gl-panel[data-state='next'] {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    transition: none;
+  }
+  [data-pin='on'] .gl-panel + .gl-panel {
+    margin-top: 28px;
+  }
+  [data-pin='on'] .gl-panel-title {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+  [data-pin='on'] .gl-signal {
+    display: none;
+  }
+  .gl-fill {
+    width: 100% !important;
+    transition: none;
+  }
+}
+
+html[data-a11y-motion='reduce'] .gl-track[data-pin='on'] {
+  height: auto;
+}
+html[data-a11y-motion='reduce'] [data-pin='on'] .gl-pin {
+  position: static;
+  transform: none;
+}
+html[data-a11y-motion='reduce'] [data-pin='on'] .gl-stage {
+  display: block;
+}
+html[data-a11y-motion='reduce'] [data-pin='on'] .gl-panel,
+html[data-a11y-motion='reduce'] [data-pin='on'] .gl-panel[data-state='past'],
+html[data-a11y-motion='reduce'] [data-pin='on'] .gl-panel[data-state='next'] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition: none;
+}
+html[data-a11y-motion='reduce'] [data-pin='on'] .gl-panel-title {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+}
+html[data-a11y-motion='reduce'] [data-pin='on'] .gl-signal {
+  display: none;
+}
+
+/* Below 900px the pin is off in JS too, so this is belt-and-braces for the frame between a resize
+   and the next scroll frame. */
+@media (max-width: 899px) {
+  .gl-track[data-pin='on'] {
+    height: auto;
+  }
+  [data-pin='on'] .gl-pin {
+    position: static;
+    transform: none;
+  }
+  [data-pin='on'] .gl-stage {
+    display: block;
+  }
+  [data-pin='on'] .gl-panel,
+  [data-pin='on'] .gl-panel[data-state='past'],
+  [data-pin='on'] .gl-panel[data-state='next'] {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+  }
+  [data-pin='on'] .gl-panel-title {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+  .gl-steps {
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 16px;
+  }
+  .gl-line {
+    display: none;
+  }
+}

@@ -42,7 +42,13 @@ export const CareersHub: Block = {
       type: 'array',
       maxRows: 6,
       admin: rowLabelAdmin,
-      fields: [{ name: 'step', label: 'Step', type: 'text', localized: true }],
+      // `body` is new. The ladder is no longer a row of names with one note under it — each step is
+      // a stage the reader arrives at, and needs something to say when they get there. A step left
+      // without a body still works: the stage shows its name and the ladder note instead.
+      fields: [
+        { name: 'step', label: 'Step', type: 'text', localized: true },
+        { name: 'body', label: 'What this level means', type: 'textarea', localized: true },
+      ],
     },
     { name: 'ladderNote', label: 'Ladder note', type: 'textarea', localized: true },
     {
