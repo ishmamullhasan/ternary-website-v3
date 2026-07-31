@@ -174,7 +174,13 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
           also takes out the page's last `border-t border-line`: the panel is a surface, and the
           gap between it and the copy does the separating. */}
       <header className="mx-auto w-full max-w-7xl px-5 pt-12 md:px-8 lg:px-12 lg:pt-20">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.44fr)] lg:items-start lg:gap-16">
+        {/* Left column is sized to the COPY, not to a fraction of the page.
+            At 1fr the column came out 878px while the copy inside it was capped at max-w-2xl —
+            672px — so 206px of the column was empty before the 64px gap even started, and the
+            band between the paragraph and the panel read as a hole. `42rem` is that same measure,
+            so the column ends where the copy ends and the leftover width goes to the panel, which
+            has something to put in it. */}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,42rem)_minmax(0,1fr)] lg:items-start lg:gap-16">
           <Motion tag="div" {...reveal} transition={{ duration: 0.7, ease: EASE }}>
             {/* No "Case study · <industry>" eyebrow. The breadcrumb directly above already says
                 All case studies, the industry is the first cell of the panel beside this, and the
@@ -183,39 +189,48 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
               {story.title}
             </h1>
             {hasText(story.excerpts) && (
-              <p className="mt-6 max-w-2xl text-[clamp(1rem,1.6vw,1.2rem)] leading-relaxed tracking-[-0.01em] text-body">
+              <p className="mt-6 text-[clamp(1rem,1.6vw,1.2rem)] leading-relaxed tracking-[-0.01em] text-body">
                 {story.excerpts}
               </p>
             )}
-            {tags.length > 0 && (
-              <ul className="mt-8 flex flex-wrap gap-2">
-                {tags.map((tag, i) => (
-                  <li
-                    key={`${tag.name}-${i}`}
-                    className="rounded-full bg-cream/[0.055] px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-body"
-                  >
-                    {tag.name}
-                  </li>
-                ))}
-              </ul>
-            )}
           </Motion>
 
-          {metaCells.length > 0 && (
+          {/* The fact sheet. The technique chips moved in here from under the paragraph: they are
+              the same kind of thing as the cells above them — what shape the work was — and the
+              narrative column is better for keeping only the narrative. It also gives a panel that
+              would otherwise be two short rows something to fill its width with. */}
+          {(metaCells.length > 0 || tags.length > 0) && (
             <Motion
-              tag="dl"
+              tag="div"
               {...reveal}
               transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
-              className="flex flex-col gap-5 rounded-xl bg-card p-7 lg:p-8"
+              className="flex flex-col gap-7 rounded-xl bg-card p-7 lg:p-8"
             >
-              {metaCells.map((cell) => (
-                <div key={cell.label} className="flex flex-col gap-1.5">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">{cell.label}</dt>
-                  {/* tabular figures so Duration and Year line up under each other rather than
-                      drifting by the width of a 1. */}
-                  <dd className="text-[15px] tabular-nums tracking-[-0.01em] text-cream">{cell.value}</dd>
-                </div>
-              ))}
+              {metaCells.length > 0 && (
+                <dl className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+                  {metaCells.map((cell) => (
+                    <div key={cell.label} className="flex flex-col gap-1.5">
+                      <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">{cell.label}</dt>
+                      {/* tabular figures so Duration and Year line up under each other rather than
+                          drifting by the width of a 1. */}
+                      <dd className="text-[15px] tabular-nums tracking-[-0.01em] text-cream">{cell.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+
+              {tags.length > 0 && (
+                <ul className="flex flex-wrap gap-2">
+                  {tags.map((tag, i) => (
+                    <li
+                      key={`${tag.name}-${i}`}
+                      className="rounded-full bg-cream/[0.06] px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-body"
+                    >
+                      {tag.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </Motion>
           )}
         </div>
