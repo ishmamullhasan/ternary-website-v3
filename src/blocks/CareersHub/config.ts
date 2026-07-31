@@ -14,7 +14,8 @@ export const CareersHub: Block = {
   interfaceName: 'CareersHubBlock',
   labels: { singular: 'Careers Hub', plural: 'Careers Hubs' },
   fields: [
-    { name: 'heroEyebrow', label: 'Hero eyebrow', type: 'text', localized: true },
+    // No 'heroEyebrow' field: the hero renders no label, so an editable eyebrow would be a control
+    // that does nothing. A value already stored stays in the document — simply unread.
     { name: 'heroHeading', label: 'Hero heading', type: 'text', localized: true },
     { name: 'heroSub', label: 'Hero subline', type: 'textarea', localized: true },
     { name: 'principlesHeading', label: 'Principles heading', type: 'text', localized: true },

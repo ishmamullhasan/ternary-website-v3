@@ -3427,7 +3427,6 @@ export interface SolutionsHubBlock {
  * via the `definition` "CareersHubBlock".
  */
 export interface CareersHubBlock {
-  heroEyebrow?: string | null;
   heroHeading?: string | null;
   heroSub?: string | null;
   principlesHeading?: string | null;
@@ -5367,7 +5366,6 @@ export interface SolutionsHubBlockSelect<T extends boolean = true> {
  * via the `definition` "CareersHubBlock_select".
  */
 export interface CareersHubBlockSelect<T extends boolean = true> {
-  heroEyebrow?: T;
   heroHeading?: T;
   heroSub?: T;
   principlesHeading?: T;

@@ -1,7 +1,7 @@
 import Motion from '@/components/animation/motion'
 import Link from '@/components/LocalizedLink'
-import type { CareersHubBlock } from '@/payload-types'
 import { cn } from '@/lib/utils'
+import type { CareersHubBlock } from '@/payload-types'
 import { ArrowRight } from 'lucide-react'
 import type { JSX, ReactNode } from 'react'
 
@@ -44,7 +44,6 @@ const PANEL = 'rounded-xl bg-card'
 // site tells one story about how the practice runs.
 // ---------------------------------------------------------------------------------------------
 const D = {
-  heroEyebrow: 'Careers at Ternary',
   heroHeading: 'Build once. Answer for it always.',
   heroSub:
     'We hire engineers who want to answer for what they build — not hand it off. Own systems in production, stay close to the work, and grow inside an engineering institution built for the long term.',
@@ -139,7 +138,6 @@ function LadderMark(): JSX.Element {
 }
 
 export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Element {
-  const heroEyebrow = cms.heroEyebrow || D.heroEyebrow
   const heroHeading = cms.heroHeading || D.heroHeading
   const heroSub = cms.heroSub || D.heroSub
   const principlesHeading = cms.principlesHeading || D.principlesHeading
@@ -164,8 +162,10 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
       <Section pad="pt-2 lg:pt-4 pb-[clamp(40px,6vh,72px)]">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)] lg:gap-16">
           <div>
+            {/* No eyebrow above the h1. Every hub on the site had its section labels removed (owner
+                direction); this was the last one left, and the only label anywhere on /careers —
+                the growth ladder's rungs are content, not a label, so they stay. */}
             <Motion className="flex flex-col gap-7" {...reveal}>
-              <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">{heroEyebrow}</p>
               <h1 className="font-display max-w-[14ch] text-[clamp(2.75rem,7vw,6rem)] leading-[1.01] font-medium tracking-[-0.04em] text-cream">
                 {heroHeading}
               </h1>
