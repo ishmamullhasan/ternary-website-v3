@@ -57,7 +57,7 @@ export function CareersHeroComponent(props: CareersHeroBlock): JSX.Element {
         </div>
         <div>
           <a
-            href={button?.url || '#open-roles'}
+            href={button?.url || '#roles'}
             className="inline-flex h-10 items-center justify-center rounded-lg bg-cream px-4 text-[14px] font-semibold tracking-tight text-ink transition-colors duration-200 hover:bg-cream-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream focus-visible:ring-offset-2 focus-visible:ring-offset-page"
           >
             {button?.label || 'View Opportunities'}
