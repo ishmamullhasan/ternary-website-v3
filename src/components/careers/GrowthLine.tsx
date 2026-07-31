@@ -36,12 +36,12 @@ export interface GrowthStage {
   body: string
 }
 
-/* One beat per stage. What the brief specifies is how long the section stays PINNED, which is the
-   track minus one viewport — not the track itself. Pinned travel works out as
-   `frame/vh + steps × STEP_VH − 100`, so at a 900px viewport with a ~315px frame, four stages need
-   ~60vh each to land inside 150–200vh. At 45 it measured 115vh: the section released while the
-   ladder still felt like it was moving. Measured after the change rather than assumed. */
-const STEP_VH = 60
+/* One beat per stage. The frame is a full viewport and the track is `100vh + steps × STEP_VH`, so
+   the pinned travel — the number the brief specifies — is exactly `steps × STEP_VH`. Four stages at
+   45vh is 180vh, inside the 150–200vh asked for.
+   (It was 60 while the frame was measured and subtracted from the track; that arithmetic went away
+   with the centring fix, and 60 would now overshoot to 240vh.) */
+const STEP_VH = 45
 
 export default function GrowthLine({
   stages,
@@ -61,8 +61,6 @@ export default function GrowthLine({
   const trackRef = useRef<HTMLDivElement>(null)
   const pinRef = useRef<HTMLDivElement>(null)
 
-  const last = Math.max(1, stages.length - 1)
-
   useEffect(() => {
     const track = trackRef.current
     const pin = pinRef.current
@@ -72,7 +70,6 @@ export default function GrowthLine({
     const wide = window.matchMedia('(min-width: 900px)')
 
     let raf = 0
-    let ro: ResizeObserver | null = null
 
     const apply = (): void => {
       raf = 0
@@ -86,8 +83,25 @@ export default function GrowthLine({
       const r = track.getBoundingClientRect()
       const travel = r.height - window.innerHeight
       const p = travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 0
+
+      /* The line follows the scroll continuously; only the copy and the dots step.
+       *
+       * Stage i owns the band [i/n, (i+1)/n), so its MIDDLE is at (i + 0.5)/n. Mapping the fill so
+       * that those middles land exactly on the nodes — 0, 1/(n-1), … 1 — means the line is always
+       * moving, and still arrives at each node precisely when that stage takes over. A plain
+       * `p → fill` would have the line between nodes whenever a stage was active, which looks like
+       * a rounding error rather than a path.
+       *
+       * Written straight to the element as a custom property rather than through state: this runs
+       * every scroll frame, and re-rendering four panels and four buttons at 60fps to move one
+       * width is the kind of thing that turns a smooth line into a stuttering one.
+       */
+      const n = stages.length
+      const fill = Math.min(1, Math.max(0, (p * n - 0.5) / Math.max(1, n - 1)))
+      track.style.setProperty('--gl-fill', String(Math.round(fill * 10000) / 10000))
+
       // Nudged off the very end so the last stage holds instead of flickering at p === 1.
-      const i = Math.min(stages.length - 1, Math.floor(p * stages.length * 0.999))
+      const i = Math.min(n - 1, Math.floor(p * n * 0.999))
       setActive((prev) => (prev === i ? prev : i))
     }
     const onScroll = (): void => {
@@ -98,25 +112,19 @@ export default function GrowthLine({
       if (wide.matches) {
         track.dataset.pin = 'on'
         setPinned(true)
-        // The spacer is the pinned frame's own height plus a beat per stage, so the section ends
-        // when the ladder does rather than at an arbitrary multiple of the viewport.
-        track.style.setProperty('--gl-frame', `${Math.round(pin.getBoundingClientRect().height)}px`)
       } else {
         delete track.dataset.pin
-        track.style.removeProperty('--gl-frame')
+        track.style.removeProperty('--gl-fill')
         setPinned(false)
       }
       onScroll()
     }
 
     sync()
-    ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(sync) : null
-    ro?.observe(pin)
     wide.addEventListener('change', sync)
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', sync)
     return () => {
-      ro?.disconnect()
       cancelAnimationFrame(raf)
       wide.removeEventListener('change', sync)
       window.removeEventListener('scroll', onScroll)
@@ -146,8 +154,6 @@ export default function GrowthLine({
     [stages.length],
   )
 
-  const fill = `${(active / last) * 100}%`
-
   return (
     <div
       ref={trackRef}
@@ -159,10 +165,10 @@ export default function GrowthLine({
 
         <div className="gl-rail" role="group" aria-label="Career ladder">
           <div className="gl-line">
-            <div className="gl-fill" style={{ width: fill }} />
+            <div className="gl-fill" />
             {/* Remounted on every change (keyed), which is what replays its one-shot travel. The
                 signal runs the segment the line just gained: draw → travel → settle. */}
-            <span key={active} className="gl-signal" style={{ left: fill }} aria-hidden />
+            <span key={active} className="gl-signal" aria-hidden />
           </div>
 
           <ol className="gl-steps">

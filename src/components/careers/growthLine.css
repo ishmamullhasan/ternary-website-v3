@@ -32,12 +32,19 @@
   background: var(--gl-rest);
 }
 
+/* Driven by `--gl-fill`, a 0–1 value GrowthLine writes straight onto the track each scroll frame.
+   Base is 1 — unpinned, the whole path has been travelled.
+
+   SCROLL-LINKED, AND DELIBERATELY WITHOUT A TRANSITION. It used to be a width the component set at
+   each of four discrete positions with a 0.6s ease, so the line sat still and then lurched, four
+   times. Following the scroll means it grows continuously under the reader's own gesture, which is
+   both smoother and more honest about what is driving it. A transition on top of a
+   per-frame update would only add lag between the two. */
 .gl-fill {
   position: absolute;
   inset: 0 auto 0 0;
-  width: 100%; /* base: the whole path, already travelled */
+  width: calc(var(--gl-fill, 1) * 100%);
   background: var(--color-cream);
-  transition: width 0.6s var(--gl-ease);
 }
 
 /* The signal. Hidden at rest — a lit mark parked mid-line with nothing moving reads as a fault.
@@ -46,6 +53,7 @@
   display: none;
   position: absolute;
   top: -1px;
+  left: calc(var(--gl-fill, 1) * 100%);
   width: 26px;
   height: 3px;
   margin-left: -26px;
@@ -158,15 +166,31 @@
 
 /* ── Pinned ───────────────────────────────────────────────────────────────────────────────────── */
 
+/* One viewport for the frame, plus a beat per stage. Travel — the pinned distance — is therefore
+   exactly `steps × --gl-step`, which is the number the brief specifies, rather than something that
+   also depends on how tall the frame measured. */
 .gl-track[data-pin='on'] {
-  /* The frame's own height plus a beat per stage: the section ends when the ladder does. */
-  height: calc(var(--gl-frame, 60vh) + var(--gl-steps, 4) * var(--gl-step, 45vh));
+  height: calc(100vh + var(--gl-steps, 4) * var(--gl-step, 45vh));
 }
 
+/* A FULL-VIEWPORT STICKY BOX THAT CENTRES ITS OWN CONTENT — not `top: 50%` with a
+   `translateY(-50%)`.
+
+   That pairing is the bug in the screenshot: sticky pins the element's LAYOUT box at the offset,
+   then the transform shifts the PAINTED content up by half its height, out of the section
+   entirely and over whatever sits above. The heading and its blurb were drawn across the
+   "Proximity to impact" and "Talent formed, not bought" cards. Nothing about the section's own
+   spacing was wrong — the content had simply left its box.
+
+   Sticking at `top: 0` with `min-height: 100vh` and centring inside means the painted content
+   never leaves the frame, so the section keeps the same rhythm as every other one on the page. */
 [data-pin='on'] .gl-pin {
   position: sticky;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: center;
 }
 
 [data-pin='on'] .gl-signal {
@@ -180,29 +204,39 @@
 [data-pin='on'] .gl-stage {
   display: grid;
 }
+/* The outgoing stage leaves faster than the incoming arrives, and the incoming waits out most of
+   that exit before it starts: two paragraphs at half opacity crossing through each other is what
+   made the change read as a flicker rather than a hand-off. `visibility` is not eased — it steps at
+   the end of the delay, which is what keeps a hidden panel out of the way without a transition on a
+   discrete property fighting the opacity curve. */
 [data-pin='on'] .gl-panel {
   grid-area: 1 / 1;
   margin-top: 0;
   transition:
-    opacity 0.5s var(--gl-ease),
-    transform 0.5s var(--gl-ease),
-    visibility 0.5s;
+    opacity 0.34s var(--gl-ease),
+    transform 0.34s var(--gl-ease),
+    visibility 0s linear 0.34s;
 }
 [data-pin='on'] .gl-panel[data-state='in'] {
   opacity: 1;
   transform: none;
   visibility: visible;
+  transition:
+    opacity 0.62s var(--gl-ease) 0.16s,
+    transform 0.62s var(--gl-ease) 0.16s,
+    visibility 0s linear;
 }
 /* Already travelled: lifts away upward. Still ahead: waiting below. So the copy moves the same
-   direction as the reader, and reversing the scroll reverses it. */
+   direction as the reader, and reversing the scroll reverses it. 22px rather than 14 — with the
+   longer entry the shorter throw read as a fade with a twitch in it rather than a movement. */
 [data-pin='on'] .gl-panel[data-state='past'] {
   opacity: 0;
-  transform: translateY(-14px);
+  transform: translateY(-22px);
   visibility: hidden;
 }
 [data-pin='on'] .gl-panel[data-state='next'] {
   opacity: 0;
-  transform: translateY(14px);
+  transform: translateY(22px);
   visibility: hidden;
 }
 
