@@ -1,0 +1,241 @@
+/* Careers hero — the Continuous Path figure and the headline that builds with it.
+ *
+ * BASE IS THE FINISHED STATE, the contract every reveal on this site is written to (see
+ * revealText.css, hub.css, processStory.css). Read the file in two halves:
+ *
+ *   - the plain rules below are what a visitor sees with JavaScript off, before hydration, and
+ *     under reduced motion: the whole route drawn, the headline set, nothing moving;
+ *   - everything under `[data-seq='on']` is the animation, and that attribute is set from JS by
+ *     HeroSequence. Nothing here can leave content in a pre-animation state that never clears.
+ *
+ * This matters more than usual for a hero: the h1 is the page's only h1, and the `motion/react`
+ * wrapper used elsewhere in this block writes `opacity: 0` inline before useReducedMotion()
+ * resolves and never clears it. That bug is exactly what this file is built to avoid.
+ */
+
+.cp {
+  --cp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* The brief's rgba(255,255,255,.18/.42/.8), taken off --color-cream (#f4f3ec) rather than pure
+     white so the figure carries the same warm neutral as the rest of the page. At these opacities
+     the hue difference is imperceptible; the consistency is not. */
+  --cp-path: color-mix(in oklab, var(--color-cream) 18%, transparent);
+  --cp-active: color-mix(in oklab, var(--color-cream) 42%, transparent);
+  --cp-signal: color-mix(in oklab, var(--color-cream) 80%, transparent);
+
+  overflow: visible; /* the glow stroke is wider than the route's own bounds */
+}
+
+.cp .cp-seg {
+  fill: none;
+  stroke: var(--cp-path);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The newest segment is the live edge of the system, so it sits at the active step rather than the
+   resting one — the one place the two path tones differ. */
+.cp .cp-branch {
+  stroke: var(--cp-active);
+}
+
+.cp .cp-node {
+  fill: var(--color-page);
+  stroke: var(--cp-active);
+  stroke-width: 1.25;
+}
+
+/* Transient by definition: hidden at rest, and shown only by the flash animation as the signal
+   passes. A permanently visible set of these would be an infographic, which is the failure mode
+   this figure is trying to stay on the right side of. */
+.cp .cp-label {
+  fill: var(--cp-active);
+  font-family: inherit;
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  opacity: 0;
+}
+
+/* No signal at rest — a lit dash frozen mid-route reads as a rendering fault, not a diagram. */
+.cp .cp-signal,
+.cp .cp-glow {
+  fill: none;
+  opacity: 0;
+  stroke-linecap: round;
+}
+.cp .cp-signal {
+  stroke: var(--cp-signal);
+  stroke-width: 1.6;
+}
+/* The halo. A second, wider stroke rather than a drop-shadow: a filter on a permanently animating
+   element costs real frames for something meant to be imperceptible. 3.5 and not 5 — the wider
+   band was the single most expensive thing in the figure, and at these opacities the halo it adds
+   measures 0.14% of the region's pixels at a 34/255 peak either way. */
+.cp .cp-glow {
+  stroke: var(--cp-active);
+  stroke-width: 3.5;
+}
+
+/* Frozen while the hero is off screen — see HeroSequence for why this is paused and not removed. */
+[data-live='off'] .cp .cp-signal,
+[data-live='off'] .cp .cp-glow,
+[data-live='off'] .cp .cp-label {
+  animation-play-state: paused;
+}
+
+/* ── The sequence ─────────────────────────────────────────────────────────────────────────────
+   01 BUILD — each stage draws itself, in step with a line of the headline.
+   02 PRODUCTION — a signal runs the completed route, every CYCLE seconds.
+   03 OWNERSHIP — the endpoint extends, once, just as the signal arrives there.
+   ---------------------------------------------------------------------------------------------- */
+
+[data-seq='on'] .cp .cp-seg {
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: cp-draw var(--dur) var(--cp-ease) var(--delay) forwards;
+}
+
+[data-seq='on'] .cp .cp-node {
+  opacity: 0;
+  animation: cp-appear 0.5s var(--cp-ease) var(--delay) forwards;
+}
+
+/* Dash of `--dash`, then a gap covering the rest of the route: exactly one lit run on the path.
+   Sweeping the offset by a full route length moves that run end to end and lands it back where it
+   started, so the loop closes on itself with no jump. */
+[data-seq='on'] .cp .cp-signal,
+[data-seq='on'] .cp .cp-glow {
+  --dash: 16;
+  stroke-dasharray: var(--dash) calc(var(--len) - var(--dash));
+  stroke-dashoffset: var(--len);
+  animation:
+    cp-run 5s linear 2.6s infinite,
+    cp-appear 0.6s ease 2.45s forwards;
+}
+[data-seq='on'] .cp .cp-glow {
+  --dash: 24;
+  animation:
+    cp-run 5s linear 2.6s infinite,
+    cp-appear-faint 0.6s ease 2.45s forwards;
+}
+
+[data-seq='on'] .cp .cp-label {
+  animation: cp-flash 5s linear var(--at) infinite;
+}
+
+@keyframes cp-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes cp-run {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes cp-appear {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cp-appear-faint {
+  to {
+    opacity: 0.35;
+  }
+}
+
+/* Lit for ~0.55s of a 5s cycle, starting the instant the signal reaches the node. "Appear for less
+   than a second" is the whole point — long enough to read one word, too short to become furniture. */
+@keyframes cp-flash {
+  0% {
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  11% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── The headline ─────────────────────────────────────────────────────────────────────────────
+   One beat per element — the headline's lines, then the subline, then the buttons. Carries the
+   animation only and never `display`, so it can sit on a block, a flex row or an inline span
+   without disturbing the layout it is applied to.
+
+   `backwards`, NOT `forwards` or `both`, and the difference is the whole reason the base-state
+   pattern works here. Backwards holds the `from` state through the delay — so a beat waiting its
+   turn is already dim and blurred rather than flashing in at full opacity first — and then, once
+   the animation finishes, stops applying entirely and lets the element fall back to its own
+   styles. Which are the finished state.
+
+   With `both` the last keyframe is retained forever, and `filter` retained at its end value is
+   `blur(0px)` — measured, not assumed: the resting h1 reported a filter rather than `none`. Any
+   filter value, zero included, keeps the element in a filter pipeline for the life of the page,
+   which is a real scroll cost on a hero-sized heading for zero visual difference. Backwards leaves
+   no filter at all. */
+[data-seq='on'] .hs-line {
+  animation: hs-in 0.8s var(--hs-ease, cubic-bezier(0.22, 1, 0.36, 1)) calc(0.05s + var(--l, 0) * 0.13s) backwards;
+}
+
+@keyframes hs-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────────────────────────────
+   Both switches: the OS preference and the in-app A11yFab toggle, which hub.css also honours and
+   which can flip after mount. Everything collapses to the base state — route drawn, headline set,
+   no signal, no annotations. */
+@media (prefers-reduced-motion: reduce) {
+  [data-seq='on'] .cp .cp-seg {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  [data-seq='on'] .cp .cp-node {
+    opacity: 1;
+    animation: none;
+  }
+  [data-seq='on'] .cp .cp-signal,
+  [data-seq='on'] .cp .cp-glow,
+  [data-seq='on'] .cp .cp-label {
+    opacity: 0;
+    animation: none;
+  }
+  [data-seq='on'] .hs-line {
+    animation: none;
+  }
+}
+
+html[data-a11y-motion='reduce'] [data-seq='on'] .cp .cp-seg {
+  stroke-dashoffset: 0;
+  animation: none;
+}
+html[data-a11y-motion='reduce'] [data-seq='on'] .cp .cp-node {
+  opacity: 1;
+  animation: none;
+}
+html[data-a11y-motion='reduce'] [data-seq='on'] .cp .cp-signal,
+html[data-a11y-motion='reduce'] [data-seq='on'] .cp .cp-glow,
+html[data-a11y-motion='reduce'] [data-seq='on'] .cp .cp-label {
+  opacity: 0;
+  animation: none;
+}
+html[data-a11y-motion='reduce'] [data-seq='on'] .hs-line {
+  animation: none;
+}

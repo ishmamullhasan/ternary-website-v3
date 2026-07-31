@@ -1,4 +1,6 @@
 import Motion from '@/components/animation/motion'
+import ContinuousPath from '@/components/careers/ContinuousPath'
+import HeroSequence from '@/components/careers/HeroSequence'
 import Link from '@/components/LocalizedLink'
 import RevealText from '@/components/text/RevealText'
 import { cn } from '@/lib/utils'
@@ -54,7 +56,10 @@ const PANEL = 'rounded-xl bg-card'
 // site tells one story about how the practice runs.
 // ---------------------------------------------------------------------------------------------
 const D = {
-  heroHeading: 'Build once. Answer for it always.',
+  // Written as three lines on purpose: each one is a beat of the hero sequence, and the path
+  // beside it draws a stage per beat. Authored line breaks are what set that rhythm — see
+  // headingBeats() — which is why the CMS field is a textarea rather than a single-line input.
+  heroHeading: 'Build once.\nAnswer for it\nalways.',
   heroSub:
     'We hire engineers who want to answer for what they build — not hand it off. Own systems in production, stay close to the work, and grow inside an engineering institution built for the long term.',
   principlesHeading: 'How we work',
@@ -129,28 +134,18 @@ function SectionHead({ title, blurb }: { title: string; blurb: string }): JSX.El
   )
 }
 
-/* Thin-line ladder construction — the hero's abstract motif (growth as ascent). Decorative. */
-function LadderMark(): JSX.Element {
-  return (
-    <svg viewBox="0 0 420 340" fill="none" aria-hidden className="h-auto w-full max-w-[420px]">
-      {[0, 1, 2, 3].map((i) => {
-        const x = 40 + i * 100
-        const y = 280 - i * 70
-        return (
-          <g key={i} stroke="var(--color-line-strong)" strokeWidth="1">
-            <line x1={x} y1={y} x2={x + 80} y2={y} />
-            <line x1={x + 80} y1={y} x2={x + 100} y2={y - 70} strokeDasharray="3 5" />
-            <circle cx={x} cy={y} r="3" fill={i === 3 ? 'var(--color-cream)' : 'none'} />
-          </g>
-        )
-      })}
-      <circle cx="440" cy="0" r="3" fill="none" stroke="var(--color-line-strong)" />
-    </svg>
-  )
+/* The headline arrives one line at a time, in step with the path drawing beside it, so the two
+   tell the same story. Explicit line breaks win — that is what lets an author decide the beats —
+   and sentence breaks are the fallback for copy written as a single run. */
+function headingBeats(heading: string): string[] {
+  const source = heading.includes('\n') ? heading.split('\n') : heading.split(/(?<=\.)\s+/)
+  const beats = source.map((line) => line.trim()).filter(Boolean)
+  return beats.length ? beats : [heading]
 }
 
 export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Element {
   const heroHeading = cms.heroHeading || D.heroHeading
+  const beats = headingBeats(heroHeading)
   const heroSub = cms.heroSub || D.heroSub
   const principlesHeading = cms.principlesHeading || D.principlesHeading
   const principlesIntro = cms.principlesIntro || D.principlesIntro
@@ -181,20 +176,38 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
           whole band down the viewport (owner direction 2026-07-31). */}
       <Section pad="pt-2 lg:pt-4 pb-[clamp(40px,6vh,72px)]">
         {/* 1fr / 0.85fr — the hero split /capabilities and /solutions use. It was 0.7fr here, so
-            the figure sat in a visibly narrower column than the same figure slot on those pages. */}
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-16">
+            the figure sat in a visibly narrower column than the same figure slot on those pages.
+
+            HeroSequence only sets `data-seq`; the beats below are ordinary server-rendered markup
+            and careersHero.css drives them. None of this hero is wrapped in <Motion> any more:
+            that wrapper writes `opacity: 0` inline before useReducedMotion() resolves and never
+            clears it, which was leaving the page's only h1 invisible under reduced motion and with
+            JS off. Measured before the change; both now render the finished hero. */}
+        <HeroSequence className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] lg:gap-16">
           <div>
             {/* No eyebrow above the h1. Every hub on the site had its section labels removed (owner
                 direction); this was the last one left, and the only label anywhere on /careers —
                 the growth ladder's rungs are content, not a label, so they stay. */}
-            <Motion className="flex flex-col gap-7" {...reveal}>
+            <div className="flex flex-col gap-7">
               <h1 className="font-display max-w-[14ch] text-[clamp(2.75rem,7vw,6rem)] leading-[1.01] font-medium tracking-[-0.04em] text-cream">
-                {heroHeading}
+                {beats.map((line, i) => (
+                  <span key={i} className="hs-line block" style={{ '--l': i } as React.CSSProperties}>
+                    {line}
+                  </span>
+                ))}
               </h1>
-              <p className="max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body">{heroSub}</p>
-            </Motion>
+              <p
+                className="hs-line max-w-2xl text-[clamp(1rem,1.6vw,1.25rem)] leading-relaxed text-body"
+                style={{ '--l': beats.length } as React.CSSProperties}
+              >
+                {heroSub}
+              </p>
+            </div>
 
-            <Motion className="mt-10 flex flex-wrap items-center gap-4 lg:mt-14" {...reveal}>
+            <div
+              className="hs-line mt-10 flex flex-wrap items-center gap-4 lg:mt-14"
+              style={{ '--l': beats.length + 1 } as React.CSSProperties}
+            >
               <a
                 href="#roles"
                 className={cn(
@@ -214,17 +227,17 @@ export function CareersHubComponent(cms: Partial<CareersHubBlock> = {}): JSX.Ele
               >
                 Meet the team →
               </Link>
-            </Motion>
+            </div>
           </div>
 
-          {/* NOT wrapped in <Motion>, for the reason /capabilities records against NetworkMark:
-              Motion commits its `initial` opacity 0 inline before useReducedMotion() resolves and
-              never clears it, so the figure keeps a hidden ancestor under BOTH
-              prefers-reduced-motion and JS-disabled. It is decorative; it does not need a reveal. */}
+          {/* The Continuous Path — Build → Deploy → Operate → Improve, drawn forward, then a signal
+              running the finished route, then one more segment growing out of the endpoint. It
+              replaces a four-riser staircase, which said "progress" and nothing about this page.
+              Hidden below lg, where the hero is a single column and it would only add scroll. */}
           <div className="hidden lg:block">
-            <LadderMark />
+            <ContinuousPath />
           </div>
-        </div>
+        </HeroSequence>
       </Section>
 
       {/* ── HOW WE WORK ──────────────────────────────────────────────────────────────────── */}

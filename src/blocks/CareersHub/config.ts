@@ -16,7 +16,10 @@ export const CareersHub: Block = {
   fields: [
     // No 'heroEyebrow' field: the hero renders no label, so an editable eyebrow would be a control
     // that does nothing. A value already stored stays in the document — simply unread.
-    { name: 'heroHeading', label: 'Hero heading', type: 'text', localized: true },
+    // textarea, not text: each LINE of this heading is one beat of the hero sequence — the line
+    // appears and a stage of the path draws beside it — so an author needs to be able to press
+    // enter. Copy written as a single run still works; it falls back to splitting on sentences.
+    { name: 'heroHeading', label: 'Hero heading (one line per beat)', type: 'textarea', localized: true },
     { name: 'heroSub', label: 'Hero subline', type: 'textarea', localized: true },
     { name: 'principlesHeading', label: 'Principles heading', type: 'text', localized: true },
     { name: 'principlesIntro', label: 'Principles intro', type: 'textarea', localized: true },
