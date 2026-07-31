@@ -107,14 +107,21 @@
   padding: 0 var(--wk-gutter) clamp(56px, 8vh, 104px);
 }
 
-/* Each headline line rises out of its own clipping box. */
+/* Each headline line rises out of its own clipping box.
+   The padding/negative-margin pair gives the clip box room for descenders, ascenders and the
+   italic line's rightward overhang — at 0.98 leading a bare content box cut the tails off
+   "guesswork"/"building." — while the margins cancel the padding out of layout so the measured
+   rhythm is unchanged. The hidden start is 125%, not 105%: the span must clear the now-taller
+   clip box or its top edge peeks through the bottom padding before the reveal. */
 .wk-mask {
   overflow: hidden;
   display: block;
+  padding: 0.12em 0.14em 0.18em 0.02em;
+  margin: -0.12em -0.14em -0.18em -0.02em;
 }
 .wk-mask > span {
   display: block;
-  transform: translateY(105%);
+  transform: translateY(125%);
   transition: transform 1.05s var(--wk-ease);
 }
 .wk-scene.is-live .wk-mask > span {
