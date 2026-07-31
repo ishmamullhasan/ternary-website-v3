@@ -231,6 +231,7 @@ export interface Page {
         | SolutionsHeroBlock
         | SolutionFeatureBlock
         | SolutionsEngageBlock
+        | SolutionsHubBlock
         | AboutFundingStoryBlock
         | AboutIntroBlock
         | AboutThesisBlock
@@ -3375,6 +3376,53 @@ export interface SolutionsEngageBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionsHubBlock".
+ */
+export interface SolutionsHubBlock {
+  heroHeading?: string | null;
+  heroSub?: string | null;
+  solutions?:
+    | {
+        name?: string | null;
+        tagline?: string | null;
+        who?: string | null;
+        what?: string | null;
+        get?: string | null;
+        proofClient?: string | null;
+        proofBody?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  models?:
+    | {
+        name?: string | null;
+        tag?: string | null;
+        body?: string | null;
+        ideal?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  compareRows?:
+    | {
+        label?: string | null;
+        tabular?: boolean | null;
+        cells?:
+          | {
+              cell?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  ctaHeading?: string | null;
+  ctaBody?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'solutionsHub';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "AboutFundingStoryBlock".
  */
 export interface AboutFundingStoryBlock {
@@ -4441,6 +4489,7 @@ export interface PagesSelect<T extends boolean = true> {
         solutionsHero?: T | SolutionsHeroBlockSelect<T>;
         solutionFeature?: T | SolutionFeatureBlockSelect<T>;
         solutionsEngage?: T | SolutionsEngageBlockSelect<T>;
+        solutionsHub?: T | SolutionsHubBlockSelect<T>;
         aboutFundingStory?: T | AboutFundingStoryBlockSelect<T>;
         aboutIntro?: T | AboutIntroBlockSelect<T>;
         aboutThesis?: T | AboutThesisBlockSelect<T>;
@@ -5224,6 +5273,52 @@ export interface SolutionsEngageBlockSelect<T extends boolean = true> {
         idealFor?: T;
         id?: T;
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SolutionsHubBlock_select".
+ */
+export interface SolutionsHubBlockSelect<T extends boolean = true> {
+  heroHeading?: T;
+  heroSub?: T;
+  solutions?:
+    | T
+    | {
+        name?: T;
+        tagline?: T;
+        who?: T;
+        what?: T;
+        get?: T;
+        proofClient?: T;
+        proofBody?: T;
+        id?: T;
+      };
+  models?:
+    | T
+    | {
+        name?: T;
+        tag?: T;
+        body?: T;
+        ideal?: T;
+        id?: T;
+      };
+  compareRows?:
+    | T
+    | {
+        label?: T;
+        tabular?: T;
+        cells?:
+          | T
+          | {
+              cell?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  ctaHeading?: T;
+  ctaBody?: T;
   id?: T;
   blockName?: T;
 }

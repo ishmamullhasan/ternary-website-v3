@@ -6,9 +6,9 @@ import type { JSX } from 'react'
 import { Fragment } from 'react'
 
 import AboutEditorialCta from '@/components/about/AboutEditorialCta'
-import ShaderHero from '@/components/ShaderHero'
 import AboutExperience from '@/components/about/AboutExperience'
 import Motion from '@/components/animation/motion'
+import ShaderHero from '@/components/ShaderHero'
 import { AboutApproachComponent } from './AboutApproach/Component'
 import { AboutBeliefsComponent } from './AboutBeliefs/Component'
 import { AboutFundingStoryComponent } from './AboutFundingStory/Component'
@@ -57,6 +57,7 @@ import { ScaleShowcaseComponent } from './ScaleShowcase/Component'
 import { SolutionFeatureComponent } from './SolutionFeature/Component'
 import { SolutionsEngageComponent } from './SolutionsEngage/Component'
 import { SolutionsHeroComponent } from './SolutionsHero/Component'
+import { SolutionsHubComponent } from './SolutionsHub/Component'
 import { StoriesArchiveComponent } from './StoriesArchive/Component'
 import { SubscribeComponent } from './Subscribe/Component'
 
@@ -98,6 +99,7 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
   'crossIndustryPatterns',
   'regulatoryPosture',
   'solutionsHero',
+  'solutionsHub',
   'solutionFeature',
   'solutionsEngage',
   'aboutFundingStory',
@@ -151,6 +153,8 @@ function renderBlock(block: BlockType, locale?: TypedLocale, slug?: string): JSX
       return <AboutSectionComponent {...block} />
     case 'solutionsSection':
       return <SolutionsSectionComponent {...block} />
+    case 'solutionsHub':
+      return <SolutionsHubComponent {...block} />
     case 'capabilitiesSection':
       return <CapabilitiesSectionComponent {...block} />
     case 'capabilityLedger':

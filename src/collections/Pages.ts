@@ -41,6 +41,7 @@ import { ScaleShowcase } from '@/blocks/ScaleShowcase/config'
 import { SolutionFeature } from '@/blocks/SolutionFeature/config'
 import { SolutionsEngage } from '@/blocks/SolutionsEngage/config'
 import { SolutionsHero } from '@/blocks/SolutionsHero/config'
+import { SolutionsHub } from '@/blocks/SolutionsHub/config'
 import { StoriesArchive } from '@/blocks/StoriesArchive/config'
 import { Subscribe } from '@/blocks/Subscribe/config'
 import { DEFAULT_LOCALE, localizedPath } from '@/lib/i18n/locales'
@@ -187,6 +188,8 @@ export const Pages: CollectionConfig = {
         SolutionsHero,
         SolutionFeature,
         SolutionsEngage,
+        // Phase 1 CMS build-out: the whole /solutions landing as one editable block.
+        SolutionsHub,
         AboutFundingStory,
         AboutIntro,
         AboutThesis,

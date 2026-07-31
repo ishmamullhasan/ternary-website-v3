@@ -5,6 +5,7 @@ production — this file is the handover artifact for replicating approved chang
 CMS later.
 
 ## ⚠️ PRODUCTION FOLLOW-UPS (replicate to production CMS)
+
 - **Header global → mega-menu panels** — Capabilities / Solutions / Industries need `panel` content
   (columns + items + featured) added, matching the redesigned `MegaMenuOverlay` schema. Production
   still has the old flat `subItems` (empty dropdowns on the new code). Content authored below; seeded
@@ -15,12 +16,26 @@ CMS later.
   `seed-fix-hero`, `seed-stage6`, `seed-stage6b`, `seed-stage7` (all take `DATABASE_URI` env +
   `SEED_DRY=0`, and use `disableTransaction` — REQUIRED on replica-set Mongo or writes silently
   roll back). Delete production's "Test Press Release" / "Test Insight" / "Test Model" equivalents.
+- **Phase 1 /solutions hub (2026-07-31)** — after deploying the `solutionsHub` block schema, run
+  `scripts/seed-solutions-hub.ts` (`SEED_DRY=0`) to replace the solutions page layout. See the
+  Phase 1 entry below.
 
 ---
 
 ## Changes
 
+### Phase 1 — /solutions hub moved into the CMS (staging, 2026-07-31)
+
+`pages.solutions.layout` via `scripts/seed-solutions-hub.ts` (`SEED_DRY=0`, `disableTransaction`).
+The doc's vestigial old blocks (`solutionsHero` + 4×`solutionFeature` + `solutionsEngage` +
+`ctaBlock` — unused; the route was hardcoded) were REPLACED by one `solutionsHub` block carrying
+the entire hub verbatim: hero, 4 solutions (who/what/get/proof), 3 engagement models, 6 compare
+rows, CTA. Copy unchanged — this is a code→CMS ownership move, not a copy edit. Old layout is in
+Payload version history. **Prod follow-up: replicate (schema deploy first — the `solutionsHub`
+block ships in code). Bengali values not yet authored; `bn` currently serves `en` via fallback.**
+
 ### Stage 8 — solution detail pages populated (staging, 2026-07-30)
+
 `solution` collection ×4 via `scripts/seed-stage8.ts`. **Prod follow-up: replicate (schema deploy
 first — the `detail` group ships in code).** Each doc gained the full 7-section template content
 (plan copy verbatim): detail.h1 sentence headline ("Take an idea to a real product." / "Replace
@@ -34,6 +49,7 @@ Canonical `title` values untouched. FLAGGED for copy review: ET walk-away bodies
 bodies (plan said "per the approved deck"; deck text unavailable — drafted faithfully).
 
 ### About copy pass — owner direction (staging, 2026-07-30)
+
 `pages.about.layout` via re-run of `scripts/seed-stage7.ts`. No "year three" phrasing; New York
 reduced to one mention. Origin heading → "Two cities. One standard."; origin p1 → "…it fails
 later, quietly…"; p2 → "Headquartered in New York, engineered in Dhaka…"; fundingStory heading →
@@ -48,6 +64,7 @@ committed, idempotent seed script; per-doc detail lives in the script + `QA.md`/
 **Prod follow-up: replicate all.**
 
 **Legal pages** (`legal` collection, via `scripts/seed-legal-content.ts`; earlier same-arc pass)
+
 - `privacy-and-policy` + `terms-of-service` `content` fully rewritten from the counsel-draft PDFs:
   new section structure, 4 tables (Privacy) via the new `table` block, `[CONFIRM: …]` placeholders
   kept verbatim and rendered as amber "input needed" chips behind a "Working draft" banner.
@@ -55,13 +72,16 @@ committed, idempotent seed script; per-doc detail lives in the script + `QA.md`/
   REMOVED from both (not for public pages). `modern-slavery-statement` untouched.
 
 **Footer global** (via `scripts/seed-stage1.ts`)
+
 - `capabilities` relationship: 6 → **all 8**, in hub order (agentic-architecture → internet-of-things).
 
 **Page meta descriptions** (`pages` collection `meta.description`, via `scripts/seed-stage1.ts`)
+
 - home / about / careers / contact: were `null` → the plan's five named descriptions
   (work's lives in code: `work/page.tsx` fallbackDescription).
 
 **Home page** (`pages.home.layout`, via `scripts/seed-stage5.ts` + `scripts/seed-fix-hero.ts`)
+
 - `processSection` ("How we operate"): all **5 empty step bodies filled** (drafted from the About
   culture themes — flagged for copy review).
 - `engagementSection.model` order: Frame, Orchestra, Flow → **Frame, Flow, Orchestra**.
@@ -69,21 +89,24 @@ committed, idempotent seed script; per-doc detail lives in the script + `QA.md`/
   already the intended hero; its title was enlarged in code instead.)
 
 **Content integrity** (via `scripts/seed-stage6.ts`)
+
 - DELETED (were published): "Test Press Release — …", "Test Insight — …", "Test Model — Embedded Pod".
 - `industry/banking-capital-markets.excerpts`: generic "Digital transformation and secure
   platforms for financial institutions" → "Exchanges, brokerages, and systems that can't be down
   while markets are open."
 
 **Contact page** (`pages.contact.layout`, via `scripts/seed-stage6b.ts`)
+
 - Hero buttons: removed "Book a call" (`#`); "Email us" kept.
 - Routes: **Partnerships removed** (folded into New business as a "Best for" bullet:
   "Agencies and technology partners who want to co-deliver"); **Careers** route now `link:
-  /careers#roles` + "See open roles" (new `link` field on ContactRoutes items) instead of a
+/careers#roles` + "See open roles" (new `link` field on ContactRoutes items) instead of a
   fourth mailto; New business + General keep hello@.
 - Offices: cleared the placeholder phone "+1 (800) 123-4567" on New York.
 - Removed a junk `ctaBlock` (gibberish description, "123" buttons → `#`) that was live on the page.
 
 **About page restructure** (`pages.about.layout`, via `scripts/seed-stage7.ts`)
+
 - New order: hero → **Origin** (aboutIntro, new: "Born in New York. Scaled in Dhaka." + conviction /
   two-cities paragraphs + "ISO 9001, ISO 27001, SOC 2 — one standard, two cities.") →
   **aboutFundingStory** (eyebrow "Bootstrapped and profitable", heading now the pull statement
@@ -101,8 +124,10 @@ committed, idempotent seed script; per-doc detail lives in the script + `QA.md`/
   home key `v12→v14` — script writes can't fire afterChange revalidation, the bumps force fresh reads.
 
 ### About / "The Ternary Way" — stated count removed (staging)
+
 `pages.about.layout[aboutApproach].description` via `scripts/seed-about-approach-count.js`
 (idempotent). **Prod follow-up: replicate.**
+
 - **Old (en):** "…rooted in technical excellence and sustained accountability, defined by three
   core principles."
 - **New (en):** "…rooted in technical excellence and sustained accountability."
@@ -119,23 +144,25 @@ beyond the incorrect number.
 Note the two locales are stored in different shapes on this field — `en` is Lexical richText,
 `bn` is a plain string — and the script preserves each rather than normalising them, since that
 would be a schema change rather than a copy fix.
+
 - Code (same pass): `[...slug]/page.tsx` cache key `pages_<path>_<locale>_v3 → _v4`. The edit was
   made outside a Next request, so no afterChange hook fired to bust the `pages` tag; without the
   bump the page keeps serving the old sentence.
 
-
 ### Header nav — "Work" added (staging)
+
 `globals.header.menu` via `scripts/seed-nav-work.js` (idempotent). **Prod follow-up: replicate.**
+
 - **Old:** Capabilities · Solutions · Industries · Scales · Stories
 - **New:** Capabilities · Solutions · Industries · Scales · **Work** · Stories
-A plain `link` entry (en "Work" / bn "কাজ") pointing at `/work`, shaped like the existing Scales
-row. Placed before Stories so the two content surfaces sit together and the portfolio reads first.
+  A plain `link` entry (en "Work" / bn "কাজ") pointing at `/work`, shaped like the existing Scales
+  row. Placed before Stories so the two content surfaces sit together and the portfolio reads first.
 - Code (same pass): `getGlobals.ts` CACHE_VERSION `v4 → v5`. The menu was seeded outside a Next
   request, so no afterChange hook fired to bust the `header` tag — the file documents the bump as
   the deterministic fix for exactly this, and without it the nav renders the old five-item menu.
 
-
 ### /work scene headlines + reel order (staging)
+
 Via `scripts/seed-work-headlines.js` (idempotent). **Prod follow-up: replicate.** New `/work`
 page — the case-study reel, one study per viewport. Each story gains a two-line `workHeadline`
 (line 2 renders in the muted italic); the description line reuses the already-approved
@@ -146,6 +173,7 @@ sixfold in five months" (Turfly), "297 legacy pages" (DSE), "Forty spreadsheets"
 "every pitch in Dhaka" — none of which appears in DECK_COPY.md or SOURCES.md, and the Turfly
 figures had already been stripped site-wide in the Stories v2 pass. All four were rewritten
 count-free before anything was seeded:
+
 - `counterfoil-continuum` → "One control layer / for every revenue lever." (deck p24)
 - `turfly` → "From phone calls and guesswork / to instant confirmation." (deck p26 — replaces
   the "sixfold in five months" line)
@@ -163,65 +191,78 @@ count-free before anything was seeded:
   Without a weight the order fell back to creation date, which opened on holcim. Editable in the
   admin sidebar.
 
-
 ### Header global — mega-menu panels (staging)
+
 `globals.header.menu[Capabilities|Solutions|Industries].panel`
+
 - **Old:** `type: 'mega'` set, but no `panel` (only legacy `subItems`) → dropdowns rendered empty.
 - **New:** authored `panel` with `eyebrow`, `heading`, `viewAll`, `featured`, and icon-less `columns`
   of items linking to the real detail routes (`/capabilities/*`, `/solutions/*`, `/industries/*`).
   Copy is count-free (base-3 marks stay on the pages). Seeded via `scripts/seed-megamenu.js`.
 
 ### Capability detail pages — "What this means to us" (staging)
+
 `capabilities[8].whatThisMeansToUs` (heading + richText description + items)
+
 - **Old:** empty → detail pages rendered hero-only.
 - **New:** authored real per-discipline content for all 8 capabilities (no invented clients/metrics).
   Seeded via `scripts/seed-capability-content.js`. **Production follow-up:** replicate to prod CMS.
 
 ### Home industries section — 4 cards (staging)
+
 `pages.home.layout[industriesSection].industries`
+
 - **Old:** 4 refs but one was a deleted/dangling doc → only 3 cards rendered (centered in a 4-col grid).
 - **New:** set 4 valid industries (Financial Services & Insurance, Health Care, Technology Platforms,
   Consumer Goods & Services); resolves the Software-vs-Technology Platforms dup. **Prod follow-up.**
 
 ### Story titles — tightened for 2-line cards (staging)
+
 `stories[10].title` — compressed each title to ≤51 chars (pure compression, no new claims) so home
 hero card titles complete within the 2-line clamp. e.g. "Counterfoil: From a Booking Monolith to an
 Event-Driven Platform" → "Counterfoil: A Booking Monolith Goes Event-Driven". Via
 `scripts/seed-story-titles.js`. **Prod follow-up.**
 
 ### Home solutions section — all 4 solutions (staging)
+
 `pages.home.layout[solutionsSection].items` — had 3 refs, one dangling; now the 4 canonical
 solutions in order (Product Development · Enterprise Transformation · Engineering Augmentation ·
 Managed Systems). **Prod follow-up.**
 
 ### Home section headings — hub voice (staging)
+
 - capabilitiesSection: "Capabilities" → "What we practice"
 - industriesSection: "Domain expertise across every industry" → "We build where the stakes are specific"
 - scalesSection: "The scales we serve." → "From founding teams to national institutions"
-**Prod follow-up.**
+  **Prod follow-up.**
 
 ### Round-2 fixes (staging) — titles / industries / de-invented capability copy
+
 - `stories[10].title` → shortened again to ≤37 chars (2-line clamp never truncates).
 - `pages.home.layout[industriesSection].industries` → 8 industries (two 4-up rows; excludes the
   software-platforms dup and Consumer Goods & Services).
 - `capabilities[8].whatThisMeansToUs` → **REWRITTEN to verbatim approved hub copy** (the exact
   /capabilities body sentences + tags). Removes previously authored prose flagged as invented.
-Via `scripts/seed-fixes-round2.js`. **Prod follow-up.**
+  Via `scripts/seed-fixes-round2.js`. **Prod follow-up.**
 
 ### Capability "Selected work" — fake case studies removed (staging)
+
 `capabilities[*].caseStudies.items` → cleared on all 8. The items were generic invented examples
 ("2025 · Retail" etc.) present in the production data — not real client work. The section is guarded
 and now hides entirely. **Prod follow-up: clear these in prod too; re-populate only with real,
 approved case studies.**
 
 ### Capability copy v3 — deck-grounded plain-language revision (staging)
+
 All 8 capabilities: heroSection.description, whatThisMeansToUs (heading/description/items with
 plain-language excerpts), howWeDoIt ("How we work", 3 steps). Grounded in the company deck
 (audit/deck/DECK_COPY.md) + approved hub copy; story arc per page; NO metrics, NO client names.
 Via `scripts/seed-copy-v3.js`. **Prod follow-up.**
 
 ### Audit copy fixes (staging) — marks, definitions, placeholders, de-counting
+
 Via `scripts/seed-audit-fixes.js` (idempotent). **Prod follow-up: replicate all.**
+
 - `models[frame|flow|orchestra].title.en` → **℠ → ™** ("Frame℠" → "Frame™", etc.; bn already ™).
 - `models.orchestra.excerpts.en + content.en` → **REWRITTEN to canonical on-demand-senior-talent
   definition** (deck p18 + approved /solutions wording). The old multi-pod/multi-program copy
@@ -240,13 +281,15 @@ Via `scripts/seed-audit-fixes.js` (idempotent). **Prod follow-up: replicate all.
   production." → "Every engagement here shipped to production." (en + bn de-counted).
 - NOTE `team` "Romjan Ali" has **no position** in the DB — deliberately not invented; the
   component now guards/hides an empty role line (code).
-Code-side (same pass): /solutions ℠→™ + proof slot hides when empty; home "N+ Orchestrators"
-counter removed; empty team-role guard; industries index "Advanced Manufacturing & Energy" →
-"Advanced Manufacturing"; `engagements@ternary.com` → `info@ternary.solutions` (ContactForm block +
-form error copy); careers Team-voices lines de-quoted (plain role descriptions, not testimonials).
+  Code-side (same pass): /solutions ℠→™ + proof slot hides when empty; home "N+ Orchestrators"
+  counter removed; empty team-role guard; industries index "Advanced Manufacturing & Energy" →
+  "Advanced Manufacturing"; `engagements@ternary.com` → `info@ternary.solutions` (ContactForm block +
+  form error copy); careers Team-voices lines de-quoted (plain role descriptions, not testimonials).
 
 ### Round-3 (staging) — home industries dedupe, excerpt alignment, About heading + story arc
+
 Via `scripts/seed-round3.js` (idempotent). **Prod follow-up: replicate all.**
+
 - `pages.home.layout[industriesSection].industries` → **4 cards** (was 8): Banking & Capital
   Markets · Health Care · Technology Platforms · Advanced Manufacturing. Financial Services &
   Insurance read as a duplicate of Banking & Capital Markets on the home grid — Banking kept.
@@ -274,9 +317,11 @@ Via `scripts/seed-round3.js` (idempotent). **Prod follow-up: replicate all.**
   CMS state surfaces on deploy.
 
 ### Stories v2 — Word-doc case-study narratives + de-invented meta (staging)
+
 `stories[10]` via `scripts/seed-stories-v2.js`. Source: `audit/case-studies/SOURCES.md`
 (extracted from the client's `COMPANY PROFILE_ TERNARY  (1).docx` — the approved source
 writing). **Prod follow-up: run the same script against the production CMS once approved.**
+
 - `content.en` **rewritten for all 10 stories** to carry the doc narratives, edited to house
   rules: story arc (context → The challenge → Our approach → What we built → The outcome),
   plain language, **all quantified achievements from the docs dropped** (MAU/GMV/uptime/%
@@ -313,11 +358,13 @@ writing). **Prod follow-up: run the same script against the production CMS once 
   `story_related_${slug}_${locale}` → `_v2`.
 
 ### Card-copy alignment pass (staging) — uniform line bands per card group
+
 Via `scripts/seed-align-copy.js` (idempotent). **Prod follow-up: replicate all.** Goal: within
 every card group, all cards' text blocks land in the same rendered-line band so rows align
 (user-reported: home capabilities descriptions wrapped 2 vs 3+ lines). Every edit is a pure
 compression/recomposition of existing approved wording — no new claims, no metrics. Stale bn
 for each rewritten field **unset** (fallback serves en), per the seed-audit-fixes pattern.
+
 - **Home capabilities strip** → 77–92ch band (2 lines; was 77–249, two cards clamped mid-claim):
   - `capabilities.agentic-architecture.excerpts.en` — 249ch two-sentence paragraph →
     "Multi-agent systems that plan, act, and verify — accountable for what they do in
@@ -359,10 +406,12 @@ for each rewritten field **unset** (fallback serves en), per the seed-audit-fixe
   `solution_related → solution_related_v2`, `industry_${slug}_${locale}_v2 → _v3`.
 
 ### Content-enrichment pass (staging) — DSE source + story, capability proof, related work, insights
+
 Sources: `audit/case-studies/SOURCES.md` (new **“Dhaka Stock Exchange (DSE)” section appended**,
 extracted from the new Desktop synthesis file `Here's a synthesis of the DSE engag.txt`; internal
 references — SOW number, ticket IDs, staging URL, data blockers — flagged as hold-from-public) +
 the existing Word-doc sections + `audit/deck/DECK_COPY.md`. **Prod follow-up: replicate all.**
+
 - **`stories.dhaka-stock-exchange` upgraded to the seed-stories-v2 narrative arc** via
   `scripts/seed-dse-story.js` (idempotent; latest `_story_versions` synced).
   - `content.en` — old proposal/design-prototyping copy → active-rebuild narrative (context →
@@ -421,6 +470,7 @@ the existing Word-doc sections + `audit/deck/DECK_COPY.md`. **Prod follow-up: re
   studies, insights, and services interleave on one page).
 
 ### Scales copy — plain-language rewrite for non-technical buyers (staging + code)
+
 Rewrote the "Scales" copy so a non-technical business owner or enterprise buyer understands every
 line: no jargon (ATO, security by architecture, re-architect, cloud-native, pod, cadence,
 increment, workstream, definition of done, program of record, MVP, CTO), no metrics-as-boasts, no
@@ -481,6 +531,7 @@ replicate the CMS `scales` edits below.**
     standard holds" → "Who we hire holds"/"How we check the work holds".
 
 ### Fit truncated card copy (staging) — complete thoughts within every clamp
+
 Via `scripts/seed-fit-copy.js` (idempotent). **Prod follow-up: replicate all fields below.** Every
 truncation was verified in-browser against the real rendered card width on `yh16`; each fix is a
 pure recomposition of existing approved copy (no new claims, no metrics). Each field is set to
