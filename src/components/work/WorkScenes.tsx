@@ -27,6 +27,14 @@ export interface WorkScene {
   toneClass: string
 }
 
+/** The opening scene — the page's own introduction, not a story. Carries the page h1. */
+export interface WorkIntro {
+  eyebrow: [string, string]
+  headline: [string, string]
+  line: string
+  cta: string
+}
+
 /** Silent looping scene video — plays only while its scene holds the screen. */
 function SceneVideo({
   url,
@@ -58,11 +66,12 @@ function SceneVideo({
   return <video ref={ref} src={url} poster={poster ?? undefined} muted loop playsInline preload="metadata" aria-hidden="true" tabIndex={-1} />
 }
 
-export default function WorkScenes({ scenes }: { scenes: WorkScene[] }): JSX.Element {
+export default function WorkScenes({ scenes, intro }: { scenes: WorkScene[]; intro: WorkIntro }): JSX.Element {
   const [current, setCurrent] = useState(0)
-  const [hintGone, setHintGone] = useState(false)
   const [reduceMotion, setReduceMotion] = useState(false)
   const sceneRefs = useRef<(HTMLElement | null)[]>([])
+  // The intro occupies slot 0; stories follow. One count for the rail, the observer, and the keys.
+  const total = scenes.length + 1
 
   useEffect(() => {
     const query = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -84,7 +93,6 @@ export default function WorkScenes({ scenes }: { scenes: WorkScene[] }): JSX.Ele
           const index = nodes.indexOf(entry.target as HTMLElement)
           if (index === -1) continue
           setCurrent(index)
-          if (index > 0) setHintGone(true)
         }
       },
       { threshold: [0, 0.55, 0.9] },
@@ -92,7 +100,7 @@ export default function WorkScenes({ scenes }: { scenes: WorkScene[] }): JSX.Ele
 
     for (const node of nodes) observer.observe(node)
     return () => observer.disconnect()
-  }, [scenes.length])
+  }, [total])
 
   const goTo = (index: number) => {
     sceneRefs.current[index]?.scrollIntoView({
@@ -106,7 +114,7 @@ export default function WorkScenes({ scenes }: { scenes: WorkScene[] }): JSX.Ele
     const step = event.key === 'ArrowDown' || event.key === 'PageDown' ? 1 : event.key === 'ArrowUp' || event.key === 'PageUp' ? -1 : 0
     if (step === 0) return
     const next = current + step
-    if (next < 0 || next >= scenes.length) return
+    if (next < 0 || next >= total) return
     event.preventDefault()
     goTo(next)
   }
@@ -114,30 +122,69 @@ export default function WorkScenes({ scenes }: { scenes: WorkScene[] }): JSX.Ele
   return (
     <>
       <nav className="wk-rail" aria-label="Case studies">
+        <button type="button" aria-current={current === 0} aria-label="Go to introduction" onClick={() => goTo(0)} />
         {scenes.map((scene, index) => (
           <button
             key={scene.id}
             type="button"
-            aria-current={index === current}
+            aria-current={index + 1 === current}
             aria-label={`Go to ${scene.client}`}
-            onClick={() => goTo(index)}
+            onClick={() => goTo(index + 1)}
           />
         ))}
       </nav>
 
-      <p className="wk-hint" data-gone={hintGone}>
-        Scroll
-      </p>
-
       {/* tabIndex makes the track focusable so the arrow-key handler is reachable by keyboard. */}
       <div className="wk-track" onKeyDown={onKeyDown} tabIndex={-1}>
+        {/* Scene 0 — the introduction. Same anatomy as a story scene so the choreography is
+            shared, but it carries the page h1 and its foot invites the scroll instead of
+            linking out. `is-live` from the start so the copy is revealed on load. */}
+        <section
+          ref={(node) => {
+            sceneRefs.current[0] = node
+          }}
+          className={`wk-scene wk-intro${current === 0 ? ' is-live' : ''}`}
+        >
+          <div className="wk-media" aria-hidden>
+            <div className="wk-fill wk-t0" />
+          </div>
+
+          <div className="wk-body">
+            <p className="wk-eyebrow">
+              <span>{intro.eyebrow[0]}</span>
+              <span className="wk-tick" aria-hidden />
+              <span>{intro.eyebrow[1]}</span>
+            </p>
+
+            <h1 className="wk-title">
+              <span className="wk-mask">
+                <span>{intro.headline[0]}</span>
+              </span>
+              <span className="wk-mask">
+                <span>
+                  <em>{intro.headline[1]}</em>
+                </span>
+              </span>
+            </h1>
+
+            <div className="wk-foot">
+              <p className="wk-line">{intro.line}</p>
+              {scenes.length > 0 && (
+                <button type="button" className="wk-link" onClick={() => goTo(1)}>
+                  {intro.cta} ↓
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
         {scenes.map((scene, index) => (
           <section
             key={scene.id}
             ref={(node) => {
-              sceneRefs.current[index] = node
+              sceneRefs.current[index + 1] = node
             }}
-            className={`wk-scene${index === current ? ' is-live' : ''}`}
+            className={`wk-scene${index + 1 === current ? ' is-live' : ''}`}
           >
             <div className="wk-media" aria-hidden>
               <div className={`wk-fill ${scene.media ? '' : scene.toneClass}`}>
@@ -146,7 +193,7 @@ export default function WorkScenes({ scenes }: { scenes: WorkScene[] }): JSX.Ele
                     <SceneVideo
                       url={scene.media.url}
                       poster={scene.media.poster}
-                      live={index === current}
+                      live={index + 1 === current}
                       reduceMotion={reduceMotion}
                     />
                   ) : (

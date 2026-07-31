@@ -57,6 +57,7 @@ import { ScaleShowcaseComponent } from './ScaleShowcase/Component'
 import { SolutionFeatureComponent } from './SolutionFeature/Component'
 import { SolutionsEngageComponent } from './SolutionsEngage/Component'
 import { SolutionsHeroComponent } from './SolutionsHero/Component'
+import { CareersHubComponent } from './CareersHub/Component'
 import { SolutionsHubComponent } from './SolutionsHub/Component'
 import { StoriesArchiveComponent } from './StoriesArchive/Component'
 import { SubscribeComponent } from './Subscribe/Component'
@@ -100,6 +101,7 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
   'regulatoryPosture',
   'solutionsHero',
   'solutionsHub',
+  'careersHub',
   'solutionFeature',
   'solutionsEngage',
   'aboutFundingStory',
@@ -155,6 +157,8 @@ function renderBlock(block: BlockType, locale?: TypedLocale, slug?: string): JSX
       return <SolutionsSectionComponent {...block} />
     case 'solutionsHub':
       return <SolutionsHubComponent {...block} />
+    case 'careersHub':
+      return <CareersHubComponent {...block} />
     case 'capabilitiesSection':
       return <CapabilitiesSectionComponent {...block} />
     case 'capabilityLedger':

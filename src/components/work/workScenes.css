@@ -1,10 +1,12 @@
 :root {
   --wk-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --wk-gutter: 48px;
-  /* The layout's <main> is offset by the floating header pill, so a 100svh scene would overflow
-     the viewport by exactly that much and push each scene's foot below the fold. Subtracting the
-     same nav tokens the layout uses keeps a scene equal to the space it actually has. */
-  --wk-vh: calc(100svh - (var(--nav-h) + var(--nav-gap) + 12px));
+  /* The layout's <main> is offset by the floating header pill. The reel cancels that offset with
+     a negative top margin on the track (owner direction 2026-07-31: the scene panel is the hero
+     and covers the full viewport, bleeding under the glass pill — no black band above it), so a
+     scene is a true viewport tall. */
+  --wk-off: calc(var(--nav-h) + var(--nav-gap) + 12px);
+  --wk-vh: 100svh;
 }
 
 @media (max-width: 768px) {
@@ -20,6 +22,7 @@
 
 .wk-track {
   height: var(--wk-vh);
+  margin-top: calc(-1 * var(--wk-off));
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
@@ -192,6 +195,12 @@
 }
 
 .wk-link {
+  /* Also used as a <button> on the intro scene — strip the UA chrome so both render alike. */
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
   flex: none;
   font-size: 11px;
   letter-spacing: 0.16em;
@@ -234,25 +243,8 @@
   width: 46px;
 }
 
-/* ---------- scroll hint ---------- */
-
-.wk-hint {
-  position: fixed;
-  left: var(--wk-gutter);
-  /* Clears the accessibility FAB, which is fixed bottom-left and stands ~80px tall including its
-     own offset. At the prototype's 26px the two sat on top of each other. */
-  bottom: 96px;
-  z-index: 10;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-subtle);
-  transition: opacity 0.6s var(--wk-ease);
-}
-.wk-hint[data-gone='true'] {
-  opacity: 0;
-  pointer-events: none;
-}
+/* The fixed "Scroll" hint is gone: the intro scene's own "Start with the first story" control
+   carries that invitation, and the two collided at the foot of the viewport. */
 
 /* ---------- responsive ---------- */
 
@@ -264,7 +256,9 @@
     align-items: flex-start;
   }
   .wk-body {
-    padding-top: calc(var(--nav-h) + clamp(48px, 10svh, 96px));
+    /* The track now starts at the viewport top, so the offset the layout used to provide has to
+       be cleared here too or the headline slides under the pill. */
+    padding-top: calc(var(--wk-off) + clamp(48px, 10svh, 96px));
     padding-bottom: clamp(32px, 6vh, 64px);
   }
   .wk-foot {
@@ -315,6 +309,12 @@
 /* ---------- fallback washes ----------
    Stand-ins until a story has real media. Borrowed from the brand TONE gradients rather than
    minting new colour, and deliberately dark so the foot type keeps its contrast. */
+
+/* Intro wash — the signature CTA violet family, held darker than the story tones so the reel
+   opens quiet and the first case study reads as the arrival. */
+.wk-t0 {
+  background: radial-gradient(130% 140% at 72% 18%, #4c2ea8 0%, #241458 42%, var(--color-page) 100%);
+}
 
 .wk-t1 {
   background: radial-gradient(120% 130% at 24% 22%, #1f9d6b 0%, #0f5a3d 44%, var(--color-page) 100%);

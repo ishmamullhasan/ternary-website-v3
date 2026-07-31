@@ -36,7 +36,9 @@ async function getGlobal(slug: Global, depth = 0, locale?: TypedLocale) {
 // v5: the header menu gained a "Work" entry via scripts/seed-nav-work.js. Seeded outside a Next
 // request, so no afterChange hook fired to bust the tag — without this bump the nav renders the
 // five-item menu forever.
-const CACHE_VERSION = 'v6'
+// v7: "Work" removed again, "Stories" retargeted /stories→/work, footer Stories likewise
+// (scripts/seed-nav-stories.ts — another out-of-request write).
+const CACHE_VERSION = 'v7'
 
 function cachedGlobal(slug: Global, depth: number, tags: string[], locale?: TypedLocale) {
   return unstable_cache(

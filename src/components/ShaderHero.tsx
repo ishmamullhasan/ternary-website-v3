@@ -316,7 +316,10 @@ export default function ShaderHero({
   return (
     <section
       data-scene="hero"
-      className="ax-black ax-scene relative isolate flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 py-16 md:px-10 lg:px-16"
+      // The negative top margin cancels the layout's fixed-header offset so the field runs to the
+      // viewport top, under the glass pill — a full hero, not a panel below a black band (owner
+      // direction 2026-07-31, same treatment as the /work reel).
+      className="ax-black ax-scene relative isolate mt-[calc(-1*(var(--nav-h)+var(--nav-gap)+12px))] flex min-h-[100svh] w-full flex-col justify-center overflow-hidden px-5 py-16 md:px-10 lg:px-16"
       // The dark ground sits behind the canvas, so a failed or slow context never flashes white.
       style={{ backgroundColor: '#050505' }}
     >

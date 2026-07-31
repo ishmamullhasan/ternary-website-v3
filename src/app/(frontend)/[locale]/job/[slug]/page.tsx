@@ -312,7 +312,7 @@ export default async function Page({
                   >
                     <div className="flex items-center gap-2.5 text-body">
                       <Users size={18} className="text-subtle" aria-hidden="true" />
-                      <h3 className="text-base font-medium text-cream">The Team</h3>
+                      <h3 className="font-display text-base font-medium tracking-[-0.01em] text-cream">The Team</h3>
                     </div>
 
                     <div className="space-y-4">
@@ -365,7 +365,7 @@ export default async function Page({
                   >
                     <div className="flex items-center gap-2.5 text-body">
                       <DollarSign size={18} className="text-subtle" aria-hidden="true" />
-                      <h3 className="text-base font-medium text-cream">Compensation</h3>
+                      <h3 className="font-display text-base font-medium tracking-[-0.01em] text-cream">Compensation</h3>
                     </div>
 
                     <div className="space-y-3.5">

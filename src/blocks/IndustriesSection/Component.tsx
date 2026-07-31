@@ -60,7 +60,7 @@ function IndustryCard({ item }: { item: Industry }): JSX.Element {
         </div>
 
         <div className="absolute inset-x-5 bottom-5 z-10">
-          <h3 className="font-medium text-cream">{item.title}</h3>
+          <h3 className="font-display font-medium tracking-[-0.01em] text-cream">{item.title}</h3>
           {/* sm+ guard: reserve + clamp 2 lines so the 4-up rows share one text-block height —
               excerpts are budgeted to the 67–82ch band (2 lines at grid widths). Unprefixed
               below sm, where the single column makes row alignment moot. */}

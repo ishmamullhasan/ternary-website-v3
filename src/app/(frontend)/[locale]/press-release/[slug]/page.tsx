@@ -162,7 +162,7 @@ function RelatedPressReleaseCard({ item, index, locale }: { item: PressRelease; 
           Press Release
         </span>
 
-        <h3 className="mb-3 text-[16px] font-medium tracking-[-0.01em] text-cream line-clamp-3">{item.title}</h3>
+        <h3 className="font-display mb-3 text-[16px] font-medium tracking-[-0.01em] text-cream line-clamp-3">{item.title}</h3>
 
         {item.excerpts && <p className="mb-auto text-[14px] leading-relaxed text-body line-clamp-3">{item.excerpts}</p>}
 

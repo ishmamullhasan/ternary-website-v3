@@ -232,6 +232,7 @@ export interface Page {
         | SolutionFeatureBlock
         | SolutionsEngageBlock
         | SolutionsHubBlock
+        | CareersHubBlock
         | AboutFundingStoryBlock
         | AboutIntroBlock
         | AboutThesisBlock
@@ -3423,6 +3424,44 @@ export interface SolutionsHubBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersHubBlock".
+ */
+export interface CareersHubBlock {
+  heroEyebrow?: string | null;
+  heroHeading?: string | null;
+  heroSub?: string | null;
+  principlesHeading?: string | null;
+  principlesIntro?: string | null;
+  principles?:
+    | {
+        title?: string | null;
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  growthHeading?: string | null;
+  growthIntro?: string | null;
+  ladder?:
+    | {
+        step?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  ladderNote?: string | null;
+  growthCols?:
+    | {
+        title?: string | null;
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  placesLine?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'careersHub';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "AboutFundingStoryBlock".
  */
 export interface AboutFundingStoryBlock {
@@ -4490,6 +4529,7 @@ export interface PagesSelect<T extends boolean = true> {
         solutionFeature?: T | SolutionFeatureBlockSelect<T>;
         solutionsEngage?: T | SolutionsEngageBlockSelect<T>;
         solutionsHub?: T | SolutionsHubBlockSelect<T>;
+        careersHub?: T | CareersHubBlockSelect<T>;
         aboutFundingStory?: T | AboutFundingStoryBlockSelect<T>;
         aboutIntro?: T | AboutIntroBlockSelect<T>;
         aboutThesis?: T | AboutThesisBlockSelect<T>;
@@ -5319,6 +5359,43 @@ export interface SolutionsHubBlockSelect<T extends boolean = true> {
       };
   ctaHeading?: T;
   ctaBody?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CareersHubBlock_select".
+ */
+export interface CareersHubBlockSelect<T extends boolean = true> {
+  heroEyebrow?: T;
+  heroHeading?: T;
+  heroSub?: T;
+  principlesHeading?: T;
+  principlesIntro?: T;
+  principles?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  growthHeading?: T;
+  growthIntro?: T;
+  ladder?:
+    | T
+    | {
+        step?: T;
+        id?: T;
+      };
+  ladderNote?: T;
+  growthCols?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  placesLine?: T;
   id?: T;
   blockName?: T;
 }

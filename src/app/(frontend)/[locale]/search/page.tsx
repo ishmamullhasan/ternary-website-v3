@@ -109,7 +109,7 @@ export default async function SearchPage({
         viewport={{ once: true, amount: 0.4 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        <h1 className="text-3xl font-medium tracking-tight text-cream lg:text-4xl">Search</h1>
+        <h1 className="font-display text-display text-cream">Search</h1>
         <SearchInput locale={typedLocale} defaultValue={query} />
       </Motion>
 

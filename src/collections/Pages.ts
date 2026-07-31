@@ -15,6 +15,7 @@ import { CareersGridOne } from '@/blocks/CareersGridOne/config'
 import { CareersGridTwo } from '@/blocks/CareersGridTwo/config'
 import { CareersGrowth } from '@/blocks/CareersGrowth/config'
 import { CareersHero } from '@/blocks/CareersHero/config'
+import { CareersHub } from '@/blocks/CareersHub/config'
 import { CareersTeam } from '@/blocks/CareersTeam/config'
 import { CategoryLanding } from '@/blocks/CategoryLanding/config'
 import { ContactForm } from '@/blocks/ContactForm/config'
@@ -190,6 +191,8 @@ export const Pages: CollectionConfig = {
         SolutionsEngage,
         // Phase 1 CMS build-out: the whole /solutions landing as one editable block.
         SolutionsHub,
+        // Careers redesign (2026-07-31): the careers narrative as one editable block.
+        CareersHub,
         AboutFundingStory,
         AboutIntro,
         AboutThesis,

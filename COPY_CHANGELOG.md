@@ -24,6 +24,32 @@ CMS later.
 
 ## Changes
 
+### Stories/Careers redesign pass — owner direction (staging + Atlas, 2026-07-31)
+
+**Nav dedupe** (`header`/`footer` globals via `scripts/seed-nav-stories.ts`, applied to localhost
+AND Atlas): header "Work→/work" item REMOVED (it sat next to "Stories→/stories", which 308s to
+/work — an identical pair); "Stories" kept and retargeted to `/work` directly. Footer resources
+"Stories" likewise → `/work`. The /work URL stays canonical (reversing the cached /stories→/work
+308 would loop browsers). `getGlobals` CACHE_VERSION v6→v7.
+
+**Careers layout** (`pages.careers.layout` via `scripts/seed-careers-hub.ts`): the bento blocks
+(careersHero + careersGridOne/Two + careersGrowth) REPLACED by one `careersHub` block (empty —
+copy ships as authored fallbacks in the component, editable via CMS overrides). careersTeam +
+jobsBlock kept verbatim. Restructured copy (authored, no invented claims): hero "Build once.
+Answer for it always." (fixed the "always.." typo) + restructured subline; principles aligned to
+About's canonical Principles ×4 with careers-angled bodies; growth = ladder (Associate → Engineer
+→ Senior → Lead) + Real mentorship / Full-lifecycle experience / A modern stack; two-cities line.
+The duplicated "Move with velocity" card and the stray field-photo card are gone with the bento
+blocks. Catch-all pages cache key `_v6`→`_v7`. **Jobs anchor standardized to `#roles`** (was
+`#open-roles`; the Contact "Careers" route already deep-links `/careers#roles`).
+
+**/work reel (code copy)**: new intro scene 0 — eyebrow "Ternary · Selected stories", h1 "We run
+what we build. / These are the stories.", line "Real systems in production — how they were scoped,
+engineered, and shipped, told plainly…", CTA "Start with the first story". Counterfoil now opens
+the stories, not the page. Page metadata "Work" → "Stories". Fixed "Scroll" hint removed (the
+intro CTA replaces it). **Prod follow-up: replicate both seeds after the schema deploy
+(seed-nav-stories needs no schema; seed-careers-hub needs the careersHub block).**
+
 ### Phase 1 — /solutions hub moved into the CMS (staging, 2026-07-31)
 
 `pages.solutions.layout` via `scripts/seed-solutions-hub.ts` (`SEED_DRY=0`, `disableTransaction`).

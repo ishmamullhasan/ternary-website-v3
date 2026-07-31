@@ -1,4 +1,4 @@
-import WorkScenes, { type WorkScene } from '@/components/work/WorkScenes'
+import WorkScenes, { type WorkIntro, type WorkScene } from '@/components/work/WorkScenes'
 import '@/components/work/workScenes.css'
 import { asTypedLocale } from '@/lib/i18n/locales'
 import { generateMeta } from '@/lib/seo/generateMeta'
@@ -25,15 +25,27 @@ import type { JSX } from 'react'
 // Washes standing in for media on a story that has none yet, cycling so neighbours differ.
 const TONES = ['wk-t1', 'wk-t2', 'wk-t3', 'wk-t4', 'wk-t5', 'wk-t6'] as const
 
+/**
+ * Scene 0 — the page's own introduction (owner direction 2026-07-31: the reel opens with what
+ * this page is, not with a client). Code-owned copy, like the hub heroes. No invented claims:
+ * every line restates what the site already says about the practice.
+ */
+const INTRO: WorkIntro = {
+  eyebrow: ['Ternary', 'Selected stories'],
+  headline: ['We run what we build.', 'These are the stories.'],
+  line: 'Real systems in production — how they were scoped, engineered, and shipped, told plainly. One story per screen; move through at your own pace.',
+  cta: 'Start with the first story',
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
   const typedLocale = asTypedLocale(locale)
   if (!typedLocale) return {}
   return generateMeta({
     doc: null,
-    fallbackTitle: 'Work',
+    fallbackTitle: 'Stories',
     fallbackDescription:
-      'Case studies, press, and insights from Ternary — production systems we designed, delivered, and stand behind.',
+      'Stories from Ternary — production systems we designed, delivered, and stand behind.',
     pathname: '/work',
     locale: typedLocale,
   })
@@ -124,12 +136,6 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
 
   const scenes = await getScenes(typedLocale)
 
-  return (
-    <>
-      {/* The scenes are h2s, so the page still needs its single h1. It is visually hidden because
-          the design gives the page no heading of its own — the first scene fills the viewport. */}
-      <h1 className="sr-only">Work</h1>
-      <WorkScenes scenes={scenes} />
-    </>
-  )
+  // The single h1 lives inside the intro scene; the story scenes are h2s beneath it.
+  return <WorkScenes scenes={scenes} intro={INTRO} />
 }

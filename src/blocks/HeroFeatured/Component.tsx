@@ -87,7 +87,7 @@ function Card({ item, index }: { item: FeaturedCard; index: number }): JSX.Eleme
           {/* Reserve two lines so short titles align with longer ones, but DON'T clamp — clamping
               truncated long CMS titles mid-word. Titles show in full; the real uniformity fix is
               shortening the titles in the CMS (tracked as a copy change). */}
-          <h3 className="min-h-[2.3em] w-full text-base font-semibold leading-[1.15] text-cream">{item.title}</h3>
+          <h3 className="font-display min-h-[2.3em] w-full text-base font-medium leading-[1.15] tracking-[-0.01em] text-cream">{item.title}</h3>
           <span className="w-full text-sm font-medium leading-[1.15] text-cream">{item.category}</span>
         </div>
       </Link>

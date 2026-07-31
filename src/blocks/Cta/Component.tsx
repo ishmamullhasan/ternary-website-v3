@@ -52,7 +52,7 @@ export function CtaBlockComponent({
           className="flex w-full flex-col items-center text-center lg:w-auto lg:items-start lg:text-left lg:max-w-xl"
           {...motionBlockProps}
         >
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight mb-3 text-cream leading-[1.2]">
+          <h2 className="font-display mb-3 text-[clamp(1.5rem,3vw,2rem)] font-medium leading-[1.15] tracking-[-0.02em] text-cream">
             {heading}
           </h2>
           {description && (

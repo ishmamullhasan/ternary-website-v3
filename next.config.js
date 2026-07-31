@@ -39,6 +39,10 @@ const nextConfig = {
       // The stories hub is now /work.
       { source: '/stories', destination: '/work', permanent: true },
       { source: '/bn/stories', destination: '/bn/work', permanent: true },
+      // The bare /case-studies index was a 404 while hub CTAs and the detail breadcrumbs pointed
+      // at it — the reel is the index.
+      { source: '/case-studies', destination: '/work', permanent: true },
+      { source: '/bn/case-studies', destination: '/bn/work', permanent: true },
       // Taxonomy: "Software Platforms" retired in favour of the canonical "Technology Platforms".
       { source: '/industries/software-platforms', destination: '/industries/technology-platforms', permanent: true },
       { source: '/bn/industries/software-platforms', destination: '/bn/industries/technology-platforms', permanent: true },
