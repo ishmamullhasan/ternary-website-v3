@@ -18,13 +18,20 @@ export interface DeckSection {
   body: string
 }
 
-export interface CaseStudyDeck {
-  slug: string
-  /** Filename of the mockup extracted from the deck. */
-  image: string
-  /** Real alt text — what the mockup actually shows, not a restatement of the title. */
+/** One visual on a case study's showcase. */
+export interface DeckVisual {
+  /** Filename in DECK_IMAGE_DIR. */
+  file: string
+  /** Real alt text — what the screen actually shows, not a restatement of the title. */
   alt: string
   caption: string
+}
+
+export interface CaseStudyDeck {
+  slug: string
+  /** Ordered; replaces whatever this import put in the showcase last time. */
+  visuals: DeckVisual[]
+  /** Empty leaves the existing write-up untouched — used when only the visuals are being set. */
   sections: DeckSection[]
   /** Sections of the deck NOT imported, and why. Kept in-repo so the omission is reviewable. */
   withheld?: string
@@ -32,10 +39,38 @@ export interface CaseStudyDeck {
 
 export const CASE_STUDY_DECKS: CaseStudyDeck[] = [
   {
+    /**
+     * VISUALS ONLY — `sections` is empty, so the import leaves Counterfoil's write-up exactly as it
+     * is. Two screens arrived with the set and neither belongs to any of the six decks: a venue
+     * operations console (tickets, entry gate, group visits, point of sale) and the operator's own
+     * balance / payout / analytics view. Both are the attractions-booking product this case study
+     * is about — "a booking monolith rebuilt as an event-driven platform" — so they go here.
+     */
+    slug: 'counterfoil-continuum',
+    visuals: [
+      {
+        file: 'counterfoil-continuum-1.png',
+        alt: 'A venue operations console: revenue and visitor totals, scheduled group visits with confirmed and pending states, a visitor enquiry inbox, and a point-of-sale cart offering cash, card and e-wallet payment.',
+        caption: 'One console for the gate, the shop and the group bookings behind them.',
+      },
+      {
+        file: 'counterfoil-continuum-2.png',
+        alt: 'The operator view: available balance and next scheduled payout beside a dated transaction history, and an analytics board comparing sales, check-ins and visitors across two selected periods.',
+        caption: 'The operator side — settlement and demand, on the same platform.',
+      },
+    ],
+    sections: [],
+  },
+
+  {
     slug: 'hissho-sushiops360',
-    image: 'Frame427322184_0_2048x2048.jpg',
-    alt: 'The SushiOps360 dashboard, showing store-level sushi sales, shrinkage and inventory-outlook panels beside a low-inventory alert and an AI assistant prompt.',
-    caption: 'SushiOps360 — the store dashboard, with inventory alerts and the assistant in the same surface.',
+    visuals: [
+      {
+        file: 'hissho-sushiops360.png',
+        alt: 'The Hissho SushiOps360 store dashboard: a low-inventory alert for sushi rice and avocado, total sushi sold, shrinkage against last month, an AI assistant prompt, and a weekly inventory outlook with days-of-cover and stockout risk.',
+        caption: 'SushiOps360 — the alert, the numbers and the assistant on one surface.',
+      },
+    ],
     sections: [
       {
         heading: 'Client / Segment',
@@ -66,9 +101,13 @@ export const CASE_STUDY_DECKS: CaseStudyDeck[] = [
 
   {
     slug: 'doyouwork',
-    image: 'Frame427322183_0_2428x1760.jpg',
-    alt: 'The DoYouWork daily scheduling board, showing a week of technician assignments in columns with crew avatars and vehicle allocations against each job.',
-    caption: 'DoYouWork — the daily scheduling board managers run the week from.',
+    visuals: [
+      {
+        file: 'doyouwork.png',
+        alt: 'The DoYouWork daily scheduling board: a week of jobs laid out by day with technician and vehicle assignments on each card, a drivers working/off toggle, and the manage rail for employees, vehicles and expenses.',
+        caption: 'DoYouWork — the board a manager runs the week from.',
+      },
+    ],
     sections: [
       {
         heading: 'Client / Segment',
@@ -99,9 +138,13 @@ export const CASE_STUDY_DECKS: CaseStudyDeck[] = [
 
   {
     slug: 'farogl-odoo-erp',
-    image: 'Frame427322182_0_2960x1440.jpg',
-    alt: 'The Odoo 18 module workspace for FAR Oil & Gas, showing Accounting, CRM, Sales, Manufacturing, Inventory, Purchase and Website apps laid out as installable tiles.',
-    caption: 'The Odoo module estate — mapped to validated workflows before anything was configured.',
+    visuals: [
+      {
+        file: 'farogl-odoo-erp.png',
+        alt: 'The Odoo app estate for FAR Oil & Gas Limited: Accounting, CRM, Sales, Manufacturing, MRP II, Inventory, Purchase, eCommerce, Email Marketing, Knowledge and Website shown as installable modules.',
+        caption: 'The module estate — mapped to validated workflows before anything was configured.',
+      },
+    ],
     sections: [
       {
         heading: 'Client / Segment',
@@ -132,9 +175,13 @@ export const CASE_STUDY_DECKS: CaseStudyDeck[] = [
 
   {
     slug: 'flex5',
-    image: 'Frame427322181_0_1408x3052.jpg',
-    alt: 'Flex5 mobile screens: a metabolic nutrition score with a logged breakfast, a biometrics panel tracking weight, A1c and blood pressure, and a gym finder listing nearby facilities.',
-    caption: 'Flex5 — daily guidance, biometrics and discovery in one mobile surface.',
+    visuals: [
+      {
+        file: 'flex5.png',
+        alt: 'Flex5 mobile screens: a metabolic nutrition score with a logged breakfast, a biometrics panel tracking weight, A1c and blood pressure, a class library, a gym finder, and the Ask Dr. Five assistant mid-conversation.',
+        caption: 'Flex5 — daily guidance, biometrics, learning and discovery in one app.',
+      },
+    ],
     sections: [
       {
         heading: 'Client / Segment',
@@ -165,9 +212,13 @@ export const CASE_STUDY_DECKS: CaseStudyDeck[] = [
 
   {
     slug: 'alley-analytix',
-    image: 'Frame427322180_2_1920x1080.jpg',
-    alt: "A coach's dashboard listing today's athlete activity — completed sessions, ratings and practice footage — beside league standings and upcoming bookings.",
-    caption: 'The coach view — longitudinal athlete tracking rather than raw telemetry.',
+    visuals: [
+      {
+        file: 'alley-analytix.png',
+        alt: "The Alley Analytix coach dashboard with today's athlete activity, completed sessions and practice footage, beside the player's league view showing league average, high series, strike and spare percentages.",
+        caption: 'Coach and player views — longitudinal tracking, not raw telemetry.',
+      },
+    ],
     sections: [
       {
         heading: 'Client / Segment',
@@ -215,9 +266,13 @@ export const CASE_STUDY_DECKS: CaseStudyDeck[] = [
      * page. Restore them here if the deck turns out to be right and the site wrong.
      */
     slug: 'turfly',
-    image: 'Frame427322179_0_2048x2048.jpg',
-    alt: 'The Turfly booking app on two phones: a futsal venue listing with a discount badge, and a prominent Book Now action over a pitch photograph.',
-    caption: 'Turfly — venue discovery through to instant confirmation.',
+    visuals: [
+      {
+        file: 'turfly.png',
+        alt: 'The Turfly booking app: a location-aware home screen with a discounted futsal venue and a Book Now action, an explore view of nearby pitches, and upcoming bookings.',
+        caption: 'Turfly — venue discovery through to instant confirmation.',
+      },
+    ],
     withheld:
       'Solution, Tech Stack, Impact, Why it matters — the deck describes a corporate travel and expense product, not this one.',
     sections: [

@@ -102,56 +102,87 @@ export const importDecks = async (payload: BasePayload, dry = DRY): Promise<stri
       continue
     }
 
-    // ── the mockup ────────────────────────────────────────────────────────────────────────────
-    const file = path.join(IMAGE_DIR, deck.image)
-    if (!fs.existsSync(file)) {
-      say(`SKIP  ${deck.slug} — image not found: ${file}`)
-      continue
-    }
-    const filename = `case-${deck.slug}-mockup.jpg`
+    // ── the visuals ───────────────────────────────────────────────────────────────────────────
+    // Every visual is uploaded (or matched to the one this import uploaded last time, by filename)
+    // and the showcase is REPLACED with them in order. Replaced, not appended, so re-running does
+    // not grow the gallery; any row pointing at media this import did not create is kept, so a
+    // hand-added visual survives.
+    const mediaIds: (string | number)[] = []
+    let uploaded = 0
+    let missing = false
 
-    let mediaId: string | number | undefined
-    const existingMedia = await payload.find({
+    for (const visual of deck.visuals) {
+      const file = path.join(IMAGE_DIR, visual.file)
+      if (!fs.existsSync(file)) {
+        say(`SKIP  ${deck.slug} — image not found: ${file}`)
+        missing = true
+        break
+      }
+      const filename = `case-${deck.slug}-${visual.file}`
+      const ext = path.extname(visual.file).toLowerCase()
+      const mimetype = ext === '.png' ? 'image/png' : 'image/jpeg'
+
+      const existing = await payload.find({
+        collection: 'media',
+        where: { filename: { equals: filename } },
+        limit: 1,
+        depth: 0,
+      })
+      if (existing.docs[0]) {
+        mediaIds.push(existing.docs[0].id)
+        if (!dry) {
+          // Refresh the alt in case the wording here changed; the file is already uploaded.
+          await payload.update({
+            collection: 'media',
+            id: existing.docs[0].id,
+            locale: 'en',
+            data: { alt: visual.alt },
+          })
+        }
+      } else if (!dry) {
+        const created = await payload.create({
+          collection: 'media',
+          locale: 'en',
+          data: { alt: visual.alt },
+          file: { data: fs.readFileSync(file), name: filename, mimetype, size: fs.statSync(file).size },
+        })
+        mediaIds.push(created.id)
+        uploaded += 1
+      } else {
+        uploaded += 1
+      }
+    }
+    if (missing) continue
+
+    /* Everything this import has EVER uploaded for this case study — every media doc whose filename
+       starts `case-<slug>-`, not only the ones named in `visuals` today. Without this, changing a
+       visual (the deck JPEGs were replaced by supplied PNGs) leaves the previous file in the
+       showcase and the page renders both. The superseded media docs stay in the library,
+       unreferenced; deleting them is a destructive call and not this script's job. */
+    const priorUploads = await payload.find({
       collection: 'media',
-      where: { filename: { equals: filename } },
-      limit: 1,
+      where: { filename: { like: `case-${deck.slug}-` } },
+      limit: 50,
       depth: 0,
     })
-    if (existingMedia.docs[0]) {
-      mediaId = existingMedia.docs[0].id
-      if (!dry) {
-        // Refresh the alt in case the wording here changed; the file itself is already uploaded.
-        await payload.update({ collection: 'media', id: mediaId, locale: 'en', data: { alt: deck.alt } })
-      }
-    } else if (!dry) {
-      const created = await payload.create({
-        collection: 'media',
-        locale: 'en',
-        data: { alt: deck.alt },
-        file: {
-          data: fs.readFileSync(file),
-          name: filename,
-          mimetype: 'image/jpeg',
-          size: fs.statSync(file).size,
-        },
-      })
-      mediaId = created.id
-    }
-
-    // ── the write-up ──────────────────────────────────────────────────────────────────────────
-    // `gallery` rows are replaced, not appended: re-running must not grow the showcase. Any row
-    // pointing at a DIFFERENT media doc is kept, so a hand-added visual survives the import.
+    const mine = new Set([...mediaIds.map(String), ...priorUploads.docs.map((d) => String(d.id))])
     const keptRows = ((story.gallery ?? []) as { media?: unknown; caption?: string }[]).filter((row) => {
       const id = typeof row.media === 'object' && row.media ? (row.media as { id?: unknown }).id : row.media
-      return id != null && String(id) !== String(mediaId)
+      return id != null && !mine.has(String(id))
     })
 
-    const data: Record<string, unknown> = { content: richText(deck.sections) }
-    if (mediaId) data.gallery = [{ media: mediaId, caption: deck.caption }, ...keptRows]
+    const data: Record<string, unknown> = {}
+    // An empty `sections` means visuals only — leave the existing write-up alone.
+    if (deck.sections.length) data.content = richText(deck.sections)
+    if (mediaIds.length) {
+      data.gallery = [...mediaIds.map((id, i) => ({ media: id, caption: deck.visuals[i]?.caption ?? '' })), ...keptRows]
+    }
 
     say(
-      `${dry ? 'DRY  ' : 'WRITE'} ${deck.slug.padEnd(22)} ${deck.sections.length} sections, ` +
-        `image ${existingMedia.docs[0] ? 'reused' : 'uploaded'}${deck.withheld ? `  [withheld: ${deck.withheld}]` : ''}`,
+      `${dry ? 'DRY  ' : 'WRITE'} ${deck.slug.padEnd(22)} ` +
+        `${deck.sections.length ? `${deck.sections.length} sections` : 'visuals only'}, ` +
+        `${mediaIds.length} visual${mediaIds.length === 1 ? '' : 's'} (${uploaded} new)` +
+        `${deck.withheld ? `  [withheld: ${deck.withheld}]` : ''}`,
     )
 
     if (!dry) {
