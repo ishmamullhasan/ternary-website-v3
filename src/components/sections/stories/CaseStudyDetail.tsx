@@ -164,33 +164,61 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
         </Link>
       </div>
 
-      {/* Hero — eyebrow, big statement title, one confident line, chips */}
+      {/* HERO — the claim on the left, the qualifying facts on the right.
+          It was a single left-aligned column at max-w-4xl with the whole right half of the page
+          empty beside it, and the facts — industry, engagement, duration, team, year — sat in a
+          strip BELOW the artwork, which is past the fold and past the point a reader deciding
+          whether this case study is about them has already decided.
+
+          They are the answer to "is this us?", so they belong level with the claim. Moving them
+          also takes out the page's last `border-t border-line`: the panel is a surface, and the
+          gap between it and the copy does the separating. */}
       <header className="mx-auto w-full max-w-7xl px-5 pt-12 md:px-8 lg:px-12 lg:pt-20">
-        <Motion tag="div" {...reveal} transition={{ duration: 0.7, ease: EASE }} className="max-w-4xl">
-          {/* No "Case study · <industry>" eyebrow. The breadcrumb directly above already says
-              All case studies, the industry is one of the cells in the meta strip below, and the
-              route is /case-studies/<slug> — three places the reader is already told. */}
-          <h1 className="font-display text-[clamp(2.25rem,5.5vw,3.75rem)] font-medium leading-[1.04] tracking-[-0.04em] text-cream">
-            {story.title}
-          </h1>
-          {hasText(story.excerpts) && (
-            <p className="mt-6 max-w-2xl text-[clamp(1rem,1.6vw,1.2rem)] leading-relaxed tracking-[-0.01em] text-body">
-              {story.excerpts}
-            </p>
-          )}
-          {tags.length > 0 && (
-            <ul className="mt-8 flex flex-wrap gap-2">
-              {tags.map((tag, i) => (
-                <li
-                  key={`${tag.name}-${i}`}
-                  className="rounded-full border border-badge px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-body"
-                >
-                  {tag.name}
-                </li>
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.44fr)] lg:items-start lg:gap-16">
+          <Motion tag="div" {...reveal} transition={{ duration: 0.7, ease: EASE }}>
+            {/* No "Case study · <industry>" eyebrow. The breadcrumb directly above already says
+                All case studies, the industry is the first cell of the panel beside this, and the
+                route is /case-studies/<slug> — three places the reader is already told. */}
+            <h1 className="font-display text-[clamp(2.25rem,5.5vw,3.75rem)] font-medium leading-[1.04] tracking-[-0.04em] text-balance text-cream">
+              {story.title}
+            </h1>
+            {hasText(story.excerpts) && (
+              <p className="mt-6 max-w-2xl text-[clamp(1rem,1.6vw,1.2rem)] leading-relaxed tracking-[-0.01em] text-body">
+                {story.excerpts}
+              </p>
+            )}
+            {tags.length > 0 && (
+              <ul className="mt-8 flex flex-wrap gap-2">
+                {tags.map((tag, i) => (
+                  <li
+                    key={`${tag.name}-${i}`}
+                    className="rounded-full bg-cream/[0.055] px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-body"
+                  >
+                    {tag.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Motion>
+
+          {metaCells.length > 0 && (
+            <Motion
+              tag="dl"
+              {...reveal}
+              transition={{ duration: 0.7, ease: EASE, delay: 0.08 }}
+              className="flex flex-col gap-5 rounded-xl bg-card p-7 lg:p-8"
+            >
+              {metaCells.map((cell) => (
+                <div key={cell.label} className="flex flex-col gap-1.5">
+                  <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">{cell.label}</dt>
+                  {/* tabular figures so Duration and Year line up under each other rather than
+                      drifting by the width of a 1. */}
+                  <dd className="text-[15px] tabular-nums tracking-[-0.01em] text-cream">{cell.value}</dd>
+                </div>
               ))}
-            </ul>
+            </Motion>
           )}
-        </Motion>
+        </div>
       </header>
 
       {/* Hero media — the story's CMS media leads; labeled gradient placeholder otherwise. */}
@@ -237,18 +265,6 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
             </>
           )}
         </div>
-
-        {/* Meta strip — quiet hairline row beneath the media, mono labels, guarded cells. */}
-        {metaCells.length > 0 && (
-          <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-line pt-8 sm:grid-cols-3 lg:grid-cols-5">
-            {metaCells.map((cell) => (
-              <div key={cell.label} className="flex flex-col gap-2">
-                <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">{cell.label}</dt>
-                <dd className="text-[15px] tracking-[-0.01em] text-cream">{cell.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
       </Motion>
 
       {/* The story — sticky mono rail + editorial prose */}
