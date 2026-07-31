@@ -9,7 +9,8 @@ import { GradientPanel, type Tone, toneFor } from '@/components/sections/stories
 import { cn } from '@/lib/utils'
 import type { Media, Story } from '@/payload-types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
-import { ArrowLeft, ArrowUpRight } from 'lucide-react'
+import { getNodeText, slugify } from '@/utilities/headings'
+import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
 import type { JSX } from 'react'
 
 /**
@@ -37,14 +38,6 @@ interface CaseStudyDetailProps {
   story: Story
   backHref: string
   related?: RelatedStoryCardData[]
-}
-
-/** Clean, non-empty entries from a localized array field. */
-function cleanList<T extends Record<string, unknown>>(list: T[] | null | undefined, key: keyof T): T[] {
-  return (list ?? []).filter((item) => {
-    const value = item?.[key]
-    return typeof value === 'string' && value.trim().length > 0
-  })
 }
 
 function hasText(value?: string | null): value is string {
@@ -96,7 +89,6 @@ function ShowcaseCell({
 
 export default function CaseStudyDetail({ story, backHref, related = [] }: CaseStudyDetailProps): JSX.Element {
   const heroTone = toneFor('story', 0)
-  const tags = cleanList(story.tags, 'name')
 
   const cmsHero = asMedia(story.thumbnail)
   /* Shipped artwork wins when the CMS has no thumbnail, OR when what it has is one of the
@@ -130,6 +122,22 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
   if (hasText(meta?.year)) metaCells.push({ label: 'Year', value: meta!.year! })
 
   const hasBody = Boolean(story.content)
+
+  /* The write-up's own section headings, as jump links.
+     The rich-text converter already slugifies heading ids for exactly this — see the comment on
+     `jsxConverters.heading` — so nothing new has to be emitted; this just reads the same nodes it
+     renders from and links to them. Works on either write-up shape: the six-part deck structure
+     (Client / Segment · Problem · Solution · Tech Stack · Impact · Why it matters) and the older
+     four-part one both store their sections as headings. */
+  const sectionLinks = (() => {
+    const root = (story.content as { root?: { children?: unknown[] } } | null)?.root
+    return (root?.children ?? []).flatMap((node) => {
+      const n = node as { type?: string; children?: readonly unknown[] }
+      if (n.type !== 'heading') return []
+      const label = getNodeText(n).trim()
+      return label ? [{ label, id: slugify(label) }] : []
+    })
+  })()
 
   // "How we worked" — authored rows only; a row needs both halves to render a step.
   const steps = (story.steps ?? []).flatMap((row) =>
@@ -199,7 +207,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
               the same kind of thing as the cells above them — what shape the work was — and the
               narrative column is better for keeping only the narrative. It also gives a panel that
               would otherwise be two short rows something to fill its width with. */}
-          {(metaCells.length > 0 || tags.length > 0) && (
+          {(metaCells.length > 0 || sectionLinks.length > 1) && (
             <Motion
               tag="div"
               {...reveal}
@@ -219,17 +227,31 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
                 </dl>
               )}
 
-              {tags.length > 0 && (
-                <ul className="flex flex-wrap gap-2">
-                  {tags.map((tag, i) => (
-                    <li
-                      key={`${tag.name}-${i}`}
-                      className="rounded-full bg-cream/[0.06] px-3 py-1 font-mono text-[12px] tracking-[-0.01em] text-body"
-                    >
-                      {tag.name}
-                    </li>
-                  ))}
-                </ul>
+              {/* Where this one goes. Chips named techniques, which is a claim the write-up makes
+                  anyway and gave the reader nothing to do; these are the article's own sections and
+                  they move you to them. Guarded at >1 because a single link is not a contents list.
+                  No visible heading — a list of the page's own section names inside its fact panel
+                  reads as what it is — but the nav is labelled for screen readers. */}
+              {sectionLinks.length > 1 && (
+                <nav aria-label="In this case study">
+                  <ul className="flex flex-col">
+                    {sectionLinks.map((section) => (
+                      <li key={section.id}>
+                        <a
+                          href={`#${section.id}`}
+                          className="group flex items-center justify-between gap-4 rounded-md py-2 text-[14px] tracking-[-0.01em] text-body transition-colors hover:text-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cream"
+                        >
+                          {section.label}
+                          <ArrowRight
+                            size={14}
+                            aria-hidden
+                            className="shrink-0 text-subtle transition-transform duration-300 group-hover:translate-x-0.5 motion-reduce:transform-none"
+                          />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
               )}
             </Motion>
           )}
@@ -291,7 +313,7 @@ export default function CaseStudyDetail({ story, backHref, related = [] }: CaseS
                 How we approached the work, what we built, and why it matters.
               </p>
             </div>
-            <div className="max-w-[74ch] [&_a]:text-cream [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-subtle [&_blockquote]:pl-5 [&_h2]:font-display [&_h3]:font-display [&_p]:tracking-[-0.01em]">
+            <div className="max-w-[74ch] [&_h2]:scroll-mt-28 [&_h3]:scroll-mt-28 [&_h4]:scroll-mt-28 [&_a]:text-cream [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-subtle [&_blockquote]:pl-5 [&_h2]:font-display [&_h3]:font-display [&_p]:tracking-[-0.01em]">
               <RichTextComp content={story.content as RichText} />
             </div>
           </Motion>
