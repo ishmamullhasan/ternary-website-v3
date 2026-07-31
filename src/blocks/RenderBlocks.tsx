@@ -316,6 +316,20 @@ export function RenderBlocks({
               </div>
             )
           }
+          // Hub blocks self-gutter (their own max-w-[1480px] + px). Inside the shared container's
+          // gutter that DOUBLED the inset — the hub's h1 sat at 96px while sibling blocks
+          // (careersTeam/jobsBlock) sat at the intended 48px, a visible mismatch. Cancel the
+          // container's horizontal padding for the hub block only; its own Section restores the
+          // single gutter, and the container's max-w-7xl equals the hub's own max-width so the
+          // negative margin can never overhang. The bare-fallback render path (no container) is
+          // untouched because the hub keeps its own gutter.
+          if (block.blockType === 'solutionsHub' || block.blockType === 'careersHub') {
+            return (
+              <div className="-mx-5 md:-mx-8 lg:-mx-12" key={block.id || i}>
+                {el}
+              </div>
+            )
+          }
           return <Fragment key={block.id || i}>{el}</Fragment>
         }
         return (
