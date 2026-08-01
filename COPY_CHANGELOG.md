@@ -19,10 +19,40 @@ CMS later.
 - **Phase 1 /solutions hub (2026-07-31)** — after deploying the `solutionsHub` block schema, run
   `scripts/seed-solutions-hub.ts` (`SEED_DRY=0`) to replace the solutions page layout. See the
   Phase 1 entry below.
+- **Remaining hubs CMS build-out (2026-08-01)** — after deploying the `capabilitiesHub` /
+  `industriesHub` / `scalesHub` block schemas, run `scripts/seed-remaining-hubs.ts` (`SEED_DRY=0`)
+  once — it seeds all three in a single connection (M0 connection cap). Replaces the shadowed dead
+  layouts on the `industries` + `scales` docs and creates the `capabilities` doc. See the entry below.
 
 ---
 
 ## Changes
+
+### CMS build-out — capabilities / industries / scales hubs (staging + Atlas, 2026-08-01)
+The three remaining hardcoded hub landings moved into the CMS as one editable block each
+(`capabilitiesHub`, `industriesHub`, `scalesHub`), following the solutionsHub/careersHub pattern:
+**design stays in code, copy is CMS-first, and every field left empty falls back to the authored
+default** (the previous hardcoded copy, verbatim) so a half-edited doc can never render broken.
+Seeded EMPTY via `scripts/seed-remaining-hubs.ts` — editors see the real text only once they choose
+to override a field.
+
+- **capabilities**: no `pages` doc existed → created (slug `capabilities`, one `capabilitiesHub`
+  block). Design unchanged (hero + NetworkMark, framing, 8-card index, combinations, the standard,
+  gradient CTA). `/capabilities` now renders via RenderBlocks.
+- **industries**: the doc's shadowed dead layout (`industryList`, `industriesDetails`,
+  `industryPanels`, `crossIndustryPatterns`, `regulatoryPosture`, `ctaBlock` — never rendered, the
+  dedicated route always won) REPLACED by one `industriesHub` block. The interactive `SectorIndex`
+  explorer is unchanged — it now takes its sectors (name/desc/label/clients/none/caps) as a prop,
+  defaulting to the same hardcoded set. Rendered directly (not via RenderBlocks) because the `.hub`
+  layout is full-bleed with its own gutters.
+- **scales**: the doc's shadowed dead layout (`scalesHero`, `qualityBar`, `scaleShowcase`,
+  `ctaBlock`) REPLACED by one `scalesHub` block. Design unchanged (hero + index, three scale cards
+  with ScaleFigure/facts/proof, the point, moves/never-moves, the constant, gradient CTA).
+
+Old layouts remain in Payload version history. All three hubs' "See our work" / combination-card
+CTAs now point at `/work` directly instead of `/stories` (which 308s to `/work`) — one fewer hop,
+no copy change. Bengali values not authored; `bn` serves `en` via fallback. **Prod follow-up:
+replicate (schema deploy first, then `seed-remaining-hubs.ts`).**
 
 ### Stories/Careers redesign pass — owner direction (staging + Atlas, 2026-07-31)
 

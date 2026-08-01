@@ -233,6 +233,9 @@ export interface Page {
         | SolutionsEngageBlock
         | SolutionsHubBlock
         | CareersHubBlock
+        | CapabilitiesHubBlock
+        | IndustriesHubBlock
+        | ScalesHubBlock
         | AboutFundingStoryBlock
         | AboutIntroBlock
         | AboutThesisBlock
@@ -3462,6 +3465,176 @@ export interface CareersHubBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CapabilitiesHubBlock".
+ */
+export interface CapabilitiesHubBlock {
+  heroHeading?: string | null;
+  heroSub?: string | null;
+  framingLead?: string | null;
+  framingLeadMuted?: string | null;
+  framingBody?: string | null;
+  indexHeading?: string | null;
+  indexBlurb?: string | null;
+  capabilities?:
+    | {
+        name?: string | null;
+        slug?: string | null;
+        body?: string | null;
+        tags?:
+          | {
+              tag?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  combosHeading?: string | null;
+  combosBlurb?: string | null;
+  combinations?:
+    | {
+        tag?: string | null;
+        title?: string | null;
+        body?: string | null;
+        caps?:
+          | {
+              cap?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  standardHeading?: string | null;
+  standard?:
+    | {
+        title?: string | null;
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  ctaHeading?: string | null;
+  ctaBody?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'capabilitiesHub';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesHubBlock".
+ */
+export interface IndustriesHubBlock {
+  heroHeading?: string | null;
+  heroSub?: string | null;
+  sectorsHeading?: string | null;
+  sectorsSub?: string | null;
+  sectors?:
+    | {
+        name?: string | null;
+        desc?: string | null;
+        label?: string | null;
+        clients?:
+          | {
+              name?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        none?: string | null;
+        caps?:
+          | {
+              cap?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  approachHeading?: string | null;
+  approach?:
+    | {
+        title?: string | null;
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  postureHeading?: string | null;
+  posture?:
+    | {
+        title?: string | null;
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  ctaHeading?: string | null;
+  ctaBody?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'industriesHub';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScalesHubBlock".
+ */
+export interface ScalesHubBlock {
+  heroHeading?: string | null;
+  heroSub?: string | null;
+  scales?:
+    | {
+        name?: string | null;
+        title?: string | null;
+        lede?: string | null;
+        facts?:
+          | {
+              k?: string | null;
+              v?: string | null;
+              lead?: boolean | null;
+              id?: string | null;
+            }[]
+          | null;
+        proof?:
+          | {
+              name?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  pointLead?: string | null;
+  pointLeadMuted?: string | null;
+  pointBody1?: string | null;
+  pointBody2?: string | null;
+  pointBody2Lead?: string | null;
+  movesHeading?: string | null;
+  neverMoves?:
+    | {
+        item?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  shapedToYou?:
+    | {
+        item?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  constantHeading?: string | null;
+  constantBlurb?: string | null;
+  constant?:
+    | {
+        title?: string | null;
+        body?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  ctaHeading?: string | null;
+  ctaBody?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'scalesHub';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "AboutFundingStoryBlock".
  */
 export interface AboutFundingStoryBlock {
@@ -4530,6 +4703,9 @@ export interface PagesSelect<T extends boolean = true> {
         solutionsEngage?: T | SolutionsEngageBlockSelect<T>;
         solutionsHub?: T | SolutionsHubBlockSelect<T>;
         careersHub?: T | CareersHubBlockSelect<T>;
+        capabilitiesHub?: T | CapabilitiesHubBlockSelect<T>;
+        industriesHub?: T | IndustriesHubBlockSelect<T>;
+        scalesHub?: T | ScalesHubBlockSelect<T>;
         aboutFundingStory?: T | AboutFundingStoryBlockSelect<T>;
         aboutIntro?: T | AboutIntroBlockSelect<T>;
         aboutThesis?: T | AboutThesisBlockSelect<T>;
@@ -5396,6 +5572,173 @@ export interface CareersHubBlockSelect<T extends boolean = true> {
         id?: T;
       };
   placesLine?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CapabilitiesHubBlock_select".
+ */
+export interface CapabilitiesHubBlockSelect<T extends boolean = true> {
+  heroHeading?: T;
+  heroSub?: T;
+  framingLead?: T;
+  framingLeadMuted?: T;
+  framingBody?: T;
+  indexHeading?: T;
+  indexBlurb?: T;
+  capabilities?:
+    | T
+    | {
+        name?: T;
+        slug?: T;
+        body?: T;
+        tags?:
+          | T
+          | {
+              tag?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  combosHeading?: T;
+  combosBlurb?: T;
+  combinations?:
+    | T
+    | {
+        tag?: T;
+        title?: T;
+        body?: T;
+        caps?:
+          | T
+          | {
+              cap?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  standardHeading?: T;
+  standard?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  ctaHeading?: T;
+  ctaBody?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IndustriesHubBlock_select".
+ */
+export interface IndustriesHubBlockSelect<T extends boolean = true> {
+  heroHeading?: T;
+  heroSub?: T;
+  sectorsHeading?: T;
+  sectorsSub?: T;
+  sectors?:
+    | T
+    | {
+        name?: T;
+        desc?: T;
+        label?: T;
+        clients?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+        none?: T;
+        caps?:
+          | T
+          | {
+              cap?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  approachHeading?: T;
+  approach?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  postureHeading?: T;
+  posture?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  ctaHeading?: T;
+  ctaBody?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScalesHubBlock_select".
+ */
+export interface ScalesHubBlockSelect<T extends boolean = true> {
+  heroHeading?: T;
+  heroSub?: T;
+  scales?:
+    | T
+    | {
+        name?: T;
+        title?: T;
+        lede?: T;
+        facts?:
+          | T
+          | {
+              k?: T;
+              v?: T;
+              lead?: T;
+              id?: T;
+            };
+        proof?:
+          | T
+          | {
+              name?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  pointLead?: T;
+  pointLeadMuted?: T;
+  pointBody1?: T;
+  pointBody2?: T;
+  pointBody2Lead?: T;
+  movesHeading?: T;
+  neverMoves?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  shapedToYou?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  constantHeading?: T;
+  constantBlurb?: T;
+  constant?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  ctaHeading?: T;
+  ctaBody?: T;
   id?: T;
   blockName?: T;
 }

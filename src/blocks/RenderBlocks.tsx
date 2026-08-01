@@ -20,8 +20,11 @@ import { CapabilityLedgerComponent } from './CapabilityLedger/Component'
 import { CareersGridOneComponent } from './CareersGridOne/Component'
 import { CareersGridTwoComponent } from './CareersGridTwo/Component'
 import { CareersGrowthComponent } from './CareersGrowth/Component'
+import { CapabilitiesHubComponent } from './CapabilitiesHub/Component'
 import { CareersHeroComponent } from './CareersHero/Component'
 import { CareersTeamComponent } from './CareersTeam/Component'
+import { IndustriesHubComponent } from './IndustriesHub/Component'
+import { ScalesHubComponent } from './ScalesHub/Component'
 import { CategoryLandingComponent } from './CategoryLanding/Component'
 import { ContactFormComponent } from './ContactForm/Component'
 import { ContactHeroComponent } from './ContactHero/Component'
@@ -102,6 +105,9 @@ const SELF_WRAPPED_BLOCKS = new Set<string>([
   'solutionsHero',
   'solutionsHub',
   'careersHub',
+  'capabilitiesHub',
+  'scalesHub',
+  'industriesHub',
   'solutionFeature',
   'solutionsEngage',
   'aboutFundingStory',
@@ -159,6 +165,12 @@ function renderBlock(block: BlockType, locale?: TypedLocale, slug?: string): JSX
       return <SolutionsHubComponent {...block} />
     case 'careersHub':
       return <CareersHubComponent {...block} />
+    case 'capabilitiesHub':
+      return <CapabilitiesHubComponent {...block} />
+    case 'scalesHub':
+      return <ScalesHubComponent {...block} />
+    case 'industriesHub':
+      return <IndustriesHubComponent {...block} />
     case 'capabilitiesSection':
       return <CapabilitiesSectionComponent {...block} />
     case 'capabilityLedger':
@@ -273,7 +285,9 @@ export function RenderBlocks({
   // rhythm — under the standard container's pt-40 the h1 landed a whole band down the viewport
   // (owner: "huge whitespace at the top"). They keep the container's width/gutters but drop the
   // big top padding; the hero block supplies what little it needs.
-  const startsWithHub = ['solutionsHub', 'careersHub'].includes(blocks[0]?.blockType ?? '')
+  const startsWithHub = ['solutionsHub', 'careersHub', 'capabilitiesHub', 'scalesHub'].includes(
+    blocks[0]?.blockType ?? '',
+  )
 
   // About runs as one continuous scene experience: the scenes are full-bleed and own their own
   // vertical rhythm, so the shared container's gap and top padding would only insert dead space
@@ -323,7 +337,12 @@ export function RenderBlocks({
           // single gutter, and the container's max-w-7xl equals the hub's own max-width so the
           // negative margin can never overhang. The bare-fallback render path (no container) is
           // untouched because the hub keeps its own gutter.
-          if (block.blockType === 'solutionsHub' || block.blockType === 'careersHub') {
+          if (
+            block.blockType === 'solutionsHub' ||
+            block.blockType === 'careersHub' ||
+            block.blockType === 'capabilitiesHub' ||
+            block.blockType === 'scalesHub'
+          ) {
             return (
               <div className="-mx-5 md:-mx-8 lg:-mx-12" key={block.id || i}>
                 {el}

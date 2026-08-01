@@ -1,14 +1,24 @@
-import Heading from '@/components/a11y/Heading'
-import Reveal from '@/components/hub/Reveal'
-import Link from '@/components/LocalizedLink'
-import { asTypedLocale } from '@/lib/i18n/locales'
-import { ArrowRight } from 'lucide-react'
+import { IndustriesHubComponent } from '@/blocks/IndustriesHub/Component'
+import { asTypedLocale, LOCALES } from '@/lib/i18n/locales'
+import { PAGES_EMBED_TAGS } from '@/utilities/cacheTags'
+import config from '@payload-config'
+import type { IndustriesHubBlock } from '@/payload-types'
 import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
+import { draftMode } from 'next/headers'
 import { notFound } from 'next/navigation'
+import type { TypedLocale } from 'payload'
+import { getPayload } from 'payload'
+import type { JSX } from 'react'
 
-import '@/components/hub/hub.css'
-import './industriesHub.css'
-import SectorIndex from './SectorIndex'
+/**
+ * Industries hub (CMS build-out 2026-08-01). The landing is now a CMS-authored Page (slug
+ * `industries`, normally a single `industriesHub` block). Unlike the other hubs this renders the
+ * block component DIRECTLY rather than through RenderBlocks: its `.hub` layout is full-bleed with
+ * its own `.wrap` gutters, so the shared RenderBlocks container (max-width + gutters) would fight
+ * it. If no doc/block exists yet, the component renders its built-in fallback content (the previous
+ * hardcoded copy), so this route can never 404 or render empty.
+ */
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -20,143 +30,43 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   }
 }
 
-// The "before we write a line of code" ladder and the regulatory posture — hardcoded; voice
-// preserved verbatim from the approved preview.
-const APPROACH = [
-  {
-    k: '1',
-    title: 'Learn the rules',
-    body: 'Regulation, workflows, vocabulary. We study how your world actually runs before proposing how software should.',
-  },
-  {
-    k: '2',
-    title: 'Sit with the operators',
-    body: 'The people doing the work every day know exactly where it breaks. We build from beside them, not from a spec.',
-  },
-  {
-    k: '3',
-    title: 'Build to the constraints',
-    body: 'Compliance, uptime windows, audit trails — treated as first-class requirements from day one, not patched in later.',
-  },
-]
+export async function generateStaticParams() {
+  return LOCALES.map((locale) => ({ locale }))
+}
 
-const POSTURE = [
-  {
-    k: 'a',
-    title: 'Traceable by default',
-    body: 'Every consequential action is attributable and replayable, months after the fact.',
-  },
-  {
-    k: 'b',
-    title: 'Deployed inside the boundary',
-    body: 'On-premises and air-gapped patterns, for data that legally cannot leave the building.',
-  },
-  {
-    k: 'c',
-    title: 'Documented for procurement',
-    body: 'Architecture, controls, and evidence packaged the way review boards actually ask for them.',
-  },
-]
+const fetchPage = async (draft: boolean, locale: TypedLocale) => {
+  const payload = await getPayload({ config })
+  const result = await payload.find({
+    collection: 'pages',
+    where: { slug: { equals: 'industries' } },
+    draft,
+    locale,
+    overrideAccess: true,
+    depth: 2,
+    limit: 1,
+  })
+  return result.docs[0] ?? null
+}
 
-export default async function IndustriesHubPage({ params }: { params: Promise<{ locale: string }> }) {
+const getPage = (draft: boolean, locale: TypedLocale) =>
+  draft
+    ? fetchPage(true, locale)
+    : unstable_cache(() => fetchPage(false, locale), [`pages_industries_${locale}_v1`], {
+        tags: [...new Set(['pages_industries', ...PAGES_EMBED_TAGS])],
+      })()
+
+export default async function IndustriesHubPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<JSX.Element> {
   const { locale } = await params
-  if (!asTypedLocale(locale)) notFound()
+  const typedLocale = asTypedLocale(locale)
+  if (!typedLocale) notFound()
+  const { isEnabled: draft } = await draftMode()
+  const page = await getPage(draft, typedLocale)
 
-  return (
-    <div className="hub">
-      {/* HERO */}
-      <section className="hero">
-        <div className="wrap">
-          <Reveal>
-            <Heading level={1}>We build where the stakes are specific.</Heading>
-          </Reveal>
-          <Reveal as="p" className="hero-sub" i={2}>
-            Every sector has its own rules, risks, and vocabulary. We learn yours before we build — because generic
-            software doesn&rsquo;t survive contact.
-          </Reveal>
-        </div>
-      </section>
+  const block = page?.layout?.find((b) => b.blockType === 'industriesHub') as IndustriesHubBlock | undefined
 
-      {/* THE SECTORS */}
-      <section className="sec-b">
-        <div className="wrap">
-          <Reveal className="sec-head">
-            <Heading level={2}>Where we build</Heading>
-            <p className="sec-sub">
-              Each entry opens into the work behind it. Where a client can be named, they are — proof, not a blurb.
-            </p>
-          </Reveal>
-          <Reveal i={1}>
-            <SectorIndex />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* HOW WE ENTER */}
-      <section className="sec-b">
-        <div className="wrap split">
-          <Reveal x>
-            <Heading level={2} className="split-lead">
-              Before we write a line of code.
-            </Heading>
-          </Reveal>
-          {/* a sequence — the tiles carry a directional wash so the order reads without numbering */}
-          <div className="ladder ladder-flow">
-            {APPROACH.map((step, i) => (
-              <Reveal className="step" i={i} key={step.k}>
-                <div>
-                  <Heading level={3}>{step.title}</Heading>
-                  <p>{step.body}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* REGULATORY POSTURE */}
-      <section className="sec-b">
-        <div className="wrap split">
-          <Reveal x>
-            <Heading level={2} className="split-lead">
-              Built to be audited.
-            </Heading>
-          </Reveal>
-          {/* not a sequence — three standing guarantees, so every tile is lit evenly */}
-          <div className="ladder ladder-stack">
-            {POSTURE.map((point, i) => (
-              <Reveal className="step" i={i} key={point.k}>
-                <div>
-                  <Heading level={3}>{point.title}</Heading>
-                  <p>{point.body}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="cta">
-        <div className="wrap">
-          <Reveal i={1}>
-            <Heading level={2}>Don&rsquo;t see your industry?</Heading>
-          </Reveal>
-          <Reveal as="p" i={2}>
-            The list above grows with the work. If your world has its own rules and real stakes, we&rsquo;re interested
-            — and your first conversation is with someone who&rsquo;s built in a sector like yours, not a generalist.
-          </Reveal>
-          <Reveal className="btns" i={3}>
-            <Link className="btn btn-primary" href="/contact">
-              Start a conversation
-              <ArrowRight size={16} strokeWidth={2} aria-hidden />
-            </Link>
-            <Link className="btn btn-ghost" href="/stories">
-              See our work
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-    </div>
-  )
+  return <IndustriesHubComponent {...(block ?? {})} />
 }

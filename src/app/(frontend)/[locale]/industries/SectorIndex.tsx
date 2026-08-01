@@ -39,16 +39,21 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from 're
  * wiring. Row titles are `<span>`, never headings inside a button (site heading policy).
  */
 
-type Sector = {
+export type Sector = {
   num: string
   name: string
   label: string
   clients: string[]
   none?: string
   desc: string
+  /** The capabilities this sector draws on. Rail shows the first three; the panel lists all. */
+  caps: string[]
 }
 
-const SECTORS: Sector[] = [
+// Default content — the previous hardcoded sectors (CAPS folded in below). Used when the
+// industriesHub block passes no `sectors` (empty/unauthored doc), so the page can never render
+// broken. CMS-authored sectors override this wholesale.
+const RAW_SECTORS: Omit<Sector, 'caps'>[] = [
   {
     // Banking & Capital Markets and Financial Services & Insurance were separate sectors. They drew
     // on an identical set of five capabilities (the old CAPS '01' and '02' were the same list in a
@@ -154,7 +159,12 @@ const CAPS: Record<string, string[]> = {
   ],
 }
 
-export default function SectorIndex() {
+const DEFAULT_SECTORS: Sector[] = RAW_SECTORS.map((s) => ({ ...s, caps: CAPS[s.num] ?? [] }))
+
+// `SECTORS` is the prop, defaulted to the hardcoded set. It is passed once from a server component
+// and is stable for the client instance's life, so the effects below list it as a dependency
+// (satisfying exhaustive-deps) without re-running in practice.
+export default function SectorIndex({ sectors: SECTORS = DEFAULT_SECTORS }: { sectors?: Sector[] }) {
   const [active, setActive] = useState(SECTORS[0].num)
   const trackRef = useRef<HTMLDivElement>(null)
   const pinRef = useRef<HTMLDivElement>(null)
@@ -214,7 +224,7 @@ export default function SectorIndex() {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
-  }, [])
+  }, [SECTORS])
 
   /**
    * Slide the rail so the selected row sits on the aperture's centre line.
@@ -274,7 +284,7 @@ export default function SectorIndex() {
       top: r.top + window.scrollY + travel * ((i + 0.5) / SECTORS.length),
       behavior: 'auto',
     })
-  }, [])
+  }, [SECTORS])
 
   /**
    * Fit the artwork to its own ink. The drawings share one 400x360 canvas but occupy very different
@@ -328,7 +338,7 @@ export default function SectorIndex() {
                   <span className="ix-line" aria-hidden="true" />
                   <span className="ix-mid">
                     <span className="ix-name">{sector.name}</span>
-                    <span className="ix-caps">{(CAPS[sector.num] ?? []).slice(0, 3).join('  ·  ')}</span>
+                    <span className="ix-caps">{sector.caps.slice(0, 3).join('  ·  ')}</span>
                   </span>
                 </Tabs.Trigger>
               ))}
@@ -361,7 +371,7 @@ export default function SectorIndex() {
                   <div className="ix-build">
                     <span className="ix-lab">What we build</span>
                     <ul className="ix-caplist">
-                      {(CAPS[sector.num] ?? []).map((cap) => (
+                      {sector.caps.map((cap) => (
                         <li key={cap}>{cap}</li>
                       ))}
                     </ul>

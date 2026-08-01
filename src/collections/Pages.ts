@@ -15,8 +15,11 @@ import { CareersGridOne } from '@/blocks/CareersGridOne/config'
 import { CareersGridTwo } from '@/blocks/CareersGridTwo/config'
 import { CareersGrowth } from '@/blocks/CareersGrowth/config'
 import { CareersHero } from '@/blocks/CareersHero/config'
+import { CapabilitiesHub } from '@/blocks/CapabilitiesHub/config'
 import { CareersHub } from '@/blocks/CareersHub/config'
 import { CareersTeam } from '@/blocks/CareersTeam/config'
+import { IndustriesHub } from '@/blocks/IndustriesHub/config'
+import { ScalesHub } from '@/blocks/ScalesHub/config'
 import { CategoryLanding } from '@/blocks/CategoryLanding/config'
 import { ContactForm } from '@/blocks/ContactForm/config'
 import { ContactHero } from '@/blocks/ContactHero/config'
@@ -193,6 +196,10 @@ export const Pages: CollectionConfig = {
         SolutionsHub,
         // Careers redesign (2026-07-31): the careers narrative as one editable block.
         CareersHub,
+        // CMS build-out (2026-08-01): the remaining hub landings as one editable block each.
+        CapabilitiesHub,
+        IndustriesHub,
+        ScalesHub,
         AboutFundingStory,
         AboutIntro,
         AboutThesis,
